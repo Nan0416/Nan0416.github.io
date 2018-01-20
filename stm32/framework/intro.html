@@ -17,6 +17,7 @@
 <div class="bar">
 <center><strong>Programming&nbsp;-&nbsp;Framework</strong></center>
 </div>
+<p class="date"><span class="created-date">Created:2018-01-19</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-01-20</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#frameworkIntro">Introduction</a></li>
@@ -31,6 +32,9 @@
 <h3>Introduction</h3>
 <p>Programming in the relatively complicated 32-bit Cortex-M devices is different from the 8-bit Atmege AVR microcontrollers. Because STM32 deivces have more registers, those registers are 32-bit long instead of 8-bit, and it has more functions, such as DMA,
 programming by directly accessing registers is not recommended. Moreover, it is difficult to run the code in different microcontrollers (bad portablity). Therefore, programming STM32 and other cortex-m devices are usually via well-defined libraries.
+</p>
+<p>Moreover, Cortex-M3 support different operating modes, priviledge/unprivileged instruction, and two stack pointer, which means it has some hardware support for a operating system. Then programming style can treat this device as a simple MCU that does not have those features, or play with those features and perphaps with a RTOS.
+In this note, the device is programmed as a simple MCU that only uses the main stack.
 </p>
 <p>The libraries used to program a STM32 and other cortex-M device are organized as a layered architecture.</p>
 <div class="featureList">
