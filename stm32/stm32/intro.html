@@ -77,6 +77,25 @@
 <h3>STM32F103 Nucleo-64</h3>
 <h4>Functions [5]</h4>
 <p><img src="./img/nucleo.png" width="600" height="550"></p>
+<h4>Components</h4>
+<p><img src="./img/layout-nucleo.png" width="600" height="550"></p>
+<h4>Using the embedded st-link programmer to program an external device.</h4>
+<p style="color:red;">TO DO</p>
+<h4>Power supply</h4>
+<div class="featureList">
+<ol>
+<li>ST-LINK usb power supplied: JP5 on and JP1 off: no more than 300mA; JP5 on and JP1 on: no more than 100mA in case the PC cannot supply more than 100mA.</li>
+<li>VIN: JP1 off, JP5 E5V on: (input 7-12V): connect cn6 pin 8 or cn7 pin 24, no more than 800mA</li>
+<li>E5V: JP1 off, JP5 E5V on: (input 4.75V-5.25V): connect cn6 pin 8 or cn7 pin 24, no more than 500mA</li>
+<li>+3.3V: </li>
+</ol>
+<p class="starMark">* order of connection is important</p>
+<p>Measuring power consumption: remove JP6 and connect to a ammeter</p>
+</div>
+<h4>Clock source</h4>
+<p>MCO from ST-LINK: MCO output of ST-LINK MCU is used as input clock</p>
+<h4>Pinout</h4>
+<p><img src="./img/pinout.png" width="600" height="550"></p>
 </div>
 </li>
 <li>
