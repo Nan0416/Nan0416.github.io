@@ -45,9 +45,12 @@
     <p>ARM-core register:</p>
     <ul>
         <li>13 * 32-bit general-purpose registers (R0-R12)</li>
-        <li>SP stack pointer</li>
+        <li>2 SP stack pointers</li>
         <li>LR link register</li>
         <li>PC program counter</li>
+        <li>status register</li>
+        <li>mask registers: managing the prioritization scheme for exceptions and interrupts</li>
+        <li>control register (CONTROL): identify the current stack and thread mode privilege level.</li>
     </ul>
     <p>Application Program Status Register:</p>
     <ul>
@@ -68,8 +71,39 @@ The distinction between application level and system level is the access of inst
 <li>
 <div class="content" id="archSys">
 <h3>System level programming</h3>
-<h4>Memory</h4>
-<p>ARMv7-M is a memory mapped architecture. The address space ranges from 0x00000000 to 0xffffffff (2^32 4GB). The address space 0xE0000000 to 0xFFFFFFFF (2^29 256MB) is reserved for system level use.</p>
+<div class="featureList">
+<ol>
+
+<li>
+<h3>Memory</h3>
+<p>ARMv7-M is a memory mapped architecture. The address space ranges from 0x00000000 to 0xffffffff (2^32 4GB). The whole space is paritioned as 8 * 0.5GB paritions.
+ The address space 0xE0000000 to 0xFFFFFFFF (2^29 512MB) is reserved for system level use. </p>
+ <p>To protected application level code to access privileged range, a MPU is required. The ARMv7-M define a Protected Memory System Architecture (PMSAv7) to do that, but it is optional.</p>
+<p>Endian:</p>
+<p></p>
+<div class="featureList">
+<h4>SCS (System control space)</h4>
+<p>This region is a system configuration region.</p>
+<ol>
+<li>CPU ID registers</li>
+<li>General control and configuration (including the vector table base address)</li>
+<li>System handler support (for system interrupts and exceptions)</li>
+<li>A SysTick system timer</li>
+<li>A Nested Vectored Interrupt Controller (NVIC), supporting up to 496 discrete external interrupts. All exceptions and interrupts share a common prioritization model</li>
+<li>Fault status and control registers</li>
+<li>The Protected Memory System Architecture (PMSAv7), the MPU is optional when implementing the ARMv7-M</li>
+<li>Processor debug</li>
+</ol>
+</div>
+
+</li>
+<li>
+
+<h3>Exception</h3>
+<p class="starMark">Interrupt is one type of exception</p>
+</li>
+</ol>
+</div>
 </div>
 </li>
 <li>
