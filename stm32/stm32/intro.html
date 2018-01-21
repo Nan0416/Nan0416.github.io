@@ -59,6 +59,20 @@
 <li>
 <div class="content" id="stm32F103RBT6">
 <h3>STM32F103RBT6</h3>
+<h4>Memory</h4>
+<p>STM32F103RB has 20KB SRAM and 128KB Flash memory. The memory map is shown below:</p>
+<p><img src="./img/stm32MemoryMap.png" width="700" height="800"></p>
+<div class="featureList">
+<h4>Important address</h4>
+<ol>
+<li>0x08000000: store the initial value of (main?) stack pointer.</li>
+<li>0x08000004: store the address of reset handler. JMP reset_hanlder?</li>
+<li>0x20000000: SRAM start point.</li>
+</ol>
+</div>
+<p>Important address: </p>
+
+<h4>Packing</h4>
 <p>The chip used in this note is F103RBT6 built on the nucleo-64 board.</p>
 <div class="featureList">
 <h4>Packing Type [2]</h4>
