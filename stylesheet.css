@@ -580,3 +580,12 @@ p.starMark{
 span.cmd{
     font:italic bold 12px Courier New, Monospace;
 }
+div.asm{
+    border: 1px solid gray;
+    border-left: 6px solid blue;
+    border-radius: 10px;
+    margin-top: 10px;
+    margin-bottom:  10px;
+    margin-right: 700px;
+    
+}

@@ -1,23 +1,2 @@
-1 .include "file.inc"
-This directive includes a supporting file (which is also a assembly file but may end with .inc) at the point when reaching it. It is same as copy and paste the entire included file at the include
-directive point.
-The search path can be set use -I (a command-line argument)
-e.g. random break the file into two files
-
-
-2. .equ
-
-
-2. macro
-
- a set of instruction represented by a single statement. A macro can be seen as a new instruction created by the programmer for the microcontroller. 
-
-.MACRO        LSP	init=0x0020
-              LDI    r17, low(\init)
-              OUT    SPL, r17
-              LDI    r17, high(\init)
-              OUT    SPH, r17
-.ENDM
-
 
 3. The initial value of SP = top of sram (hardware done when reset , atmega328p)
