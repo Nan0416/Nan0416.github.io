@@ -77,6 +77,7 @@ SyntaxHighlighter.all()
 <div class="featureList">
 <h4>Constructor/Destructor (Suppose class name is BankAccount)</h4>
 <ol>
+<li><p><span style="font-weight:bold">In-class initialization (a feature of C++11)</span>:</p></li>
 <li><p><span style="font-weight:bold">Default constructor</span>: the constructor without arguments. The compiler gives a default constructor that does nothing if no constructor is defined.
 <pre class="brush: cpp">
 class BankAccount{
@@ -168,26 +169,122 @@ BankAccount::BankAccount(double balance, double interest):balance(balance), inte
     //
 }
 </pre></p></li>
-<li><p><span style="font-weight:bold">Destructor</span>: called when an object of the class <mark>goes out of scope</mark>. It also can be invoked by calling the delete.
+<li><p><span style="font-weight:bold">Copy constructor</span></p>
+<p>A copy constructor is a member function, which initializes an object using another object of the same class.</p>
+<p>e.g. ClassType p1; ClassType p2 = p1; // this will invoke the copy constructor</p>
+<p>void func(ClassType p1); func(p); // this call by value also invokes the copy constructor</p>
+<p><span style="color:red">default copy constructor</span>: primitive type just re-assign value, class type continues to call their copy constructor. So the pointer type is just copied a new pointer, the memory allocation is not copied.</p>
+<p><a href="./program/copy_constructor.cpp">Source code</a></p>
+<pre class="brush: cpp; highlight : [44,45];">
+                #include &lt;iostream>
+                using namespace std;
+                class Complex{
+                public:
+                    int x = 0;
+                    int y = 0;
+                    Complex();
+                    Complex(int x, int y);
+                    Complex(const Complex &lt;c);
+                    // const means c cannot be modified, &lt; means call by reference,
+                    // it cannot use call by value, since the call by value will use this constructor.
+                };
+                Complex::Complex(int x, int y):x(x), y(y){
+                    cout &lt;&lt; "constructor called" &lt;&lt;  endl;
+                }
+                Complex::Complex():Complex(0,0){
+                }
+                Complex::Complex(const Complex &amp;c){
+                    cout &lt;&lt;  "copy constructor" &lt;&lt;  endl;
+                    x = c.x;
+                    y = c.y;
+                }
+                void printComplexReference(Complex &amp; c){
+                    if(c.y > 0){
+                        cout &lt;&lt;  c.x &lt;&lt;  " + i" &lt;&lt;  c.y &lt;&lt;  endl;
+                    }else if(c.y  0){
+                        cout &lt;&lt;  c.x &lt;&lt;  " - i" &lt;&lt;  -c.y &lt;&lt;  endl;
+                    }else{
+                        cout &lt;&lt;  c.x &lt;&lt;  endl;
+                    }
+                }
+                void printComplexValue(Complex c){
+                    if(c.y > 0){
+                        cout &lt;&lt;  c.x &lt;&lt;  " + i" &lt;&lt;  c.y &lt;&lt;  endl;
+                    }else if(c.y &lt; 0){
+                        cout &lt;&lt;  c.x &lt;&lt;  " - i" &lt;&lt;  -c.y &lt;&lt;  endl;
+                    }else{
+                        cout &lt;&lt;  c.x &lt;&lt;  endl;
+                    }
+                }
+                int main(){
+                    Complex c(1,-1); // constructor called
+                    printComplexReference(c); // 1 - i1
+                    printComplexValue(c); // copy constructor /n 1 - i1
+                    Complex x = c; // copy constructor
+                }
+</pre>
+<h4>copy constructor cascade invoking</h4><p><a href="./program/copy_constructor2.cpp">Source code</a></p>
 <pre class="brush: cpp">
-class BankAccount{
+#include &lt;iostream>
+using namespace std;
+class F1{
 public:
-    BankAccount();
-    ~BankAccount(); // cannot have argument.
-private:
-    double balance;
-    double interest;
+    F1();
+    F1(const F1 &amp; f);
 };
-
-BankAccount::BankAccount():balance(0), interest(0){
-    cout &lt;&lt; "init" &lt;&lt; endl;
+F1::F1(const F1 &amp; f){
+    cout &lt;&lt; "F1 copy constructor" &lt;&lt; endl;
 }
-BankAccount::~BankAccount(){
-    cout &lt;&lt; "gone" &lt;&lt;endl;
+F1::F1(){
+    cout &lt;&lt; "F1 user defined default constructor" &lt;&lt; endl;
+}
+
+class F2{
+public:
+    F1 f;
+};
+int main(){
+    F2 f2; // F1 user defined default constructor // since F2 has a F1
+    F2 a[10]; // invoke 10 times.
+    F2 * b = new F2[10]; // invoke 10 times
+    F2 f2_ = f2; // F1 copy constructor, F2 default copy constructor also invokes F1 copy constructor
+}
+</pre>
+</li>
+<li><h4>Assignment operator</h4></li>
+<li><p><span style="font-weight:bold">Destructor</span>: called when an object of the class <mark>goes out of scope</mark>. It also can be invoked by calling the delete.</p>
+<p>Using destructor to deallocate the dynamic allocated memory is necessary, because it can avoid memory leakage. However, it is also dangerous because of <span style="color:red">using the compiler provided copy constructor and assignment operator</span>. 
+    In the following case, a new copy constructor has to be defined. (Or According to the requirement, a static member may be needed.)
+</p>
+<p>Moreover, destructor usually is set as virtual function.</p>
+<pre class="brush: cpp">
+#include &lt;iostream>
+using namespace std;
+class F1{
+public:
+    int * x;
+    F1();
+    ~F1();
+};
+F1::F1(){
+    x = new int [10];
+}
+F1::~F1(){
+    cout &lt;&lt; "destructor" &lt;&lt; endl;
+    delete x;
+}
+int main(){
+    F1 f;
+    F1 f_ = f;
+    /*destructor
+    destructor
+    a.out(5044,0x7fffe882c3c0) malloc: *** error for object 0x7fb10f500000: pointer being freed was not allocated
+        *** set a breakpoint in malloc_error_break to debug
+        Abort trap: 6*/
 }
 
 </pre>
-</p></li>
+</li>
 
 </ol>
 </div>

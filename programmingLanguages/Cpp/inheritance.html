@@ -50,13 +50,161 @@ SyntaxHighlighter.all()
 <div class="content" id="inheritIntro">
 <h3>Introduction</h3>
 <p>Inheritance: is-a (vs. has-a) architecture, child contains class. Natural and good for code reusing.</p>
-<p>Different from Java, C++ inheritance allows mutli-inheritance, which means from ...</p>
-<p>It also has public/protect/private modifier before parent name.</p>
+<p>Subclasses automatically inherit all Parent classes's members except *structors (Even though the subclasses cannot directly access parent private members, but they are also inherited. )</p>
+<p>Different from Java, C++ inheritance allows <span style="color:red">mutli-inheritance</span></p>
+<p>It also has <span style="color:red">public/protect/private modifier</span> before parent name.</p>
 </div>
 </li>
 <li>
+<div class="content" id="inheritExamples">
 <h3>Examples</h3>
-https://www.geeksforgeeks.org/inheritance-in-c/
+<div class="featureList">
+<ol>
+<li>
+<h4>Constructor inheritance</h4>
+<p>Either child's compiler-provided or user-provided default/non-default constructor would FIRST call Parent default constructor, then do it self. (same as Java)</p>
+<p>Using c++ std11, child constructor use initialization list to choose a specific parent constructor.</p>
+<p>Exact one of parent constructor must be called first in the every child constructor.</p>
+<pre class="brush: cpp"> 
+        #include &lt;iostream>
+        using namespace std;
+        class Parent{
+        public:
+            Parent();
+        };
+        Parent::Parent(){
+            cout &lt;&lt; "Parent constructor" &lt;&lt; endl;
+        }
+        class Child: public Parent{
+            
+        };
+        
+        int main(){
+            Parent p; // Parent constructor
+            Child c; // Parent constructor
+            return 0;
+        }
+            
+</pre>
+<p><a href="./program/inheritance_contructor.cpp">Source code</a></p>
+<pre class="brush: cpp">
+
+#include &lt;iostream>
+    using namespace std;
+    class Parent{
+    public:
+        Parent();
+        Parent(int x, int y);
+    };
+    Parent::Parent(){
+        cout &lt;&lt; "Parent constructor" &lt;&lt; endl;
+    }
+    Parent::Parent(int x, int y){
+        cout &lt;&lt; "Parent (int, int) constructor" &lt;&lt; endl;
+    }
+    class Child: public Parent{
+    private:
+        int x;
+        int y;
+    public:
+        Child();
+        Child(int x, int y);
+        Child(int x, int y, int z);
+    };
+    Child::Child(){
+        // Parent(); syntax is ok, but this is actually just to create a Parent object without assignment.
+        cout &lt;&lt; "Child constructor" &lt;&lt; endl;
+    }
+    Child::Child(int x, int y):x(x), y(y){
+        this->x = x;
+        this->y = y;
+        cout  &lt;&lt; "Child (int, int) constructor" &lt;&lt; endl;
+    }
+    Child::Child(int x, int y, int z):Parent(x,y){ //using initialization list to choose a non-default parent constructor.
+        cout &lt;&lt; "Child (int, int, int) constructor" &lt;&lt; endl;
+    }
+    int main(){
+        Parent p; // Parent constructor
+        Child c; //  Parent constructor /n Child constructor
+        Child c1(1,1); //Parent constructor /n Child (int, int) constructor
+        Child c2(1,1,1); // Parent (int, int) constructor /n Child (int, int, int) constructor
+        return 0;
+    }
+</pre>
+</li>
+<li>
+<h4>Initialization list order</h4>
+<p>The order of element in the initialization does not matter. e.g. :x(x), y(y), Parent(x,y) is OK. But the real initialization order is <span style="color:red">Parent, arguments in declaration order.</span></p>
+
+</li>
+<li>
+<h4>Override &amp; Call super class method</h4>
+<p>Subclasses automatically inherit all Parent classes's members except constructor (Even though the subclasses cannot directly access parent private members, but they are also inherited. </p>
+<p>However, if the subclass define a method to override a parent method (the two methods have same signature: name + same order arguments), but the child still wants to call it, then it has to use Parent:: syntax</p>
+<p><span style="color:red">C++ does not have super like keywork (e.g. super in Java), perhaps because C++ support multiple inheritance.[1]</span></p>
+<p><a href="./program/override.cpp">Source code</a></p>
+<pre class="brush: cpp;  highlight: [19, 25];">
+    #include &lt;iostream>
+        using namespace std;
+        class Parent{
+        public:
+            Parent();
+            void display();
+        };
+        Parent::Parent(){
+            cout &lt;&lt; "Parent constructor" &lt;&lt; endl;
+        }
+        void Parent::display(){
+            cout &lt;&lt; "Parent display" &lt;&lt; endl;
+        }
+        
+        //========
+        class Child: public Parent{
+        public:
+            Child();
+            void display(); // if child wants to override a function, it has to explicitly declare the function.
+        };
+        Child::Child(){
+            cout &lt;&lt; "Child Constructor" &lt;&lt; endl;
+        }
+        void Child::display(){
+            Parent::display(); // invoke parent's display
+            // display();// this causes infinite recursion
+            cout &lt;&lt; "Child display "  &lt;&lt;  endl;
+        }
+        int main(){
+            Child c; // Parent constructor /n Child constructor
+            c.display(); // Parent display /n Child display
+            return 0;
+        }
+</pre>
+</li>
+<li>
+<h4>Modes of inheritance: public, protected and private</h4>
+<div class="featureList">
+
+</div>
+</li>
+<li>
+<h4>Mutli-inheritance</h4>
+<p></p>
+<pre>
+
+</pre>
+</li>
+</ol>
+</div>
+</div>
+</li>
+<li>
+<div class="content" id="inheritReferences">
+<h3>References</h3>
+<ol>
+<li>Problem solving with C++ 9th edition, P846</li>
+<li><a href="https://www.geeksforgeeks.org/inheritance-in-c/" target="_blank">Inheritance in C++ - GeeksforGeeks</li>
+<li><a href="https://stackoverflow.com/questions/357307/how-to-call-a-parent-class-function-from-derived-class-function" target="_blank">C++ does not have super keyword.</a></li>
+</ol>
+</div>
 </li>
 </ol>
 </div>
