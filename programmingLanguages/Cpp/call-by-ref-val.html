@@ -40,7 +40,7 @@ SyntaxHighlighter.all()
 <ul class="catalogItems">
 <li><a href="#rvIntro">Introduction</a></li>
 <li><a href="#rvExample">Example</a></li>
-
+<li><a href="#rvReturnReference">Return a reference</a></li>
 </ul>
 </div>
 <hr>
@@ -54,6 +54,7 @@ not reflect to the variable that is outside the function. So the original value 
 <p>Call by reference is like an alias of the original variable. Usually it is used in the function argument, but it can be used to declare variable. It is just like a pointer in C. (C does not have reference variable.)
 Because of its nature, it does not isolate the original value. Just like a pointer, all modification made inside a function would reflect into the original variable. Its advantage is <mark>faster and less memory</mark>.
 </p>
+<p><span style="color:red">Same as pointer, it also can invoke the virtual functions.</span></p>
 </div>
 </li>
 
@@ -109,6 +110,46 @@ int main(){
 }
 </pre>
 </p>
+</div>
+</li>
+<li>
+<div class="content" id="rvReturnReference">
+<h3>Return reference</h3>
+<p>Return a reference of an object to the scope that the object does not exist would cause warning but not error.</p>
+<p class="starMark">* The effect is same as returning a pointer from a stack object.</p>
+<p>However, if the scope of the object is allowed, then it is ok. For example, return *this in a class member function because the object itself is outside its member function.</p>
+<p><a href="./program/return_reference.cpp">Source code</a></p>
+<pre class="brush: cpp;">
+#include &lt;iostream>
+using namespace std;
+
+class F{
+public:
+    int x = 0;
+};
+//warning: reference to stack memory associated with local variable 'f' returned [-Wreturn-stack-address]
+F&amp; return_reference(){
+    F f;
+    f.x = 1;
+    return f;
+}
+//warning: address of stack memory associated with local variable 'f' returned [-Wreturn-stack-address]
+F* return_address(){
+    F f;
+    f.x = 1;
+    return &f;
+}
+//allowed 
+F* return_out(F&amp; f){
+    return &f;
+}
+int main(){
+    F *fa = return_address();
+    cout &lt;&lt; fa->x &lt;&lt; endl;
+    F fr = return_reference();
+    cout &lt;&lt; fr.x &lt;&lt; endl;
+}
+</pre>
 </div>
 </li>
 </ol>

@@ -37,8 +37,9 @@ SyntaxHighlighter.all()
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#overloadIntroduction">Introduction</a></li>
+
 <li><a href="#overloadExample">Overload examples</a></li>
-<li><a href="#overloadDefaultParameters">Default parameters</a></li>
+<li><a href="#overloadISA">Overload ISA</a></li>
 </ul>
 </div>
 <hr>
@@ -52,9 +53,46 @@ SyntaxHighlighter.all()
 <h4>Term</h4>
 <ul>
 <li>Overloading: two or more methods in one class have the same method name but different parameters. </li>
-<li>Overriding:two methods with the same method name and parameters (i.e., method signature). One of the methods is in the parent class and the other is in the child class.</li>
+<li>Overriding: two methods with the same method name and parameters (i.e., method signature). One of the methods is in the parent class and the other is in the child class.</li>
 </ul>
 </div>
+<h4>Declaration and defintion</h4>
+<p>C++ compiler thinks the following are different declarations</p>
+<pre class="brush:cpp">
+void func(int x){}
+void func(float x){}
+void func(double x){}
+void func(int &amp; x){}
+class F{};
+class G: public F{};
+void func(F x){}
+void func(G x){}
+
+</pre>
+<p>C++ compiler does not allow the following overloading</p>
+<pre class="brush: cpp">
+void func(int x){
+
+}
+int func(int x){
+
+}
+// functions that differ only in their return type cannot be overloaded
+</pre>
+<div class="featureList">
+<h4>Calling</h4>
+<p>C++ compiler interrupts number value with following equal preference. Therefore it can cause calling ambiguous.</p>
+<ol>
+<li>double -> double or float</li>
+<li>float -> double or float</li>
+<li>int -> int or double or float</li>
+<li>Moreover, compiler cannot distinguish call by reference or call by value.</li>
+</ol>
+<p>C++ compiler prefers to use most close class type to interrupt class value.</p>
+
+</div>
+<p>What can be distinguished: #parameter, order of parameter (but double -> float, float -> double, int -> float, int -> double)</p>
+<p>What can not be distinguished: reference or not. e.g. func(int x); and func(int &amp;x);</p>
 </div>
 </li>
 <li>
@@ -84,7 +122,7 @@ class Overload{
 // overload.cpp:48:8: error: call to member function 'add' is ambiguous
 </pre>
 </li>
-<li><p>Moreover, <span style="font-weight:bold">the definition is sometime not ambiguous, but calling can cause ambiguous.</span></p>
+<li><p>Moreover, <span style="font-weight:bold">the definition sometime is not ambiguous, but calling can cause ambiguous.</span></p>
 <pre class="brush: cpp">
 class Overload{
 public:    
@@ -130,11 +168,7 @@ void Overload::add(float b, int x){
 </p>
 </div>
 </li>
-<li>
-<div class="content" id="overloadDefaultParameters">
-<h3>Default parameters</h3>
-</div>
-</li>
+
 </ol>
 </div>
     

@@ -171,8 +171,14 @@ BankAccount::BankAccount(double balance, double interest):balance(balance), inte
 </pre></p></li>
 <li><p><span style="font-weight:bold">Copy constructor</span></p>
 <p>A copy constructor is a member function, which initializes an object using another object of the same class.</p>
-<p>e.g. ClassType p1; ClassType p2 = p1; // this will invoke the copy constructor</p>
-<p>void func(ClassType p1); func(p); // this call by value also invokes the copy constructor</p>
+<p>Signature: <span style="color:red;">Complex(const Complex&amp; c);</span> // it must be const &amp; </p>
+<div class="featureList">
+<h4>Invoke copy constructor</h4>
+<ol>
+<li>e.g. ClassType p1; ClassType p2 = p1; // this will invoke the copy constructor</li>
+<li>void func(ClassType p1); func(p); // this call by value also invokes the copy constructor</li>
+</ol>
+</div>
 <p><span style="color:red">default copy constructor</span>: primitive type just re-assign value, class type continues to call their copy constructor. So the pointer type is just copied a new pointer, the memory allocation is not copied.</p>
 <p><a href="./program/copy_constructor.cpp">Source code</a></p>
 <pre class="brush: cpp; highlight : [44,45];">
@@ -251,7 +257,59 @@ int main(){
 }
 </pre>
 </li>
-<li><h4>Assignment operator</h4></li>
+<li><p><span style="font-weight:bold">Assignment operator</span></p>
+<p>It is just a regular overloading operator, no special meaning on syntax. But it is important and error-prone in terms of the whole program.</p>
+<div class="featureList">
+<h4>Invoke assignment operator</h4>
+<ol>
+<li>c1 = c2;</li>
+<li><span style="color:red;">Not invoke</span>: Complex c1 = c; // this cause the copy constructor</li>
+</ol>
+</div>
+<h4>Convention</h4>
+<p>Assignment operator usually treated as a class member instead of [friend] global function. <br>Const &amp; argument type.<br>It may also return a reference of the current object.</p>
+<p class="starMark"> *Return a reference is OK if this operator is a class member.</p>
+<p><a href="./program/as.cpp">Source code</a></p>
+<pre class="brush: cpp">
+#include &lt;iostream>
+using namespace std;
+class Complex{
+public:
+    int x;
+    int y;
+public:
+    Complex();
+    Complex(int x, int y);
+    Complex &amp; operator = (const Complex &amp; value);
+    Complex(const Complex &amp; value);
+};
+Complex::Complex():Complex(0,0){
+    
+}
+Complex::Complex(int x, int y):x(x), y(y){
+    cout &lt;&lt; "constructor" &lt;&lt; endl;
+}
+Complex::Complex(const Complex &amp; value){
+    x = value.x;
+    y = value.y;
+    cout &lt;&lt; "copy constructor" &lt;&lt; endl;
+}
+//return *this as a reference is allowed because the object is out of the function scope.
+Complex&amp; Complex::operator = (const Complex &amp; value){
+    cout &lt;&lt; "assigment constructor" &lt;&lt; endl;
+    this->x =  value.x;
+    this->y =  value.y;
+    return *this;
+}
+
+int main(){
+    Complex c(1,1); // constructor
+    Complex c2; // constuctor
+    Complex x = (c2 = c); // assignment constructor /n copy constructor
+    // c2 = c is c2.operator=(c);, the return value is not received by
+}
+</pre>
+</li>
 <li><p><span style="font-weight:bold">Destructor</span>: called when an object of the class <mark>goes out of scope</mark>. It also can be invoked by calling the delete.</p>
 <p>Using destructor to deallocate the dynamic allocated memory is necessary, because it can avoid memory leakage. However, it is also dangerous because of <span style="color:red">using the compiler provided copy constructor and assignment operator</span>. 
     In the following case, a new copy constructor has to be defined. (Or According to the requirement, a static member may be needed.)

@@ -40,6 +40,7 @@ SyntaxHighlighter.all()
 <ul class="catalogItems">
 <li><a href="#staticIntro">Introduction</a></li>
 <li><a href="#staticUsage">Static Examples</a></li>
+<li><a href="#staticInheritance">Static Inheritance</a></li>
 <li><a href="#staticReferences">References</a></li>
 </ul>
 </div>
@@ -50,6 +51,13 @@ SyntaxHighlighter.all()
 <div class="content" id="staticIntro">
 <h3>Introduction</h3>
 <p>Static usage is different in different scenario.</p>
+<div class="featureList">
+<ol>
+<li>static variable as a class member</li>
+<li>static function as a class member</li>
+<li>static variable in a function <span style="color:red">TODO</span></li>
+</ol>
+</div>
 </div>
 </li>
 <li>
@@ -59,34 +67,124 @@ SyntaxHighlighter.all()
 <ol>
 <li>
 <h4>Static variables in a class</h4>
-<p>Just initialized once, shared by all objects. Just have one copy in an entire process</p>
-<p>non const static cannot initialize when declaration</p>
-<p>static variable is stored outside of any object.</p>
-<pre class="brush: cpp; highlight:[6,12]">
+<p>It is shared by all objects, but stored outside any object. Just have one copy in an entire process.</p>
+<div class="featureList">
+<ol>
+<li>Init: In the class implementation file, int Class::var = 0; Don't need static when init. <span style="color:red">Cannot assignment in the class declaration except is const.</span></li>
+<li>modify/read: obj.var or class::var</li>
+</ol>
+<p>It is also shared by all child classes and objects.</p>
+</div>
+<p><a href="./program/static_variables.cpp">Source code</a></p>
+<pre class="brush: cpp; highlight:[6,12, 21]">
 #include &lt;iostream>
 using namespace std;
 
 class F{
+private:
+    static int counter;  // initialize non-const static variable in definition is not allowed.
 public:
-    static int counter; // initialize non-const static variable in definition is not allowed.
-    const static double pi = 3.1415; // OK
     F(){
         counter++;
     }
+    int getC(){
+        return counter;
+    }
+    void inc(){
+        counter ++;
+    }
+};
+class G: public F{
+    
 };
 int F::counter = 0; // this line must be included. It initialize/define this value, otherwise linker cannot found this variable.
 int main(){
-    F f[10];
-    cout &lt;&lt; f[0].counter &lt; F::counter &lt; endl; // 1010 
+    F f; // constructor counter ++ => counter = 1;
+    G g; // constructor counter ++ => counter = 2;
+    cout &lt;&lt; f.getC()  &lt;&lt; endl; // 2
+    g.inc();
+    cout &lt;&lt; f.getC() &lt;&lt; endl; // 3
 }
 </pre>
 </li>
 <li>
 <h4>Static function in a class</h4>
-<p>Can only access static members. Can be called by Class::func(), or object.func(). The first one is recommanded.</p>
+<p>Static member functions also does not depend on object of class. It can only access other static members or global variables and functions.</p>
+<h4>definition</h4>
+<p>It can define in .cpp or .h file.</p>
+<h4>Invoke</h4>
+<p>Can be called by Class::func(), or object.func(). The first one is recommanded.</p>
+<p><a href="./program/static_member_functions.cpp">Source code</a></p>
+<pre class="brush: cpp">
+#include &lt;iostream>
+using namespace std;
+
+int global_x = 10;
+void global_func(){
+    cout &lt;&lt; "global_func() is called" &lt;&lt; endl;
+}
+class F{
+public:
+    static void f(){
+        cout &lt;&lt; "global_x is " &lt;&lt; global_x &lt;&lt; endl;
+        cout &lt;&lt; "f() is called" &lt;&lt; endl;
+        global_x ++;
+        global_func();
+    }
+    static void G();
+};
+void F::G(){
+    cout &lt;&lt; "global_x is " &lt;&lt; global_x &lt;&lt; endl;
+    cout &lt;&lt; "g() is called" &lt;&lt; endl;
+    global_x ++;
+    global_func();
+}
+int main(){
+    F g;
+    F::f();
+    /*global_x is 10
+    f() is called
+    global_func() is called*/
+   
+    g.G();
+    /*global_x is 11
+    g() is called
+    global_func() is called*/
+}
+</pre>
+<h4>Why static member function can be define in .h but static member variable cannot?</h4>
+<p>In class, member function is like a r-value type, which means they cannot be modified. In the assembly code, they are not stored in stack or any register. They are stored in the .text section.<br>
+However, variables are containers. They has space in the stack. Each object would have its own variable containers. But for a static variable, only a global container is there.</p>
 </li>
 </ol>
 </div>
+</div>
+</li>
+<li>
+<div class="content" id="staticInheritance">
+<h3>Static in inheritance</h3>
+<p>
+<pre class="brush: cpp">
+#include &lt;iostream>
+using namespace std;
+
+class F{
+public:
+    static int x;
+};
+int F::x = 10;
+class G: public F{
+public:
+    static int x;
+};
+int G::x =11; // G declare a new static x, which will allocate a new space in stack, and it is now independent to F::x
+int main(){
+    cout &lt;&lt; F::x &lt; endl;
+    cout &lt;&lt; G::x &lt;&lt; endl;
+}
+
+</pre>
+</p>
 </div>
 </li>
 </ol>
