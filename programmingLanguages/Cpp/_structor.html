@@ -35,11 +35,13 @@ SyntaxHighlighter.all()
 <div class="bar">
 <center><strong>C++&nbsp;-&nbsp;Class</strong></center>
 </div>
+<p class="date"><span class="created-date">Created:2018-01-24</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-01-29</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#stIntroduction">Introduction</a></li>
 <li><a href="#stExample">Examples</a></li>
-<li><a href="#"></a></li>
+<h2 style="color:red">Default constructor</h2>
+<p>Always make sure there is a default constructor exists because it is often implicitly invoked.</p>
 </ul>
 </div>
 <hr>
@@ -81,7 +83,52 @@ SyntaxHighlighter.all()
 <div class="featureList">
 <h4>Constructor/Destructor (Suppose class name is BankAccount)</h4>
 <ol>
-<li><p><span style="font-weight:bold">In-class initialization (a feature of C++11)</span>:</p></li>
+<li><p><span style="font-weight:bold">In-class initialization (a feature of C++11)</span>:
+initialize a class member variable when declaring. e.g. int x = 1; Class x = X(11);
+</p>
+<p>When declaring a class (non-primitive) object, they will call the default constructor. So the class does not have a default constructor, the code has to avoid invoke it by using in-class initialization.</p>
+<p><a href="./program/in_class_initialization.cpp">Source code</a></p>
+<pre class="brush:cpp">
+#include &lt;iostream>
+using namespace std;
+class G{
+public:
+    G(int x){
+        cout &lt;&lt; "G user-defined non-default constructor " &lt;&lt; x &lt;&lt; endl;
+    }
+};
+class E{
+public:
+    // G g; because G does not have a default constructor, this is not allowed.
+    G g = G(0);
+    // G g(0); it is also not allowed.
+    E(){
+        cout &lt;&lt; "E user-defined default constructor" &lt;&lt; endl;
+    }
+    E(int x){
+        cout &lt;&lt; "E user-defined non-default constructor" &lt;&lt; endl;
+    }
+};
+class F{
+public:
+    E e; // invoke a G(0) and E()
+    F(){
+        e = E(11); // invoke a G(0) and E(11) [and assignment operator].
+    }
+};
+int main(){
+    F f;
+    /*G user-defined non-default constructor 0
+    E user-defined default constructor
+    G user-defined non-default constructor 0
+    E user-defined non-default constructor*/
+    return 0;
+}
+</pre>
+
+
+
+</li>
 <li><p><span style="font-weight:bold">Default constructor</span>: the constructor without arguments. The compiler gives a default constructor that does nothing if no constructor is defined.
 <pre class="brush: cpp">
 class BankAccount{

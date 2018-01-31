@@ -54,7 +54,9 @@ SyntaxHighlighter.all()
 <div class="featureList">
 <ol>
 <li>static variable as a class member</li>
-<li>static function as a class member</li>
+<li>static member function</li>
+<li>static non-member global variables: a internal linked variable cannot be seen from outside.</li>
+<li>static non-member function: a internal linked function that cannot be seen from outside. [static keyword is only required in declaration]</li>
 <li>static variable in a function <span style="color:red">TODO</span></li>
 </ol>
 </div>
@@ -70,7 +72,7 @@ SyntaxHighlighter.all()
 <p>It is shared by all objects, but stored outside any object. Just have one copy in an entire process.</p>
 <div class="featureList">
 <ol>
-<li>Init: In the class implementation file, int Class::var = 0; Don't need static when init. <span style="color:red">Cannot assignment in the class declaration except is const.</span></li>
+<li>Init: In the class implementation file, int Class::var = 0; Don't need static when init. <span style="color:red">Cannot assignment in the class declaration except const.</span></li>
 <li>modify/read: obj.var or class::var</li>
 </ol>
 <p>It is also shared by all child classes and objects.</p>
@@ -155,6 +157,8 @@ int main(){
 <h4>Why static member function can be define in .h but static member variable cannot?</h4>
 <p>In class, member function is like a r-value type, which means they cannot be modified. In the assembly code, they are not stored in stack or any register. They are stored in the .text section.<br>
 However, variables are containers. They has space in the stack. Each object would have its own variable containers. But for a static variable, only a global container is there.</p>
+<h4>Rule</h4>
+<p>static only appears in declaration, not in definition.</p>
 </li>
 </ol>
 </div>
