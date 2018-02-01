@@ -1,0 +1,7 @@
+Remote objects: Objects with methods that can be invoked across Java virtual machines.
+
+An object becomes remote by implementing a remote interface, which has the following characteristics:
+
+    A remote interface extends the interface java.rmi.Remote.
+    Each method of the interface declares java.rmi.RemoteException in its throws clause, in addition to any application-specific exceptions.
+receiving Java virtual machine: the calling machine (client)
