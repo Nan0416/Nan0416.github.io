@@ -49,13 +49,20 @@ SyntaxHighlighter.all()
 <li>
 <div class="content" id="virtualIntro">
 <h3>Introduction</h3>
-<p>Virtual function (A special override) achieved a runtime polymorphism instead of compile-time.</p>
+<p>Virtual function (A special override) achieved a runtime polymorphism instead of compile-time. [late binding]</p>
 <p>It allowes a child class object but is declared as parent class to call the child functions.</p>
 <p>Only accessing via <span style="color:red">pointer or reference</span> of parent type can achieve the runtime polymorphism.</p>
 <p> for deconstructor</p>
-<h4>Requirement: </h4>
-<p>Only parent class need the virtual keyword</p>
-<p>virtual function can be public or protected, it is meaningless to set virtual function private .......???</p>
+<div class="featureList">
+<h4>Features</h4>
+<ol>
+<li>Only parent class need the virtual keyword</li>
+<li>No virtual member variables</li>
+<li>Private/Protected modifier is static, but virtual function is dynamic.</li>
+<li>virtual functions can be defined as public, protected or private in the Parent class. But Attention: modifier is static even with a pointer or reference type</li>
+</ol>
+
+</div>
 </div>
 </li>
 <li>
@@ -165,6 +172,28 @@ SyntaxHighlighter.all()
             callByValue(c); //Parent virtual display
             return 0;
         }
+</pre>
+<h4>static binded modifier</h4>
+<p><a href="./program/virtualPrivate.cpp">Source code</a></p>
+<pre class="brush: cpp">
+#include &lt;iostream>
+using namespace std;
+class F{
+private:
+    virtual void func(){cout &lt;&lt; "Parent Private virtual function" &lt;&lt; endl;}
+
+};
+class E: public F{
+public:
+    void func(){cout &lt;&lt; "Child Public virtual function" &lt;&lt; endl;}
+
+};
+int main(){
+    E e;
+    F * f = &amp;e;
+    e.func();
+    //f->func(); private modifer static bind
+}
 </pre>
 </div>
 </li>

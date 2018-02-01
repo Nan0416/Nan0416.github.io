@@ -39,8 +39,8 @@ SyntaxHighlighter.all()
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#inheritIntro">Introduction</a></li>
-<li><a href="#inheritExample">Examples</a></li>
-<li><a href="#inheritReferences">References</a></li>
+<li><a href="#inheritExamples">Examples</a></li>
+<li><a href="#inheritReference">References</a></li>
 </ul>
 </div>
 <hr>
@@ -133,14 +133,61 @@ SyntaxHighlighter.all()
 </pre>
 </li>
 <li>
+<h4>The requirement for a parent default constructor</h4>
+<p>In some cases, the parent class may not have the default constructor either provided by the compiler or defined by the user. However, because the subclass's constructors would implicitly invoke 
+    the parent's default constructor, it would cause compilation error. To avoid this issue, 1) always having a default constructor; or 2) explicitly invoking parent's own constructors.
+</p>
+<pre class="brush:cpp">
+#include &lt;iostream>
+using namespace std;
+
+class F{
+public:
+    F(int x){cout &lt;&lt; "F(int x) constructor" &lt;&lt; endl; }
+};
+class E: public F{
+    
+};
+
+int main(){
+    E e; //no matching function for call to ‘F::F()’ class E: public F{
+
+    return 0;
+}
+</pre>
+<pre class="brush: cpp">
+#include &lt;iostream>
+using namespace std;
+
+class F{
+public:
+    F(int x){cout &lt;&lt; "F(int x) constructor" &lt;&lt; endl; }
+};
+class E: public F{
+public:
+    E():F(1){} // explicitly call F(int )
+};
+
+int main(){
+    E e; 
+
+    return 0;
+}
+</pre>
+</li>
+<li>
 <h4>Initialization list order</h4>
 <p>The order of element in the initialization does not matter. e.g. :x(x), y(y), Parent(x,y) is OK. But the real initialization order is <span style="color:red">Parent, arguments in declaration order.</span></p>
 
 </li>
 <li>
+<h4>Override parent private functions</h4>
+<p>The parent private function is invisble to child class, so the child </p>
+</li>
+<li>
 <h4>Override &amp; Call super class method</h4>
-<p>Subclasses automatically inherit all Parent classes's members except constructor (Even though the subclasses cannot directly access parent private members, but they are also inherited. </p>
-<p>However, if the subclass define a method to override a parent method (the two methods have same signature: name + same order arguments), but the child still wants to call it, then it has to use Parent:: syntax</p>
+<p>Subclasses automatically inherit all Parent classes's members <span style="color:red">except constructor</span> (Even though the subclasses cannot directly access parent private members, but they are also inherited). </p>
+<p>However, if the subclass define a method to override a parent method (the two methods have same signature: name + same order arguments), but the child still wants to call its parent version, then it has to use Parent:: syntax</p>
 <p><span style="color:red">C++ does not have super like keywork (e.g. super in Java), perhaps because C++ support multiple inheritance.[1]</span></p>
 <p><a href="./program/override.cpp">Source code</a></p>
 <pre class="brush: cpp;  highlight: [19, 25];">
@@ -180,10 +227,50 @@ SyntaxHighlighter.all()
 </pre>
 </li>
 <li>
+<h4>Override member variables</h4>
+<p>Override member variable can modify variable's access modifier, and variable's type. Also it will create a new storage area for this new variable and still has space for parent. </p>
+<p><span style="color:red">If the parent's functions access the parent's variable, the child inherited functions still go to access the inherited parent's variable instead of child newly defined varaibles.</span></span></p>
+</li>
+<li>
 <h4>Modes of inheritance: public, protected and private</h4>
 <div class="featureList">
 
 </div>
+</li>
+<li>
+<h4>Override changes the modifers</h4>
+<p>Override can also override the modifer. The child class can make public parent functions to be private or protected. In this case, outside of the child class cannot invoke 
+this function anymore. <span style="color:red">In order to call the child class function, a virtual function can be used.</span>.
+</p>
+<pre class="brush:cpp">
+#include &lt;iostream>
+using namespace std;
+class F{
+protected:
+    int x = 0; 
+    void print(){cout &lt;&lt; "P protected print!" &lt;&lt; endl; }
+public:
+    virtual void draw(){cout &lt;&lt; "P public draw!" &lt;&lt; endl; }
+    void showX(){ cout &lt;&lt; x &lt;&lt; endl;} // a new x is defined in child, but parent still use its self x
+};
+class E: public F{
+public:
+    int x; // child override parent's variable
+    void print(){cout &lt;&lt; "C public print!"  &lt;&lt; endl; }
+protected:
+    void draw(){cout &lt;&lt; "C protected draw!" &lt;&lt; endl; }
+};
+int main(){
+    E e;
+   // e.draw();// ‘void E::draw()’ is protected
+    e.print();
+    e.x = 10;
+    e.showX();
+    F * f = new E();
+    f->draw(); // invoke child protected...
+    return 0;
+}
+</pre>
 </li>
 <li>
 <h4>Mutli-inheritance</h4>
@@ -197,7 +284,7 @@ SyntaxHighlighter.all()
 </div>
 </li>
 <li>
-<div class="content" id="inheritReferences">
+<div class="content" id="inheritReference">
 <h3>References</h3>
 <ol>
 <li>Problem solving with C++ 9th edition, P846</li>
