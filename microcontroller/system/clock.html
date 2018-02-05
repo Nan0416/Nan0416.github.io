@@ -10,9 +10,26 @@
 <meta name="keywords" content="oscillator">
 <link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
 <script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+
+
 </head>
 <body>
-
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
 <center><strong>System&nbsp;-&nbsp;Clock</strong></center>
@@ -40,6 +57,7 @@
 Clock multiplexer (select clock source) -> prescaled (software, output system clock clk-sys) ->AVR Clock control unit -> different 
 sub clock source for those components. The following picture is a clock system in the Atmega328p chip.[1]</p>
 <p><img src="./img/clockOrganization.png" title="org" width="400" height="400"></p>
+<p class="starMark">* The clki/o and clkcpu have the same clock speed.</p>
 <p><span style="font-weight:bold;">Why independent ADC clock domain?</span> It allows the ADC to work while halting the clocks for CPU and I/O clocks. Halting other clocks
  reduces the noise and improve ADC accuracy.</p>
 </p>
@@ -85,6 +103,13 @@ clock source.</p>
 <li>within 4 cycles, write desired value to CLKPS[3:0] while writing a zero to CLKPCE = 0. CLKPR = 0x0N</li>
 </ol>
 </div>
+<h4>Code</h4>
+<pre class="brush:cpp">
+cli(); // disable interrupt because the following instructions need to be done within 4 clock cycles.
+CLKPR = 0x80;
+CLKPR = 0x08; // set a 256 prescale
+sei(); // may enable interrupt again
+</pre>
 <p class="starMark">* Interrupts must be disabled by software during the modification.</p>
 <div class="register">
 <h4>Clock Prescaler Register</h4>
@@ -104,8 +129,17 @@ clock source.</p>
 <li>
 <div class="content" id="clockSource">
 <h3>Clock sources in Atmega328/p</h3>
-<p>Atmega328p can select 6 clock sources 1). calibrated internal RC OSC [default], 2) crystal oscillator [frequently used], 3) external clock, 4) Timer/Counter oscillator 
-5). Low-frequency crystal oscillator and .. </p>
+<div class="featureList">
+<h4>Atmega328p can select 6 clock sources</h4>
+<ol>
+<li>calibrated internal RC OSC [default] <span style="color:red">8MHz</span></li>
+<li>external crystal oscillator [frequently used e.g. Arduino Nano 16MHz] <span style="color:red">Max. 20MHz</span></li>
+<li>external clock</li>
+<li>Real timer/counter oscillator</li>
+<li>Low-frequency crystal oscillator</li>
+</ol>
+
+</div>
 <p>System startup: A successful microcontroller startup needs a stable voltage and a stable clock source. After just powering the system, the Vcc pin's voltage may not be stable thinks to capacitance and other factors.
 The system would delay a short period in order to give time (<mark>time-out delay</mark>) to the Vcc pin to reach the valid voltage. Also the clock source may also not reach the stable status. It needs to run a few cycles (<mark>start-up time</mark>) 
 before claiming it is stable. Different power types and clock sources have distinctive time-out delay and start-up time. They are configured by the Low fuse btyes (<span style="font-style:italic;color:gray;">[Divided by 8, ck out, SUT (start-up time), CKSELn (clock source selection)]</span>).
