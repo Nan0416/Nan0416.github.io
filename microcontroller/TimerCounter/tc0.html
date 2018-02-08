@@ -84,15 +84,18 @@ Using the CS bits, the timer/counter speed could be 61.035Hz. <span style="color
 <li>fast PWM, top = 0xff or top = ocr0A</li>
 <li>Phase correct PWM, top = 0xff or top = ocr0A</li>
 </ol>
+</div>
 <div class="termnology">
 <h4>Terms</h4>
 <ul>
 <li>Duty cycle: the fraction of one period in which a signal or system is active</li>
 </ul>
 </div>
-
-</div>
-
+<h4>Glitch free with double buffer</h4>
+<p>In the fast PWM and phase correct PWM, the ocr0A/B are double buffering. By double buffering, the value set by software is set to the ocr0A/B buffer,
+the real effective ocr0A/B are only update when tcnt = bottom or top.</p>
+<p>This feature enable glitch free (missing compare match) when modifying the ocr0A/B. Suppose the fast PWM with top = 0xff, the tcnt is now 0x90 and ocr0A = 0xb0. In next cycle, software set ocr0A = 0x30. It will result missing one clear or one set 
+if without double buffering.</p>
 </div>
 </li>
 <li>
