@@ -60,6 +60,10 @@ It also has two stacks that are pointed by two stack pointer registers, main sta
 <p class="starMark">* The privileged thread mode that use main stack is similar to run a program in a MCU that does not have these features, e.g. Atmega328p.</p>
 <p><img src="./img/mode.png" width="500" height="250"></p>
 <p><img src="./img/stack.png" width="500" height="250"></p>
+<p><img src="./img/mode2.png" width="600" height="500"></p>
+<p>User thread mode accesses the "system control space" and special registers except APSR will trigger a fault exception.</p>
+<h4>Use as a microcontroller without considering those modes</h4>
+<p><img src="./img/mode3.png" width="600" height="250"></p>
 </div>
 <div class="termnology">
 <h4>Term</h4>
@@ -69,8 +73,111 @@ It also has two stacks that are pointed by two stack pointer registers, main sta
 </div>
 </li>
 <li>
+<div class="featureList">
+<h4>Cortex-M3 16 Registers</h4>
+<ol>
+<li>R0-R7 (8 32-bit registers): general purpose low registers can be accessed by all 16-bit Thumb instructions.</li>
+<li>R8-R12 (5 32-bit registers): general purpose high registers. Only 32-bit thumb-2 instruction do not have the ability to access these registers (too short to encode).</li>
+<li>R13/SP (MSP &amp; PSP): banked main stack pointer and process stack pointer. When using rR13 to access, only one is visible to program at any time.
+    <br>
+    Inside program code, both the MSP and the PSP can be called R13/SP. However, you can access a particular one using special register access instructions (MRS/MSR)
+    <br>
+    Using MSR (move general register to special) and MRS (move special to general) instructions, the MSP and PSP can be selected.
+    <br>
+    MSP is the default SP. 8-bit microcontroller only has this sp.
+    <br>
+    SP's low 2-bit is always 0 (it is hardwired to 0), which means it aligns to word (32-bit) size. The push and pop is -4 or +4.
+    <br>
+</li>
+<li>R14/LR linked register: store the return address when invoking a function
+    <br>
+    <span style="color:red">Never seen before</span>: instructions BL and BX (branch with link) is in the sense between call/ret and branch. 
+    <br>
+    It does not push the return address (PC) to stack or pop the return address from stack to PC, but it may pre-set arguments to registers.
+    It store the return address into the LR.
+    <br>
+    PC's LSB is always 0 because 16-bit instruction, but the LR's LSB is read/writable instead of hard wired.
+</li>
+<li>R15/PC: program counter
+    <br>LSB of PC: align to half-word so it is always 0. So reading always results in 0, but writing the LSB 1 indicates using Thumb, 0 indicates ARM instruction. Because cortex-M3 does not support ARM instruction, it would result in a fault exception.
+    <br>Reading PC: due to pipeline, the code is prefetched to ALU, and then PC + 2 or 4, then implement. Therefore, the code address is different from the read PC by 4. Only 32-bit thumb-2 can access it.
+    <br>Writing PC: it cause branching and the LSB must be 1 to indicate this is a Thumb instruction.
+</li>
+</ol>
+<h4>Special registers</h4>
+<p>Special registers do not have address, which means they cannot be accessed through MOV. <span style="color:red">They can only be accessed with MSR/MRS instructions.</span></p>
+<div class="asm" style="margin-right:300px">
+<pre>
+    MRS &lt;reg>, &lt;special_reg>; Read special register
+    MSR &lt;special_reg>, &lt;reg>; write to special register
+</pre>
+</div>
+<ol>
+<li>
+<h4>xPSR (program status registers)</h4>
+<i>[1]APSR (Application Program Status Register)</i><br>
+<i>[2]IPSR (Interrupt Program Status Register)</i><br>
+<i>[3]EPSR (Execution Program Status Register)</i><br>
+<p><img src="./img/xPSRregister.png" width="800" height="400"></p>
+<p>The 3 registers can be access individually, or together by one instruction. When accessing together, the register name is PSR.</p>
+<div class="asm" style="margin-right:300px">
+<pre>
+    MRS r0, APSR; Read special register
+    MSR APSR, r0; write to special register
+    ;;
+    MRS r0, PSR ; Read the combined program status word
+    MSR PSR, r0 ; Write combined program state word
+</pre>
+</div>
+<p><img src="./img/bit.png" width="800" height="300"></p>
+</li>
+<li>
+<h4>PRIMASK, FAULTMASK, BASEPRI: control the mask of interrupt</h4>
+<p>exception includes software exceptions and hardware interrupts.</p>
+<i>[1]PRIMASK</i><br>
+1-bit register. = 1 will only allow NMI (nonmaskable interrupt) and the hard fault exception.<br>
+<i>[2]FAULTMASK</i><br>
+1-bit register. = 1 will only allow NMI.<br>
+<i>[3]BASEPRI (up to 8 bits depending on the vendor supported #priority level)</i><br>
+It can disable all the interrupts of the same or lower level (lager priority value)
+<li>
+<h4>CONTROL: control the operating mode, stack pointer selection</h4>
+<p>A 2-bit register
+<br>
+control[1] = 1 indicates PSP, = 0 indicates MSP.<br>
+control[0] = 1 user statue in thread mode, = 0 privileged in thread mode. (* hanlder mode is always privileged)
+</p>
+<p>Writing control register is only allowed in the privileged thread mode. In this mode, the CPU can return to user thread mode.</p>
+<p class="starMark">* From kernel mode to user mode is done by the kernel. From user mode to kernel mode is done by exceptions.</p>
+</li>
+</ol>
+</div>
+
+
+</li>
+<li>
+<h4>Cortex-M3 execption model</h4>
+<p>Cortex-M3 defines a number of system exceptions and interrupts. These part are same between different vendors. The rest of interrupt source is defined by vendors.</p>
+<p><img src="./img/exceptions.png" width="700" height="600"></p>
+<p><img src="./img/vector.png" width="700" height="400"></p>
+<p>Vector table provides the initial value of SP and the starting addresses of each exception. After reset, the vector table is alway starting from 0x00 but it is relocatable at the runtime by modifying the NVIC's registers.</p>
+<p class="starMark">* The LSB of each vector address is always 1 to indicate the exception is to be executed in the Thumb state.</p>
 <h4>NVIC (Nested Vectored Interrupt controller)</h4>
 <p>The NVIC control interrupt and exception (software?), it can support 240 interrupt source and 256 level of priority </p>
+<h4>Who did what?</h4>
+<p><img src="./img/whodidwhat.png" width="600" height="250">[2]</p>
+</li>
+<li>
+<h4>Stack model</h4>
+<p>SP is points to the current top (SP decrements 4 <strong>before</strong> storing)</p>
+<p>Little endian</p>
+<p><img src="./img/endian.png" width="200" height="200"></p>
+<p>Two SP may used (MSP in handler mode, PSP in thread mode), then they are pointing to different region. </p>
+</li>
+<li>
+<h4>Reset sequence</h4>
+<p>When the process reset, processor reads two words 1). addr 0x00000000 to set SP, 2). addr 0x00000004 reset vector.</p>
+<p class="starMark">* previous ARM is just like AVR, the vector table is a jmp addr instruction. But now, it is just the pure address.</p>
 </li>
 </ol>
 </div>
@@ -82,6 +189,7 @@ It also has two stacks that are pointed by two stack pointer registers, main sta
 <div class="featureList">
 <ol>
 <li><a href="./cortexM3.pdf" target="_blank">Cortex-M3 Technical Reference Manual</a></li>
+<li><a href="../readings/M3Guide.pdf" target="_blank">The definitive guide to the ARM cortex-M3, 2nd edition</a></li>
 </ol>
 </div>
 </div>
