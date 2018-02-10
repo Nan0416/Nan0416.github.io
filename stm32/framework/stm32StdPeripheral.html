@@ -10,9 +10,26 @@
 <meta name="keywords" content="microcontroller">
 <link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
 <script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+
+
 </head>
 <body>
-
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
 <center><strong>Framework&nbsp;-&nbsp;STM32 HAL</strong></center>
@@ -21,7 +38,7 @@
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#stm32StdIntro">Introduction</a></li>
-
+<li><a href="#stm32StdPrinciple">Principles</a></li>
 <li><a href="#stm32References"></a></li>
 </ul>
 </div>
@@ -29,8 +46,69 @@
 <div class="contentContainer">
 <ol>
 <li>
-<div class="content" id="powerIntro">
+<div class="content" id="stm32StdIntro">
+<h3>Introduction</h3>
+</div>
+</li>
+<li>
+<div class="content" id="stm32StdPrinciple">
+<h3>Principles</h3>
+<div class="featureList">
+<ol>
+<li>
+<h4>How does the registers is set?</h4>
+<p>In AVR microcontroller, the register is defined as a macro.</p>
+<pre class="brush:cpp">
+#define DDRB 0x20;
+</pre>
+<p>In STM32, registers are organized with struct</p>
+<div class="featureList">
+<h4>Background</h4>
+<ol>
+<li>STM32 put the relevant registers together. For example, the RCC (reset control and clock) block's registers are addressed from 0x40021000 to 0x400213FF.</li>
+<li>Peripheral are divided into three ranges. 
+    <br>1). connect to APB1, address started from 0x40000000
+    <br>2). connect to APB2, address started from 0x40010000
+    <br>3). connect to AHB, address started from 0x40020000
+</li>
+</ol>
+</div>
+<h4>Map RCC registers to a structure</h4>
+<pre class="brush:cpp">
+// all structs are defined in stm32f103xb.h
+typedef struct{ 
+    __IO uint32_t CR;
+    __IO uint32_t CFGR;
+    __IO uint32_t CIR;
+    __IO uint32_t APB2RSTR;
+    __IO uint32_t APB1RSTR;
+    __IO uint32_t AHBENR;
+    __IO uint32_t APB2ENR;
+    __IO uint32_t APB1ENR;
+    __IO uint32_t BDCR;
+    __IO uint32_t CSR;
+}RCC_TypeDef;
 
+// all address are defined in stm32f103xb.h
+#define PERIPH_BASE 0x40000000U
+#define AHBPERIPH_BASE (PERIPH_BASE + 0x00020000U)
+#define RCC_BASE (AHBPHERIPH_BASE + 0x00001000U)
+
+// all conversions are defined in stm32f103xb.h
+#define RCC ((RCC_TypeDef *)RCC_BASE)
+
+//defined in stm32f1xx.h
+#define SET_BIT(REG, BIT) ((REG) |= BIT)
+
+//The individual bits are defined in stm32f1xx_hal_rcc.h
+#define RCC_HSE_ON
+
+//usage
+SET_BIT(RCC->CR, RCC_HSE_ON);
+</pre>
+</li>
+</ol>
+</div>
 </div>
 </li>
 </ol>
