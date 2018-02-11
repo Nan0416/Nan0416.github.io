@@ -240,7 +240,7 @@ typedef struct
 
 #endif /* STM32F105xC || STM32F107xC */
 
-/** 
+/**
   * @brief  RCC Internal/External Oscillator (HSE, HSI, LSE and LSI) configuration structure definition  
   */
 typedef struct

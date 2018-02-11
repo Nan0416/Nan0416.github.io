@@ -193,6 +193,61 @@ void SystemClock_Config(void)
   HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
 }
 </pre>
+<pre class="brush:cpp">
+/** 
+  * @brief  RCC Internal/External Oscillator (HSE, HSI, LSE and LSI) configuration structure definition  
+  */
+typedef struct
+{
+  uint32_t OscillatorType;       /*!&lt; The oscillators to be configured.
+                                       This parameter can be a value of @ref RCC_Oscillator_Type */
+
+#if defined(STM32F105xC) || defined(STM32F107xC)
+  uint32_t Prediv1Source;       /*!&lt;  The Prediv1 source value.
+                                       This parameter can be a value of @ref RCCEx_Prediv1_Source */
+#endif /* STM32F105xC || STM32F107xC */
+
+  uint32_t HSEState;              /*!&lt; The new state of the HSE.
+                                       This parameter can be a value of @ref RCC_HSE_Config */
+                          
+  uint32_t HSEPredivValue;       /*!&lt;  The Prediv1 factor value (named PREDIV1 or PLLXTPRE in RM)
+                                       This parameter can be a value of @ref RCCEx_Prediv1_Factor */
+
+  uint32_t LSEState;              /*!&lt;  The new state of the LSE.
+                                        This parameter can be a value of @ref RCC_LSE_Config */
+                                          
+  uint32_t HSIState;              /*!&lt; The new state of the HSI.
+                                       This parameter can be a value of @ref RCC_HSI_Config */
+
+  uint32_t HSICalibrationValue;   /*!&lt; The HSI calibration trimming value (default is RCC_HSICALIBRATION_DEFAULT).
+                                       This parameter must be a number between Min_Data = 0x00 and Max_Data = 0x1F */
+                               
+  uint32_t LSIState;              /*!&lt;  The new state of the LSI.
+                                        This parameter can be a value of @ref RCC_LSI_Config */
+
+  RCC_PLLInitTypeDef PLL;         /*!&lt; PLL structure parameters */      
+
+#if defined(STM32F105xC) || defined(STM32F107xC)
+  RCC_PLL2InitTypeDef PLL2;         /*!&lt; PLL2 structure parameters */      
+#endif /* STM32F105xC || STM32F107xC */
+} RCC_OscInitTypeDef;
+</pre>
+<pre class="brush:cpp">
+/** 
+  * @brief  RCC PLL configuration structure definition  
+  */
+typedef struct
+{
+  uint32_t PLLState;      /*!&lt; PLLState: The new state of the PLL.
+                              This parameter can be a value of @ref RCC_PLL_Config */
+
+  uint32_t PLLSource;     /*!&lt; PLLSource: PLL entry clock source.
+                              This parameter must be a value of @ref RCC_PLL_Clock_Source */          
+
+  uint32_t PLLMUL;        /*!&lt; PLLMUL: Multiplication factor for PLL VCO input clock
+                              This parameter must be a value of @ref RCCEx_PLL_Multiplication_Factor */
+} RCC_PLLInitTypeDef;
+</pre>
 </p></li>
 </ol>
 </div>
