@@ -40,6 +40,7 @@ SyntaxHighlighter.all()
 <ul class="catalogItems">
 <li><a href="#flagIntro">Introduction</a></li>
 <li><a href="#flagCompilation">Compilation</a></li>
+<li><a href="#flagLinker">Linker</a></li>
 <li><a href="#flagReference">References</a></li>
 </ul>
 </div>
@@ -67,10 +68,27 @@ SyntaxHighlighter.all()
 <p>enable gdb </p>
 </li>
 <li>
-    <h4>-W</h4>
-    <p></p>
+<h4>-Wall</h4>
+<p>print warning</p>
 </li>
+<li>
+<h4>-Wextra [or -W]</h4>
+<p>This enables some extra warning flags that are not enabled by -Wall.</p>
+</li>
+<li>
+<h4>Warnings that are not enabled by Wall and Wextra</h4>
+<div class="featureList">
+<ol>
+<li>-Wfloat-equal: Warn if floating-point values are used in equality comparisons.</li>
+<li>...</li>
+</ol>
+</div>
 
+</li>
+<li>
+<h4>-Werror</h4>
+<p>switch all warnings to error, this will stop compiling.</p>
+</li>
 </ol>
 </div>
 </div>
@@ -105,9 +123,7 @@ Pass option as an option to the linker. If option contains commas, it is split i
 </ol>
 </div>
 </li>
-<li>
-<div class
-</li>
+
 </ol>
 </div>
     
