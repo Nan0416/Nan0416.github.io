@@ -65,16 +65,17 @@ SyntaxHighlighter.all()
 <tr><th>Name</th><th>Do</th><th>Do not do</th></tr>
 <tr><td>header file suffix</td><td>.h</td><td>.hpp</td></tr>
 <tr><td>Source file suffix</td><td>.cc</td><td>.cpp</td></tr>
-
 <tr><td>indentation</td><td>2 spaces</td><td>1 tab</td></tr>
+
 </table>
 <h4></h4>
 <table>
-<tr><th>Name</th><th>Do</th><th>Common</th></tr>
+<tr><th>Name</th><th>Do</th><th>Comments</th></tr>
 <tr><td>No Space</td><td>end of a line</td><td>A line cannot end with a space, e.g int a = 1;[space]</td></tr>
 <tr><td>Space</td><td>after comma, before {, after //  </td><td></td></tr>
-<tr><td>#define Guard</td><td>#define PROJECT_PATH_FILE_H_</td><td>No leading _, every .h should have one</td></tr>
+<tr><td>#define Guard</td><td>#define PROJECT_PATH_FILE_H_</td><td>No leading _, every .h should have one, upper case, e.g. LABS_LAB04_SRC_ROBOT_LAND_H_</td></tr>
 <tr><td>length of a line</td><td>&lt;= 80 characters</td><td>./cpplint.py --linelength=500 *.cc</td></tr>
+<tr><td>comments</td><td>code[space][space]//[space]comments</td><td>two space after code, one space after //</td></tr>
 </table>
 </div>
 <h4>Examples</h4>
