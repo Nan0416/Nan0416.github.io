@@ -39,6 +39,10 @@ SyntaxHighlighter.all()
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#memoryIntro">Introduction</a></li>
+<li><a href="#memoryStartSequence">Start Sequence</a></li>
+<li><a href="#memorySystem">System memory</a></li>
+<li><a href="#memoryFlash">Flash memory</a></li>
+<li><a href="#memoryOption">Option Bytes</a></li>
 <li><a href="#memoryReference">References</a></li>
 </ul>
 </div>
@@ -48,7 +52,86 @@ SyntaxHighlighter.all()
 <li>
 <div class="content" id="memoryIntro">
 <h3>Introduction</h3>
-<p></p>
+<p>The STM32 has a uniform address space that ranges from 0x0000_0000 to 0xffff_ffff. The memory section discussed in this note is from
+0x0000_0000 to 0x2000_0000. This section consists of the flash memory (0x0800_0000 - 0x0801_ffff, 128KB), system memory (0x1fff_f000 - 0x1fff_f7ff, 2K) and option bytes (0x1fff_f800 - 0x1fff_f80f)</p>
+</div>
+</li>
+<li>
+<div class="content" id="memoryStartSequence">
+<h3>Start Sequence</h3>
+<p>STM32 can start execute program from three location. 1). flash; 2). system memory; 3). SRAM</p>
+<p>It can be configure by the boot pins (boot1 and boot0, they are not pins of GPIO)</p>
+<p><img src="./img/boot.png" width="200" height="100"></p>
+<h4>Start from system memory or flash</h4>
+<p><span style="color:red">The memory address space (boot space) from 0x0000_0000 to 0x0800_0000 can map to either the flash memory or system memory</span>. It depends on the boot pins. For example, when boot1 = 0 and boot0 = 1, this section maps to system memory.</p>
+<p>The PC (program counter) starts from 0x0000_0004, to load the reset handler address. It is equivalent to load from the 0x1fff_f004.</p>
+<p>A linear memory translation (MMU, hahaha). The program code use the boot space (virtual address), but the hardware use either flash memory or system memory (physical address).</p>
+<h4>Start from SRAM</h4>
+<p>Because SRAM cannot be mapped to the boot space. Without the translating, the program has to directly use the physical address. Including the vector table, it has to add an offset.</p>
+<pre class="brush: cpp">
+//SRAM_BASE = 0x2000_0000 physical
+//VECT_TAB_OFFSET = 0x0000_0000
+//FLASH_BASE = 0x0000_0000 virtual
+#ifdef VECT_TAB_SRAM
+  SCB->VTOR = SRAM_BASE | VECT_TAB_OFFSET; /* Vector Table Relocation in Internal SRAM. */
+#else
+  SCB->VTOR = FLASH_BASE | VECT_TAB_OFFSET; /* Vector Table Relocation in Internal FLASH. */ 
+#endif
+</pre>
+</div>
+</li>
+<li>
+<div class="content" id="memorySystem">
+<h3>System Memory</h3>
+<p>The 2 KB system memory is read-only, cannot be programmed. It is pre-programmed by ST during production. This section contains code for downloading application code to the flash memory via UART1. It is part of the ICP (ISP) method.</p>
+<p class="starMark">* Atmega328p does not have this feature.</p>
+<div class="terminology">
+<h4>Terms</h4>
+<ul>
+<li>ICP (In-circuit programming), programming the flash memory via a hardware, such as JTAG, SWD protocol or the boot loader in the system memory.</li>
+<li>ISP (In-system programming), same as ICP</li>
+<li>IAP (In-application programming), developer write a function that can modify the flash memory (code) via any of the microcontroller's interface, such as UART, SPI, and I2C. Arduino bootloader is in this categroy.</li>
+</ul>
+</div>
+<p>The program in the system memory can interact with the PC side UART via pre-defined command.
+<br>
+<a href="../readings/usart_in_system_memory.pdf" target="_blank">UART command reference</a></p>
+
+<div class="featureList">
+<h4>Example</h4>
+<ol>
+<li>host send 0x7f: to start communicating.</li>
+<li>host sent 0x00 0xff (get): to get the bootloader version and avaliable command.</li>
+</ol>
+<p class="starMark">* ACK = 0x79, NACK = 0x1f</p>
+</div>
+<h4>Flash loader demonstrator</h4>
+<p>ST provides a PC side software called flash loader demonstrator, which is used to upload the .bin file to the flash memory.
+<br>
+<a href="http://www.st.com/en/development-tools/flasher-stm32.html" target="_blank">Download</a>
+</p>
+</div>
+</li>
+<li>
+<div class="content" id="memoryFlash">
+<h3>Flash memory</h3>
+<p>STM32 F103RB has a 128KB flash memory that is divided into 128 1KB pages.</p>
+</div>
+</li>
+<li>
+<div class="content" id="memoryOption">
+<h3>Option Bytes</h3>
+<p>16 bytes</p>
+<p>Configure the protection of the flash memory.</p>
+</div>
+</li>
+<li>
+<div class="content" id="memoryReference">
+<h3>Reference</h3>
+<ol>
+<li><a href="https://www.youtube.com/watch?v=ZUXuk2zFHfs" target="_blank">STM32 system memory boot modes</a></li>
+<li><a href="../readings/flash_memory.pdf" target="_blank">STM32 flash memory</a></li>
+</ol>
 </div>
 </li>
 </ol>
