@@ -95,8 +95,23 @@
 <p><img src="./img/layout-nucleo.png" width="600" height="550"></p>
 <h4>Using the embedded st-link programmer to program an external device.</h4>
 <p style="color:red;">TO DO</p>
-<h4>Power supply</h4>
+
 <div class="featureList">
+<h4>Power supply</h4>
+<ol>
+<li>ST-LINK usb power supplied: JP5 on and JP1 off: no more than 300mA; JP5 on and JP1 on: no more than 100mA in case the PC cannot supply more than 100mA.</li>
+<li>VIN: JP1 off, JP5 E5V on: (input 7-12V): connect cn6 pin 8 or cn7 pin 24, no more than 800mA</li>
+<li>E5V: JP1 off, JP5 E5V on: (input 4.75V-5.25V): connect cn6 pin 8 or cn7 pin 24, no more than 500mA</li>
+<li>+3.3V: </li>
+</ol>
+<p class="starMark">* order of connection is important</p>
+<p>Measuring power consumption: remove JP6 and connect to a ammeter</p>
+</div>
+<div class="featureList">
+<h4>ST-Link virtual COM</h4>
+<p>stlink provides a virtual serial port. After connect the stlink to a PC via usb, it will virtualize a serial port that can be accessed by the PC.</p>
+<p>The serial port has RX/TX connector on the st-link part. It hard wired connnects to the USART2 (PA2/PA3). So when using uart2 to communicate, no extra hardware is needed.</p>
+<p>The virtual com can also be used with uart1 or uart3 by connecting its connector to the corresponding pins on the target board side.</p>
 <ol>
 <li>ST-LINK usb power supplied: JP5 on and JP1 off: no more than 300mA; JP5 on and JP1 on: no more than 100mA in case the PC cannot supply more than 100mA.</li>
 <li>VIN: JP1 off, JP5 E5V on: (input 7-12V): connect cn6 pin 8 or cn7 pin 24, no more than 800mA</li>
