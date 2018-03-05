@@ -38,15 +38,51 @@ SyntaxHighlighter.all()
 <p class="date"><span class="created-date">Created:2018-03-04</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-03-04</span></p>
 <div class="catalog">
 <ul class="catalogItems">
-<li><a href="#powerIntro">Introduction</a></li>
-<li><a href="#powerReference">References</a></li>
+<li><a href="#thriftIntro">Introduction</a></li>
+<li><a href="#thriftInstallation">Installation</a></li>
+<li><a href="#thriftReference">References</a></li>
 </ul>
 </div>
 <hr>
 <div class="contentContainer">
 <ol>
 <li>
-<div class="content" id="powerIntro">
+<div class="content" id="thriftIntro">
+
+</div>
+</li>
+<li>
+<div class="content" id="thriftInstallation">
+<h3>Installation</h3>
+<p>Installation consists installing thrift compiler [supporting python and java] and thrift python library</p>
+<div class="asm" style="margin-right:200px">
+<pre>
+
+    sudo apt-get install automake bison flex g++ git libevent-dev libssl-dev libtool make pkg-config ant
+    sudo apt-get install libboost-dev libboost-test-dev libboost-program-options-dev libboost-system-dev libboost-filesystem-dev libtool flex libssl-dev
+    # download source code 
+    wget http://apache.claz.org/thrift/0.10.0/thrift-0.10.0.tar.gz
+    tar -zxvf thrift-0.10.0.tar.gz
+
+    # go to source code directory
+    ./configure
+    make
+
+    # optional
+    [make check]
+    sudo make install
+
+    # for python
+    cd ~/thrift-0.10.0/lib/py
+    sudo python setup.py install
+
+    $vim ~/.bashrc
+    export LD_LIBRARY_PATH=/usr/local/lib/:${LD_LIBRARY_PATH}
+    $source ~/.bashrc
+
+</pre>
+</div>
+
 
 </div>
 </li>
