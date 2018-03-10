@@ -57,6 +57,7 @@ SyntaxHighlighter.all()
 <p>Each plug-ins may have serveral <i><strong>goals</strong></i>. The goal is just a task. For example, the compiler plug-in has the goal of compiling application source; compiling test case; display help information. To invoke a goal, run <i><strong>mvn plug-in:goal -Doptional-arguments</strong></i>.</p>
 <p>For example, when running <i>mvn compile</i>, the mvn program will use the Java dynamic load class feature to load the compile .jar file. And then the compile .jar file will compile the project.</p>
 <p>The load class feature is supported by the <i>plexus-classworld</i> framework.</p>
+<p><a href="https://search.maven.org/" target="_blank">Maven central repo.</a></p>
 <h4>Maven project structure</h4>
 <div class="asm" style="margin-right:700px">
 <pre>
@@ -114,9 +115,42 @@ SyntaxHighlighter.all()
   &lt;modelVersion>4.0.0&lt;/modelVersion>
 
     &lt;groupId>com.maven.practice&lt;/groupId>
-    &lt;artifactId>maven-pratice-01&lt;/artifactId>
+    &lt;artifactId>maven-practice-01&lt;/artifactId>
     &lt;version>0.0.1-SNAPSHOT&lt;/version>
+    &lt;packaging>jar&lt;/packing>
+    &lt;name>short-description-of-the-project&lt;/name>
+    &lt;description>description-of-the-project&lt;/description>
+    &lt;developers>&lt;/developers>
+    &lt;license>&lt;/license>
+    &lt;organization>&lt;/organization>
 
+    &lt;--add dependency-->
+    &lt;dependencies>
+        &lt;!-- https://mvnrepository.com/artifact/org.aspectj/aspectjweaver -->
+        &lt;dependency>
+            &lt;groupId>org.aspectj&lt;/groupId>
+            &lt;artifactId>aspectjweaver&lt;/artifactId>
+            &lt;version>1.8.9&lt;/version>
+            &lt;type>&lt;/type>
+            &lt;scope>test/main where is the package used&lt;/scope>
+            &lt;optional>true/false???&lt;/optional>
+            &lt;exclusions>
+                &lt;exclusion>
+                    this project, maven-practice-01 depends on the aspectjweaver
+                    suppose the aspectjweaver depends on the logger.
+                    The by default, the maven-practice-01 will also import the logger.
+
+                &lt;/exclusion>
+            &lt;/exclusions>
+        &lt;/dependency>
+
+    &lt;/dependencies>
+    &lt;build>
+        &lt;plugins>
+        &lt;/plugins>
+    &lt;/build>
+    &lt;parent>&lt;/parent>
+    &lt;module>&lt;/module>
   &lt;/project>
 </pre>
 
@@ -127,7 +161,7 @@ SyntaxHighlighter.all()
 <div class="content" id="mavenPlugin">
 <h3>Plug-ins (commands)</h3>
 <p>Plug-ins are just .jar packages. Each jar package achieves a collection of goals, which are simple tasks, such as compile, run test cases. Most of the plug-ins have a common goal, help, which prints the help message.</p>
-<p>A goal may allow the user to input arguments by using the format -Darg_name=arg_value. </p>
+<p>A goal may allow the user to input arguments by using the format -Darg_name=arg_value.</p>
 <p>To invoke a goal, run <i>mvn plugin:goal [-Darg_name=arg_vale]</i></p>
 <div class="featureList">
 <h4>Plug-ins</h4>
@@ -144,7 +178,7 @@ SyntaxHighlighter.all()
 $ mvn archetype:generate
 # It would ask groupId, artifactId, version and package
 # groupId = package name e.g. com.maven.practice
-# artifactId = project name (It will be the name of the top level directory) e.g. maven-practice
+# artifactId = module-name (It will be the name of the top level directory) e.g. maven-practice-basic
 # version = version number e.g. 0.0.1-SNAPSHOT
 # package = package
 
@@ -158,6 +192,7 @@ $ mvn archetype:generate
 <li>
 <h4><a href="https://maven.apache.org/plugins/maven-compiler-plugin/" target="_blank">compiler</a></h4>
 <p>Compile the source.</p>
+<p>Changing jre version: go to setting, add the profile tag.</p>
 <div class="featureList">
 <ol>
 <li>
@@ -228,7 +263,8 @@ $ mvn install:install-file -Dfile=... [-DpomFile]
 <li>
 <div class="content" id="mavenBuildLifeCycle">
 <h3>Build Lifecycle</h3>
-<p>Maven project lifecycle has 7 phases.</p>
+<p>Maven project has 3 independent lifecycles: default, clean, and site</p>
+<h4>The default lifecycle has 7 phases.</h4>
 <div class="featureList">
 <ol>
 <li>validate: </li>
@@ -238,11 +274,49 @@ $ mvn install:install-file -Dfile=... [-DpomFile]
 <li>verify: beside test, it also package the project. [== package]</li>
 <li>install: install package in the local repo.</li>
 <li>deploy: copy package to the remote repo.</li>
+<li>[clean]</li>
 </ol>
 </div>
 <p>To process each maven lifecycle, just input <i>mvn lifecycle</i> e.g. mvn validate.</p>
 <p style="color:red">*** These commands are not plugins, it is a combination of different plugin-goals defined by Maven***</p>
 <p>e.g. mvn compile is a combination of the resources:resources and compiler:compile.</p>
+
+</div>
+
+<h4>Site lifecycle:</h4>
+<div class="featureList">
+<ol>
+<li>pre-site:</li>
+<li>site:</li>
+<li>post-site:</li>
+<li>site-deploy:</li>
+</ol>
+<h4>Use plug-ins</h4>
+<p>Plug-ins:goals can be binded to a phase. For example, when using mvn install, also run clean:clean.</p>
+<div class="asm" style="margin-right:300px">
+<pre>
+    &lt;build>
+        &lt;plugins>
+            &lt;plugin>
+                &lt;groupId>org.apache.maven.plugins&lt;/groupId>
+                &lt;artifactId>maven-source-plugin&lt;/artifactId>
+                &lt;version>2.4&lt;/version>
+                &lt;executions>
+                    &lt;execution>
+                        &lt;phase>package&lt;/phase>
+                        &lt;goals>
+                            &lt;goal>help&lt;/goal>
+                        &lt;/goals>
+                    &lt;/execution>
+                &lt;/executions>
+            &lt;/plugin>
+        &lt;/plugins>
+    &lt;/build>
+</pre>
+</div>
+<p>Add a new build tag <span style="color:red">(build tag defines info about building process)</span>. Inside, defining plugins to select plug-ins. And an execution specifies which goal should be run.</p>
+<p>The goal will run after other pre-defined goals.</p>
+<p>For example, the above configuration will print help message after mvn package</p>
 </div>
 </li>
 
