@@ -42,6 +42,8 @@ SyntaxHighlighter.all()
 <li><a href="#mavenPom">POM</a></li>
 <li><a href="#mavenPlugin">Plug-ins (commands)</a></li>
 <li><a href="#mavenBuildLifeCycle">Build LifeCycle</a></li>
+<li><a href="#mavenDependency">Dependency Rules</a></li>
+<li><a href="#mavenAggregationInheritance">Aggregation &amp; Inheritance</a></li>
 <li><a href="#mavenReference">References</a></li>
 </ul>
 </div>
@@ -319,7 +321,57 @@ $ mvn install:install-file -Dfile=... [-DpomFile]
 <p>For example, the above configuration will print help message after mvn package</p>
 </div>
 </li>
+<li>
+<div class="content" id="mavenDependency">
+<h3>Dependency rules</h3>
+<h4>Short path high priority</h4>
+<p>For example, when A depends on B.jar and C.jar. B.jar depends on D.jar. D depends on X.1.jar and C depends on X.2.jar</p>
+<pre>
+    A => B =>D => X.1
+    A => C => X.2
+</pre>
+<p>Then the project would have A, B, C, D, and X.2 not X.1</p>
+<h4>First come First use</h4>
+<pre>
+    A => B => X.1
+    A => C => X.2 
+</pre>
+<p>In the POM, if the dependency B is ahead of the dependency C, then the project has A, B, C, and X.1</p>
+</div>
+</li>
+<li>
+<div class="content" id="mavenAggregationInheritance">
+<h3>Aggregation &amp; Inheritance</h3>
+<h4>Aggregation</h4>
+<p>
+Put mutliple POM together. Each POM represent a sub-module, now put the together. 
+</p>
+<p>Define a new POM, &lt;modules>&lt;/modules></p>
 
+<h4>Inheritance</h4>
+<p>For example, every module would use junit. The define a parent POM.</p>
+
+<div class="featureList">
+<ol>
+<li>Put common dependencies in the &lt;dependencyManagement</li>
+<li>&lt;packaging> is pom not jar</li>
+</ol>
+</div>
+<div class="featureList">
+<ol>
+<li>In the sub POM, add a &lt;parent> tag to include the parent identifer (groupId, artifactId, and version) </li>
+</ol>
+</div>
+</div>
+</li>
+<li>
+<div class="content" id="mavenReference">
+<h3>References</h3>
+<ol>
+<li><a href="https://maven.apache.org/plugins/" target="_blank">Maven plugins</a></li>
+</ol>
+</div>
+</li>
 </ol>
 </div>
     
