@@ -14,6 +14,7 @@
 <script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
 <link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
 <link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
 
@@ -40,6 +41,8 @@ SyntaxHighlighter.all()
 <ul class="catalogItems">
 <li><a href="#thriftIntro">Introduction</a></li>
 <li><a href="#thriftInstallation">Installation</a></li>
+<li><a href="#thriftIDL">IDL</a></li>
+<li><a href="#thriftGen">Generate code</a></li>
 <li><a href="#thriftReference">References</a></li>
 </ul>
 </div>
@@ -48,7 +51,7 @@ SyntaxHighlighter.all()
 <ol>
 <li>
 <div class="content" id="thriftIntro">
-
+<h3>Introduction</h3>
 </div>
 </li>
 <li>
@@ -82,8 +85,162 @@ SyntaxHighlighter.all()
 
 </pre>
 </div>
+</div>
+</li>
+<li>
+<div class="content" id="thriftIDL">
+<h3>IDL</h3>
+<h4>IDL (Interface Definition Language)</h4>
+<p>IDL file is defined by developers and supplies to the thrift compiler. The thrift compiler will generate corresponding PL source code.</p>
+<div class="featureList">
+<h4>Types</h4>
+<ol>
+<li>void: void</li>
+<li>i16: A 16-bit signed integer (Java short)</li>
+<li>i32: A 32-bit signed integer (Java int)</li>
+<li>i64: A 64-bit signed integer (Java long)</li>
+<li>byte: A signed byte (Java byte)</li>
+<li>double: A 64-bit floating point number (Java double)</li>
+<li>bool: A boolean value (true or false), one byte (Java bool)</li>
+<li>string: Encoding agnostic text or binary string (Java String)</li>
+<li>binary: A byte array (Java byte[])</li>
+</ol>
+<h4>Define services(functions)</h4>
+<p>Naming is important for making code to easy understand.</p>
+<p>e.g. LogicDeviceServerServesDeviceManagerIface means the server-side is the logic device server, and client-side is the device manager.</p>
+<p>Server usually runs instance and server itself.</p>
+<ol>
+<li>
+service LogicDeviceServerServesDeviceManagerIface {
+    string startInstances(1:string deviceInfo);
+    string stopInstances(1:string deviceInfo);
+}
+</li>
+<li>
+service LogicDeviceInstanceServesUserInstanceIface {
+    void ping();
+    string getDeviceInfo();
+}
+</li>
+</ol>
+<p>Store the content in a file with name extension .thrift e.g.  LogicDeviceServerServesDeviceManager.thrift</p>
+</div>
+</div>
+</li>
+<li>
+<div class="content" id="thriftGen">
+<h3>Generate code</h3>
+<h4>Java</h4>
+<p><i>thrift [-r] --gen PL file.thrift</i>. -r : recursively, PL : target programming language</p>
+<p>thrift -r --gen java LogicDeviceServerServesDeviceManager.thrift</p>
+<pre>
+gen-java/
+    LogicDeviceServerServesDeviceManagerIface.java
+</pre>
+<h4>Dependencies</h4>
+<p>The generate java code depends on libthrfit, slf4j-api and optional slf4j-simple jar package. "libthrift-0.10.0.jar", "slf4j-api-1.7.7.jar" and ["slf4j-simple-1.7.7.jar"]</p>
+<h4>Generated file</h4>
+<p>Inside the generated "LogicDeviceServerServesDeviceManagerIface" class, there are a couple inner class and interface</p>
+
+<div class="featureList">
+<ol>
+<li><h4><i>public interface Iface/AsyncIface</i></h4></li>
+<li><h4><i>public static class Client/AsyncClient</i></h4>
+Implement Iface, inside it does marshaling to call the remote object. 
+<pre>
+1. ================
+send_startInstance(args) { serializing, sendBase}
+2. ================
+recv_startInstance(args) { new a buffer, receiveBase}
+</pre>
+<p>Each method may throw TException</p>
+</li>
+<li><h4><i>public static class Processor/AsyncProcessor</i></h4>
+Used in the server-side. It gets the socket message, and invokes the corresponding server-side function.
+<br>
+Each method is an inner class, e.g. startInstance(). Inside the class _result() method, it invokes the iface's developer-defined function.
+<br>
+<pre class="brush:java">
+public static class stopInstances&lt;I extends Iface> extends org.apache.thrift.ProcessFunction&lt;I, stopInstances_args> {
+      public stopInstances() {
+        super("stopInstances");
+      }
+
+      public stopInstances_args getEmptyArgsInstance() {
+        return new stopInstances_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public stopInstances_result getResult(I iface, stopInstances_args args) throws org.apache.thrift.TException {
+        stopInstances_result result = new stopInstances_result();
+        result.success = iface.stopInstances(args.deviceInfo); // Invoke developer defined function.
+        return result;
+      }
+    }
+</pre>
+</li>
+<li><h4><i>marshaling classes</i></h4>: used for marshaling</li>
+</ol>
+</div>
+<h4>Server-side</h4>
+<p>Server-side should implement the Iface interface. .Iface / AsyncIface, and start services</p>
+<div class="featureList">
+<ol>
+<li>
+<h4>implement interfaces</h4>
+<pre class="brush:java">
+public class LogicDeviceServerServesDeviceManager implements LogicDeviceServerServesDeviceManagerIface.Iface {
+
+}
+</pre>
+</li>
+<li>
+<h4>start services</h4>
+<p>Select Thrift protocol stack</p>
+<div class="featureList">
+<ol>
+
+<li>Transport layer: (sending and receiving data technique): TSocket (TCP socket), TFramedTransport (used for non-blocking server),  THttpTransport ... </li>
+<li>Protocol layer: (data format for serialization): TBinaryProtocol, TCompactProtocol ...</li>
+<li>Processor layer [only server-side]: distributed request to local service</li>
+<li>Server layer [only server-side]: A server listen request from processor. TSimpleServer, TThreadPoolServer, TNonblockingServer</li>
+</ol>
+</div>
+<pre class="brush:java">
+
+			TServerSocket tSocket = new TServerSocket(0); // choose any avaliable port
+			TServerTransport serverTransport = tSocket;
+			TProtocolFactory tProtocolFactory = new TBinaryProtocol.Factory(true, true);
+			TTransportFactory transportFactory = new TFramedTransport.Factory();
+			LogicDeviceServerServesDeviceManager serviceHandler = new LogicDeviceServerServesDeviceManager();
+			LogicDeviceServerServesDeviceManagerIface.Processor processor = new LogicDeviceServerServesDeviceManagerIface.Processor(serviceHandler);
+			TServer server = new TThreadPoolServer(new TThreadPoolServer.Args(serverTransport).minWorkerThreads(3) 
+					.maxWorkerThreads(10) 
+					.inputTransportFactory(transportFactory).outputTransportFactory(transportFactory).inputProtocolFactory(tProtocolFactory).outputProtocolFactory(tProtocolFactory).processor(processor));
+
+            // m_nLocalServerPort = tSocket.getServerSocket().getLocalPort();
+            server.serve();
+</pre>
+</li>
+</ol>
+</div>
 
 
+</div>
+</div>
+
+<div class="content" id="thiftReference">
+<h3>References</h3>
+<div class="featureList">
+<ol>
+<li><a href="https://thrift.apache.org/docs/types" target="_blank">Thrift Types</a></li>
+<li><a href="http://blog.csdn.net/z69183787/article/details/53005696" target="_blank">Thrift 原理</a></li>
+<li><a href="http://thrift-tutorial.readthedocs.io/en/latest/thrift-stack.html" target="_blank">Thrift protocol stack</a></li>
+</ol>
+</div>
 </div>
 </li>
 </ol>
