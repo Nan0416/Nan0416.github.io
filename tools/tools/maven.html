@@ -44,6 +44,7 @@ SyntaxHighlighter.all()
 <li><a href="#mavenBuildLifeCycle">Build LifeCycle</a></li>
 <li><a href="#mavenDependency">Dependency Rules</a></li>
 <li><a href="#mavenAggregationInheritance">Aggregation &amp; Inheritance</a></li>
+<li><a href="#mavenExample">Examples</a></li>
 <li><a href="#mavenReference">References</a></li>
 </ul>
 </div>
@@ -368,6 +369,21 @@ Put mutliple POM together. Each POM represent a sub-module, now put the together
 <li>In the sub POM, add a &lt;parent> tag to include the parent identifer (groupId, artifactId, and version) </li>
 </ol>
 </div>
+</div>
+</li>
+<li>
+<div class="content" id="mavenExample">
+<h3>Examples</h3>
+<h4>Thrift</h4>
+<p>Java thrift project would depend on the libthrift jar.</p>
+<pre>
+    &lt;dependency>
+        &lt;groupId>org.apache.thrift&lt;/groupId>
+        &lt;artifactId>libthrift&lt;/artifactId>
+        &lt;version>0.10.0&lt;/version>
+        &lt;scope>compile&lt;/scope>
+    &lt;/dependency>   
+</pre>
 </div>
 </li>
 <li>

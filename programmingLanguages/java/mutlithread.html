@@ -41,6 +41,7 @@ SyntaxHighlighter.all()
 <ul class="catalogItems">
 <li><a href="#threadIntro">Introduction</a></li>
 <li><a href="#threadExample">Examples</a></li>
+<li><a href="#threadManagement">Thread Management</a></li>
 <li><a href="#threadLock">Locks</a></li>
 <li><a href="#threadDataStructure">Thread-safe Data Structure</a></li>
 <li><a href="#threadReference">References</a></li>
@@ -206,6 +207,288 @@ public class Priority extends Thread{
 </li>
 </ol>
 </div>
+</div>
+</li>
+<li>
+<div class="content" id="threadManagement">
+<h3>Thread Management</h3>
+<p></p>
+<div class="featureList">
+<ol>
+<li>
+<h4>Interrupt</h4>
+<p>Each thread has two methods interrupt(), isInterrupted(), and an internal interrupted flag.</p>
+<p>
+<i><strong>interrupt()</strong></i>: e.g. In the main thread to interrupt thread t1, t1.interrupt(). It will set the interrupt flag.<br>
+<i><strong>interrupted flag</strong></i>: Interrupt flag is set by the interrupt() function, it will be cleared if the thread can throw the InterruptException. e.g. sleep()<br>
+<i><strong>isInterrupted()</strong></i>: return the interrupted flag.
+
+</p>
+<p class="starMark">* After interrupting a thread, the thread is continuing running.</p>
+<pre class="brush:java">
+public class ThreadManage {
+    public static void main(String [] args) throws InterruptedException{
+        Thread t1 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (!Thread.currentThread().isInterrupted()){
+                    System.out.println(Thread.currentThread().getName() + Thread.currentThread().isInterrupted());
+                }
+            }
+        });
+
+        Thread t2 = new Thread(()->{
+            while(true){
+                System.out.println(Thread.currentThread().getName() + Thread.currentThread().isInterrupted() );
+                try{
+                    Thread.sleep(1000);
+                }catch (InterruptedException e){
+                    System.out.println("return : is interrupted " +  Thread.currentThread().isInterrupted());
+                    return;
+                }
+            }
+        });
+        t1.setName("While thread ");
+        t2.setName("Sleep thread ");
+        t1.start();
+        t2.start();
+        Thread.sleep(20);
+        t1.interrupt();
+        System.out.println(t1.isInterrupted());
+        Thread.sleep(2000);
+        t2.interrupt();
+        // Thread.sleep(20);
+        System.out.println(t2.isInterrupted()); 
+        // The above statement print true, because the interrupt function and isInterrupted function are executed together.
+        // The sleep function does not throw the exception and reset the flag yet.
+        // In the handler, the isInterrupted is false.
+    }
+}
+</pre>
+</li>
+<li>
+<h4>Synchronized block</h4>
+<p>Synchronized block guarantee the executing sequence of multithread</p>
+<p>The synchronized block can be in 4 scenario.</p>
+<p>
+i. instance method<br>
+ii. static class method<br>
+iii. code blocks inside instance method<br>
+iv. code blocks inside static class method<br>
+</p>
+<h4>synchronized instance method</h4>
+<p>The sychronized unit is object. All synchronized methods in an instance use one "lock".</p>
+<p>Synchronized instance methods in an instance are synchronized on the <strong>instance</strong> itself.</p>
+<pre class="brush:java">
+public class ThreadManage2 {
+    public static void main(String [] args) throws InterruptedException {
+        final Sync s = new Sync(0);
+        // final Sync s2 = new Sync(0);
+        Thread t1 = new Thread(()->s.dec());
+        Thread t2 = new Thread(()->s.inc());
+// dec() and inc() use the same lock even though they are not the same object.
+
+        t1.start();
+        Thread.sleep(100);
+        t2.start();
+        System.out.println("start");
+        t2.join(); // blocked here
+        System.out.println("t2 end");
+        t1.join();
+        System.out.println("end");
+    }
+}
+class Sync{
+    private int i;
+    public Sync(int i){
+        this.i = i;
+    }
+    public synchronized void dec(){
+        while (i &lt;= 0);
+        i--;
+    }
+    public synchronized void inc(){
+        i++;
+    }
+}
+</pre>
+<h4>synchronized class static method</h4>
+<p>Different from instance methods, each static method has its own lock.</p>
+<pre class="brush:java">
+public class ThreadManage2 {
+    public static void main(String [] args) throws InterruptedException {
+        final Sync s = new Sync(0);
+        // final Sync s2 = new Sync(0);
+        Thread t1 = new Thread(()->s.dec());
+        Thread t2 = new Thread(()->s.inc());
+        Thread t3 = new Thread(()->Sync.waiting());
+        Thread t4 = new Thread(()->Sync.waiting());
+        t3.setName("t3 ");
+        t4.setName("t4 ");
+
+
+        t3.start();
+        Thread.sleep(100);
+        t4.start();
+        t2.start();
+        Thread.sleep(100);
+        t1.start();
+        System.out.println("start");
+        t3.join();
+        t4.join();
+
+        t2.join();
+        System.out.println("t2 end");
+        t1.join();
+        System.out.println("end");
+    }
+}
+class Sync{
+    private int i;
+    public Sync(int i){
+        this.i = i;
+    }
+    public synchronized void dec(){
+        while (i &lt;= 0);
+        i--;
+        System.out.println("dec end");
+    }
+    public synchronized void inc(){
+        i++;
+    }
+    public synchronized static void waiting(){
+        System.out.println(Thread.currentThread().getName() + " run");
+        while(true);
+    }
+}
+// waiting has one lock, dec and inc share one lock
+</pre>
+<h4>Synchronized code block in instance methods</h4>
+<p>Sometimes, it is not necessary to synchronize the entire method.</p>
+<p>Synchronized block also need to select the target sync object. Usually, it is just the instance itself, this.</p>
+<pre class="brush:java">
+public class ThreadManage4 {
+    // private String name;
+    public void func1(){
+        synchronized (this){
+            while(true);
+        }
+    }
+    public void func2(){
+        synchronized (this){
+            System.out.println("func2");
+        }
+    }
+    public void func3(){
+        synchronized (this.toString()){
+            System.out.println("func3");
+        }
+    }
+    public static void main(String []args) throws InterruptedException{
+        ThreadManage4 m4 = new ThreadManage4();
+        Thread t1 = new Thread(()->m4.func1());
+        Thread t2 = new Thread(()->m4.func2());
+        Thread t3 = new Thread(()->m4.func3());
+        t1.start();
+        Thread.sleep(1000);
+        t2.start();
+        t3.start();
+        t2.join();
+        t3.join();
+        // t1 blocks t2, but t3 synchronizes on a different object, so t3 can run.
+    }
+}
+</pre>
+<h4>Synchronized code block in class static methods</h4>
+<p>It is same as the code block in instance methods but cannot use "this".</p>
+</li>
+<li>
+<h4>Wait notfiy</h4>
+<p>Wait/notify to achieve a bounded buffer. Different from CV in POSIX:<br>
+1. POSIX: a lock can bind to serveral cv.
+Java: a object is a cv and a lock. synchronized(this) is to lock
+</p>
+<pre>
+import java.util.LinkedList;
+
+public class BB {
+    private LinkedList&lt;String> container;
+    private int size;
+    private int len;
+
+    public BB(int size){
+        this.size = 0;
+        len = 0;
+        container = new LinkedList&lt;>();
+    }
+
+    public synchronized boolean push(String value){
+        while(len > this.size){
+            try {
+                this.wait();
+            }catch (InterruptedException e){
+                System.out.println("Push failed, it is interrupted.");
+                return false;
+            }
+        }
+        len++;
+        System.out.println("push");
+        container.add(value);
+        this.notifyAll();
+        return true;
+    }
+    public synchronized String pop(){
+        while(len &lt;= 0){
+            try{
+                this.wait();
+            }catch (InterruptedException e){
+                System.out.println("Pop failed, it is interrupted.");
+                return null;
+            }
+        }
+        len--;
+        System.out.println("pop");
+        String value = container.remove(len);
+        this.notifyAll();
+        return value;
+    }
+
+    public static void main(String [] args){
+        BB bb = new BB(1);
+        Thread t1 = new Thread(()->{
+            while(true){
+
+                bb.pop();
+            }
+        });
+        Thread t2 = new Thread(()->{
+            while(true) {
+
+                bb.push("first");
+            }
+        });
+        t1.start();
+        t2.start();
+        System.out.println("end");
+    }
+}
+</pre>
+</li>
+</ol>
+</div>
+</div>
+</li>
+
+
+<li>
+<div class="content" id="threadReference">
+<h3>References</h3>
+<div class="featureList">
+<ol>
+<li><a href="http://tutorials.jenkov.com/java-concurrency/synchronized.html" target="_blank">Synchronized block</a></li>
+</ol>
+</div>
+
 </div>
 </li>
 </ol>
