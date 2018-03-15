@@ -43,6 +43,7 @@ SyntaxHighlighter.all()
 <li><a href="#ioFileByte">File I/O Byte</a></li>
 <li><a href="#ioFileChar">File I/O Char</a></li>
 <li><a href="#ioFile">File Class</a></li>
+<Li><a href="#ioRedirection">Redirection</a></Li>
 <li><a href="#ioReference">References</a></li>
 </ul>
 </div>
@@ -105,6 +106,7 @@ SyntaxHighlighter.all()
 <p>Closeable: defines a close function: which is intented to relinquish resources.</p>
 <p>AutoCloseable: defines a close function: which can be used with the try-with-resources statement (since Java7)</p>
 <p>byte vs char: byte没有ready,char没有avaliable, reader没有autocloseable</p>
+<p><img src="./img/javaio.png" width="800" height="400"></p>
 </div>
 </div>
 </li>
@@ -288,6 +290,29 @@ public class FileIO7 {
     }
 }
 </pre>
+</div>
+</li>
+<li>
+<div class="content" id="ioRedirection">
+<h3>Redirection</h3>
+<div class="featureList">
+<p>java.lang.System defines 3 standard I/O,</p>
+<ol>
+<li>static final InputStream in</li>
+<li>static final PrintStream out</li>
+<li>static final PrintStream err</li>
+</ol>
+<p>They are opened when launching the Java VM, closed at the end of the process.</p>
+</div>
+<h4>Redirection</h4>
+<p>Same as Unix, the 3 standard i/o objects can be redirected.</p>
+<div class="featureList">
+<ol>
+<li>static void setIn(InputStream in)</li>
+<li>static void setOut(PrintStream out)</li>
+<li>static void setErr(PrintStream err)</li>
+</ol>
+</div>
 </div>
 </li>
 <li>
