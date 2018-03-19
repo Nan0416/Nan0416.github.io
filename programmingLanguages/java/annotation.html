@@ -41,7 +41,8 @@ SyntaxHighlighter.all()
 <ul class="catalogItems">
 <li><a href="#annotationIntro">Introduction</a></li>
 <li><a href="#annotationUser">User-defined Annotation</a></li>
-<li><a href="#annotationExample">Runtime annotation with class reflection</a></li>
+<li><a href="#annotationUsage">Using Annotation</a></li>
+<li><a href="#annotationReflection">Runtime annotation with class reflection</a></li>
 <li><a href="#annotationReference">References</a></li>
 </ul>
 </div>
@@ -74,33 +75,109 @@ SyntaxHighlighter.all()
 <p>Annotation has 3 types in terms of the usage: 1). standard annotation; 2). meta annotation; 3). user-defined annotation</p>
 
 <h4>Example</h4>
+<pre class="brush:java">
+package javatutorial.annotation;
 
-    <p>Define annotation interface with @</p>
-    <pre class="brush:java">
-        package javatutorial.annotation;
-        
-        import java.lang.annotation.ElementType;
-        import java.lang.annotation.Retention;
-        import java.lang.annotation.RetentionPolicy;
-        import java.lang.annotation.Target;
-        
-        @Target({ElementType.METHOD}) // it means that the annotation can only be used before the class/interface's method
-        @Retention(RetentionPolicy.RUNTIME) // runtime: modify the code at runtime via reflection
-        public @interface Description {
-            String deviceType();
-            String deviceVendor();
-        }
-        </pre>
+import java.lang.annotation.*;
+
+// meta annotation
+@Target({ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+@Inherited
+@Documented
 
 
+public @interface Description {
+    String deviceType();
+    String deviceVendor();
+    int num() default 18;
+
+}
+
+</pre>
 <div class="featureList">
-<h4>Requirements</h4>
+<h4>meta annotation</h4>
+<p>Meta annotation is used to configure the following user-defined annotation.</p>
+
 <ol>
-<li><p>Use meta-annotation to specify the type of this user-defined annotation</p></li>
+<li>
+<strong>@Target: specify the scope of the annotation</strong>: it is for<br>
+<i> * constructor<br>
+    * field<br>
+    * local_variable<br>
+    * method<br>
+    * package<br>
+    * parameter<br>
+    * type (class, interface)</i>
+</li>
+<li>
+<strong>
+@Retention(RetentionPolicy.RUNTIME)
+</strong>: it defines the phase of lifecycle:<br>
+<i> * source<br>
+    * class<br>
+    * runtime, with reflection</i>
+</li>
+<li>
+<strong>@Inherited</strong>: the subclass of the class that use the annotation will also have this annotation
+</li>
+<li>
+<strong>@Documented</strong>: the generate java doc will include the annotation.
+</li>
 </ol>
 </div>
+<div class="featureList">
+<h4>Define annotation</h4>
+<ol>
+<li>annotation member, no variable, all in function form</li>
+<li>no parameter, no throwing exception</li>
+<li>return type can only be primitive types, String, Class, Annotation and Enumeration</li>
+<li>can have default value</li>
+</ol>
+<p class="starMark">* If just having one member, the value of this member is value()</p>
+<p class="starMark">* If having no member, this annotation is called标示注解</p>
+</div>
 
-
+</div>
+</li>
+<li>
+<div class="content" id="annotationUsage">
+<h3>Using Annotation</h3>
+<p>Annotation is used before the right element</p>
+<p>e.g. If an annotation is defined as @Target({ElementType.METHOD}), then this annotation should use before a class method member.</p>
+<p>@Annotation(membername="value", ...) // the order is not important</p>
+<p>If only one member, then the name can be ignored.</p>
+</div>
+</li>
+<li>
+<div class="content" id="annotationReflection">
+<h3>Runtime annotation with class reflection</h3>
+<p>Using reflection to obtain the class, method, field ...' Runtime annotation.</p>
+<h4>Class</h4>
+<p>get a class object. Class object can access the annotation whose target is Type</p>
+<div class="featureList">
+<ol>
+<li>.isAnnotationPreset(AnnotationType.class):bool</li>
+<li>.getAnnotation(Annotation.class): Annotation, we need <strong>cast</strong> to a normal annotation.</li>
+</ol>
+<pre class="brush:java">
+    public static void main(String [] args){
+        Washer ws = new Washer("Washing Machine");
+        System.out.println(ws.getName());
+        Class c = ws.getClass();
+        if(c.isAnnotationPresent(Description.class)){
+            System.out.println("Description annotation is found at " + c.getName());
+            Description ds = (Description) c.getAnnotation(Description.class);
+            System.out.println(ws.getName() + " is a " + ds.deviceType() + " production of " + ds.deviceVendor());
+        }
+        if(c.isAnnotationPresent(Version.class)){
+            System.out.println("Version annotation is found at " + c.getName());
+            Version ds = (Version) c.getAnnotation(Version.class);
+            System.out.println(ws.getName() + " firmware version " + ds.version());
+        }
+    }
+</pre>
+</div>
 </div>
 </li>
 </ol>
