@@ -1,0 +1,48 @@
+<!DOCTYPE>
+<html>
+<head>
+	<title>VirtualEnv</title>
+</head>
+<body>
+	<ol>
+		<li>
+			<p>Create a new environment. (Do not root privilege.)</p>
+			<p>virtualenv [--python=/usr/bin/python2.7] envName</p>
+		</li>
+		<li>
+			<p>Enter this env directory, create a file called requirements.txt to tell what package you need.</p>
+			<p>Create a file called requirements.txt. In this file, we declare the packages and version numbers.</p>
+			<p>package_name==package_version</p>
+			<p>django==1.9.0</p>
+		</li>
+		<li>
+			<p>Start this virtual environment.</p>
+			<p>source ./bin/activate</p>
+			<p>Principle: this "activate" file is actually a shell script. To create a new python environment, virtualenv just simply copies the python source file into a new location.
+				And when we run this activate, it will change the PS1 (the prompt) and the search path of python.
+			</p>
+		</li>
+		<li><p>Download dependencies
+		</p>
+		<p>Attention: this must be download after activate the new enviroment.</p>
+		<p>pip install -r requirements.txt</p>
+		</li>
+	</ol>
+	<h2>How to manually install package. -- Introduction to pip.</h2>
+	<ol>
+		<li>
+			<p>Where does python manage dependencies?</p>
+			<p>Most dependencies are stored in ../usr/lib/pythonVer/site-packages/ [native python] or envDir/lib/pythonVer/site-packages/ [virtualenv created env].</p>
+		</li>
+		<li>
+			<p>Download source code.</p>
+			<p>There are two ways to download source files. 1. Download from github or the official website. Compared with the second approach, this is a safer way. Second, using pip download, which
+			download the newest version of the source file. e.g. pip download django.</p>
+		</li>
+		<li><p>Install source code</p>
+			<p>Uncompress source file into the site-packages directory. Go to the source file directories, run python setup.py install</p>
+		</li> 
+
+	</ol>
+</body>
+</html>
