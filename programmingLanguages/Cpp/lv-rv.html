@@ -47,7 +47,62 @@ SyntaxHighlighter.all()
 <ol>
 <li>
 <div class="content" id="lrIntro">
+<h3>Introduction</h3>
+<div class="featureList">
+<h4>Concepts</h4>
+<ol>
+<li>
+        <p>lvalue: locator value, the value is stored in a memory location, it takes a memory space.</p>
+        <p>rvalue: defined by exclusion of lvalue, e.g. immediate value</p>
+</li>
+<li>
+        In an assignment operation, the left side must be an lvalue.
+</li>
+<li>
+        The lvalue can be an reference or a variable.
+</li>
+<li>
+        Not all lvalue can be assigned, const int a = 1;
+</li>
+<li>
+        lvalue can be used as a rvalue, but rvalue cannot be used as a lvalue
+</li>
+<li>
+    * deference can convert a rvalue into a lvalue
+        <pre class="brush:cpp">
+                int p = 0x11111; 
+                *(p + 1) = 10;
+            </pre>
+</li>
+</ol>
+</div>
 
+
+
+<h4>Code illustration</h4>
+<pre class="brush:cpp">
+// return a reference
+int global = 10;
+int&amp; foo(){ // return the reference of the global variable.
+  return global; // local variable cannot be returned, because C++ does not support closure.
+}
+int main(){
+  foo() = 1; // reference is an lvalue, so it can be assigned a value.
+  std::cout &lt;&lt; foo() &lt;&lt; std::endl; // 1
+  return 0;
+}
+
+</pre>
+</div>
+</li>
+<li>
+<div class="lrReferences">
+<h3>References</h3>
+<div class="featureList">
+<ol>
+<li><a href="https://eli.thegreenplace.net/2011/12/15/understanding-lvalues-and-rvalues-in-c-and-c" target="_blank">Understanding lvalues and rvalues in C and C++</a></li>
+</ol>
+</div>
 </div>
 </li>
 </ol>
