@@ -35,7 +35,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <center><strong>Cpp&nbsp;-&nbsp;Compilation flags</strong></center>
 </div>
-<p class="date"><span class="created-date">Created:2018-02-11</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-02-11</span></p>
+<p class="date"><span class="created-date">Created:2018-02-11</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-04-03</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#flagIntro">Introduction</a></li>
@@ -88,6 +88,20 @@ SyntaxHighlighter.all()
 <li>
 <h4>-Werror</h4>
 <p>switch all warnings to error, this will stop compiling.</p>
+</li>
+<li>
+<h4>-Wsuggest-override // override control, only in -std=c++11</h4>
+<p>If the subclass method override parent class's method, then there must be a "override" after the child's method declaration. </p>
+<p><i>g++ -std=c++11 -Wsuggest-override </i></p>
+<p>The override only used when the function is a virtual function</p>
+<pre class="brush:cpp">
+class TestSub: public Test{
+public:
+    TestSub(){    
+    }
+    void execute() override;
+};
+</pre>
 </li>
 </ol>
 </div>
