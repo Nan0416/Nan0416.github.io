@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <meta charset="UTF-8">
+      <meta name="description" content="Personal Notes">
+      <meta name="keywords" content="HTML,CSS,JavaScript, Secuirty, Cryptography">
+      <meta name="author" content="Nan Qin">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Computer Security</title>
+    <style>
+
+      body{
+        margin:0;/* body default margin is 8px */
+      }
+
+
+
+    </style>
+    <link rel="stylesheet" type="text/css" href="./css/navigationbar.css">
+    <link rel="stylesheet" type="text/css" href="./css/sidebar.css">
+    <link rel="stylesheet" type="text/css" href="./css/content.css">
+  </head>
+  <body>
+    <ul id="nav">
+      <li><a class="active">Home</a></li><!-- remove the space between inlined elements
+    --><li><a href="#1">Security</a></li><!--
+    --><li><a href="#2">OS</a></li><!--
+    --><li><a href="#3">Networking</a></li><!--
+    --><li><a href="#3">Tools</a></li>
+
+    </ul>
+
+
+
+    <ul id="sidebar">
+        <li><a href="#distributedsystems">Distributed Systems</a></li>
+        <ol class="dropdown">
+          <li><a href="#">Frameworks</a></li>
+        </ol>
+        <li><a href="security.html">Security</a></li>
+        <ol class="dropdown">
+          <li><a href="security.html#crypto">Cryptography</a></li>
+        </ol>
+        <li><a href="webdesign.html">Web design</a></li>
+        <ol class="dropdown">
+          <li><a href="webdesign.html#html">HTML</a></li>
+          <li><a href="webdesign.html#css">CSS</a></li>
+        </ol>
+        <li><a href="#3">Web servers</a></li>
+        <ol class="dropdown">
+          <li><a href="#">Apache2</a></li>
+        </ol>
+        <li><a href="#4">Compression</a></li>
+        <li><a href="#5">Multimedia streaming</a></li>
+        <li><a href="#tools.html">Tools</a></li>
+        <ol class="dropdown">
+
+        </ol>
+      </ul>
+
+    <div id="content-div">
+      <h2>Computer Security</h2>
+      <p>
+        Topics include cryptography and computer software that are secure sensitive.
+      </p>
+      <h3 id="network_security">Network Security</h3>
+      <p>The inital network design is <span class="word">end-to-end</span>, which means the devices between two computers are just routers with limited intelligence.
+        However, as the network becomes complex, the issue of security also increases significantly.
+      </p>
+      <ol class="section-list">
+        <li>Firewall: like a router to forward packets, but it may deny to forward some packets accroding to a-priori rules by checking headers
+          <ol>
+            <li>Most firewalls prevent traffic from the outside (incoming traffic)</li>
+            <li>Also may prevent inside users to communicate with outside</li>
+            <li>Default behavior: deny and provide whitelist</li>
+            <li>Sophisticated firewall: (proxy) can check packets' contents.</li>
+            <li>Stateful filtering: Dealing with reply message. e.g. client 132.21.3.2:12304 -> www.google.com:80,
+              then we rememeber this info and allow www.google.com -> 132.21.3.2:12304</li>
+            <li>Circuit-level proxying: standard protocol: SOCKS. Inside the firewall, one socket connects to client, one socket connects to server.
+              firewall check and copy data from one socket to another socket.
+            </li>
+            <li>Application-level proxying: e.g. HTTP proxy.</li>
+          </ol>
+        </li>
+        <li>
+          WEP (wired equivalent privacy)
+          <ol>
+            <li>Stream cipher + CRC</li>
+            <li>Single shared symmetric key</li>
+            <li>WEP key 40-bit length + 24-bit IV = 64 bit RC4 key </li>
+            <li>RC4 problem: key schedule vulnerable: extend small key to large for streaming. Similar key extends the same large key.</li>
+          </ol>
+        </li>
+        <li>
+          WPA/WPA2
+          <ol>
+            <li>
+              Seesion key set up in a 4-message handshake
+            </li>
+            <li>Key reinstallation attack: replay #3 message (the #3 message in the 4 message is used to setup the session key)</li>
+          </ol>
+        </li>
+        <li>
+          (Network level) Intrusion detection systems (<mark>IDS</mark>): a middle-box device tells us that we are under attacking.
+          <ol>
+            <li>Decision used to check whether it is an attacking is made on the fly. V.S. firewall policies are pre-determined.
+            </li>
+            <li>Signature matching: signature is a pattern that matches known bad behavior. Cons 1). Defender must know the attacking before. it won't work for novel attacks. 
+              2). Often easy to attack around. If you are unluck to be the first victim. Also, the signature is static and may be known by attacker.</li>
+            <li>Anomaly detection: learn pattern of normal behavior. Cons: 1). if the normal behavior is very diverse, then it is hard to detect.
+              2). hard to avoid false positive, fn is also unavoidable. 3). adversary can train over time.</li>
+              <li>
+                Host-based on IDS: look for compromised process or user from within machines.
+              </li>
+              <li>False Positive: Bad thing: System said you are under attack, but you are actually good.</li>
+              <li>False Negative: Bad thing: System said you are good, but you are under attack.</li>
+              <li>False Positive + </li>
+          </ol>
+        </li>
+        <li>Base rate problem
+          <ol>
+            <li>Rare events trigger alarm, but most of these rare events are good. So it induces a high FP.</li>
+            <li>So attacker can take this advantage.</li>
+            <li>Wagner and Soto mimicry attack: Host-based IDS based on sequence of syscalls</li>
+          </ol>
+        </li>
+        
+        <li>Tunneling: Against firewall
+          <ol>
+            <li>Any data can be transmitted on any channel, if both sides agree.</li>
+            <li>e.g. Encapsulate IP packets over ssh connection.</li>
+            <li>SSH can be used to tunnel almost any traffic.</li>
+          </ol>
+        </li>
+        <li>
+          Malware: Malicious software.(专门用来做坏事的software. some software that have bugs that can be applied by attackers to do bad things are not
+          malware.)
+          <ol>
+            <liT>Trojan (horse木马): looks like benign, e.g. a text editor. But it has malicious purpose. 
+              User are fooled to run it.
+            </li>
+            <li>Computer Virus: a little piece of software that attack to a software to propragate when the attached software run.
+
+            </li>
+            <li>Worms: a complete program, completely automatic self-propagation. <mark>Requires remote security holes.</mark></li>
+            <li>Rootkit: hide malware by changing the kernel behavior. e.g. ps command will do a malicious thing instead of printing malicious message.</li>
+            <li>MBR (master boot record) virus: take control early in boot</li>
+            <li>Blue-pill attack: malware is a VM Monitor running your system.</li>
+            <li>Why people do malware: 1) curiosity &amp; be famous 2). making money 3). nation-oriented</li>
+            <li>Ransomware(勒索软件): encrypt victim's files and let them pay money for decrypting.</li>
+          </ol>
+        </li>
+        <li>
+          Bots and botnets
+          <ol>
+            <li>Bot(肉鸡): program under control of remote attacker</li>
+            <li>Botnet: large group of bot-infectde computers with common "master"</li>
+            <li>control bot: peer-to-peer &amp; RIC</li>
+            <li>Make money fron botnets: 0). click (ad) fraud. 1).distributed DoS, 2).Bitcoin mining 3). Spam sending 4). paid-per-install (租给其他attacker)</li>
+          </ol>
+        </li>
+        <li>
+          Anti-virus (AV) systems
+          <li>Signatured-based AV: similar idea to signature-based IDS, but it requires a frequently changed database.</li>
+          <li>AV software company has research on attacking, keep the database up-to-date.</li>
+          <li>Emulation: run an unknown software in a invaluable operating system to see if it does some malicious actions.</li>
+          <li>Polymorphism: attackers make a lot of variants of malware, 30 million virus samples observed.</li>
+          <li>Packing: static code creates real malicious code on the fly. </li>
+          <li>Fake anti-virus: ... 报假警骗钱。</li>
+        </li>
+        <li>DoS
+          <ol>
+            <li>Unexpected and unintented by the author.</li>
+            <li>Algorithmic complexity attacks: (Developer always care the worst case because they want their systems can always work well). 
+              an adversary make your algorithm have the worst-case behavior. e.g. Attacker always let quicksort always be O(n^2).</li>
+            <li>XML entity expansion: XML entities (like C macros)</li>
+            <li>zip file quine: zip file contains itself, systems recursively unzip file will go to infinite loop.</li>
+            <li>DoS against network services:
+              <ol>
+                <li>making packet small and high sending frequency.</li>
+                <li>Queuing Theory: arrival rate >= service rate, request go unbound.</li>
+                <li>SYN flooding: syn first of three packets to set up new connection. Server allocates space after receiving first syn. 
+                  (CSCI 4211).</li>
+                <li>SYN flooding defense: SYN cookies: change server behavior to stateless approach. </li>
+                <li>DoS against network links: try to use all availabe bandwidth.</li>
+                <li>Traffic multipliers: attacker, victim, third parties(bots) send packets to victim to slow his/her network.</li>
+                <li>Distributed Dos: </li>
+              </ol>
+            </li>
+          </ol>
+          
+        </li>
+        <li>
+          Side-channel attacking
+         <ol>
+           <li>Timing-analysis: </li>
+           <li>Power analysis: </li>
+           <li>Fault injection: </li>
+           <li>Data non-erasure: </li>
+         </ol>
+        </li>
+       
+      </ol>
+      <h3>Anonymous communications techniques</h3>
+      <p></p>
+      <ol class="section-list">
+        
+      </ol>
+      <h3 id="crypto">Cryptography</h3>
+      <p>This section introduces the basic concepts of cipher. Following, a couple of popular ciphers are shown.</p>
+      <ol class="section-list">
+        <li>
+          <h4>Concepts</h4>
+          <ol class="subsection-list">
+            <li>Cipher: an <span class="word">algorithm</span> for performing encryption or decryption.</li>
+            <li>cryptography: the study of <span class="word">designing</span> cipher algorithms.</li>
+            <li>cryptanalysis: the study of <span class="word">breaking</span> cipher algorithms.</li>
+            <li>cryptology: cryptography and cryptanalysis</li>
+            <li>Kerckhoffs's principle: [in 19th century] an cipher aglorithm should be secure even if the implementation is public known.
+              Modern cryptography embraces openness.</li>
+            <li>Symmetric key cryptography: one key for encryption and decryption. The key is secret and shared only by people who should know.</li>
+            <li>Public key cryptography: one key for encryption and another key for decryption. Private key is only known by owner, public key can
+               be known by anyone. 1). invented in 1970s; 2). Depends on fancier math; 3). Makes key distribution easier.</li>
+            <li>Integrity: massage integrity cannot be guaranteed by encryption.</li>
+            <li>Secure channel: Using cryptography to construct a secure channel to transmit data securely. e.g. HTTP login, chatting software.
+              Consideration: adversary can read and modify ciphertext. So secure channel must deliver message intact and in order.
+              Moreover, we must exchange the symmetric key before setting up the secure channel. And we usually use public key cryptography to exchange the symmetric key. And use symmetric key to set
+              up the secure channel.
+            </li>
+            <li>key size: Modern symmetric key size at least 2^128.</li>
+            <li>Scenarios of Attacks
+              <ol>
+                <li>Known ciphertext: a attacker knows ciphertext.</li>
+                <li>Known plaintext: a attacker knows a pair of plaintext and ciphertext that used in the past.</li>
+                <li>Chosen plaintext: a attacker could choose a plaintext to encrypt and get the ciphertext.</li>
+                <li>Chosen ciphertext: a attacker can encrypt any plaintext and decrypt any ciphertext except the one we want to keep secret.</li>
+              </ol>
+            </li>
+            <li>
+              Random oracle paradigm: a black box that returns a uniform random number for any different input.
+            </li>
+            <li>NIST (US National Institute of Standards and Technology): a neutral organization to compete cipher aglorithms in cryptography.</li>
+            <li>NSA (National Security Agency): for "signals intelligence"-> getting information from digital signals. Break the encryption of
+              everyone in the world. Help US encryption not be broken by foreign powers.</li>
+            <li>Stream ciphers (out of fashion): a key used to generate a long pseudorandom bitstream. And then xor with the message.
+              <ol>
+                <li>+Easy to implement in hardware</li>
+                <li>-Stream cipher mutability: a attacker can guess the structure of security data, and modify part of the ciphertext. Then the obtained plaintext
+                  will be exactly flipped those bits.
+                </li>
+              </ol>
+            </li>
+            <li>Block ciphers: plaintext is divided into fixed length blocks. ciphertext_block = Ciphers(Key, plaintext_block). It is insecure if block size is too small. Current size
+              is 128 bits.
+              <ol>
+                <li>Confusion: combine elements so none can be analyzed individually.</li>
+                <li>Diffusion: spread the effect of one symbol around to others. Changing one part, the effect will also be reflected to others.</li>
+                <li>Substitution/permutation network (e.g. AES): general structure for building block ciphers. 1). Subsitution: an invertible mod lookup table. 2). Permutation: shuffle bit (diffusion).</li>
+              </ol>
+            </li>
+            <li>
+              Mode operation: break a arbitary length of data into blocks, and apply the block cipher. e.g. ECB.
+            </li>
+            <li>
+             stream mode:
+            </li>
+            <li>
+              Birthday paradox: describe that hash function collision is easy to happen. C(n,2 )= n^2, n^2 pairs
+            </li>
+            <li>
+              Birthday attack: find hash function's collision.
+            </li>
+            <li>Nonce: a value chosen to make a message unique. Used to prevent a reply attack.</li>
+          </ol>
+        </li>
+        <li>
+          <h4>Symmetric stream ciphers</h4>
+          <ol class="subsection-list">
+            <li>
+              <h4>Caesar [凯撒] cipher</h4>
+              <p>Shift plaintext </p>
+            </li>
+            <li>
+              <h4>Rot-13</h4>
+              <p>same as ..</p>
+            </li>
+            <li>
+              <h4>One Time pad (inpractical)</h4>
+              <p>A random key whose length is same as the secret message (inpractical). <span class="emphasis">Ciphertext = K xor Plaintext; Plaintext = K xor Ciphertext;</span></p>
+            </li>
+            <li>
+              <h4>RC4</h4>
+              <p>Fast, simple, widely used software stream software.</p>
+              <p>WEP used RC4 in a wrong way.</p>
+            </li>
+          </ol>
+          </li>
+          <li>
+          <h4>Mode operation</h4>
+          <ol class="subsection-list">
+            <li>
+              <h4>ECB (Electronic Codebook)</h4>
+              <ol>
+                <li>Split into blocks and apply cipher to each one individually.</li>
+                <li><span class="word">Bad idea: </span> block cipher with a specific key is a deterministic function, y = F(K, x). If two cipherblocks are same, it would mean the corresponding
+                  plaintext blocks are also same. (leaking information)
+                </li>
+                <li>e.g. Image encrypted by DES in ECB mode, you are still find the outline of things in the image.</li>
+              </ol>
+            </li>
+            <li>
+              <h4>CBC (Cipher Block Chaining)</h4>
+              <ol>
+                <li>Ci = Ek(Pi xor Ci-1) // Ek is Encryption(K, x)</li>
+                <li>Plaintext changes propagrate forever: If p2 changes, then c2, c3, c4 ... all will change.</li>
+                <li>Ciphertext change only two plaintext blocks changed. If c3 changes, then only p4 and p3 change.</li>
+                <li>Initialization vector: C0, C0 is not a secret message, but it is randomly generated (nonce: not predicatible)</li>
+                <p><img src="./images/cbc-encryption-mode.png" alt="cbc encryption mode" width="450px" height="200px"></p>
+              </ol>
+            </li>
+          </ol>
+          </li>
+          <li>
+          <h4>Stream modes: take a block cipher and a key to generate a key stream and xor with plaintext</h4>
+          <ol class="subsection-list">
+            <li>
+              <h4>OFB (output feedback)</h4>
+              <ol>
+                <li>Drawback: if key size is small, it may lead collision of keystream. And the ciphertext may be repeated.</li>
+                <p>
+                  <img src="./images/ofb_mode.png" alt="ofb mode" width="450px" height="200px">
+                </p>
+              </ol>
+
+            </li>
+            <li>
+              <h4>CTR (couter mode)</h4>
+              <ol>
+                <li>Advantage: can start from middle because counter is predicatible.</li>
+                <p>
+                  <img src="./images/ctr_mode.png" alt="ctr mode" width="450px" height="200px">
+                </p>
+              </ol>
+
+            </li>
+          </ol>
+          </li>
+          <li>
+          <h4>Symmetric block ciphers</h4>
+          <ol class="subsection-list">
+            <li>
+              <h4>AES (advanced encryption standard: very secure)</h4>
+              <ol>
+                <li><a href="http://www.formaestudio.com/rijndaelinspector/archivos/Rijndael_Animation_v4_eng.swf">Animation</a></li>
+                <li>128-bit block, 128/192/256-bit key. Fast software implement, x86 has insns instruction for AES.</li>
+                <li>128-bit has 10 round</li>
+                <li>The lookup table and mixcolumn's matrix are fixed.</li>
+                <li>Round key are expanded by the key schedule. Also use the same lookup table.</li>
+              </ol>
+            </li>
+            <li>
+              <h4>DES (data encryption standard: predecessor of AES)</h4>
+              <p>Not secure: brute force due to small size of key.</p>
+            </li>
+
+            <li>
+              <h4>Feistel cipher</h4>
+              <p>+ the process as a whole is revertible, even if F is not revertible.</p>
+            </li>
+          </ol>
+        </li>
+      </ol>
+
+
+      <h3>Cryptography Hash functions</h3>
+
+        <p>  Ideal model: take aribitary input return fixed length output. No collision (big output space), not invertible.
+          For a cryptography hash function, we don't want the attacker "pre-image" (inversion) this function. i.e. given
+          output to find input. Second preimage (targeted collision): finding H(x') == H(x) but x' != x.
+        </p>
+        <p>If output length is k, preimage and second preimage complex is 2^k, but collision has complexity 2^k/2. </p>
+        <p>To avoid collision, be conservative: if input length is about k, then output should be 2 * k.</p>
+        <p>History: MD5 (128-bit output: now easy to find collision) ->
+          SHA(-0: from NIST/NSA but quickly withdraw) ->
+          SHA-1 (small modification 160-bit output, but the real collision is just 2^60 not 2^80, first collision in 2017) ->
+          SHA-2 (output 224 256 384 512 bits, still length extension problem) ->
+          SHA-3 (fixed length extension in 2015)
+        </p>
+        <p>Length extension problem (not ideal): hash function (md5 sha-1 sha-2) take fixed lenght input H(A||B) may equal to H(A).</p>
+
+
+      <h3>Intergrity</h3>
+      <p>
+      </p>
+
+      <ol class="section-list">
+        <li>
+            <h4>MAC (message authentication code)</h4>
+            <p>Prove the message has not been modified. Input(message, key) = MAC. Receiver use the received message and pre known key to
+              recompute the MAC, then compare the two MAC. MAC's kye is usually different from encryption key.
+            </p>
+
+        <ol class="subsection-list">
+          <li>
+            <h4>CBC-MAC</h4>
+            <p>CBC-MAC: start VI = 0, to encrypt the message and take the last cipher block as the key.
+              For security reason, that we can only use the 0 as VI and last cipher as MAC.
+            </p>
+          </li>
+          <li>
+              <h4>HMAC : common</h4>
+              <p>
+                HMAC: H(K xor a || H(K xor b || MAC)) // using hash function twice.
+                H(K || M), H(M || K): insecure due to length extension.
+              </p>
+          </li>
+          <li>
+            <h4>How to apply?</h4>
+            <p>
+              Encrypt and MAC separately. Cipher= Encrypt(K1 , Plain) || MAC(K2, Plain). This is  a bad design
+              since encrypt only protect confidentiality and MAC only protect integrity. Therefore, we can use MAC(K2, Plain) to get the plaintext.
+
+            </p>
+            <p>
+              Encrypt then MAC: has cleanest formal safety proof.
+            </p>
+            <p>
+              First MAC then Encrypt: preferred by practical reasons.
+            </p>
+        </li>
+        <li>
+          <h4>GCM (Galois Counter Mode)</h4>
+          <p>In traditional encry & Mac authentication, we need to do twice. This is expensive. "Authenticated encryption" modes do both at once.
+            Higher preformance. 
+          </p>
+        </li>
+      </ol>
+    </li>
+    <li>
+          <h4>Ordering and message number</h4>
+          <p>When sending data, we break them into small packets. Attacker can reorder them, so we assign each one with a sequence number. If we detect out-of-order/duplicated, we just ignore them.
+            Sequence number is inside MAC.
+          </p>
+    </li>
+     <li>
+          <h4>Padding</h4>
+          <p>When the plaintext is not long enough to satisfy the cipher block (e.g. 128-bit). It will be padded with 1, 2,2 ,3,3,3 up to 16 bytes.</p>
+          <p>When recover plaintext, decrypt -> remove padding -> compute MAC -> compare MAC </p>
+          <p>Padding oracle attack: timing attack: suppose the server's response time depends on whether the padding is correct or not.
+            (This assumption is reasonable, because we developer may not compute the MAC when detecting a wrong padding.) By controlling the ciphertext, attacker can modify the padding bytes.
+
+          </p>
+    </li>
+  </ol>
+
+      <h3>Public key cryptography: generalized block cipher: separate encryption key and decryption key (secret).</h3>
+      <p>
+        Analogy: Alice wants to send Bob a gift in a locked box. In a symmetric key scenario, both Alice and Bob has the same key. But in public key mode, each person has a private key (key) and a public key
+        (lock). The immportant feature of public key is that the physical locks are commute <span class="word">Ek1(Ek2(M)) = Ek2(Ek1(M))</span>.
+
+        </p>
+        <p>
+        Alice sends this gift and locks it with her lock kA: EkA(gift). Send to Bob. Bob lock it with his lock. EkB(EkA(gift)). Send to Alice.
+        Alice unlock her lock. DkA(EkB(EkA(gift))) =  DkA(EkA(EkB(gift))) = EkB(gift). Send to Bob. Bob unlock his lock and get the message.
+
+      </p>
+      <p>Modular arithmetic: <a href="https://nrich.maths.org/2200">math</a>
+        <ol>
+          <li>x = y mod n. Given y and n, we know x. e.g. 10 mod 3 = 1. </li>
+          <li>given x and n we cannot know y. e.g. 1 = y mod 3. y = 1, 4, 7 ... </li>
+          <li> (g^b (mod p))^a (mod p) = g^ab mod p.</li>
+        </ol>
+
+      </p>
+      <p>
+        Diffie-Hellman key exchange: assumption: we are in a unsecure channel, but we are telling to the right person. Finally, we will reach a final shared key.
+        The key is computed on the fly.
+        <ol>
+          <li>Alice has secret a = 3, Bob has secret b = 4. And two public parameters p = 10 and g = 12.</li>
+          <li>Alice -> Bob: A = g^a mod p = 12 ^ 3 mod 10 = 8.</li>
+          <li>Bob -> Alice: B = g^b mod p = 12 ^ 4 mod 10 = 6.</li>
+          <li>Attacker can capture 8 and 6. However, knowing 8 and 6, the attacker cannot know a and b. since 8 = 12^a mod 10. 12^a has mulitple solution.</li>
+          <li>Alice computes B^a mod p = (g^b (mod p))^a (mod p)= 6^3 mod 10 = 6.</li>
+          <li>Bob computes A^b mod p = (g^a (mod p))^b (mod p) = 8^4 mod 10 = 6.</li>
+          <li>6 is just the secret key.
+            Suppose g^b = np + c, then (g^b (mod p))^a (mod p) = c^a mod p.
+            And because g^ab mod p = (np + c)^a mod p = c^a mod p. We have (g^b (mod p))^a (mod p) = g^ab mod p.
+            We can prove that g^ab mod p == (g^a (mod p))^b (mod p). So (g^a (mod p))^b (mod p) == (g^b (mod p))^a (mod p).
+          </li>
+        </ol>
+      </p>
+      <p>
+        Public key size must be 10 times larger than security level. (up to 768bits, and usually 2048 bit).
+        Elliptic curves: objects from higher math with analogous group structure 2 * security level.
+      </p>
+      
+      <ol class="section-list">
+        <li>
+          <h4>RSA</h4>
+          <ol>
+            <li>n = pq two large primes, n is public, p and q are secret. Because n is large, it is hard to guess p and q from n. n (2000 or more bits lang.)
+              将两个大质数相乘十分容易，但是想要对其乘积进行因式分解却极其困难.
+            </li>
+            <li>modular exponentiation - c mod m = (a ⋅ b) mod m, c mod m = [(a mod m) ⋅ (b mod m)] mod m</li>
+            <li>choose e and d such that : M^ed mod n = M </li>
+            <li>Public key: (n, e); C = M^e mod n (M < n)</li>
+            <li>Private key: (n, d); C^d = M^ed mod n = M;</li>
+            <li>Euler: ø(n) 与n互质且小于n的数。ø（p）= p - 1 if p is prime.</li>
+            <li>随便找一个e < ø(n), and e ø(n)互质</li>
+            <li>找 M^ed mod n = M; -> (M^(ed-1) mod n)(M mod n) = M; -> M^(ed - 1) mod n = 1; -> M^(ed-1) = 1 (mod n);</li>
+            <li>欧拉定理： a^ø(n) = 1 (mod n); so 找 ed - 1 = ø(n); ø(n) = ø(p * q) = (p -1)*(q -1);</li>
+            <li>ed - 1 = (p-1)(q - 1)</li>
+            
+          </ol>
+        </li>
+        <li>
+          <h4>Hybrid encryption</h4>
+          <ol>
+            <li>Practical application</li>
+            <li>Public-key operations are slow, and complicated.</li>
+            <li>Only applied it at the startup time to set up the symmetric session keys.</li>
+            <li>So we encrypt session key</li>
+          </ol>
+        </li>
+        <li>
+          <h4>Padding: to set the session key</h4>
+          <ol>
+            <li>public-key encrypted key's size does not match with the key of symmetric encryption scheme.</li>
+            <li>PKCS #1 v1.5 suggest padding with 00 01 FF FF ... FF</li>
+            <li>But choose ciphertext attacks</li>
+            
+          </ol>
+        </li>
+        <li>
+          <h4>Modern Padding</h4>
+          <ol>
+            <li>using hashing, random salt</li>
+            <li>OAEP for encryption, PSS for signing</li>
+
+          </ol>
+        </li>
+        <li>
+          <h4>KEM key Encapsulation mechanism</h4>
+          <ol>
+            <li>
+              Instead of we select the session key, choosing it randomly. And hashing the random(r) to get the 256 bits value as
+              the session key.
+            </li>
+            <li>RSA-KEM is insecure if reuse e and r with different n.</li>
+        </ol>
+        </li>
+        <li>
+          <h4>Security Properties</h4>
+          <ol>
+            <li>Non-repudiation: principal cannot later deny having made a commitment :you sign a signature, other people have a copy of that.
+              you cannot say you did not sign that later.
+            </li>
+            <li>Forward secrecy: recovering later information does not reveal past information.
+              Why session key: long term key is broken, session key is still ok.
+            </li>
+            
+          </ol>
+        </li>
+        <li>
+          <h4>Replay attack hw example.</h4>
+          <ol>
+            <li>A nonce is needed to prevent a verbatim replay of a previous message.</li>
+            <li>receiver keep track what nonce used before, one nonce can only be used once.</li>
+            <li>challenge-response authentication: receiver choose the nonce.</li>
+          </ol>
+        </li>
+        <li>
+          <h4>Chess grandmaster problem</h4>
+          <ol>
+            <li>Variant or dual of MITM: attacker has a different id.</li>
+            <li>A and B are chess master. I challenge A and B. A is black chess , B is white chess. A move first, I copy A's move to B. The B response to me,
+              I copy B's response to A.</li>
+          </ol>
+        </li>
+        <li>
+          <h4>(Public) key distribution</h4>
+          <ol>
+            <li>Get the correct public key for right person.
+            </li>
+            <li>Symmetric key servers: users share keys with (trusted) server, server distriuted session keys.
+            </li>
+            <li>Public key based key distribution. Certificate X.509: A name and a public key signed by someone(ceritficate authority) else. Ca = signByS(A, A-public-key)</li>
+            <li>PGP:(poineer of CA, no central server): every is potentially a CA: trust people you know.</li>
+          </ol>
+        </li>
+       
+        <li>
+          <h4>SSL/TLS</h4>
+          <ol>
+            <li>Public key for distributing session key and mac key: verify you are connecting to the correct server.</li>
+            <li>
+              Developed by netscape SSL1.0 (never released) -> SSL2.0 (one year) -> SSL3.0 (better) -> go to RFC process, renamed to TLS 1.0 -> TLS 1.1, 1.2
+              
+            </li>
+            <li>
+              TLS 1.0 use previous the cipher text as the CBC IV (Initilization vector)
+            </li>
+            <li>
+              compression oracle vulnerabilities: compress(S || A), S is secret data, A is attacker-controlled data. If A is similar to S, then then it compresses better.
+            </li>
+           
+          </ol>
+        </li>
+        </ol>
+        <h3>Web security <a href="https://www.owasp.org/index.php/Main_Page">Open Web Application Security Project(OWASP)</a></h3>
+        <ol class="section-list">
+        <li>
+          <h4>Concepts</h4>
+          <ol>
+            <li>Signature: A private key signed message by the site.</li>
+            <li>Certificate: a public key distributed by the trusted authority. cert = (subject's public key, subject, authority's signature)</ol>
+
+        </li>
+        <li>
+
+          <h4>CA hierarchies</h4>
+          <ol>
+          <li>Organize CAs in a tree.</li>
+          <li>Enterprise PKI (public key infrastructure) links up with permissions.</li>
+          <li>Revocation: 1. short expiration times (bad scalability) 2. certificate revocation lists 2. certificate status online checking API</li>
+          </ol>
+              
+        </li>
+        <li>
+          <h4>CA &amps; HTTPS &amps; EV</h4>
+          <ol>
+            <li>Verify you are telling to the right server.</li>
+            <li>Extended validation (green bar) new version</li>
+          </ol>
+        </li>
+        <li>
+          <h4>Web applications security</h4>
+          <ol>
+            <li>Web application: charge manage, manage manage, user edited data....</li>
+            <li>Server side application: PHP, Ruby, Perl.</li>
+            <li>Client-side application: Java(web server-provided), Active X(windows downloadable binary, no sandboxin), 
+              Flash (today used for customized video), JS</li>
+            <li>JS + broswer provided (created) DOM: js have security check.</li>
+            
+          </ol>
+        </li> 
+        <li>
+          <h4>Same origin policy</h4>
+          <ol>
+            <li>Origin is a tuple (Scheme, host, port)</li>
+            <li>Basic JS interact only allowed to interact with the same origin.</li>
+            <li>Different pages are managed as different applications.</li>
+          </ol>
+        </li>
+        <li>
+          <h4>GET, POST &amp; Cookies</h4>
+          <ol>
+            <li>GET: ?key=value&amp;key2=value2, query</li>
+            <li>POST: sumbit form.</li>
+            <li>Cookies: make the HTTP have states. Set by the server, store in the client, send back server.</li>
+            <li>Cookies arm race: privacy-sensitive users disable cookies\sites have various reason for using cookies.</li>
+            <li>Evercookie: store in different places. Regenerate if subset are deleted.</li>
+          </ol>
+        </li>
+        <li>
+          <h4>SQL injection example. Client attacks server (without knowing the program, guess(e.g. through error message)</h4>
+          <ol>
+            <li>SQL injection example</li>
+            <li>WHERE name = '$name'</li>
+            <li>$name = me' OR '1'='1 (tautologies)</li>
+            <li>Fix: 1. avoid constructing queries as strings</li>
+            <li>Fix: 2. Web language/framework sanitizing, escape string. escape "</li>
+            <li>Lazy sanitization: whitelist</li>
+            <li><a href="https://www.netsparker.com/blog/web-security/sql-injection-cheat-sheet/#SyntaxBasicAttacks">SQL inject cheat sheet</a></li>
+            <li>Blind SQL injection: timing attack.</li>
+            <li>Experience: when attacking, don't include # (anchor) in url.</li>
+          </ol>
+        </li>
+        <li>
+          <h4>Authentication webstie</h4>
+          <ol>
+            <li>Based on session</li>
+            <li>Session ID (created by the server): not predictable, ensure freshness (not reused old)</li>
+            <li>Session ID: use a non-persistent cookie and sending under HTTPS</li>
+            <li>Create new session ID when login, invalidate session on logout or after timeout.</li>
+            
+          </ol>
+        </li>
+        <li>
+          <h4>Cross Site Scripting (XSS, CSS - cascading style sheets)</h4>
+          <ol>
+            <li>When html is dynamic generated, xss is more possible.</li>    
+            <li>violate Same origin policy (scheme:address:port)</li>
+            <li>Reflected XSS: injected data used immediately in producing a page. </li>
+            <li>two siteL vitcim site; attacker site.</li>
+            <li>Persistent XSS: injected data used to produce page later.(stored in db) (e.g. hands-on assignment)</li>
+            <li>Attacker inject send cookie JS to a webpage's table, victim open the page, execute the malicious code, and send cookie to attacker.</li>
+            <li>DOM-based XSS: injected occurs in client-side page construction</li>
+            <li>More complicated: html element's attributes can have script.</li>
+            <li>one-pass delete: &lt;scr&lt;script&gt;ipt&gt;</li>
+            <li>Filter failure: utf-7. +ADw-script+AD4- is utf-7's &lt;script&gt;</li>
+            <li>Filter failure: event handler, JS function without js tag. &lt;IMG onmouseover="alert(xss)"&gt;</li>
+            <li>Content Security Policy: (defense) new http header specified some rule: e.g. no inline JS</li>
+            <li>CSRF: cross-site request forgery: you have been logining to usbank.com (have the cookie). you are now visiting evil.com and click a button. The button is set a url to usbank.com
+                to wire money to the evil.com's owner. Because you are logining to the usbank.com, you would be successfully wire the money. (A site utilize B site's cookie via broswer.)
+              </li>
+              <li>CSRF: prevention: client also need to send a random-nonce to the usbank.com in post request. Because the evil.com doesn't know how to generate a proper random-nonce,
+                it would fail. (XSS can steal CSRF tokens)
+              </li>
+          </ol>
+        </li>
+        <li>
+          <h4>Content sniffing</h4>
+          <ol>
+            <li>browser determine the file's type by looking at the header, read some bytes in the contents.</li>
+            <li>Guessing problem: </li>
+          </ol>
+        </li>
+        <li>
+          <h4>Open redirects</h4>
+          <ol>
+            <li>Open redirect target supplied in parameter with no checks</li>
+            <li>Doesn't directly hurt the hosting site.</li>
+            <li>But reputation risk, say if used in phishing</li>
+            <li>We teach users to trust by site.</li>
+          </ol>
+        </li>
+        <li>
+          <h4>Tracking</h4>
+          <ol>
+            <li>Tracking the user broswer certain sites (for ad).</li>
+            <li>Add a 1*1 images in html for tracking.</li>
+          </ol>
+        </li>
+        <li>
+          <h4>Server configuration</h4>
+          <ol>
+            <li>don't have default accounts</li>
+            <li>don't provide unneeded features</li>
+            <li>Framework behaviors: don't automatically create variables from query fields</li>
+            <li></li>
+          </ol>
+        </li>
+        <li>
+          <h4>DNSSec's goal Using signature &amp; certificate, not encryption</h4>
+          <ol>
+            <li>Authenticity of positive replies: ask: www.google.com reply: 12.123.214.213. Then it's truely google.</li>
+            <li>Authenticity of negative replices: ask: where.google.com reply: doesn't exist. Then it's google that tells you not exist.</li>
+            <lil>Integrity: request &amp; response not modified in transit.</lil>
+            <li>-Confidentiality: public database, not secret data.</li>
+            <li>-Availability: DoS is still a problem.</lil>
+          </ol>
+        </li>
+        <li>
+          <h4>DNSSec's implementation</h4>
+          <ol>
+            <li>Each resource record has an RRSIG signature, the sigature is usually larger than the record itself.</li>
+            <li>Signature validation: when you visit the website, the website tells you the certificate, use the public key to validate if the website is true.</li>
+            <li>Protection of negative answer: we won't want attacker to be able to control this message (Dos, and attacker may lead users to vulnerable website).</li>
+            <ol>
+              <li>NSEC: signed a range of negative anwsers together. Because too many negative message, we signed them together.  </li>
+            </ol>
+          </ol>
+        </li>
+        <li>
+          <h4>SSH</h4>
+          <ol>
+            <li>Server's duties: listening port, construct the secure connection, authenticate the client, spwan environment.</li>
+            <li>Client's duties: send request, construct the secure connection, verify the server's identity, providing credentials to server.</li>
+            <li>
+              <ol>
+                <li>1. both parties produce a pair of public-private keys. Exchange the public key.   
+                <li>2. share the secret data from both sides to set up the symmetric session key. (Based on Diffie-Hellman)</li>
+                <li>3. login: 1). password-based: client send password to server via the secure channel.</li>
+                <li>3. login: 2). ssh key-pair: server use public key to encrypt a message and then ask the original message.</li>
+                <li>4. transmit data</li>
+              </ol>
+            </li>
+            <li>
+              Each server just has one common public-private key pair for all the users. The public key is stored in /etc/ssh/, depends on which protocol you used, the public key is usually the ssh_host_rsa_key.
+            </li>
+            <li>
+              User's public key is upload to the server's user directory ~/.ssh.
+            </li>
+            <li>
+              Server's public key is stored in client's known_host. The client always trust the server's identity when the first connection. In the following connection, the client will compare the stored server's public key with the key just received from server.
+              If it is different, the ssh will give warning to client. The warning is possible when servers have dynamic IP. For example, when client A, server B and server C in a network. A connects to B(192.168.0.2), then tomorrow, A connects to C (192.168.0.2)
+              B and C have different public key but same IP, the client ssh will give warning.
+            </li>
+            <li>
+              Does client has a premanent public-private key for stage 1?
+            </li>
+            <li>
+              ssh key-pair based login. A public-private key is used. Public key is stored in the server (public-key, client-id) in the ~/.ssh/authentized_keys file. The private key is managed by the ssh-agent in the client.
+              The client send the client-id to the server, the server find its public-key. Use this public to encrypt a number. The client decrypt the message with the private key. Calculate MD5(revealed number || session key), send by to server.
+              The server does same operation to verify it.
+            </li>
+            <li>
+              In stage 2 based on public-key. One client just generates one private-public key pair, it used for all different server. (We just tell the public key to all the server we want to connect)
+              In client, ssh-keygen -t rsa. It generate id_rsa and id_rsa.pub. Append the id_rsa.pub to the server's authentized_hosts. Whenever you want to set up a new server, just use the same public key.
+            </li>
+          </ol>
+        </li>
+
+      </ol>
+      <h3>Signature scheme: generalized MAC: separate signing key (secret) and verification key.</h3>
+      <p>A wants to verify B. B gives A the signature (Private key signed message) and the trusted authority gives A the public key (certificate).
+        A use the public key to decrypt private key signed message, and verify the resulted message is B. 
+      </p>
+      <p>Assume the authority is correct, if verification passed, then B is real B. However, if verification does not passed, then B may not B. (B can give
+        A a fake signature because B does not want acknowledge he/she is B. B干了坏事，不想承认) </p>
+      <ol class="section-list">
+        <li>
+          <h4>Needham-Schroeder</h4>
+          <ol>
+            <li>Goal: mutual authentication via nonce exchange. Assume already hast trust-worth public keys</li>
+            <li>Suppose<img src="./images/needham-schroeder-suppose.png" width="250" height="200"></li>
+            <li>Real<img src="./images/needham-schroeder-real.png" width="300" height="300"></li>
+            <li>即使C没有A的private key, C也可以假冒A去和B谈。</li>
+            <li>Put Bob's name in supposed step 2</li>
+          </ol>
+        </li>
+        <li>
+          <h4>Denning-Sacco</h4>
+          <li><img src="./images/denning-sacco.png" width="300" height="300"></li>
+          A 和 B 讲话，然后B伪造A的身份去和C 讲话.
+          Bacause B has the signed letter by A. 
+        </li>
+        <li>
+          <h4>Envelops analogy: sign paper, then encrypt with envelop. Don't do opposite because we don't want others to use our unsigned paper.</h4>
+        </li>
+        <li>
+          <h4>Protocol's principle</h4>
+          <ol>
+            <li>Put the destination in the session key e.g. SignA(session-key, dest)</li>
+            <li>Use timestamps or nonces for freshness</li>
+            <li>Be explicit about the context</li>
+            <li>Don’t trust the secrecy of others’ secrets</li>
+            <li>Whenever you sign or decrypt, beware of being an oracle (you also provide a service to the attacker:padding)</li>
+            <li>Distinguish runs of a protocol</li>
+          </ol>
+        </li>
+      </ol>
+    <h3>Random number and entropy</h3>
+    <p>Cryptographic RNGs (Random Number Generators) use cipher-like techniques to provide indistinguishability. 
+      But rely on truly random seeding to stop brute force. Modern best practice: seed pool with 256 bits of entropy.
+    </p>
+    <ol class="section-list">
+      <li>
+        SSL seeded (time_of_day, pid, ppid) : time of day is not secret, pid depends on how many processes is running. Moreover, you may always have the same pid.
+      </li>
+      <li>
+        Debian/OpenSSL: /dev/urandom + uninitilized variable. But later some developers use the ssl lib, it reported "Potential use of uninitialized value".
+        Then the bug was reported and known by the maintainers. The maintainers fix the bug but also disabled most entropy (2 years before discovery).
+      </li>
+      <li>
+        <h4>Dual EC DRBG (elliptic curve -- determined random bit generator)</h4>
+        <ol>
+          <li>Standard but slow, NIST now does not recommend withdrawal</li>
+        </ol>
+      </li>
+    </ol>
+    
+
+    </div>
+  </body>
+</html>

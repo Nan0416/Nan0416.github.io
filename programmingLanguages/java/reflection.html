@@ -40,7 +40,9 @@ SyntaxHighlighter.all()
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#reflectionIntro">Introduction</a></li>
-<li><a href="#reflection"</li>
+<li><a href="#reflectionExample">Create object</a></li>
+<li><a href="#reflectionField">Get field values</a></li>
+<li><a href="#reflectionMethod">Invoke Method</a></li>
 <li><a href="#reflectionReference">References</a></li>
 </ul>
 </div>
@@ -52,10 +54,112 @@ SyntaxHighlighter.all()
 <h3>Introduction</h3>
 <p>Reflection: load new class at runtime.</p>
 <p>Check class attributes, e.g. check the methods inside a class, annotations.</p>
+<p>When a program is running, Java runtime maintains information that maps objects to its class file. When objects need to call methods, it loads them from the class files.</p>
+<p>Field, Method, Constructor -- 3 important classes in the java.lang.reflect package.</p>
 </div>
 </li>
 <li>
-<div class="content" id="reflection">
+<div class="content" id="reflectionExample">
+<h3>Create object</h3>
+<h4>Get class object</h4>
+<div class="featureList">
+<h4>Class Class</h4>
+<p>The Object (最上边的类) has a method: Class&lt;?> getClass, return a Class&lt;?> object.</p>
+<p>The runtime maintains a <strong>unique</strong> Class object for each type.So String.class == "Name".getClass()</p>
+<p>Class object has the following method</p>
+<ol>
+<li>.getName(): get class name, the package is part of the name</li>
+<li>Class.forName("java.lang.String"): factory method return a Class （Class&lt;?>) object. It throws ClassNotFoundException</li>
+<li>String.class return a String class Class&lt;String> object.</li>
+</ol>
+</div>
+
+<div class="featureList">
+<h4>Constructor class</h4>
+<ol>
+<li>(Class).newInstance: Class&lt;T> returns a T object. Must be sure the class has a <strong>default</strong> constructor</li>
+<li>(Class).getConstructor(Class&lt;?>... param): Constructor&lt;T>:  e.g. responseClass.getConstructor(LocalInstance.class, String.class, Map.class)</li>
+<li>(Constructor).newInstance(Object ...): T, create an object
+<pre class="brush:java">
+    byte [] a = {113,110};
+    Constructor&lt;String> c = str3.getConstructor(a.getClass());
+
+    String x = c.newInstance(a);
+    System.out.println(x);
+</pre>
+<pre class="brush:java">
+        Class&lt;TargetClass> tc1 = TargetClass.class;
+        try{
+            Constructor&lt;TargetClass> con = tc1.getConstructor(String.class, String.class, String.class);
+            try{
+                TargetClass t1 = con.newInstance("private", "protected", "public");
+                System.out.println(t1.getPublicValue());
+            }catch (InstantiationException e){
+                System.out.println("cannot instantiate");
+            }catch (InvocationTargetException e){
+                System.out.println("cannot invoke this method");
+            }catch (IllegalAccessException e){
+                System.out.println("cannot access this method");
+            }
+        }catch (NoSuchMethodException e){
+            System.out.println("no such constructor");
+        }
+</pre>
+</li>
+</ol>
+</div>
+</div>
+</li>
+<li>
+<div class="content" id="reflectionMethod">
+<h3>Methods</h3>
+<p>A Class object .getMethods() will return a Method[] array, which includes all the <strong>public static/non-static</strong> methods, including the inherited methods from direct and indirect parent classes.</p>
+<p>A Class object .getDeclaredMethod(String, Class&lt;?>...): return a Method</p>
+<h4>Call method</h4>
+<p>A Method object has a method "invoke(Object obj, Object ... ):Object". 
+    <br>The first object is the object that actually calls this method. It is null if static.
+    <br>The following object are the parameters.
+    <br>The returned object is the return value, need to be cast.
+</p>
+<div class="featureList">
+<h4>Method's annotation, exceptions, parameter, return type, modifiers, parameter annotations, </h4>
+<ol>
+<li>
+<strong>How to distinguish if the method is defined in the current class or super class?</strong>
+<pre class="brush:java">
+Method [] ms = c.getMethods();
+for(Method i : ms){
+if(i.getDeclaringClass() == c){ // i.getDeclaringClass returns the closest class that override this method.
+// for example, if the toString is overrided in this class, then (toString).getDeclaringClass() will return this class.
+    System.out.println(i.getName());
+}
+
+</pre>
+</li>
+<li><strong>Reflection gives default parameters with Parameter annotation</strong>
+<pre class="brush:java">
+                if(i.getName()=="setName"){
+                    Annotation[][] pas = i.getParameterAnnotations();
+                    try {
+                        StringParameter sp = (StringParameter) pas[0][0];
+                        if(!sp.requiredValue()){
+                            try{
+                                i.invoke(ws, sp.value());
+                            }catch (InvocationTargetException e){
+                                System.out.println("cannot invoke this method");
+                            }catch (IllegalAccessException e){
+                                System.out.println("cannot access this method");
+                            }
+                        }
+                    }catch (Exception e){
+                        System.out.println("Default parameters not supported");
+                    }
+                }
+</pre>
+</li>
+</ol>
+</div>
+
 
 </div>
 </li>

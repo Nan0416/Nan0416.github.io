@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Personal Notes">
+    <meta name="keywords" content="HTML,CSS,JavaScript, Secuirty, Cryptography">
+    <meta name="author" content="Nan Qin">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web desgin</title>
+    <style>
+      body{
+        margin:0;/* body default margin is 8px */
+      }
+
+
+    </style>
+    <link rel="stylesheet" type="text/css" href="./css/navigationbar.css">
+    <link rel="stylesheet" type="text/css" href="./css/sidebar.css">
+    <link rel="stylesheet" type="text/css" href="./css/content.css">
+  </head>
+  <body>
+    <ul id="nav">
+      <li><a class="active">Home</a></li><!-- remove the space between inlined elements
+    --><li><a href="#1">Security</a></li><!--
+    --><li><a href="#2">OS</a></li><!--
+    --><li><a href="#3">Networking</a></li><!--
+    --><li><a href="#3">Tools</a></li>
+
+    </ul>
+
+
+    <ul id="sidebar">
+        <li><a href="#distributedsystems">Distributed Systems</a></li>
+        <ol class="dropdown">
+          <li><a href="#">Frameworks</a></li>
+        </ol>
+        <li><a href="security.html">Security</a></li>
+        <ol class="dropdown">
+          <li><a href="security.html#crypto">Cryptography</a></li>
+        </ol>
+        <li><a href="webdesign.html">Web design</a></li>
+        <ol class="dropdown">
+          <li><a href="webdesign.html#html">HTML</a></li>
+          <li><a href="webdesign.html#css">CSS</a></li>
+        </ol>
+        <li><a href="#3">Web servers</a></li>
+        <ol class="dropdown">
+          <li><a href="#">Apache2</a></li>
+        </ol>
+        <li><a href="#tools.html">Tools</a></li>
+        <ol class="dropdown">
+
+        </ol>
+      </ul>
+
+    <div id="content-div">
+      <h2>Web design</h2>
+      <p>
+        Topics include html, css, javascript and jQuery.
+      </p>
+      <h3 id="html">HTML</h3>
+      <p>HTML's definition, head section and common tags.</p>
+      <ol class="section-list">
+        <li>
+          <h4 id="html_def">HTML definition</h4>
+          <ol class="subsection-list">
+            <li>Hypertext</li>
+          </ol>
+        </li>
+        <li>
+          <h4 id="html_head">HTML head section</h4>
+          <ol class="subsection-list">
+
+            <li>meta charset=utf-8 // specify the character that encode this html document. Broswer use the same charset to render this page. <mark>meta is unclosed tag.</mark></li>
+            <li>meta http-equiv=refresh content=30 // refresh page every 30 seconds.</li>
+            <li>meta name=keywords content=tutorial,programming // used by search engines</li>
+            <li>meta name=viewport content=width=device-width, initial-scale=1.0 // set the page width to be the width of browser. And set no scale.</li>
+            <li>title name //define the tab name</li>
+          </ol>
+        </li>
+        <li>
+          <h4 id="html_tags">HTML tags</h4>
+          <ol class="subsection-list">
+            <li>Formatting</li>
+            <ol>
+                <li>code&nbsp;&lt;code&gt;</li>
+                <li>bold&nbsp;&lt;b&gt;</li>
+                <li>strong&nbsp;&lt;strong&gt;</li>
+                <li>italic&nbsp;&lt;i&gt;</li>
+                <li>strong&nbsp;&lt;strong&gt;</li>
+                <li>marked&nbsp;<mark>&lt;mark&gt;</mark></li>
+                <li>subscripted&nbsp;&lt;sub&gt;</li>
+                <li>superscripted&nbsp;&lt;sup&gt;</li>
+                <li>quotation&nbsp;<q>&lt;q&gt;</q></li>
+                <li>address&nbsp;&lt;address&gt;</li>
+                <li>separate line&nbsp;&lt;hr&gt;</li>
+            </ol>
+            <li>Image: image&nbsp;&lt;img src = <q>./image.gif</q> alt = <q>programmer</q>&gt;
+              <img src = "./images/image.gif" alt = "programmer" style="display:block;">
+            </li>
+            <li>Table: &nbsp;&lt;table&gt;&nbsp;&lt;thead&gt;&nbsp;&lt;tbody&gt;&nbsp;&lt;tfoot&gt;&nbsp;&lt;tr&gt;&nbsp;&lt;th&gt;&nbsp;&lt;td&gt;</h4>
+                <table>
+                  <thead>
+                  <tr> <!-- table titil-->
+                    <th>Name</th> <th>Age</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr>
+                    <td>Nan Qin</td> <td>23</td>
+                  </tr>
+                  <tr>
+                    <td>Xiaoming</td> <td>45</td>
+                  </tr>
+                </tbody>
+                </table>
+            </li>
+            <li>List
+                <ul>
+                  <li>ordered list&nbsp;&lt;ol&gt;</li>
+                  <li>unordered list&nbsp;&lt;ul&gt;</li>
+                  <li>list content&nbsp;&lt;li&gt;</li>
+                </ul>
+            </li>
+            <li>Span, span used to give the text or content a special decoration.<br>
+                My name is <span style="color:red">Nan Qin</span>.<br>
+                My name is &nbsp;&lt;span style = "color:red"&gt;Qin Nan;&lt;/span&gt;.
+            </li>
+            <li>
+                Frame embedded anther web page inside this page.<br>
+                frame&nbsp;&lt;frame src = "./src.html"&gt;&lt;/frame&gt;<br>
+                Elements can be inserted between the frame, and it will show if the src is unavailable.
+            </li>
+            <li>form &amp; input
+                <ul>
+                  <li>form is inline.</li>
+                  <li>input's type can be text, submit</li>
+                  <li>label is inline.</li>
+                  <li>form's attributes: action, method; input's type: text, submit, radio (select one among mutliple)</li>
+                  <li>GET https://www.example.com/?FirstName=Mickey&LastName=Mouse</li>
+                  <li>However, this html page will be reload. So using AJAX</li>
+                </ul>
+
+                <form action = "https://www.example.com" method = "get">
+                  <label>First name: </label><input type="text" name="FirstName" value="Mickey"><br>
+                  <label>Last name: </label><input type="text" name="LastName" value="Mouse"><br>
+                  <input type="submit" value="Submit">
+                </form>
+            </li>
+            <li>
+              Button
+              <ul>
+                <li>Button&nbsp;&lt;button type = "button" onclick="alert('Hello World')"&gt;Content&lt;/frame&gt;</li>
+                <button type = "button" onclick = "alert('Hello World')">Content</button>
+              </ul>
+            </li>
+
+          </ol>
+
+        </li>
+      </ol>
+    </div>
+  </body>
+</html>
