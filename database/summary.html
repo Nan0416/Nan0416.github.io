@@ -22,7 +22,8 @@
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#databaseIntro">Introduction</a></li>
-
+<li><a href="#databaseSQLNoSQL">SQL vs. NoSQL</a></li>
+<li><a href="#databaseDocument">Document database (Mongodb)</a></li>
 </ul>
 </div>
 <hr>
@@ -31,7 +32,49 @@
 <li>
 <div class="content" id="databaseIntro">
 <h3>Introduction</h3>
-<p>SQL vs NoSQL</p>
+<p>Database: SQL, NoSQL. ACID (atomicity, consistency, isolation, durability)</p>
+<p>transaction</p>
+</div>
+</li>
+<li>
+<div class="content" id="databaseSQLNoSQL">
+<h3>SQL vs NoSQL</h3>
+<div class="featureList">
+<h4>SQL</h4>
+<p>Stored <strong>structured</strong> information: data organized as rows that stored in a table</p>
+<ol>
+<li>MySQL</li>
+<li>Oracle Database</li>
+<li>PostgreSQL</li>
+</ol>
+</div>
+<div class="featureList">
+<h4>NoSQL</h4>
+<p>No object-relation mapping required</p>
+<p>+ Easy for distributed
+<br>+ Parition tolerance (CAP???)
+<br>+ Consistency 
+<br>+ Scalability
+<br>+ Avaliablity
+</p>
+<p>There are different types of NoSQL database</p>
+<ol>
+<li>Mongodb: document database</li>
+<li>Redis: key-value database</li>
+<li>Cassandra: Column-family database</li>
+<li>Neo4J: graph database</li>
+</ol>
+</div>
+</li>
+<li>
+<div class="content" id="databaseDocument">
+<h3>Document database (Mongodb)</h3>
+<h4>Document</h4>
+<p>A document is a self-contained piece of information, the format of a document can be JSON string, XML string??</p>
+<p class="starMark">* Mongodb is good at storing JSON document.</p>
+<h4>Organization</h4>
+<p>Database (SQL Database) -> Collection (SQL Table)-> Document (SQL Row)</p>
+<p>Different from SQL, the documents are not structured. For example, {"name":"Nan", "age":24} and {"temperature":34, "humidity":23} can be stored in one collection.</p>
 </div>
 </li>
 </ol>

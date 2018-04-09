@@ -43,6 +43,8 @@ SyntaxHighlighter.all()
 <ul class="catalogItems">
 <li><a href="#expressIntro">Introduction</a></li>
 <li><a href="#expressMiddleware">Middleware</a></li>
+<li><a href="#expressRequest">Request</a></li>
+<li><a href="#expressResponse">Response</a></li>
 <li><a href="#expressGenerator">Express Generator</a></li>
 <li><a href="#expressReference">References</a></li>
 </ul>
@@ -209,6 +211,158 @@ module.exports = addition;
 </li>
 </ol>
 </div>
+<h4>Application Middleware</h4>
+<div class="featureList">
+<ol>
+<li>
+<span style="color:red">morgan</span> a logger plug-in
+<pre class="brush:js">
+const morgan = require('morgan'); // 1.9.0
+app.use(morgan('dev'));
+
+// GET /dishes/1 500 15.014 ms - 1867
+// Method, URL, Status Code, Server Handling Time, -, Size of Response Body
+</pre>
+</li>
+<li>
+<span style="color:red">body-parser</span> parsing json body request
+<pre class="brush:js">
+const bodyparser = require('body-parser'); // 
+
+app.use(bodyparser.json());
+app.use(bodyParser.urlencoded({ extended: true })); // 解析form？
+// for parsing application/x-www-form-urlencoded
+
+</pre>
+</li>
+
+</ol>
+</div>
+</div>
+</li>
+<li>
+<div class="content" id="expressRequest">
+<h3>Request</h3>
+<p>Express request object</p>
+<div class="featureList">
+<ol>
+<li>
+<span style="color:red">Express built-in functionality</span> Parameters from the url e.g. /:dishId
+<pre class="brush:js">
+    // /:dishId
+    req.params.dishId
+    // /file/* regex, 
+    req.params[0]
+</pre>
+</li>
+<li>
+<span style="color:red">Express Middleware functionality</span> Body content from http request body
+<pre class="brush:js">
+var bodyParser = require('body-parser');
+
+app.use(bodyParser.json()); // for parsing application/json
+app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+
+req.body // a object
+req.body.name.first
+req.body["age"]
+</pre>
+</li>
+</ol>
+</div>
+</div>
+</li>
+<li>
+<div class="content" id="expressResponse">
+<h3>Response</h3>
+<p>Express response object</p>
+<div class="featureList">
+<ol>
+<li>
+<span style="color:red">Express built-in</span> .status() .statusCode
+<pre class="brush:js">
+res.statusCode = 200; // node http
+res.status(200).send('data'); // express chainable wrapper
+</pre>
+</li>
+<li>
+<span style="color:red">Express built-in</span> .setHeader .type
+<pre class="brush:js">
+res.setHeader('Content-Type', 'application/json'); // node http
+res.type('application/json'); // express wrapper
+// using this method, we can .type('json'). The function will convert it into 'application/json'
+// others .type('html'), .type('png')
+</pre>
+</li>
+<li>
+<span style="color:red">From node http core</span> .end()
+<pre class="brush:js">
+res.end();
+res.end('string');
+// this method can only be called once for one http request.
+</pre> 
+</li>
+<li>
+<li>
+<span style="color:red">Express built-in</span> .json()
+<pre class="brush:js">
+res.json(obj);
+// It convert a method to a json string. It uses the JSON.stringfy() internally.
+// It also calls the .end
+</pre> 
+</li>
+<li>
+</li>
+</ol>
+</div>
+</div>
+</li>
+<li>
+<div class="content" id="expressGenerator">
+<h3>Express Generator</h3>
+<p>A command line tool that generates an express application skeleton</p>
+<pre class="brush:js">
+# installation 
+npm install express-generator -g 
+# usage 
+express <app_name> 
+# install project dependencies 
+npm install
+</pre> 
+<div class="featureList">
+<h4>Structure of express generator project</h4>
+<ol>
+<li>app.js // index.js the main file but not the start file</li>
+<li>bin // configure the http server, e.g. port, hostname, the start-up file</li>
+<li>package.json</li>
+<li>public // static resources</li>
+<li>routes // application routes</li>
+<li>views // template engine templates</li>
+</ol>
+</div>
+<h4>Error handler</h4>
+<p>The generated project provided a error handler</p>
+<p>The last two middleware functions are</p>
+
+<pre class="brush:js">
+// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+  next(createError(404));
+});
+
+// error handler
+app.use(function(err, req, res, next) {
+  // set locals, only providing error in development
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+  // render the error page
+  res.status(err.status || 500);
+  res.render('error');
+});
+</pre>
+<p>Therefore, whenever a error happens during the previous middleware functions, just call next to transfer the error to the last two functions</p>
+<p>Successful handling should .end the response and stop next early</p>
 </div>
 </li>
 <li>
