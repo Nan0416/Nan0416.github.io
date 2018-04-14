@@ -262,6 +262,22 @@ const dishSchema = new Schema({
 </pre>
 </li>
 <li>
+<p><span style="color:red">Delete all documents</span></p>
+<pre class="brush:js">
+    const dishSchema = require('../models/dishes');
+    dishSchema.remove({})
+    .then((resp)=>{ 
+        // the resp is a json that indicates the deleted number of documents
+        /*{
+            "n":4,
+            "ok":1
+        }*/
+    }, (err)=>{
+        
+    });
+</pre>
+</li>
+<li>
 <p><span style="color:red">Delete a document</span></p>
 <pre class="brush:js">
     const dishSchema = require('../models/dishes');
