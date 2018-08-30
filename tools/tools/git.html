@@ -158,8 +158,10 @@ sync, delete and so on.</p>
 <ol>
 <li>git checkout [-b] branchName: switch to branchName, -b will <strong>locally</strong> create this branch from the <strong>CURRENT</strong> branch</li>
 <li>git branch: check project's branch and current working branch.</li>
-<li>git push --all origin: push the new branch to remote server "origin"</li>
+<li>git push --all origin: push the new branch to remote server "origin"<span style="color:red">remote has branch 1,2,3, local has 1,4. Then the push may be denied since local does not have 2 and 3.</span></li>
 <li>git merge --no-ff targetBranch: merge the target branch to the current branch</li>
+<li>git pull origin a-certain-branch // usually download a new branch from remote</li>
+<li><span style="color:red">git pull --all // only update all branch that local already has. It does not download new branches.</span></li>
 </ol>
 </div>
 <h4>Commands for remote servers</h4>
