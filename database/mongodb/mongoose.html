@@ -21,7 +21,6 @@
 <link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
 
 
-
 </head>
 <body>
 <script>
@@ -36,9 +35,9 @@ SyntaxHighlighter.all()
 </script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<center><strong>Mongodb&nbsp;-&nbsp;Mongoose</strong></center>
+<strong>Mongodb&nbsp;-&nbsp;Mongoose</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-04-07</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-04-14</span></p>
+<p class="date"><span class="created-date">Created:2018-04-07</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-08-30</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#mongooseIntro">Introduction</a></li>
@@ -60,6 +59,9 @@ SyntaxHighlighter.all()
 <h4>Mongoose ODM</h4>
 <p>ODM (Object Data Model, Object Document Mapping)</p>
 <p>Mongoose defines schema, the schema defines data field, data type and other properties.</p>
+<p style="color:red">Schema -> Model -> Document
+<br> Schema and Model are data type. Document is an instance of Model.
+</p>
 <h4>Data type</h4>
 <p>The data type can be String, Number, Date, Buffer, Boolean, Mixed, ObjectId, Array</p>
 <p>There are also 3rd party types, e.g. mongoose-currency</p>
@@ -99,10 +101,13 @@ const commentSchema = new Schema({
 },{
     timestamps: true
 });
+const Comment = mongoose.model("comment", commentSchema); // comment => comments automatically.
+module.exports = Comment;
 </pre>
 <p>The schema takes two parameters
 <br>1. definition: a object that specifies each field name and features. Features include type, required, default value, and max, min.
 <br>2. optional: directive to the mongoose</p>
+<p>By using mongoose.model, a Model type is generated. The Model can support to query, update, remove, and create the document stored in mongodb.</p>
 <div class="featureList">
 <ol>
 <li><span style="color:blue">timstamps: true</span>
@@ -114,6 +119,12 @@ If the number __v is conflict with developer's name, updates it here.
 </li>
 </ol>
 </div>
+<h4>Create index</h4>
+<pre class="brush:js">
+    commentSchema.index({name:1, contentId:1}, {unique:true});
+    commentSchema.index({name:1, duration:-1});
+</pre>
+<p>Index can reduce the runtime of query, but increase the time for modification</p>
 <h4>Embedded Schema</h4>
 <p><span style="color:red">A Feature That Cannot Be Given By SQL Databases.</span></p>
 <pre class="brush:js">
