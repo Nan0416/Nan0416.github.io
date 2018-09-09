@@ -45,7 +45,8 @@ SyntaxHighlighter.all()
 <li><a href="#d3DOM">D3 manipulate DOM</li>
 <li><a href="#d3DataBinding">D3 Data Binding</a></li>
 <li><a href="#d3Transition">D3 DOM transition</a></li>
-
+<li><a href="#d3loadingfile">D3 Loading files</a></li>
+<li><a href="#d3tips">Tips</a></li>
 <li><a href="#d3References">References</a></li>
 </ul>
 </div>
@@ -63,6 +64,14 @@ SyntaxHighlighter.all()
             <script src="https://d3js.org/d3.v4.min.js"></script>
         </pre>
         <p>d3.select-chain.[specify-data].[transition-chain].[action-chain]</p>
+        <div>
+            <h4>Other comments</h4>
+            <p>
+            Loading data into the browser`s memory<br>
+            Binding data to elements within the document and creating new elements as needed<br>
+            Transforming those elements by interpreting each element's bound datum and setting its visual properties accordingly<br>
+            Transitioning elements between states in response to user input</p>
+        </div>
     </div>
 </li>
 <li>
@@ -193,6 +202,32 @@ SyntaxHighlighter.all()
             d3.select('#example-6').transition().style('background-color', 'black');
             d3.selectAll('#example-6 p').transition().style('color', 'yellow');
         </script>
+    </div>
+</li>
+<li>
+    <div class="content" id="d3loadingfile">
+        <h3>D3 Loading files</h3>
+        <p>D3 can load external .cvs .json .xml .tsv files by sending http request, and converting the raw data into JS Object</p>
+        <pre class="brush:js">
+            d3.cvs('./file.cvs', (err, dataset)=>{
+                // the get request url is the current url + ./files.
+                // e.g. current http://www.xxx.com/home/index.html , then
+                // the url of the cvs file is http://www.xxx.com/home/file.cvs 
+            });
+        </pre>
+    </div>
+</li>
+<li>
+    <div class="content" id="d3tips">
+        <h3>D3 Tips</h3>
+        <ol>
+            <li>
+                If you want to assign specific styles to the whole selection (e.g. font-color: blue), we recommend you define an HTML 
+                class ("state-name" in our example) and add these rules in an external stylesheet. That will make your code concise 
+                and reusable.
+            </li>
+        </ol>
+        
     </div>
 </li>
 <li>
