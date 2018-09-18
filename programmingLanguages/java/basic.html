@@ -41,8 +41,10 @@ SyntaxHighlighter.all()
 <p class="date"><span class="created-date">Created:2018-09-08</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-09-08</span></p>
 <div class="catalog">
 <ul class="catalogItems">
+<li><a href="#instanceof">instanceof</a></li>
 <li><a href="#datatype">Data Type</a></li>
 <li><a href="#basic">String/StringBuffer</a></li>
+<li><a href="#date">Date</a></li>
 <li><a href="#object">Object</a></li>
 <li><a href="#array">Array</a></li>
 <li><a href="#reference">References</a></li>
@@ -131,6 +133,35 @@ SyntaxHighlighter.all()
                     <br>.toString();
                     <br>.reverse(): StringBuffer; the original does not change, return a new StringBuffer
                 </p>
+</div>
+</li>
+<li>
+<div class="content" id="date">
+    <h3>java.util.Date</h3>
+    <h4>Corresponding classes</h4>
+    <p>
+        DateFormat: format and parse date strings.
+        <br>Calender: It tolerates the problem of difference of time zone.
+    </p>
+    <h4>Knowledge about time</h4>
+    <p>
+        UTC (Coordinated Universal Time): the most accurate time in the world. It use atomic clock combined with the Earth rotation. 
+        For example, UTC considered "leap second".
+        <br>
+        GMT (Greenwich mean time): the civil name of UTC. They are same.
+        <br>
+        Modern OS assume 1 day = 24 * 60 * 60 seconds in all case. Therefore, OS is not always accurate. Moreover, JVM is based on OS. Therefore JVM is not accurate.
+    </p>
+    <h4>Date</h4>
+    <p>It includes year, month, day, hour, minute, second, millisecond</p>
+    <div class="featureList">
+        <ol>
+            <li>new Date():  initialize it at which it is allocated.</li>
+            <li>new Date(long time): time in millisecond + 1970.1.1 00:00:00 GMT</li>
+            <li>.getTime() long: Returns the number of milliseconds since January 1, 1970, 00:00:00 GMT.</li>
+            <li>.toString() String: </li>
+        </ol>
+    </div>
 </div>
 </li>
 <li>
