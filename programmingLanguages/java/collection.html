@@ -46,6 +46,7 @@ SyntaxHighlighter.all()
 <li><a href="#list">List</a></li>
 <li><a href="#stack">Stack</a></li>
 <li><a href="#queue">Queue</a></li>
+<li><a href="#iterator">Iterator</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -53,16 +54,114 @@ SyntaxHighlighter.all()
 <div class="contentContainer">
 <ol>
 <li>
-<div class="content" id="intro">
-<h3>Introduction</h3>
+<div class="content" id="set">
+<h3>Set</h3>
+<p>HashSet, </p>
+<h4>HashSet</h4>
+<p>HashSet is a generic class. Fast.
+    <br>Constructor:
+    <br>new HashSet&lt;E>()
+        new HashSet&lt;E>(int capacity)
+    <br>boolean .contains(Object o)
+    <br>int .size()
+    <br>void .add(E e)
+    <br>void .remove(Object e)
+    <br>void .clear()
+    <br>void .isEmpty()
+    <br>.toArray();
+</p>
+<p>
+    <pre class="brush:java">
+        for(E e: set){
+
+        }
+        Iterator&lt;E> it = set.iterator();
+            while(it.hasNext()){
+               System.out.println(it.next());
+               it.remove();
+        }
+    </pre>
+</p>
 </div>
+</li>
+<li>
+    <div class="content" id="map">
+        <h3>Map</h3>
+        <h4>HashMap</h4>
+        <p>
+            boolean .containsKey()<br>
+            boolean .containsValue() // O(n)<br>
+            int .size()<br>
+            void .put(k, v)<br>
+            V .get(k) // return null<br>
+            V .remove(k) // null returned if no such key.<br>
+            .clear()<br>
+            .isEmpty()<br>
+            Set&lt;Map.Entry&lt;K,V>> .entrySet()<br>
+            Set&lt;Key> .keySet()<br>
+
+        </p>
+        <p>
+            loop
+            <pre class="brush:java">
+                Map&lt;String, Object> map = ...;
+
+                for (String key : map.keySet()) {
+                    // ...
+                }
+                for (Map.Entry&lt;String, Object> entry : map.entrySet()) {
+                    String key = entry.getKey();
+                    Object value = entry.getValue();
+                    // ...
+                }
+            </pre>
+        </p>
+    </div>
+</li>
+<li>
+    <div class="content" id="list">
+        <h3>List</h3>
+        <p>LinkedList: Best for add, insert, delete O(1). ArrayList: Best for Get O(1), with initial size, add takes O(1) </p>
+        <h4>LinkedList</h4>
+        <p>
+            boolean .contains(E)<br>
+            int .size()<br>
+            void .add(E)<br>
+            void .clear()<br>
+            boolean remove(E) // true if removed the first<br>
+            E .get(index) // throws IndexOutOfBound<br>
+            E .set(index, newE) // return the old E, throws IndexOutOfBound<br>
+            <span style="color:red">void .addFirst(E o);<br>
+            void .addLast(E o);<br>
+            E .getFirst();<br>
+            E .getLast();<br>
+            E .removeFirst();<br>
+            E .removeLast();<br></span>
+        </p>
+        <pre class="brush:java">
+            for(int num=0; num&lt;linkedlist.size(); num++)
+            {
+                System.out.println(linkedlist.get(num));
+            }
+            for(String str: linkedlist)
+            {
+                System.out.println(str);
+            }
+            Iterator i = linkedlist.iterator();
+                while (i.hasNext()) {
+                System.out.println(i.next());
+            }
+        </pre>
+    </div>
 </li>
 <li>
 <div class="content" id="reference">
 <h3>References</h3>
 <div class="featureList">
     <ol>
-        <li></li>
+        <li><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Set.html" target="_blank">Set Java doc</a></li>
+        <li><a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html" target="_blank">HashMap Java doc</a></li>
+        <li><a href="https://docs.oracle.com/javase/8/docs/api/java/util/LinkedList.html" target="_blank">LinkedList</a></li>
     </ol>
 </div>
 </div>
