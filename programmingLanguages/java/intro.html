@@ -43,6 +43,8 @@ SyntaxHighlighter.all()
 <ul class="catalogItems">
 <li><a href="#structure">Java Project Structure</a></li>
 <li><a href="#javac">javac</a></li>
+<li><a href="#java">java</a></li>
+<li><a href="#jar">jar // pack and unpack</a></li>
 </ul>
 </div>
 <hr>
@@ -100,6 +102,22 @@ SyntaxHighlighter.all()
         <pre class="brush:java">
             java -cp "../../jars/*:../../out/production/wieraLocal/"  
             umn.dcsg.wieralocalserver.LocalServer
+        </pre>
+    </div>
+</li>
+<li>
+    <div class="content" id="jar">
+        <h3>jar</h3>
+        <h4>Unpack</h4>
+        <p>Download some source code from Maven repo. Unpack it with jar to look through source code and read documents</p>
+        <p>Two versions of jars are available in the maven repo, .jar and javadoc.jar.
+            <br><span style="color:red">The javadoc.jar contains the generated java doc.</span>
+        </p>
+        <pre class="brush:bash">
+            #unpack
+            jar -xf javadoc.jar 
+            # -x extract files from the archive. 
+            # -f give the archive .jar name.
         </pre>
     </div>
 </li>

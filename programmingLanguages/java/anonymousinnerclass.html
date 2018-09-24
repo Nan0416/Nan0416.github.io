@@ -34,9 +34,9 @@ SyntaxHighlighter.all()
 </script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<center><strong>Java&nbsp;-&nbsp;Anonymous Inner Class</strong></center>
+<strong>Java&nbsp;-&nbsp;Anonymous Inner Class</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-03-10</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-03-10</span></p>
+<p class="date"><span class="created-date">Created:2018-03-10</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-09-15</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#anonymousIntro">Introduction</a></li>
@@ -138,18 +138,17 @@ public class Anonymous3 {
     public static void main(String [] args){
         Anonymous3 a3 = new Anonymous3();
         a3.s3.print();
-
     }
 }
 abstract class Show3{
     public abstract void print();
 }
 </pre>
-<p>Final modifier</p>
+<p>Effective Final modifier</p>
 <pre class="brush:java">
 public class anonymous4 {
     public static void main(String [] args){
-        final int num = 10;
+        final int num = 10; // this final can be remove by java 8. Because it is effective final.
         Show4 s = new Show4(){
           @Override
           public void print(){
@@ -158,6 +157,34 @@ public class anonymous4 {
         };
         s.print();
         // num++;
+    }
+}
+
+class Show4{
+    public void print(){}
+}
+</pre>
+<p>Java does not support closure very well. Different from Javascript, which updates the outside variable's value when the inside changes, java 
+    only copies the outside value to the inside value at initialization. If the inside change the value later, outside woule not change. Because this looks not normal. Therefore,
+    java just uses final to restrict.
+</p>
+<p>Mondatory Final</p>
+<pre class="brush:java">
+public class A5 {
+    public static void main(String [] args){
+        
+    }
+    public Show4 fun(){
+        int num = 10;
+        Show4 s = new Show4(){
+            public void print(){
+                num = 100; // not effective final because it value changed
+            }
+        }
+        s.print();
+        System.out.println(num); // accroding to java, this is still 10. Because it looks weird, java just restricts it.
+        return s; // Most importantly, after this function, it's local variable will be deleted. So the assignment will 
+        // case runtime error.
     }
 }
 

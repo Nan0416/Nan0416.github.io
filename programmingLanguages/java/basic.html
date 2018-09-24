@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
 <link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
 <link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
-
+<link href="./style.css" rel="stylesheet" type="text/css"/>
 <script src="https://d3js.org/d3.v4.min.js"></script>
 
 </head>
@@ -41,41 +41,86 @@ SyntaxHighlighter.all()
 <p class="date"><span class="created-date">Created:2018-09-08</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-09-08</span></p>
 <div class="catalog">
 <ul class="catalogItems">
-<li><a href="#basic">Basic</a></li>
+<li><a href="#instanceof">instanceof</a></li>
+<li><a href="#datatype">Data Type</a></li>
+<li><a href="#basic">String/StringBuffer</a></li>
+<li><a href="#date">Date</a></li>
+<li><a href="#object">Object</a></li>
+<li><a href="#array">Array</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
 <hr>
 <div class="contentContainer">
 <ol>
+    <li>
+        <div class="content" id="datatype">
+            <h3>Data Type</h3>
+            <p class="highlight">No unsigned number in java</p>
+            <table>
+                <tr><td>byte</td><td>1 byte</td><td>Byte</td></tr>
+                <tr><td>short</td><td>2 bytes</td><td>Short</td></tr>
+                <tr><td>char</td><td>2 bytes</td><td>Character // '', 一撇在java里是char不是string</td></tr>
+                <tr><td>int</td><td>4 bytes</td><td></td>Integer // <span class='highlight'>int cannot be used as boolean</span></tr>
+                <tr><td>long</td><td>8 bytes</td><td></td>Long</tr>
+                <tr><td>float</td><td>4 bytes</td><td></td>Float // ±3.40282347E+38F, IEEE 754 specification</tr>
+                <tr><td>double</td><td>8 bytes</td><td></td>Double // ±1.79769313486231570E+308</tr>
+                <tr><td>boolean</td><td></td><td>Boolean</td></tr>
+            </table>
+            <pre class="brush:java">
+                    public class DataType {
+                        public static void main(String [] args){
+                            char q = 113;
+                            char n = 110;
+                            char comma = 44;
+                            System.out.println(q + ',' + n); // print 267. q + ',' + n => 113 + 110 + 44 = 267, 267 here is an integer
+                            System.out.println(comma);
+                        }
+                    }
+            </pre>
+            <pre class="reference">
+                The result of adding Java chars, shorts, or bytes is an int.
+                If any of the operands is of a reference type, unboxing conversion (§5.1.8) is performed. Then:
+                If either operand is of type double, the other is converted to double.
+                Otherwise, if either operand is of type float, the other is converted to float.
+                Otherwise, if either operand is of type long, the other is converted to long.
+                Otherwise, both operands are converted to type int.
+            </pre>
+            <p>0x00 hex, 011 (oct), 0b11 (binary) 123 (dec)</p>
+            <h5>Binary Operator</h5>
+            <p>int 32-bit (2's complement): 0xff ff ff ff = -1; 0x80 00 00 00 = -2147483648 MIN; 0x7f ff ff ff = 2147483647 MAX; 
+                <br> ^ XOR
+                <br> | OR
+                <br> & AND
+                <br> ~ NOT
+            </p>
+            <p>char: java use utf-16 encoding.</p>
+            <pre class="reference">
+                Unicode defines the translation from number to character. e.g. 113 is q ...
+                UTF-8/UTF-16 defines how to store and interpert this number.
+                For example, Both uft-8 and utf-16 use 113 to represent q. But utf-8 only use 
+                1 byte to store q, utf-16 use 2 bytes.
+            </pre>
+        </div>
+    </li>
 <li>
 <div class="content" id="basic">
-    <h3>Basic</h3>
-    <div>
-        <ol>
-            <li>
-                <h5>Object</h5>
-                <p>Object's methods and meanings:
-                    <br>1. public String .toString(): conversion to string.
-                </p>
-            </li>
-            <li>
-                <h5>String</h5>
-                <p>
-                    <span style="color:red">
-                    String is immutable, so when you want to dynamically create String, use StringBuffer.</span>
-                    <br> String name = "Nan Qin";
-                    <br> Constructors// String(byte [], Charset)
-                    <br> .charAt(int index): char <span style="color:red">char in Java is 2-byte</span>
-                    <br> + / .concat(String str); return a new string, the original string does not change.
-                    <br> .hashCode() :int
-                    <br> .length(): int // Array's length is not a function but an attributes.
-                    <br> .toLowerCase();
-                    <br> .toUpperCase();
-                    <br> .substring(int beginindex);
-                    <br> .substring(int beginindex, int endindex);
-                </p>
-                <h5>StringBuffer</h5>
+    <h3>String</h3>
+    <p>
+        <span style="color:red">
+            String is immutable, so when you want to dynamically create String, use StringBuffer.</span>
+            <br> String name = "Nan Qin";
+            <br> Constructors// String(byte [], Charset)
+            <br> .charAt(int index): char <span style="color:red">char in Java is 2-byte</span>
+            <br> + / .concat(String str); return a new string, the original string does not change.
+            <br> .hashCode() :int
+            <br> .length(): int // Array's length is not a function but an attributes.
+            <br> .toLowerCase();
+            <br> .toUpperCase();
+            <br> .substring(int beginindex);
+            <br> .substring(int beginindex, int endindex);
+    </p>
+    <h3>StringBuffer</h3>
                 <p>
                     <span style="color:red">Essential method, append/insert</span>
                     <br>new StringBuffer();
@@ -87,72 +132,98 @@ SyntaxHighlighter.all()
                     <br>length();
                     <br>.toString();
                     <br>.reverse(): StringBuffer; the original does not change, return a new StringBuffer
-
                 </p>
-            </li>
-            <li>
-                <h4>java.util.*</h4>
-                <h5>1. Arrays</h5>
-                <p>Arrays is a class (not String [], int [])
-                    <br><span style="color:red">n*log(n)</span>Arrays.sort(int [])... // float [], ..., in-place sort, return void., default increasing order.
-                    <br>Arrays.sort(int [], int from, int to)
-                    <br>Arrays.sort(int [], Comparator) // customized sort
-                    <br><span style="color:red">Print services: Default print array will print its address ..., Use Arrays.toString(int []) convert.</span>
-                </p>
-                <pre class="brush:java">
-                    class NameComparator implements Comparator&lt;String&gt; 
-                    {          
-                        public int compare(String a, String b) 
-                        { 
-                            return a.length() - b.length(); 
-                        } 
-                    } 
-                </pre>
-                <h5>2. Set/HashSet/TreeSet</h5>
-                <p>Set&ltE&gt;: An interface, .add() : boolean, .contains(), .size(), .remove(): boolean, .clear();
-                   <br>HashSet: O(1) add, contain, remove ...
-                   <br>TreeSet: sorted element when add, remove ... O(log(n))
-                </p>
-                <p>Loop set</p>
-                <pre class="brush:java">
-                    Set&lt;Integer&gt; s = new Set();
-                    for(Integer i : s){
-                        System.out.println(i);
-                    }
-                    Interator&lt;Integer&gt; it = s.iterator();
-                    while(it.hasNext()){
-                        System.out.println(it.next());
-                    }
-                </pre>
-                <h5>3. Map/HashMap, Map.Entry</h5>
-                <p>
-                    .containsKey(), get(key), put(key, value), remove(key), size(), .keySet()   
-                </p>
-                <p>Loop</p>
-                <pre class="brush:java">
-                    for (Map.Entry&lt;Integer, Integer&gt; entry : hm1.entrySet()) {
-                        int value = entry.getKey();
-                        int repeat = entry.getValue();
-                        entry.setValue(value);
-                    }
-                </pre>
-                <h5>4. LinkedList</h5>
-                <p>
-
-                </p>
-            </li>
-            <li>
-                <h5>Binary Operator</h5>
-                <p>int 32-bit (2's complement): 0xff ff ff ff = -1; 0x80 00 00 00 = -2147483648 MIN; 0x7f ff ff ff = 2147483647 MAX; 
-                    <br> ^ XOR
-                    <br> | OR
-                    <br> & AND
-                    <br> ~ NOT
-
-                </p>
-            </li>
+</div>
+</li>
+<li>
+<div class="content" id="date">
+    <h3>java.util.Date</h3>
+    <h4>Corresponding classes</h4>
+    <p>
+        DateFormat: format and parse date strings.
+        <br>Calender: It tolerates the problem of difference of time zone.
+    </p>
+    <h4>Knowledge about time</h4>
+    <p>
+        UTC (Coordinated Universal Time): the most accurate time in the world. It use atomic clock combined with the Earth rotation. 
+        For example, UTC considered "leap second".
+        <br>
+        GMT (Greenwich mean time): the civil name of UTC. They are same.
+        <br>
+        Modern OS assume 1 day = 24 * 60 * 60 seconds in all case. Therefore, OS is not always accurate. Moreover, JVM is based on OS. Therefore JVM is not accurate.
+    </p>
+    <h4>Date</h4>
+    <p>It includes year, month, day, hour, minute, second, millisecond</p>
+    <div class="featureList">
+        <ol>
+            <li>new Date():  initialize it at which it is allocated.</li>
+            <li>new Date(long time): time in millisecond + 1970.1.1 00:00:00 GMT</li>
+            <li>.getTime() long: Returns the number of milliseconds since January 1, 1970, 00:00:00 GMT.</li>
+            <li>.toString() String: </li>
         </ol>
     </div>
+</div>
+</li>
+<li>
+<div class="content" id="Object">
+    <h3>Object</h3>
+    <div class="featureList">
+        <ol>
+            <li></li>
+        </ol>
+    </div>
+</div>
+</li>
+<li>
+<div class="content" id="array">
+    <h3>Array</h3>
+        <p>1. Array must has at least one layer is initialized as declaration.</p>
+        <pre class="brush:java">
+        int [][] a = new int[2][2];
+        int [][] b = new int[10][];
+        for(int i = 0 ; i &lt; 10; i++){
+            b[i] = new int[i];
+        }
+        </pre>
+        <p>2. Array init
+            <pre class="brush:java">
+                int [] a = {1,2,3};
+                int [] a1 = new int[]{1,2,3};
+                // wrong int [] b = new int[3]{1,2,3}; 
+            </pre>
+        </p>
+    <h3>Arrays</h3>
+    <p class="highlight">Defined by java.util.*, so import it before using</p>
+    <p>Arrays is a class (not String [], int [])
+        <br>
+        <br>1.<span style="color:red">n*log(n)</span>Arrays.sort(int [])... // float [], ..., in-place sort, return void., default increasing order.
+        <br>Arrays.sort(int [], int from, int to)
+        <br>Arrays.sort(int [], Comparator) // customized sort
+        <pre class="brush:java">
+                class NameComparator implements Comparator&lt;String&gt; 
+                {          
+                    public int compare(String a, String b) 
+                    { 
+                        return a.length() - b.length(); 
+                    } 
+                } 
+        </pre>
+        <br>
+        <br>2.Print services: Default print array will print its address ..., Use Arrays.toString(int []) convert.
+        <br>It is not recursive, which means a 2 dimension array not work well.
+        <br>
+        <br>3. Array copy
+        <br>
+        <pre class="brush:java">
+            int [] a = new int[10];
+            for(){
+                // init a
+            }
+            int [] b = Arrays.copyOf(a, 2 * a.length); // increase the length of a. 
+            // remaining is filled with 0, or false.
+        </pre>
+    </p>
+    
 </div>
 </li>
 <li>

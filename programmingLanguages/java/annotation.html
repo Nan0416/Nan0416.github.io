@@ -34,10 +34,10 @@ SyntaxHighlighter.all()
 </script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<center><strong>Java&nbsp;-&nbsp;Annotation</strong></center>
+<strong>Java&nbsp;-&nbsp;Annotation</strong>
 </div>
 
-<p class="date"><span class="created-date">Created:2018-03-15</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-03-15</span></p>
+<p class="date"><span class="created-date">Created:2018-03-15</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-09-11</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#annotationIntro">Introduction</a></li>
@@ -67,6 +67,34 @@ SyntaxHighlighter.all()
 <br>It marks just before the user's method that employees a deprecated function.</li>
 </ol>
 </div>
+<p style="color:steelblue">Annotation is widely used in framework, such as Spring. It provides magic syntax sugar. 
+<pre class="brush:java">
+    class UserClass{
+        @FrameworkAnnotation...
+        .... user code ...
+    }
+
+    public @interface FrameworkAnnotation{
+
+    }
+
+    public class FrameworkClass{
+        public class FrameworkMethod(UserClass uc){
+            // framework defined method.
+            // use reflection to do magic here
+        }
+    }
+
+    public class UserMain{
+        public static void main(String [] args){
+            UserClass uc = new UserClass();
+            FrameworkClass fc = new FrameworkClass();
+
+            fc.FrameworkMethod(uc);
+        }
+    }
+</pre>
+</p>
 </div>
 </li>
 <li>
