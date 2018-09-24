@@ -1,0 +1,40 @@
+ROS (Robot Operating System), not a operating system. It’s a framework using the concept of an OS. 
+It provides many set of libraries, tools, and framework, such
+as 
+1. package managements: catkin_make, catkin_create_pkg
+
+message-passing, device drivers, hardware abstraction, visualizers.
+ROS distributionst
+    The latest ROS Melodic Morenia, which is released on May 23rd, 2018
+    We use ROS Indigo Igloo, which is the 8th distribution and released on July 22nd, 2014
+    http://wiki.ros.org/indigo
+
+1. ROS Indigo, only targeted at the Ubuntu 14.04
+Installation, http://wiki.ros.org/indigo/Installation/Ubuntu
+Installation will install different libraries, and tools.
+e.g. ROS, rqt, rviz, robot-generic libraries, 2D/3D simulators and 2D/3D perception.
+1). create a working space (catkin_make)
+source devel/setup.bash
+
+workspace
+    /src
+        /CMakeLists.txt
+    /devel
+        /setup.suc
+        /setup.bash
+        ...
+    /build
+2). create catkin package, Packages are the software organization unit of ROS code
+    1. cd workspace/src
+    2. catkin_create_pkg <package_name> [depend1] [depend2] [depend3]
+       e.g. catkin_create_pkg beginner_tutorials std_msgs rospy roscpp
+3). build
+    1. cd workspace
+    2. catkin_make
+
+
+Gazebo: a simulation environment
+
+sudo apt-get install ros-indigo-fetch-gazebo-demot
+
+https://www.allaboutcircuits.com/technical-articles/an-introduction-to-robot-operating-system-ros/
