@@ -16,18 +16,71 @@
 
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<center><strong>Distributed Summary</strong></center>
+<strong>Distributed Summary</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-01-14</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-01-25</span></p>
+<p class="date"><span class="created-date">Created:2018-01-14</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-09-27</span></p>
 <div class="catalog">
 <ul class="catalogItems">
-
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#architecure">Architecture</a></li>
+<li><a href="#concept">Concepts</a></li>
 </ul>
 </div>
 <hr>
 <div class="contentContainer">
 <ol>
 <li>
+    <div class="content" id="intro">
+        <h3>Introduction</h3>
+        <h4>1. Communication</h4>
+        <p>Message passing in DS: RPC, RESTful API</p>
+        <h4>2. Architecture</h4>
+        <p>client-server, n-tier, p2p.</p>
+        <h4>3. Design Issue</h4>
+        <div class="featureList">
+        <ol>
+            <li>Degree of Transparency</li>
+            <li>Scalability</li>
+            <li>Degree of Consistency</li>
+        </ol>
+        </div>
+        <h4>4. Distributed Algorithms</h4>
+        <div class="featureList">
+        <ol>
+            <li>No single node has complete information about the entire system states.</li>
+            <li>Individual node makes decisions only based on local information.</li>
+            <li>Failure of one machine does not ruin the algorithm</li>
+            <li>No global clock exists</li>
+        </ol>
+        </div>
+        <h4>5. False assumptions in DS</h4>
+        <div class="featureList">
+        <ol>
+            <li>Network is reliable, secure, homogeneous</li>
+            <li>Topology does not change</li>
+            <li>Latency is zero, bandwidth is infinite.</li>
+            <li>There is a master (administrator) node</li>
+        </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="architecture">
+        <h3>Architecture</h3>
+        <p>Distributed system can be organized as a middleware between heterogeneous OS and higher-level application.</p>
+        <p>Middleware should provide functions, such as message-passing, lock, multicast, authentication.</p>
+        <p><img src="./img/distributedMiddleware.png" width="600" height="200"></p>
+    </div>
+</li>
+<li>
+    <div class="content" id="concept">
+        <h3>Concepts</h3>
+        <div class="featureList">
+            <ol>
+                <li>Idempotence: the effect of call once and call multiple times are same. For example, .setOn(true) is idempotent .increaseOne() is not. </li>
+            </ol>
+        </div>
+    </div>
 </li>
 </ol>
 </div>
