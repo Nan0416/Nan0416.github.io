@@ -4,7 +4,9 @@ Overall document style
 */
 
 @import url('resources/fonts/dejavu.css');
-
+p{
+    font-size: 13px;
+}
 body {
     background-color:#ffffff;
     color:#353833;
