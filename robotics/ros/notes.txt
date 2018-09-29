@@ -2,9 +2,8 @@ ROS (Robot Operating System), not a operating system. It’s a framework using t
 It provides many set of libraries, tools, and framework, such
 as 
 1. package managements: catkin_make, catkin_create_pkg
-
 message-passing, device drivers, hardware abstraction, visualizers.
-ROS distributionst
+ROS distributions
     The latest ROS Melodic Morenia, which is released on May 23rd, 2018
     We use ROS Indigo Igloo, which is the 8th distribution and released on July 22nd, 2014
     http://wiki.ros.org/indigo
@@ -32,9 +31,98 @@ workspace
     1. cd workspace
     2. catkin_make
 
+Project Structures
+    /src
+        /CMakeLists.txt
+        /project.xml 
+        /Project/
+            /includes
+            /source
+            /launch [this folder is created by own, it contains launch files]
+
+launch files
+A launch file include a couple of node to say how to start these nodes.
+################ .launch ############
+<launch>
+  <node pkg="slam_karto" type="slam_karto" name="slam_karto" output="screen">
+    <remap from="scan" to="base_scan" />
+  </node>
+</launch>
+kgis  the  name  of  the  package  that  we  want  to  execute,typeisthe  program  file  we want  to  execute,nameis  the  name  of  node  we  will  launch,andoutputspecifies  where  we  want  to  print  the  output. 
+
+////
+roslaunch: a tool to launch ros nodes.
+roslaunch package-name .launch-file
+ros node: a node is process, nodes communicate with each node by using ROS provided services, such as RPC services, PubSub topics, and the Paramter server
+Each node just does a simple task, such as control a robot's wheel.
+
+roslaunch one or many nodes according to the launch file, spwan each node to a process, and redirect the output to a log file for each
+node.
+
+rosrun is a small function that just immediate start a new node without spwan and redirect output.
+It receives the package name and direct executable file.
+
+
 
 Gazebo: a simulation environment
 
 sudo apt-get install ros-indigo-fetch-gazebo-demot
-
 https://www.allaboutcircuits.com/technical-articles/an-introduction-to-robot-operating-system-ros/
+
+
+
+
+
+
+
+#############################################
+
+rviz is another visualization tools.
+rviz configuration file.
+When open rvis, it use the default configuration. configuration includes how to show laser, show TF ...
+You can open rvis with a specific configuration file.
+
+
+start rviz
+rosrun rviz rviz
+Rviz configuration
+    LaserScan -> base_scan
+The rviz is a program that let user to visiualize the robot condition.
+According to the robot's sensor, you can select corresponding listener in the rviz to listen the robot using (PubSub)
+e.g. 
+RobotModel -> show the robot. e.g. ask the robot who are you, robot tells i am fetch. Rviz will draw a fetch.
+Image -> topic -> head camera, LaserScan -> topic -> base scan
+
+
+
+save the configuration as xxx.rviz
+next time, run 
+rosrun rviz rviz -d xxx.rviz
+
+
+
+
+####################################################
+create user defined node (script)
+Example of running .py script 
+1. write the script in src folder
+2. give it 775 premission to be executable
+3. optional define a .launch file if you want to use roslaunch to run
+if only run with rosrun, then you don't need .launch file
+4. make the script accessible 
+source ./devel/setup.bash
+
+5. run 
+roslaunch package .launch
+or 
+rosrun package .py
+
+
+Launch file
+
+
+
+mapping
+
+create a map for the sence
+1. move robot by a keyboard, 2. use fetch_navigation package's build map launch
