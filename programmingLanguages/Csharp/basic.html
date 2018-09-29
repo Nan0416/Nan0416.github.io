@@ -44,6 +44,7 @@ SyntaxHighlighter.all()
 <li><a href="#intro">Types</a></li>
 <Li><a href="#expression">Expression</a></Li>
 <li><a href="#flowcontrol">Flow control</a></li>
+<li><a href="#class">Class</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -82,7 +83,7 @@ SyntaxHighlighter.all()
             <ol>
                 <li>i++, i-- is allowed in C#, (Java, C, C++ as well), (Not allowed in Python)</li>
                 <li>typeof(object): Obtains a Type object. Type is Class (Java Class class)</li>
-                <li>(T)object: casting</li>
+                <li>(T)object: casting <span style="color:red">!!!!In C#, user can define how to cast variables. NEVER SEEN IN OTHER LANGUAGES.</span></li>
                 <li>object as T: return a casted object. If cannot cast, return null.</li>
                 <li>object is T: return true if object's type is T</li>
             </ol>
@@ -112,11 +113,104 @@ SyntaxHighlighter.all()
     </div>
 </li>
 <li>
+    <div class="content" id="class">
+        <h3>Class</h3>
+        <p>C#'s class has some new features compared with Java. But most of these features are provided by C++.</p>
+        <div class="featureList">
+            <ol>
+                <li>Access modifier</li>
+                <li>Operator overload</li>
+                <li>Indexer operator i.e. []</li>
+                <li>Events (Different from Java Object notify, which is used for synchronization, C# events is a publisher-subscriber, which is used in the event-driven programming.)</li>
+                <li>Finalizer (Destructor)</li>
+                <li>Nested Types (Java inner class)</li>
+            </ol>
+        </div>
+        <h4>Modifier for accessibility</h4>
+        <div class="featureList">
+            <ol>
+                <li>public: all</li>
+                <li>protected: self and drived class</li>
+                <li>internal: access limited to the current assembly (assembly is a .dll library or a .exe, it is not a namespace. (different from java.))</li>
+                <li>protected internal: protected internal has a more border accessibility than internal. It is like protected || internal.
+                    <br>
+                    <pre class="brush:java">
+                        // assembly1.dll
+                            public class BaseClass
+                            {
+                               protected internal int myValue = 0;
+                            }
+                    </pre>
+                    <pre class="brush:java">
+                        // assembly2.dll
+                            public class SubClass:BaseClass{
+                                public static void Main(){
+                                    BaseClass bc = new BaseClass();
+                                    // bc.myValue // error since different assembly
+                                    SubClass a = new SubClass();
+                                    a.myValue; // correct since drived class.
+                                }
+                            }
+                    </pre>
+                </li>
+                <li>private: inside the class</li>
+                <li>private protected: subclass can access private field if the subclass and baseclass in the same assembly.</li>
+            </ol>
+            <h5>Rules</h5>
+            <ol>
+                <li>Default access modifier of class is Internal. And private for class member.</li>
+                <li>Subclass's accessibility &lt; Parent class e.g. Subclass Public and Parent class Internal is an error.</li>
+            </ol>
+        </div>
+        <h4>Overload operator</h4>
+        <div class="featureList">
+            <ol>
+                <li>Overload Indexer.
+                    <pre class="brush:java">
+                        // []
+                        class XXX{
+                            public int this[int index] { // get, set, value are keywords in C#
+                                get {
+                                    return 0;
+                                }
+                                set {
+                                    Console.WriteLine(value);
+                                }
+                            }
+                        }
+                    </pre>
+                </li>
+                <li>Operator Overload.<br>
+                    In C++, overloading a operator can be done as either a function member or a friend function. However, in C#, only the "friend function" like
+                    overloading is allowed. C# does not have "friend function" concept, it use public static method member.
+                    <pre class="brush:java">
+                        public class XXX{
+                            public static string operator + (XXX a, XXX b){
+
+                            }
+                        }
+                    </pre> 
+                </li>
+                <li>Casting Overload<br>
+                    <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/conversion-keywords" target="_blank">Here.</a>
+
+                </li>
+            </ol>
+        </div>
+        <h4>Event with Function Delegate</h4>
+        <div>
+            <p>C# event subscribing can be done with IDE's drag. But also can be done programmatically with Delegate.</p>
+        </div>
+    </div>
+</li>
+<li>
 <div class="content" id="reference">
 <h3>References</h3>
 <div class="featureList">
     <ol>
         <li><a href="https://docs.microsoft.com/en-us/dotnet/csharp/tour-of-csharp/types-and-variables" target="_blank">Types and variables</a></li>
+        <li><a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/access-modifiers" target="_blank">Access Modifier</a></li>
+        <li><a href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/events/" target="_blank">C# class events.</a></li>
     </ol>
 </div>
 </div>
