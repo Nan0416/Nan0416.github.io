@@ -1,0 +1,150 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>Unity&nbsp;Basic</title>
+<meta charset="utf-8">
+<meta name="date" content="2018-09-29">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>&nbsp;-&nbsp;</strong>
+</div>
+<p class="date"><span class="created-date">Created:2018-09-29</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-09-29</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#assests">Assets</a></li>
+<li><a href="#gameobject">GameObject</a></li>
+<li><a href="#script">Script</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+    <li>
+        <div class="assets">
+            <h3>Assets</h3>
+            <p>Assets convention structures</p>
+            <pre>
+                /Assets
+                    /scripts
+                    /Textures
+                    /Animations
+                    /Audio
+                    /Prfabs
+                    ...
+            </pre>
+        </div>
+    </li>
+<div class="content" id="gameobject">
+<h3>GameObject</h3>
+<h4>About GameObject</h4>
+<div class="featureList">
+    <ol>
+        <li>Unity provide a couple of 2d and 3d game object, such as Cube, Sphere, light</li>
+        <li>Each GameObject has serveral components, components can be viewed in the "inspector" panel.</li>
+        <li>Moreover, a gameobject can become a component of another gameobject. <span style="color:red">It is a way to group game object.</span></li>
+        <li>Every GameObject has a component called Transform. But other common component includes materials, scripts, box collider (check if object is collide)</li>
+        <li>A gameobject can be used by drag it from the sence panel to a assets folder. Later modification would also change the saved gameobject after click "apply" in the inspector panel.</li>
+    </ol>
+</div>
+</div>
+</li>
+<li>
+    <div class="content" id="script">
+        <h3>Script</h3>
+        <p>Script is a assest, so right click the assets folder and create a new C# script.</p>
+        <h4>Link the script to a component</h4>
+        <p>Just drag the C# script file to the GameObject in the sence panel. Then there will be a Script component showing in the GameObject's inspector</p>
+        <p>The C# code defines a class, which must drive MonoBehavior class.</p>
+        <h4>Execution Order</h4>
+        <div class="featureList">
+            <ol>
+                <li>Awake: when a scene starts, all script's awake are invoked. Even if the script is disabled.</li>
+                <li>Start: When the script is enabled, the function is called immediately before the first frame.</li>
+                <li>Update: Call every frame. LateUpdate是在所有Update函数调用后被调用。这可用于调整脚本执行顺序。例如:当物体在Update里移动时，跟随物体的相机可以在LateUpdate里实现。</li>
+                <li>LateUpdate: After LateUpdate</li>
+                <li>FixedUpdate: According to time, per unit of time.</li>
+                <li>OnDestory: When the compoent is destoried</li>
+            </ol>   
+        </div>
+        <h4>Inter script communication</h4>
+        <div class="featureList">
+            <ol>
+                <li>GetComponent</li>
+                <li>GameObject.Find</li>
+            </ol>
+        </div>
+        <pre class="brush:java">
+             // component move forward, each component has a transform attributes inherited from the MonoBehavior.
+                void Update () {
+                    transform.position += (float)0.7 * transform.forward * Time.deltaTime;
+                }
+        </pre>
+        <h4>Set Class member</h4>
+        <p>Public variable members are shown in the inspector. So their can set there. For example, if a camera wants to follow a GameObject, it will need a reference to the GameObject in order to get
+            its position and set self position. And this can be set by drag the target GameObject to it.
+        </p>
+        <p>Drag can only be used when the member is public, so it limited.</p>
+        <p>Another way is to let the GameObject find the camera, and attach itself by calling the camera setter function or directly use member.</p>
+        <pre class="brush:java">
+            // camera's variable and setter method.    
+            private MoveCharacter character;
+                public void setCharacter(MoveCharacter x) {
+                    this.character = x;
+                }
+        </pre>
+        <pre class="brush:java">
+            // GameObject attach itself to the camera at the Start function
+                void Start () {
+                    GameObject.Find("Cameras").GetComponent&lt;CameraFollowing>().setCharacter(this);
+                }
+        </pre>
+        <h4>User input</h4>
+        <p>Input class.</p>
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li><a href="https://docs.unity3d.com/Manual/ExecutionOrder.html" target="_blank">Unity Script event Execution Order.</a></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>
