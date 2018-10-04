@@ -16,13 +16,14 @@
 
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<center><strong>ARM Summary</strong></center>
+<strong>ARM Summary</strong>
 </div>
+<p class="date"><span class="created-date">Created:2018-01-14</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-10-03</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#armIntro">Introduction</a></li>
+<li><a href="#application">ARM Application Processor</a></li>
 <li><a href="#armNaming">Naming convention</a></li>
-<li><a href="#armboard">Development board</a></li>
 <li><a href="#armReference">Reference</a></li>
 </ul>
 </div>
@@ -71,6 +72,52 @@ e.g. S3C2440.
 </div>
 </li>
 <li>
+    <div class="content" id="application">
+        <h3>ARM Application Processor</h3>
+        <p>Three categories of ARM processors: 
+            <br>ARM Cortex-A (for application level, such as SmartPhone, with MMU, can run linux).
+            <br>ARM Cortex-R (for real time application)
+            <br>ARM Cortex-M (microcontroller)
+        </p>
+        <div class="featureList">
+            <h4>ARM micro-architecture, architecture history</h4>
+            <ol>
+                <li>ARM7, ARMv4T, (1993-2001)<br>
+                    ARM7TDMI (first generation supports 16-bit Thumb)
+                </li>
+                <li>ARM9 (1998-2006)
+                </li>
+                <li>ARM11, ARMv6, (2002-2005)
+                    <br>Rasberry Pi Zero is equiped with ARM1176JZ-F (BCM2835, Broadcom)
+                    <br>iPhone 1st generation, 3G ARM1176JZ Samsung
+                </li>
+                <li>ARM Cortex-A8, ARMv7-A, (2005 announced)<span style="color:red"> ** A8-A32 32-bit, A35- 64-bit</span>
+                    <br>iPhone 4
+                </li>
+                <li>ARM Cortex-A9, ARMv7-A, (2007)
+                    <br>Apple A5, iPhone 4S
+                </li>
+                <li>ARM Cortex-A5, ARMv7-A, (2009)</li>
+                <li>ARM Cortex-A15, ARMv7-A, (2010)</li>
+                <li>ARM Cortex-A7, ARMv7-A, (2011)</li>
+                <li><span style="color:red">ARM Cortex-A53, ARMv8-A, (2012)</span></li>
+                <li><span style="color:red">ARM Cortex-A57, ARMv8-A, (2012)</span></li>
+                <li>ARM Cortex-A12, ARMv7-A, (2013)</li>
+                <li>ARM Cortex-A17, ARMv7-A, (2014)</li>
+                <li><span style="color:red">ARM Cortex-A72, ARMv8-A, (2015)</span></li>
+                <li><span style="color:red">ARM Cortex-A35, ARMv8-A, (2015)</span></li>
+                <li>ARM Cortex-A32, ARMv8-A, (2016)</li>
+                <li><span style="color:red">ARM Cortex-A73, ARMv8-A, (2016)</span></li>
+                <li><span style="color:red">ARM Cortex-A55, ARMv8.2-A, (2017)</span></li>
+                <li><span style="color:red">ARM Cortex-A75, ARMv8.2-A, (2017)</span></li>
+                <li><span style="color:red">ARM Cortex-A76, ARMv8.2-A, (2018)</span></li>
+                
+            </ol>
+        </div>
+
+    </div>
+</li>
+<li>
 <div class="content" id="armNaming">
 <h3>Naming Convention</h3>
 <h4>Example ARM1156T2-S</h4>
@@ -86,18 +133,6 @@ e.g. S3C2440.
 </div>
 </li>
 <li>
-<div class="content" id="armEmbeddedSystem">
-<h3>Embedded Systems</h3>
-<p>树莓派当初做出来的时候定位是一个卡片电脑，可以跑windows和Linux，接屏幕键盘就是一个电脑用。开发板提出是根据嵌入式的定义，<mark>软硬件可裁剪</mark>，对功耗和体积等各个方面有特殊要求的场合.</p>
-<p>谢邀，如果说学习嵌入式，光买块树莓派还是不够的，树莓派和arduino其实是用来给喜欢DIY的来搞开发的，而且学习嵌入式是有个过程的，首先你得学会搞8位单片机，如8051，avr系列，stm8...买上一块板子，学会用c写各种例子，比如点亮led灯，驱动lcd屏，扫描矩阵键盘，驱动各种模块，熟悉i2c，spi，uart的通讯协议，bootloader的编写...之类，当然，同时也需要对电路较为熟悉，最好是学过数电模电，至于动手能力也可以通过protell，DXP之类的软件学习设计PCB，自己焊接，下载程序跑，当熟悉上面这些后可以接触stm32，尝试用stm32实现各种模块的驱动，尝试移植片上系统，或者编写一个协程调度器之类的，再往后就可以考虑树莓派之类的高端arm了，运行linux系统，这时点亮led灯自然没意义了，可以开始学习linux的驱动编写，比如为树莓派b编写RF24L01的驱动blabla，再往后就可以考虑学习linux安卓方面了，比如移植安卓系统到，熟练交叉编译器，写makefile之类的，熟悉TCP/IP等网络协议，再往后可以考虑设计手机方案，当然，那都是进公司后的事情了.....
-
-作者：刘逸才
-        链接：https://www.zhihu.com/question/53095078/answer/133410337
-        来源：知乎
-        著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</p>
-</div>
-</li>
-<li>
 <div class="content" id="armReference">
 <h3>Reference</h3>
 <div class="featureList">
@@ -106,6 +141,7 @@ e.g. S3C2440.
 <li><a href="https://developer.arm.com/products" target="_blank">ARM developer</a></li>
 <li><a href="https://www.zhihu.com/question/27472303">Embedded Systems</a></li>
 <li><a href="https://developer.arm.com/products/architecture/learn-about-the-arm-architecture">ARM Architecture</a></li>
+<li><a href="https://en.wikipedia.org/wiki/ARM_Cortex-A" target="_blank">ARM Cortex-A Wiki</a></li>
 </ol>
 </div>
 </div>

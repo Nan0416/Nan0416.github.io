@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>Linux&nbsp;Boot</title>
+<meta charset="utf-8">
+<meta name="date" content="2018-10-03">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>Link&nbsp;-&nbsp;Boot</strong>
+</div>
+<p class="date"><span class="created-date">Created:2018-10-03</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-10-03</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+    <li><a href="#bios">BIOS</a></li>
+    <li><a href="#bootloader">Bootloader</a></li>
+    <li><a href="#kernel">Kernal Initialization</a></li>
+    <li><a href="#startup">Startup</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+    <li>
+        <div class="content" id="bios">
+            <h3>BIOS (Basic I/O System)</h3>
+            <p><span style="color:red">BIOS has no relation with the operating system.</span></p>
+            <h4>Function of BIOS</h4>
+            <p>1. BIOS is a hardward-dependent program that runs in real (address) mode after the computer is turned on.<span style="color:red">, which means the first value of the CPU's PC register is the first instruction of BIOS program.</span> 
+                It first runs the POST (Power On Self Test) to check if the hardware is working properly.</p>
+            <p>2. And then it issues a BIOS interrupt, INT 13H, which locates the boot sectors on any attached bootable devices, such as disks, networks.
+                <br>
+                <br>Disk is organized with sector. The typical size of a sector is 512 bytes.
+                <br>By convention, the first sector of a hard disk is called the <span style="color:red">Master Boot Record</span>
+                <br>MBR contains a table that record the logic parition of a disk, and a program that load the kernel. (In reality, 
+                the program in MBR is limited to 400+ bytes, this is still not enough. Therefore, bootloader program is divided into 
+                multiple part. The first part that is stored in the MBR is the first part, and its job is to load the second part to RAM.)
+                <p>
+                    <img src="../img/first_sector.png" width="350" height="200">
+                </p>
+                <p>(figure, first sector -- MBR)</p>
+
+            </p>
+            <p>3. Load the boot sector (e.g. first part of GRUB) into RAM and transfer CPU to the RAM.</p>
+            <h4>Where is BIOS?</h4>
+            <p>
+                BIOS program is stored in a EEPROM (non-volatile), BIOS setting is stored as a 64 bytes data on a CMOS chip (data kept by battery).
+                <br>If the on board battery is off, BIOS setting goes back to default.
+            </p>
+            <h4>BIOS in history</h4>
+            <p>
+                In the era of MS-DOS, the BIOS provided a hardware abstraction layer for the keyboard, display, and other input/output (I/O) 
+                devices that standardized an interface to application programs and the operating system. More recent operating systems do not use 
+                the BIOS after loading, instead accessing the hardware components directly. [Citied from Wikipedia]
+            </p>
+        </div>
+    </li>
+<li>
+    <div class="content" id="bootloader">
+        <h3>Bootloader</h3>
+        <p>GRUB2 is bootloader that can load different operating systems. GRUB2 has 3 parts of programs. The first part is stored in the MBR (boot.img). It runs by the BIOS.</p>
+        <h4>stage 1, boot.img -- the first part of GRUB2</h4>
+        <p>Because the first part of bootloader is very small, it does not understand file systems. It can only load the second part by gives its absolute address (cannot be a file system path, e.g. /usr/boot/grub2)
+            Therefore, the second part must be outside the FS.
+            <br>The first parition on a disk starts from 63 (indexed 0). So there are 62 free sectors (62 * 512 = 31K bytes) (this 62-free sectors is called boot track, MBR gap, or embedding area) between MBR and first parition. The second part (core.img) of GRUB2 is stored here.
+        </p>
+        <h4>stage 1.5, core.img -- the second part of GRUB2</h4>
+        <p>The size of core.img is 25,389 bytes. It can recognize the file systems. Its function is to load a specific boot img (e.g. disk boot, CD boot)</p>
+        <h4>stage 2, the third part of GRUB2</h4>
+        <p>GRUB2 stage 2 is to locate and load a Linux kernel into RAM and turn control of the computer over to the kernel.</p>
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li href="https://opensource.com/article/17/2/linux-boot-and-startup" target="_blank">Linux Boot and startup.</li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>
