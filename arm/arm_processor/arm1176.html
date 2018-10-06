@@ -2,7 +2,7 @@
 <!-- NewPage -->
 <html lang="en">
 <head>
-<title>ARM&nbsp;ARMv6</title>
+<title>ARM&nbsp;ARM1176</title>
 <meta charset="utf-8">
 <meta name="date" content="2018-10-04">
 <meta name="keywords" content="">
@@ -35,7 +35,7 @@ SyntaxHighlighter.all()
 </script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<strong>ARM&nbsp;-&nbsp;ARMv6</strong>
+<strong>ARM&nbsp;-&nbsp;ARM1176</strong>
 </div>
 <p class="date"><span class="created-date">Created:2018-10-04</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-10-04</span></p>
 <div class="catalog">
@@ -55,6 +55,14 @@ SyntaxHighlighter.all()
 <p>There is another version of ARMv6-M, which is used for current ARM Cortex-M micro-architecture. This part introduces the old
     ARMv6 that is used by ARM11.
 </p>
+<h4>ARM ALU and RISC</h4>
+<div class="featureList">
+    <ol>
+        <li>load/store architecture, where data-processing operations only operate on register contents, not directly on memory contents.</li>
+        <li>auto-increment and auto-decrement addressing modes to optimize program loops</li>
+        <li>simple addressing modes, with all load/store addresses being determined from register contents and instruction fields only.</li>
+    </ol>
+</div>
 <h4>Difference between ARMv6 and ARMv7-A</h4>
 <div class="featureList">
     <ol>
@@ -67,17 +75,42 @@ SyntaxHighlighter.all()
 <div class="featureList">
     <ol>
         <li>TrustZone</li>
-        <li>Jazelle</li>
-        <li>ThumbEE</li>
-        <li>SIMD (Single Instruction Multiple Data):</li>
+        <li>Jazelle: directly run java bytecode on the processor. Hardware (Circuit) translates bytecode to the actually runnable code.</li>
+        <li>ThumbEE: a variant of the Thumb instruction set that minimizes the code size overhead of a Just-In-Time (JIT) or Ahead-Of-Time (AOT) compiler</li>
+        <li>SIMD (Single Instruction Multiple Data): DSP instruction that operate on 16-bit or 8-bit data values in 32-bit registers</li>
     </ol>
 </div>
 </div>
-
 </li>
+
 <li>
     <div class="content" id="bus">
-        
+        <h3>BUS, AMBA (advanced microprocessor bus architecture)</h3>
+        <div class="featureList">
+            <ol>
+                <li>AMBA is used to connect different functional blocks, e.g. </li>
+                <li>AMBA (1996) ASB and APB, AMBA 2 (1999) AHB, AMBA 3(2003) AXI, AMBA 4(2010) AXI4 and ACE, AMBA 5 (2013) coherent hub interface</li>
+                <li>AXI (Advanced Extensible interface): targeted at high performance, high clock frequency system</li>
+                
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="arm1176">
+        <h3>ARM1176JZF-S</h3>
+        <p>
+            <img src="../img/arm1176.png" width="400" height="350">
+        </p>
+        <h4>Features</h4>
+        <div class="featureList">
+            <ol>
+                <li>8 stage pipeline</li>
+                <li>MMU</li>
+                <li>7 operating mode: User, Supervisor, fast interrupt, normal interrupt, abort, system, undefined, secure monitor</li>
+                <li>Harvard Architecture</li>
+            </ol>
+        </div>
     </div>
 </li>
 <li>
