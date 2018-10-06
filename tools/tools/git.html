@@ -15,13 +15,14 @@
 
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<center><strong>Tools&nbsp;-&nbsp;Git</strong></center>
+<strong>Tools&nbsp;-&nbsp;Git</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-04-01</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-04-01</span></p>
+<p class="date"><span class="created-date">Created:2018-04-01</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-10-06 @UMN Bio-Library</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#gitIntro">Git Concepts</a></li>
 <li><a href="#gitInit">Create a repo</a></li>
+<li><a href="#gitconfig">Git Config</a></li>
 <li><a href="#gitFilestate">File state and local operations</a></li>
 <li><a href="#gitBranch">Branch model</a></li>
 <li><a href="#gitReferences">References</a></li>
@@ -77,6 +78,56 @@ sync, delete and so on.</p>
 <p><span class="cmd">git remote remove remote_repo_name</span></p>
 <p><span class="cmd">git remote rename old_repo_name new_repo_name</span></p>	
 </div> 
+</li>
+<li>
+    <div class="content" id="gitconfig">
+        <h3>Git Config</h3>
+        <p>Git configuration file has three levels (like the inline CSS, internal css external css), system, global, and local.
+            <br>Priority: local > global > system.
+        </p>
+        <p>Detail <a href="https://git-scm.com/book/en/v2/Getting-Started-First-Time-Git-Setup" target="_blank">here</a>.</p>
+        <div class="featureList">
+            <ol>
+                <li>system: the system scope, applied to every user. /etc/gitconfig </li>
+                <li>global: the user scope (e.g. a linux user), the file is stored in ~/.gitconfig</li>
+                <li>local: the repo scope, the file is stored in the repo's .git/config
+                    <pre>
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+	ignorecase = true
+    precomposeunicode = true
+    editor = vim
+[branch "master"]
+[remote "origin"]
+	url = https://github.com/Nan0416/Nan0416.github.io.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+[branch "master"]
+	remote = origin
+	merge = refs/heads/master
+[user]
+	email = qinnan0416@gmail.com
+	name = Nan Qin
+[credential]
+	helper = osxkeychain
+                    </pre>
+                </li>
+            </ol>
+        </div>
+        <h4>tools</h4>
+        <p><span style="color:red">git config</span> is the git tool to configure the config file.</p>
+        <pre class="brush:bash">
+            # git config --&lt;scope> attribute value
+            git config --local user.name "Your Name Here"
+            git config --local user.email "your_email@youremail.com"
+            git config --local core.editor vim
+            # for macOS, use the keychain to automatically fill in the password.
+            git config --local credential.helper osxkeychain
+        </pre>
+        <p><span style="color:red">git config --list</span>: show all the settings</p>
+    </div>
 </li>
 <li>
 <div class="content" id="gitFilestate">
