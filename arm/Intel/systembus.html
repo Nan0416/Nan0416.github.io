@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>Intel&nbsp;System Bus</title>
+<meta charset="utf-8">
+<meta name="date" content="2018-10-06">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>&nbsp;-&nbsp;</strong>
+</div>
+<p class="date"><span class="created-date">Created:2018-10-06</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-10-06</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#progress">Progress</a></li>
+<li><a href="#pcie">PCIe</a></li>
+<li><a href="#storage_interface">Storage Interface</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+<p>System bus is used to connected the CPU with out onboard component, such as dedicated graphics card</p>
+</div>
+</li>
+<li>
+    <div class="content" id="progress">
+        <h3>Progress</h3>
+        <div class="featureList">
+            <ol>
+                <li>(8-bit) ISA (Industry Standard Architecture): 1981 Intel 8088 IBM PC</li>
+                <li>ISA: 1984, 16-bit, Intel 80286 IBM AT
+                    <br>
+                    <img src="./img/superio.png" width="300" height="550">
+                </li>
+                <li>EISA (Extended ISA): 1988 32-bit, not successful</li>
+                <li>PCI (Peripheral Component Interconnect): 1992 32/64-bit
+                    <br>
+                    <img src="./img/pci.JPG" width="200" height="200">
+                </li>
+                <li>AGP (Accelerated Graphics Port): 1996, replaced by PCIe
+                    <br>
+                    <img src="./img/agp.jpg"width="200" height="200">
+                </li>
+                <li>PCI Express: 2004</li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="pcie">
+        <h3>PCIe</h3>
+        <p>PCIe is mainly developed by Intel to replace PCI, APG and PCI-X. It was released at 2004</p>
+        
+        <div class="featureList">
+            <h4>Features</h4>
+            <ol>
+                <li>Serial communication, duplex communication</li>
+                <li>Hot-swap functionality (热拔插)</li>
+                <li>Communication channel is not shared</li>
+            </ol>
+            <h4>Standards</h4>
+            <ol>
+                <li>Each communication lane (channel) includes two "differential signaling" pairs, one receiving pair and one transimtting pair, thus one lane composed 4 wires</li>
+                <li>Scalability: One physical interface can include 1 lanes, 2 lanes, up to 32 lanes. Represent by x1, x2, x4, x8, x16 and x32</li>
+                <li>x1 and x16 are most common</li>
+                <li>smaller size interface e.g. x4 device can be plugged into bigger slot, e.g. x16 e.g. x16 @ x4 mode.</li>
+                <li>
+                    PCIe x1<br>
+                    <img src="./img/pcie-x1.JPG" width="100" height="100">
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="storage_interface">
+        <h3>Storage Interface</h3>
+        <h4>SATA</h4>
+        <p>SATA (Serial AT attachment) defines the physical interface (form factor) and protocols</p>
+        <h4>SSD -> NVMe -> M.2 -> PCIe 3.0 x4</h4>
+        <p>NVMe defines the protocol that allows the SSD directly attached to a PCIe</p>
+        <h4>M.2</h4>
+        <p>M.2 defines a form factor. M.2 supports both NVMe protocol and SATA protocol. It also support the Wifi card.</p>
+        <p>M.2 connector types: A or E for wireless adapter, B or M for SSD. Different socket.</p>
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li><a href="https://en.wikipedia.org/wiki/PCI_Express" target="_blank">PCI Express wiki</a></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>
