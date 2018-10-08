@@ -37,7 +37,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Link&nbsp;-&nbsp;Boot</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-10-03</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-10-03</span></p>
+<p class="date"><span class="created-date">Created:2018-10-03</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-10-07</span></p>
 <div class="catalog">
 <ul class="catalogItems">
     <li><a href="#bios">BIOS</a></li>
@@ -53,6 +53,10 @@ SyntaxHighlighter.all()
     <li>
         <div class="content" id="bios">
             <h3>BIOS (Basic I/O System)</h3>
+            <p>
+                <img src="../img/dell-bios.jpg" width="190" height="150">
+                <img src="../img/bios.jpg" width="190" height="150">
+            </p>
             <p><span style="color:red">BIOS has no relation with the operating system.</span></p>
             <h4>Function of BIOS</h4>
             <p>1. BIOS is a hardward-dependent program that runs in real (address) mode after the computer is turned on.<span style="color:red">, which means the first value of the CPU's PC register is the first instruction of BIOS program.</span> 
@@ -87,6 +91,9 @@ SyntaxHighlighter.all()
 <li>
     <div class="content" id="bootloader">
         <h3>Bootloader</h3>
+        <p>
+            <img src="../img/grub2.jpeg" width="210" height="150">
+        </p>
         <p>GRUB2 is bootloader that can load different operating systems. GRUB2 has 3 parts of programs. The first part is stored in the MBR (boot.img). It runs by the BIOS.</p>
         <h4>stage 1, boot.img -- the first part of GRUB2</h4>
         <p>Because the first part of bootloader is very small, it does not understand file systems. It can only load the second part by gives its absolute address (cannot be a file system path, e.g. /usr/boot/grub2)
@@ -100,11 +107,64 @@ SyntaxHighlighter.all()
     </div>
 </li>
 <li>
+    <div class="content" id="kernel">
+        <h3>Kernel Initialization</h3>
+        <p>
+                
+                <img src="../img/systemd.jpg" width="250" height="150">
+        </p>
+        <p>All of the kernel images are located in the /boot directory. There may exist serveral kernel images. GRUB2 can be configured to select one of them</p>
+        <p>Once the kernel images is load to RAM, it then extracts itself, And then start the systemd program.</p>
+        <p>Scheduler process has a PID 0, systemd has a PID 1 (init)</p>
+        <h4>systemd</h4>
+        <p>systemd is a bootup program</p>
+        <p>systemd is a resource (service, device, ...) management program.</p>
+        <div class="featureList">
+            <ol>
+                <li>systemd is used to start services in parallel, and print if the service is started successfully.</li>
+                <li>systemctl is a command tool to check service's status and modify their runlevel.</li>
+                
+            </ol>
+        </div>
+        <div class="featureList">
+            <ol>
+                <li>.service: A .service file defines the dependency of the services</li>
+                <li>.target: A group of services 
+                    <pre class="brush:bash">
+                        systemctl get-default # check the default target, (e.g. graphical.target)
+                    </pre>
+                </li>
+                <li>Default start target is the /etc/systemd/system/default.target (Sys V's /etc/inittab), which is symbolic link to a concrete target (e.g. grahpical target)
+                    <pre class="brush:bash">
+                        # update default target, just create a new symbolic link
+                        systemctl set-default multi-user.target
+                    </pre>
+                </li>
+                <li>/lib/systemd/system -> /etc/systemd/system (SysV /etc/init.d -> /etc/rc*.d) defines how to start
+                    <br>systemd will start all the services defined in /etc/systemd/system
+                </li>
+            </ol>
+        </div>
+        <h4>init -- System V (Sys V)</h4>
+        <p>Sys V is an old bootup program of linux, in which the first process is init. init (PID 1) is direct or in-direct parent of all processes. It also adopts all orphaned processes. It terminated until the system shutdown.</p>
+        <div class="featureList">
+            <ol>
+                <li>init uses the /etc/inittab to detemine the default runlevel.</li>
+                <li>/etc/rc*.d folders defines the behavior of each runlevel.</li>
+                <li>/etc/init.d/* defines the scripts that how to start each process by the init.</li>
+                <li>Sys V starts process serially.</li>
+                <li>systemd does not have the runlevel concept, you can define many .target file and select one as default.</li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
 <div class="content" id="reference">
 <h3>References</h3>
 <div class="featureList">
     <ol>
-        <li href="https://opensource.com/article/17/2/linux-boot-and-startup" target="_blank">Linux Boot and startup.</li>
+        <li><a href="https://opensource.com/article/17/2/linux-boot-and-startup" target="_blank">Linux Boot and startup.</a></li>
+        <li><a href="http://www.ruanyifeng.com/blog/2016/03/systemd-tutorial-commands.html" target="_blank">Systemd 入门教程：命令篇</a></li>
     </ol>
 </div>
 </div>
