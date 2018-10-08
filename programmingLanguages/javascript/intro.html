@@ -37,10 +37,11 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Javascript&nbsp;-&nbsp;Syntax</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-03-26</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-09-27</span></p>
+<p class="date"><span class="created-date">Created:2018-03-26</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-10-08</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#jsIntro">Introduction</a></li>
+<li><a href="#jsConcept">Concepts</a></li>
 <li><a href="#jsScope">Variable Scope</a></li>
 <li><a href="#jsVariable">Declaring variables and variable types</a></li>
 <li><a href="#jsThis">Nodejs "this"</a></li>
@@ -170,6 +171,7 @@ show(); // "variable in global"
 </pre>
 <p>JS first scans the code and finds that the show(){} defines the variable, so it will use the local variable.</p>
 <p>However when executing the first console.log, the local variable is undefined yet, so print undefined.</p>
+<p><span style="color:red">This feature applies to both let and var</span></p>
 </li>
 </ol>
 </div>
@@ -224,6 +226,37 @@ function func(){
 }
 // console.log(z); // error
 </pre>
+</li>
+<li>
+<h4>var vs. let</h4>
+<p>let's variables has the traditional C-like scope
+	<pre class="brush:js">
+		let x = 10;
+		{
+			console.log(x); // *** not defined, the new define is below
+			let x = 100;
+			let x2 = 11;
+			console.log(x); // 100
+		}
+		console.log(x); // 10
+		console.log(x2) ; // not defined.
+	</pre>
+</p>
+<p>all var's variables intend to be a function
+	<pre class="brush:js">
+		{
+			var x2 = 10;
+		}
+		console.log(x2); // 10
+		function printing(){
+			for(var i = 0; i&lt;10; i++) {
+			  console.log(i)
+			}
+		}
+		printing()
+		console.log(i) // undefined, var's scope is the function
+	</pre>
+</p>
 </li>
 </ol>
 <h4>Variable types</h4>
@@ -448,6 +481,7 @@ Object.keys(x).forEach((key) => {}); // it gives the key as string. The keys are
 <ol>
 	<li><a href="https://en.wikipedia.org/wiki/ECMAScript#Versions" target="_blank">ECMAScript Wiki</a></li>
 	<li><a href="http://www.jb51.net/article/81556.htm" target="_blank">Nodejs中的this详解</a></li>
+	<li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Control_flow_and_error_handling">JavaScript Guide</a></li>
 </ol>
 </div>
 </div>
