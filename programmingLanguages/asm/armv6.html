@@ -2,9 +2,9 @@
 <!-- NewPage -->
 <html lang="en">
 <head>
-<title>&nbsp;</title>
+<title>ASM&nbsp;ARMv6</title>
 <meta charset="utf-8">
-<meta name="date" content="2018-10-03">
+<meta name="date" content="2018-10-08">
 <meta name="keywords" content="">
 <meta name="keywords" content="">
 <meta name="keywords" content="">
@@ -37,10 +37,13 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>&nbsp;-&nbsp;</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-10-03</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-10-03</span></p>
+<p class="date"><span class="created-date">Created:2018-10-08 @ UMN Bio-Library</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-10-08</span></p>
 <div class="catalog">
 <ul class="catalogItems">
-<li><a href="#intro">Introduction</a></li>
+<li><a href="#example">Example</a></li>
+<li><a href="#hardware">Register</a></li>
+<li><a href="#directive">Directives</a></li>
+<li><a href="#load_store">Load & Store</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -49,8 +52,105 @@ SyntaxHighlighter.all()
 <ol>
 <li>
 <div class="content" id="intro">
-<h3>Introduction</h3>
+<h3>Example</h3>
+<p>Pi Zero [W], BCM 2835, ARM1176, ARMv6</p>
+<div class="asm">
+    <pre>
+    .global main /* allow to be found by the linker */
+
+    main:
+	    mov r0, #2 /* intel syntax, mov 2 to r0, r0 is the register that stores return value*/
+        bx lr /* return from the main */
+        /* bx branch and exchange instruction: branch to the lr address. [If lr's LSB is 1, then the next instruction is treated as Thumb, otherwise as ARM]*/
+        /* lr (r14) is the link register, which holds the return address */
+    </pre>
 </div>
+<div class="asm">
+    <pre>
+            .global main
+
+            main:
+                mov r0, #3
+                mov r1, #1
+                add r0, r1, r0 /* r0 &lt;- r1 + r0*/
+                bx lr
+    </pre>
+</div>
+<p>
+    # gcc -o to compile and run
+    # echo $? // print 2 
+</p>
+</div>
+</li>
+<li>
+    <div class="content" id="hardware">
+        <h3>Register</h3>
+        <p>16 32-bit int registers + 32 floating point registers</p>
+        <p></p>
+    </div>
+</li>
+<li>
+    <div class="content" id="directive">
+        <h3>Directive</h3>
+        <div class="featureList">
+            <ol>
+                <li>.balign</li>
+                <li>.word
+                    <div class="asm">
+                        <pre>
+                            .balign 4 /* align the following label's address by a mulitple of 4 bytes*/ 
+                            myvar1:
+                                .word 3 /* use 4 bytes to store the number 3 */
+                        </pre>
+                    </div>
+                </li>
+                <li>
+                    .data: define the memory varaible section
+                </li>
+                <li>
+                    .text: define the code section
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="load_store">
+        <h3>Load & Store</h3>
+        <p>** ARM and Thumb are RISC, all data maniuplation must be done on registers. In other words, instructions cannot directly maniuplate data on memory</p>
+        <h4>Addressing mode: How to compute a address</h4>
+        <div class="featureList">
+            <ol>
+                <li>addressing via a register:
+                    <br>
+                    <div class="asm">
+                        <pre>
+    .data
+    .balign 4
+    myvar1:
+        .word 3
+    myvar2:
+        .word 4
+
+    .text
+    .balign 4
+    .global main
+    main:
+        ldr r1, addr_of_myvar1
+        ldr r1, [r1]
+        ldr r2, addr_of_myvar2
+        ldr r2, [r2]
+        add r0, r1, r2
+        bx lr
+
+    addr_of_myvar1: .word myvar1
+    addr_of_myvar2: .word myvar2
+                        </pre>
+                    </div>
+                </li>
+            </ol>
+        </div>
+    </div>
 </li>
 <li>
 <div class="content" id="reference">
