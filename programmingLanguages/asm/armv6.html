@@ -148,6 +148,31 @@ SyntaxHighlighter.all()
     /* we cannot directly access the label across sections */
                         </pre>
                     </div>
+                    <p>Move data from memory to another location</p>
+                    <div class="asm">
+                        <pre>
+.data
+.balign 4
+var1:
+	.word 10
+var2:
+	.word 0
+
+.text
+.balign 4
+.global main
+var1_text: .word var1
+var2_text: .word var2
+main:
+	ldr r1, var1_text
+	ldr r1, [r1] /* load [r1] to r1 */
+	ldr r2, var2_text
+	str r1, [r2] /* store r1 to [r2], order is different*/
+	ldr r0, [r2]
+	bx lr
+
+                        </pre>
+                    </div>
                 </li>
             </ol>
         </div>
