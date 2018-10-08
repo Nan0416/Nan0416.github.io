@@ -34,9 +34,9 @@ SyntaxHighlighter.all()
 </script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<center><strong>ASM&nbsp;-&nbsp;Basic</strong></center>
+<strong>ASM&nbsp;-&nbsp;Basic</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-01-02</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-01-21</span></p>
+<p class="date"><span class="created-date">Created:2018-01-02</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-10-08 @ UMN Bio-Medical Library</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#asmIntro">Introduction</a></li>
@@ -59,7 +59,14 @@ set that support by the specific target processor. (e.g. Cortex-M3 only supports
 <li>assembler pseudo-ops (directives): different assemblers have distinct directives.</li>
 </ol>
 <p>Even though there is no unique assembly code can be compiled and run directly in different devices, but the ideas and principles of assembly programming are same for all instruction set and syntax.</p>
-<p>In this note, AT&amps;T syntax, GNU-AS and AVR 8-bit instruction set is used.</p>
+<p>In this note, Intel syntax, GNU-AS and AVR 8-bit instruction set is used.</p>
+<p>
+    <img src="./img/syntax.png" width="200" height="90">
+    <br>
+    AT&T: op source, destination. Intel: op dest, source
+    <br>
+    AT&T: $immediate, %register
+</p>
 </div>
 </div>
 </li>
@@ -144,7 +151,8 @@ set that support by the specific target processor. (e.g. Cortex-M3 only supports
 <h3>References</h3>
 <div class="featureList">
 <ol>
-<li><a href="http://www.avr-tutorials.com/assembly/basics-assembly-language">Assembly Language AVR Basic</a></li>
+<li><a href="http://www.avr-tutorials.com/assembly/basics-assembly-language" target="_blank">Assembly Language AVR Basic</a></li>
+<li><a href="https://imada.sdu.dk/Employees/kslarsen-bak/Courses/dm18-2007-spring/Litteratur/IntelnATT.htm" target="_blank">AT&T and Intel Syntax</a></li>
 </ol>
 </div>
 </div>
