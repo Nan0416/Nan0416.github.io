@@ -67,13 +67,13 @@ SyntaxHighlighter.all()
 </div>
 <div class="asm">
     <pre>
-            .global main
+    .global main
 
-            main:
-                mov r0, #3
-                mov r1, #1
-                add r0, r1, r0 /* r0 &lt;- r1 + r0*/
-                bx lr
+    main:
+        mov r0, #3
+        mov r1, #1
+        add r0, r1, r0 /* r0 &lt;- r1 + r0*/
+        bx lr
     </pre>
 </div>
 <p>
@@ -125,7 +125,7 @@ SyntaxHighlighter.all()
                     <br>
                     <div class="asm">
                         <pre>
-    .data
+    .data 
     .balign 4
     myvar1:
         .word 3
@@ -136,15 +136,16 @@ SyntaxHighlighter.all()
     .balign 4
     .global main
     main:
-        ldr r1, addr_of_myvar1
-        ldr r1, [r1]
+        ldr r1, addr_of_myvar1 // r1 is the address of var1
+        ldr r1, [r1]            // r1 is the value of var1
         ldr r2, addr_of_myvar2
         ldr r2, [r2]
         add r0, r1, r2
         bx lr
 
-    addr_of_myvar1: .word myvar1
+    addr_of_myvar1: .word myvar1 
     addr_of_myvar2: .word myvar2
+    /* we cannot directly access the label across sections */
                         </pre>
                     </div>
                 </li>
@@ -157,7 +158,7 @@ SyntaxHighlighter.all()
 <h3>References</h3>
 <div class="featureList">
     <ol>
-        <li></li>
+        <li><a href="https://thinkingeek.com/arm-assembler-raspberry-pi/" target="_blank">ARM assembler in RPi</a></li>
     </ol>
 </div>
 </div>
