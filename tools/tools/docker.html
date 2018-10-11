@@ -37,11 +37,12 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Tools&nbsp;-&nbsp;Docker</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-10-10</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-10-10 @ Hurricane Michael</span></p>
+<p class="date"><span class="created-date">Created:2018-10-10 @ Hurricane Michael</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-10-11</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
 <li><a href="#container">Container</a></li>
+<li><a href="#gui">GUI</a></li>
 <li><a href="#image">Image</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
@@ -114,6 +115,23 @@ SyntaxHighlighter.all()
                 <li><span style="font-weight: bold">docker image rm IMAGE_ID</span>: remove the image</li>
             </ol>
         </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="gui">
+        <h3>GUI</h3>
+        <p>Method: directly mount X11 socket, using SSH forwarding X11, using VNC</p>
+        <p>Allow the container to use the host X11 server by mounting the /tmp/.X11-unix (/tmp/.X11-unix contains the x11 socket), and expose the $DISPLAY variable.</p>
+        <pre class="brush:bash">
+                docker run -it \
+                    --env="DISPLAY" \
+                    --env="QT_X11_NO_MITSHM=1" \
+                    --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
+                    IMAGE
+        </pre>
+        <p>xhost + localhost # allow localhost to send request to the X11 server.
+        </p>
+
     </div>
 </li>
 <li>
