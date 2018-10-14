@@ -1,0 +1,163 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>Java&nbsp;Cheatsheet</title>
+<meta charset="utf-8">
+<meta name="date" content="2018-10-14">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>Java&nbsp;-&nbsp;Cheatsheet</strong>
+</div>
+<p class="date"><span class="created-date">Created:2018-10-14</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-10-14</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#string">String</a></li>
+<li><a href="#array">Array</a></li>
+<li><a href="#collections">List/Set/Map</a></li>
+<li><a href="#math">Math</a></li>
+<li><a href="https://docs.oracle.com/javase/8/docs/api/" target="_blank">Java SE 8 Doc</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="string">
+<h3>String</h3>
+<h4><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html" target="_blank">String</a></h4>
+<div class="featureList">
+    <ol>
+        <li>constructor: (char [])</li>
+        <li>.charAt(int): char</li>
+        <li>.toCharArray(): char []</li>
+        <li>.equals(String): boolean</li>
+        <li>.substring(int s, int e): String</li>
+        <li>+ (concate): String</li>
+        <li>.length(): int</li>
+        <li>.split(String): String[]</li>
+        <li>.toLowerCase()/ .toUpperCase(): String[]</li>
+        <li>.indexOf(String): int</li>
+    </ol>
+</div>
+<h4><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/StringBuilder.html" target="_blank">StringBuilder</a></h4>
+<div class="featureList">
+    <ol>
+        <li>constructor: (int init_cap), (String str)</li>
+        <li>.append(String / char / char[]): self</li>
+        <li>.insert(int offset, char / char[] / String): self. <span style="color:red">Offset in terms of string</span>  </li>
+        <li>.reverse(): self</li>
+        <li>.substring(int s, int e):String</li>
+        <li>.length(): int</li>
+    </ol>
+</div>
+<h4>Experiences</h4>
+<div class="featureList">
+    <ol>
+        <li><span style="font-weight: bold">Construct/Modify a string</span>: if the size is known, then use char[] and new String(char[]). Otherwise, using StringBuilder.</li>
+        <li><span style="font-weight: bold">for loop a string</span>: .charAt()</li>
+        <li><span style="font-weight: bold">upper case</span>: (char)(char_c - 'a' + 'A') <span style="color:red">Return int</span></li>
+    </ol>
+</div>
+</div>
+</li>
+<li>
+    <div class="content" id="array">
+        <h3>Array</h3>
+        <h4>Array</h4>
+        <div class="featureList">
+            <ol>
+                <li>int [][] arr = new int[20][];</li>
+                <li>initial value of int [] is {0}, boolean [] is {false}, Object [] is {null}</li>
+            </ol>
+        </div>
+        <h4><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Arrays.html" target="_blank">Arrays</a></h4>
+        <div class="featureList">
+            <ol>
+                <li>.sort(int/..[]): in-place sort O(nlgn)</li>
+                <li>.fill(int[] / char[], int / char)</li>
+                <li>.copyOf(int [], int length): 补零删多</li>
+                <li>.sort(<span style="color:red">Integer / ..</span> [], Collections.reverseOrder())</li>
+            </ol>
+        </div>
+        <h4>Experiences</h4>
+        <div class="featureList">
+            <ol>
+                <li>array can be used as hashmap in some cases</li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="collections">
+        <h3>List/Set/Map</h3>
+        <style>
+            table {
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+table, th, td {
+    border: 1px solid black;
+}
+
+        </style>
+        <table>
+            <tr><th>operation</th>
+                <th><a href="https://docs.oracle.com/javase/8/docs/api/java/util/LinkedList.html" target="_blank">LinkedList</a></th>
+                <th><a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashSet.html" target="_blank">HashSet</a></th>
+                <th><a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html" target="_blank">HashMap</a></th></tr>
+            <tr><td>add</td><td>.add(E e): boolean</td><td>.add(E e): false when existed</td><td>.put(K, V)</td></tr>
+            <tr><td>get by index</td><td>.get(int index): E</td><td></td><td>.get(Object k): V, .getOrDefault(Object k, V v): V</td></tr>
+            <tr><td>contains</td><td>.contains(Object o): boolean</td><td>.contains(Object o) [For self-defined object, hashCode and equals]</td><td>.containsKey(K k)</td></tr>
+            <tr><td>.size(): int</td></tr>
+            <tr><td>.clear(): void</td></tr>
+            <tr><td>remove</td><td>.remove(int index): E, .remove(Object E): boolean</td><td>.remove(Object o): boolean</td><td>remove(Object k): V</td></tr>
+            <tr><td>loop</td></tr>
+        </table>
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>
