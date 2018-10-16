@@ -131,6 +131,7 @@ table, th, td {
 }
 
         </style>
+        <h4>Summary</h4>
         <table>
             <tr><th>operation</th>
                 <th><a href="https://docs.oracle.com/javase/8/docs/api/java/util/LinkedList.html" target="_blank">LinkedList</a></th>
@@ -138,21 +139,39 @@ table, th, td {
                 <th><a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html" target="_blank">HashMap</a></th></tr>
             <tr><td>add</td><td>.add(E e): boolean</td><td>.add(E e): false when existed</td><td>.put(K, V)</td></tr>
             <tr><td>get by index</td><td>.get(int index): E</td><td></td><td>.get(Object k): V, .getOrDefault(Object k, V v): V</td></tr>
-            <tr><td>contains</td><td>.contains(Object o): boolean</td><td>.contains(Object o) [For self-defined object, hashCode and equals]</td><td>.containsKey(K k)</td></tr>
+            <tr><td>contains</td><td>.contains(Object o): boolean</td><td>.contains(Object o) <br>[For self-defined object, hashCode and equals]</td><td>.containsKey(K k)</td></tr>
             <tr><td>.size(): int</td></tr>
             <tr><td>.clear(): void</td></tr>
             <tr><td>remove</td><td>.remove(int index): E, .remove(Object E): boolean</td><td>.remove(Object o): boolean</td><td>remove(Object k): V</td></tr>
-            <tr><td>loop</td></tr>
+            <tr><td>loop</td><td>for(E e: list)</td><td>for(E e: set)</td><td>for(Map.Entry&lt;K,V> en: map.entrySet()); // en.getValue(), en.getKey(), en.setValue(E)<br>for(V v: map.values()); for(K v: map.keySet())</td></tr>
         </table>
+        <h4>LinkedList</h4>
+        <div class="featureList">            
+            <ol>
+                <li>.add(int index, E e), .remove(int i) // out of bounds error</li>
+                <li>.push(E e); .pop():E // no such element error <span style="color:red">Push/Pop is on the first (left, index 0) element</span></li>
+                <li>.removeFirst(); .add(E e) // queue</li>
+                <li>.set(index i, E e): replacement</li>
+                <li>all: .removeFirst/Last() .getFirst/Last() .addFirst/Last(E e)</li>
+            </ol>
+        </div>
+        <h4><a href="https://docs.oracle.com/javase/8/docs/api/java/util/TreeMap.html" target="_blank">TreeMap</a></h4>
+        <div class="featureList">
+            <ol>
+                <li>for-loop is ordered in an ascending order.</li>
+                <li>.ceilingEntry(K key): Map.Entry // return a entry's key >= input key <span style="color:red">May return null</span></li>
+                <li>.ceilingKey(K key): K</li>
+                <li>.floorEntry(K k), .floorKey(K k)</li>
+                <li>.firstKey, firstEntry <span style="color:red">Error when map is empty</span></li>
+            </ol>
+        </div>
     </div>
 </li>
 <li>
 <div class="content" id="reference">
 <h3>References</h3>
 <div class="featureList">
-    <ol>
-        <li></li>
-    </ol>
+    
 </div>
 </div>
 </li>
