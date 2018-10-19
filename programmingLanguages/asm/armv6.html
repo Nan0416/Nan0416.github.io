@@ -168,7 +168,7 @@ SyntaxHighlighter.all()
     </p>
     <p>
         Reason: the linker will update the label with real address by a PC (program counter) relative value, e.g. ldr r1, myvar1 -> ldr r1, pc + 100. If the myvar1 is too far from the address of the instruction, ldr r1. myvar1, then
-        the offset may exceed the maximum pc relative. So the compiler just simply reject to do crossing section reference.
+        the offset may exceed the maximum pc relative (4K bytes). So the compiler just simply reject to do crossing section reference.
     </p>
                 </li>
                 <li>Move data from memory to another location
