@@ -35,15 +35,15 @@ SyntaxHighlighter.all()
 </script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<strong>&nbsp;-&nbsp;</strong>
+<strong>ASM&nbsp;-&nbsp;ARMv6</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-10-08 @ UMN Bio-Library</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-10-08</span></p>
+<p class="date"><span class="created-date">Created:2018-10-08 @ UMN Bio-Library</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-10-19</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#example">Example</a></li>
 <li><a href="#hardware">Register</a></li>
 <li><a href="#directive">Directives</a></li>
-<li><a href="#load_store">Load & Store</a></li>
+<li><a href="#load_store">Load &amp; Store</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -98,9 +98,9 @@ SyntaxHighlighter.all()
                 <li>.word
                     <div class="asm">
                         <pre>
-                            .balign 4 /* align the following label's address by a mulitple of 4 bytes*/ 
-                            myvar1:
-                                .word 3 /* use 4 bytes to store the number 3 */
+    .balign 4 /* align the following label's address by a mulitple of 4 bytes*/ 
+    myvar1:
+        .word 3 /* use 4 bytes to store the number 3 */
                         </pre>
                     </div>
                 </li>
@@ -110,13 +110,25 @@ SyntaxHighlighter.all()
                 <li>
                     .text: define the code section
                 </li>
+                <li>
+                    .ascii "string text\0": allocate a space for this string (explicitly write \0)
+                </li>
+                <li>
+                    .asciz: "string text": allocate a space with the implicit \0
+                    <div class="asm">
+                    <pre>
+    hello_msg: .ascii "Hello, World!\0"
+    hello_msg_z: .asciz "Hello, World!"
+                    </pre>
+                    </div>
+                </li>
             </ol>
         </div>
     </div>
 </li>
 <li>
-    <div class="load_store">
-        <h3>Load & Store</h3>
+    <div id="load_store" class="content">
+        <h3>Load &amp; Store</h3>
         <p>** ARM and Thumb are RISC, all data maniuplation must be done on registers. In other words, instructions cannot directly maniuplate data on memory</p>
         <h4>Addressing mode: How to compute a address</h4>
         <div class="featureList">
@@ -148,7 +160,18 @@ SyntaxHighlighter.all()
     /* we cannot directly access the label across sections */
                         </pre>
                     </div>
-                    <p>Move data from memory to another location</p>
+    <p>
+        <span style="color:red">ldr r1, addr_of_myvar1 == mov r1, myvar1, BUT mov register, register/immediate (cannot be a label)</span>    
+    </p>    
+    <p>
+        <span style="color:red">ldr r1, addr_of_myvar1<br>ldr r1, [r1] === ldr r1, myvar1, BUT we cannot directly access the label across sections</span>
+    </p>
+    <p>
+        Reason: the linker will update the label with real address by a PC (program counter) relative value, e.g. ldr r1, myvar1 -> ldr r1, pc + 100. If the myvar1 is too far from the address of the instruction, ldr r1. myvar1, then
+        the offset may exceed the maximum pc relative. So the compiler just simply reject to do crossing section reference.
+    </p>
+                </li>
+                <li>Move data from memory to another location
                     <div class="asm">
                         <pre>
 .data
@@ -171,6 +194,16 @@ main:
 	ldr r0, [r2]
 	bx lr
 
+                        </pre>
+                    </div>
+                </li>
+                <li>
+                    indexing, pre-indexing and post-indexing
+                    <div class="asm">
+                        <pre>
+    str r2, [r1, #+12] // [r1 + 12] &lt;- 12 , r1 does not change
+    str lr, [sp, #-8]! // sp = sp - 8, [sp] &lt;- lr
+    ldr lr, [sp] #+8 /*lr &lt;- [sp], sp = sp + 8*/
                         </pre>
                     </div>
                 </li>
