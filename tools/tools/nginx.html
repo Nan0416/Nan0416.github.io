@@ -51,7 +51,9 @@ SyntaxHighlighter.all()
 <li>
 <div class="content" id="intro">
 <h3>Introduction</h3>
-<p>Nginx is </p>
+<p>Nginx is reverse proxy.</p>
+<p>Proxy: complete LAN request to WAN</p>
+<p>Reverse proxy: complete WAN request to LAN.</p>
 </div>
 </li>
 <li>
@@ -105,12 +107,36 @@ SyntaxHighlighter.all()
             <ol>
                 <li>server: Sets configuration for a virtual server</li>
                 <li>server_name name
-                    <br> e.g. server_name home.sousys.com # only the request to home.sousys.com will be hold by the server.
+                    <br> e.g. server_name home.sousys.com;
+                    <br> # only the request to home.sousys.com will be hold by the server.
                 </li>
                 <li>listen: ip:port [default_server]
-                    <br> listen: 80 # = listen *:80, accept all request to 80 port and also satisfy the server_name
-                    <br> listen: 80 default_server, accept all request to 80 port and if no server_name allow the request, then this server will handle it.
+                    <br> listen: 80; 
+                    <br># = listen *:80, accept all request to 80 port and also satisfy the server_name
+                    <br> listen: 80 default_server; 
+                    <br>accept all request to 80 port and if no server_name allow the request, then this server will handle it.
                     <span style="color:red">Only one virtual server can have default_server</span>
+                </li>
+                <li> location /url {}
+                    <br>the url prefix that match the url will be handled by this block.
+                    <br><pre>
+                        location /sitemap {
+                            root /home/ubuntu/SEO;
+                        }
+                        url = http://home.sousys.com/sitemap/sitemap-1.xml
+                        this url will be routed into this block and the file location is /home/ubuntu/SEO + /sitemap/sitemap-1.xml
+                    </pre>
+                </li>
+                <li>root path;
+                    <br> the file path prefix
+                </li>
+                <li>
+                    proxy_pass origin;
+                    <br>proxy_pass http://localhost:3003; redirect request to this location.
+                    <pre>
+                        url = http://home.sousys.com/content/page-1.html
+                        -> http://localhost:3003/content/page-1.html
+                    </pre>
                 </li>
             </ol>
         </div>
