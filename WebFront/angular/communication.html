@@ -1,0 +1,225 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>Angular&nbsp;Communication between components and services</title>
+<meta charset="utf-8">
+<meta name="date" content="2018-10-03">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>Angular&nbsp;-&nbsp;Communication between components and services</strong>
+</div>
+<p class="date"><span class="created-date">Created:2018-10-29</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-10-29</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#parameter">Inter-component parameter passing</a></li>
+<li><a href="#function">Inter-component method invocation</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+    <h3>Introduction</h3>
+    <p>Communication: pulling or pushing</p>
+
+    <div class="featureList">
+        <ol>
+            <li>Inter-component parameter passing</li>
+            <li>Inter-component method invocation</li>
+        </ol>
+    </div>
+</div>
+</li>
+<li>
+    <div class="content" id="parameter">
+        <h3>Inter-component parameter passing</h3>
+        <div class="featureList">
+            <ol>
+                <li>Parent pass parameters to child:
+                    <pre class="brush:js">
+                        //parent
+                        export class ParentC implements OnInit{
+                            data: string = "xxx";
+                        }
+                        //html
+                        &lt;child (data)="data">&lt;/child>
+                    </pre>
+                    <pre class="brush:js">
+                        export class ChildC implements OnInit{
+                            // @Input() data: string
+                            /*
+                            * static binding, the data will change as the parent's data change.
+                            * but the side-effect of the change will not apply
+                            */
+                            private _data: string;
+                            @Input()
+                            set data(data: string){
+                                // the function is called each time the parent change the data
+                                this._data = data;
+                            }
+                            get data(){
+                                return this._data;
+                            }
+                        }
+                    </pre>
+                </li>
+                <li>Detect the change of multiple input parameter:
+                    <p>ngOnChanges() lifecycle hooks</p>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="function">
+        <h3>Inter-component method invocation (via PubSub)</h3>
+        <div class="featureList">
+            <ol>
+                <li>Parent invoke Child:
+                    <pre class="brush:js">
+                        // Child
+                        export class ChildComponent implements OnInit{
+                            fun(){
+                                // do something
+                            }
+                        }
+                    </pre>
+                    <pre class="brush:js">
+                        // Parent
+                        export class ParentComponent implements OnInit{
+                            @ViewChild(ChildComponent)
+                            private childCpt: ChildComponent;
+
+
+                        }
+                    </pre>
+                </li>
+                <li>Child invoke Parent: (parent listen child's event)
+                    <pre class="brush:js">
+                        // Child
+                        export class ChildComponent implements OnInit{
+                            @Output("an-event") evt = new EventEmitter&lt;Data>();
+                            fun(){
+                                this.evt.emit(new Data());
+                            }
+                        }
+                    </pre>
+                    <pre class="brush:js">
+                        // Parent
+                        export class ParentComponent implements OnInit{
+                            handle_child_data(data: Data){
+                                //
+                            }
+                        }
+
+                        // html
+                        &lt;child (an-event)="handle_child_data($event)">&lt;/child>
+                    </pre>
+                </li>
+                <li>General method invocation among componenet by service
+                    <pre class="brush:js">
+                            import { Injectable } from '@angular/core';
+                            import { Subject }    from 'rxjs';
+                            
+                            @Injectable({
+                              providedIn: 'root',
+                            })
+                            export class EventHubService {
+                            
+                              // Observable string sources
+                              private parentSay_ = new Subject&lt;string>();
+                              private childrenSay_ = new Subject&lt;string>();
+                            
+                              // Observable string streams
+                              parentSay$ = this.parentSay_.asObservable();
+                              childrenSay$ = this.childrenSay_.asObservable();
+                            
+                              // Service message commands
+                              parentSay(text: string) {
+                                this.parentSay_.next(text);
+                              }
+                            
+                              childrenSay(text: string) {
+                                this.childrenSay_.next(text);
+                              }
+                            }
+                    </pre>
+                    <pre class="brush:js">
+                        // a component
+                        import { Component, OnInit, OnDestroy } from '@angular/core';
+                        import {EventHubService} from '../services/event-hub.service';
+                        import { Subscription } from 'rxjs';
+
+                        export class Level1Component implements OnInit, OnDestroy {
+                           
+                            data:string = "";
+                            subscription: Subscription
+                            constructor(
+                                private eventHub: EventHubService
+                            ) { }
+
+                            ngOnInit() {
+                                this.eventHub.childrenSay$.subscribe(data=>{
+                                this.data = "parent received: " + data;
+                                })
+                            }
+                            ngOnDestroy(){
+                                this.subscription.unsubscribe(); // avoid component be null.
+                            }
+                            click(){
+                                this.eventHub.parentSay("Parent is good");
+                            }
+                        }
+                    </pre>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li><a href="https://angular.io/guide/component-interaction" target="_blank">Component Interaction</a></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>

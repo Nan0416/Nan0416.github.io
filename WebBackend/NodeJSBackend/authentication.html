@@ -1,0 +1,263 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>NodeJS&nbsp;Authentication</title>
+<meta charset="utf-8">
+<meta name="date" content="2018-10-28">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>NodeJS&nbsp;-&nbsp;Authentication</strong>
+</div>
+<p class="date"><span class="created-date">Created:2018-10-28</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-10-28</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#cookie">Cookie</a></li>
+<li><a href="#session">Session</a></li>
+<li><a href="#auth">Authentication</a></li>
+<li><a href="#passport">Passport</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+<p>Cookie, Session, Nodejs Passport module</p>
+</div>
+</li>
+<li>
+    <div class="content" id="cookie">
+        <h3>Cookie</h3>
+        <p>cookie is a small piece of data that the server stores in the client side. 
+            It is set via the response message, and the broswer will store the cookie 
+            automatically. It will send as part of the request header whenever the request 
+            goes to the same origin.
+        </p>
+        <h4>Signed cookie</h4>
+        <p>Cookie can be sent as plain text, but can also be sent as encrypted form. <span style="color:red">
+        Avoid users to create feak cookie</span></p>
+        <h4>Cookie option</h4>
+        <p>{path '/', httpOnly: true, secure: false, maxAge: null}</p>
+        <h4>Express & cookie-parser module</h4>
+        <pre class="brush:js">
+            // set cookie
+            res.cookie(name, value, option);
+
+            // get cookie with cookie-parser
+            let cookieParser = require(cookie-parser);
+            app.use(cookieParser())
+            req.cookies.name;
+
+            #signed cookie
+            let cookieParser = require(cookie-parser);
+            app.use(cookieParser("secret key e.g. xxxxxx"))
+            
+            res.cookie("user", "admin", {signed: true});
+            req.signedCookies.name;
+
+            if(typeof req.signedCookies.user === "boolean" && !req.signedCookies.user){
+                res.statusCode = 403;
+                res.end("Not auth");
+                return;
+            }else if(typeof req.signedCookies.user === "string" && req.signedCookies.user !== "admin"){
+                res.statusCode = 403;
+                res.end("Not auth");
+                return;
+            }else if(req.signedCookies.user === undefined){
+                res.cookie("user", "admin", {signed: true});
+            }
+            next();
+        </pre>
+        <p><span style="color:red">req.signedCookies.attribute will be false if cannnot be decrypted</span></p>
+        <h4>Allowing Angular send cookie</h4>
+        <p>Cookie is allowed to be set by Ajax (angular httpclient), and it can also be automatically send as part of header</p>
+        <pre class="brush:js">
+
+            // server side, cors
+            // if cross origin is required, then the credentials: true need to be added as part of the response header.
+            // Moreover, if the credentials: true is added, then the allowed-origin cannot be wildcard *. (directly using cors() is not allowed).
+            
+            var whitelist = ["http://localhost:4200"];
+            var corsOptionsDelegate = (req, callback) => {
+                var corsOptions;
+                if(whitelist.indexOf(req.header('Origin')) !== -1){
+                    corsOptions = {origin: req.header('Origin'), credentials: true};
+                }else{
+                    corsOptions = {origin: false};
+                }
+                callback(null, corsOptions);
+            };
+        </pre>
+        <pre class="brush:js">
+            // httprequest set withCredentials: true will allow to set cookie.
+            this.http.post(queryUrl, {}, {withCredentials: true}).subscribe(httpObserver);
+        </pre>
+    </div>
+</li>
+<li>
+    <div class="content" id="session">
+        <h3>Session</h3>
+        <p>Session is a piece of data that stored in the server side. It still need the assistance of cookie</p>
+        <p>The session data can be stored in memory, permanent storage (e.g. file system or database), or distributed mode.</p>
+        <h4>express-session module and session-file-store module for storage</h4>
+        <pre class="brush:js">
+            //npm install express-session session-file-store --save
+            const session = require('express-session');
+            const FileStore = require('session-file-store')(session);
+
+            app.use(session({
+                name: "session-id", // it is the name of the cookie stored in the client side.
+                secret: "key for signing cookie",
+                saveUninitialized: false, // when the session is modification, create a new one instead of saving the old one.
+                resave: false, // save the session back to the storage even if the session is not modified
+                store: new FileStore() // default it is using memory
+            }));
+
+            req.session // data read from memory or fs based on the cookie.
+            
+            req.session.destory(); // delete the server-side session
+            res.clearCookie(session_id); // remove the key
+
+        </pre>
+        <p>The first time session only include the cookie file without actual value.
+            <pre>
+                    Session {
+                        cookie: 
+                         { path: '/',
+                           _expires: null,
+                           originalMaxAge: null,
+                           httpOnly: true } }
+            </pre>
+        </p>
+        <p>The following will include the set value
+            <pre>
+                Session {
+                    cookie: 
+                    { path: '/',
+                        _expires: null,
+                        originalMaxAge: null,
+                        httpOnly: true },
+                    user: 'admin',
+                    __lastAccess: 1540788357893 }
+            </pre>
+        </p>
+        <p><span style="color:red">If the user modified the session's cookie, the server side just ignore it because it cannot find the corresponding session.<br>
+        If the user modified the direct signed cookie, the server-side cannot decrypted it then just mark it as false.
+        </span></p>        
+    </div>
+</li>
+<li>
+    <div class="content" id="auth">
+        <h3>Authentication</h3>
+        <p>In express framework, authentication is done by ordering the route.</p>
+        
+        <pre class="brush:js">
+                function session_authentication(req, res, next){
+                    if(req.session.username === undefined){
+                        res.statusCode = 403; // don't send 401 unauthenticated it is sent by the webserver, not web app.
+                        res.json({
+                            success: false,
+                            reasons:["Please login or signup first"],
+                            value: null
+                        });
+                    }else{
+                        next();
+                    }
+                }
+                user_app.use(url_prefix + '/user/signup', signupRoute);
+                user_app.use(url_prefix + '/user/login', loginRoute);
+                user_app.use(cors.cors, session_authentication);
+                user_app.use(url_prefix + '/user/logout', logoutRoute);
+                user_app.use(url_prefix + '/content/query', queryContentRoute);
+        </pre>
+    </div>
+</li>
+<li>
+    <div class="content" id="passport">
+        <h3>Passport</h3>
+        <p>Authentication strategy: How to authenticate a user? Local user db, 3rd party (Oauth: facebook, twitter) or openid</p>
+        <p>passport is a nodejs module that support various auth strategy, and sessions.</p>
+        <p>passport-local is a nodejs module that support local authentication </p>
+        <p>passport-local-mongoose is a mongoose plugin that defined the user schema e.g. hash(password, salt), we can extend the schema futher.
+            <br><span style="color:red">username (string, unique), salt (string), hash (string)</span>
+        </p>
+        <pre class="brush:js">
+            // Extend passport-local-mongoose
+            const mongoose = require('mongoose');
+            const Schema = mongoose.Schema;
+            const passportLocalMongoose = require('passport-local-mongoose');
+
+            const user = new Schema({
+
+            });
+            user.plugin(passportLocalMongoose);
+            // the plugin provide the local authenticate function
+            const Users = mongoose.model("user", user);
+            module.exports = Users;
+        </pre>
+        <pre class="brush:js">
+            // use passport to login (verify user's info and create session)
+            // the user.authenticate() is provided by the mongoose plugin.
+            passport.use(new LocalStrategy(User.authenticate()));
+            // limitation: it can only use the username to verify, cannot use other field, e.g. email.
+
+            // for session
+            passport.serializeUser(User.serializeUser());
+            passport.deserializeUser(User.deserializeUser());
+
+            loginRoute.post('/login', passport.authenticate('local'), (req, res, next)=>{
+                // success, now we have req.user, which is added by the passport.
+                res.statusCode = 200;
+                res.json({
+
+                });
+            });
+        </pre>
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>
