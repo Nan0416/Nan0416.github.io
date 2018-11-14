@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>&nbsp;</title>
+<meta charset="utf-8">
+<meta name="date" content="2018-11-14">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>&nbsp;-&nbsp;</strong>
+</div>
+<p class="date"><span class="created-date">Created:2018-11-14</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-11-14</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#example">Example</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+<p>STM32CubeMX is a software that helps to generate initial code for a project visually. By using STM32CubeMX, you can make the initial configuration, such as clocks, gpio, DMA. It can also help to estimate the power consumption.</p>
+<p>Keil is the IDE. It integrates functions such as debugging, library management.</p>
+</li>
+<li>
+    <div class="content" id="example">
+        <h3>Example</h3>
+<div class="featureList">
+    <h4>Example (generate a blinky program for Nucleo)</h4>
+    <ol>
+        <li>New Project: It will download update from remote servers. The process can take a while.</li>
+        <li>Select chip model: This example uses Nucleao F103RB development board, so selecting the STM32F103RB model.</li>
+        <li>Config GPIO: the on-board led is connected to Pin A5, so selecting PA5 as GPIO_OUTPUT
+            <br>Green pins are configured, yellow pins are power supply, gray pins are reset (default
+            <div><img src="./img/cubemx_1.png" width="300" height="300"></div>
+        </li>
+        <li>Config clock: the source of clock input. STM32 can have different clock inputs.
+            <br>The first step is optional because we can just use the default high speed internal 8MHz clock generator. Nocleo does not come up with a external clock actually. You have to solder one if you want to use the external clock source.
+            <div><img src="./img/cubemx_2_clock.png" width="240" height="140"></div>
+            <br>The second step is to config the registers
+            <br>This example uses the 8M HSL with /2 * 16 PLL to obtain a 64M System clock.
+            <div><img src="./img/cubemx_3_clock.png" width="800" height="220"></div>
+        </li>
+        <li>Other configuration: DMA, GPIO, Interrupts
+            <br>In this example, we don't need to do these configuration.
+        </li>
+        <li>Generate code:
+            <br>STM32CubeMX can help to generate the inital code for IDE, such as Keil or a bare metal Makefile.
+            <br>You may need to download some packages during this process.
+            <div><img src="./img/cubemx_4.png" width="480" height="580"></div>
+        </li>
+        <li>Open with Keil (version 5):
+            <br>Project structure:
+            <br>Application/MDK-ARM/startup_stm32f103xb.s: this code run before the main.c. It reset the clock and load main.c.
+            <br>Application/User/main.c: user code; stm32f1xx_it.c: user-defined interrupt handler; stm32f1xx_hal_msp.c: user-initialized peripheral.
+            <div><img src="./img/cubemx_5.png" width="240" height="280"></div>
+        </li>
+        <li>Editing main.c:
+            <br>The comments is create by STM32CubeMX. They are used to re-initialize the project and avoid replacing user's code. 
+            <br>User code can only be placed inside centain comments area. Otherwise, it will be replaced.
+            <br>Inside the main.c: reset all peripheral -> config system clock as user-defined -> config all peripheral as user-defined. 
+            For example, the GPIO_PIN_A_5 is initalized in the MX_GPIO_Init function.
+            <br>Find the function for toggling gpio, click the "function" at the bottom.
+            <div><img src="./img/cubemx_6.png" width="300" height="600"></div>
+            <div><img src="./img/cubemx_7_code.png" width="400" height="200"></div>
+        </li>
+        <li>Build project:
+            <br>click this icon: <img src="./img/cubemx_8_build.png" width="60" height="60">
+            <div><img src="./img/cubemx_9.png"></div>
+            <br>This panel is used to configuration the compile options (under C/C++), and debug option.
+
+        </li>
+        <li>Deploy to STM32 with ST-link:
+            The Nucleo has a st-link, so we use st-link as the programmer. (You may need download the driver 
+            <a herf="https://www.st.com/en/development-tools/stsw-link009.html" target="_blank">here</a>)
+            <div><img src="./img/cubemx_10_deploy.png" width="500" height="500"></div>
+            build and load <img src="./img/cubemx_11_build_button.png"><img src="./img/cubemx_12_load_button.png">
+        </li>
+    </ol>
+</div>  
+</div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>
