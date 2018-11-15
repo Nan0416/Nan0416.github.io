@@ -62,6 +62,19 @@ SyntaxHighlighter.all()
         <p>STM32CubeMX provide a FreeRTOS port for stm32 microcontrollers. The port has one extra layer, cmsis-os layer, which is a kind of uniform API layer defined by ARM in order to be able to run code on different OSes.</p>
         <p>For example, the create thread function in FreeRTOS is xTaskCreate(), but it is wrapped by osThreadCreate() in cmsis-os.</p>
         <p>But it is still possible to directly use the FreeRTOS API.</p>
+        <div class="featureList">
+            <h4>Example</h4>
+            <ol>
+                <li>When using FreeRTOS, it is recommended to use a timer as the timebase.
+                    <div><img src="./img/cubemx_3_0.png" width="300" height="150"></div>
+                </li>
+                <li>Create thread inside the tool.
+                    <div><img src="./img/cubemx_3_1.png" width="400" height="400"></div>
+                </li>
+            </ol>
+        </div>
+        <h4>Code structure</h4>
+        <div><img src="./img/freeRtos.png" width="500" height="300"></div>
     </div>
 </li>
 <li>
