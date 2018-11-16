@@ -53,7 +53,23 @@ SyntaxHighlighter.all()
 <h3>Introduction</h3>
 <p>FreeRTOS is a real time operating system for embedded devices that don't equip MMU (no virtual memory)</p>
 <p>In order to use FreeRTOS, you have to port FreeRTOS to the specific platform. Fortunately, there existed lots of FreeRTOS ports, such as for STM32F103</p>
-
+<div class="featureList">
+    <h4>FreeRTOS</h4>
+    <ol>
+        <li>
+            <h4>FreeRTOS scheduler</h4>
+            <p>FreeRTOS scheudler can be used as a preemptive priority based scheduler. The scheduler maintains serveral task lists, each task list is associated with a priority.
+                In the STM32CubeMX example, there are 
+                <pre class="brush:cpp">
+                    #define configMAX_PRIORITIES                     ( 7 ) // defined in FreeRTOSConfig.h
+                </pre>
+                7 priorities.<br>
+                Therefore, the FreeRTOS has 7 thread ready lists. It also has 2 delayed task lists, 1 pending ready list, 1 suspended thread list and 1 waiting terminated list.
+            </p>
+        </li>
+       
+    </ol>
+</div>
 </div>
 </li>
 <li>
@@ -77,6 +93,7 @@ SyntaxHighlighter.all()
         <div><img src="./img/freeRtos.png" width="500" height="300"></div>
     </div>
 </li>
+
 <li>
 <div class="content" id="reference">
 <h3>References</h3>

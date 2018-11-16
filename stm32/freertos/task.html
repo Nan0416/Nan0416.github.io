@@ -40,7 +40,8 @@ SyntaxHighlighter.all()
 <p class="date"><span class="created-date">Created:2018-11-14</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-11-14</span></p>
 <div class="catalog">
 <ul class="catalogItems">
-<li><a href="#intro">Create</a></li>
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#create">Create</a></li>
 <li><a href="#detail">Detail</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
@@ -48,8 +49,13 @@ SyntaxHighlighter.all()
 <hr>
 <div class="contentContainer">
 <ol>
+    <li>
+        <div class="content" id="create">
+
+        </div>
+    </li>
 <li>
-<div class="content" id="intro">
+<div class="content" id="create">
 <h3>Create</h3>
 <h4>C knowledge</h4>
 <div class="featureList">
@@ -124,33 +130,13 @@ SyntaxHighlighter.all()
                     osThreadId osThreadCreate (const osThreadDef_t *thread_def, void *argument)
                     {
                         TaskHandle_t handle;
-                        
-                        /*#if( configSUPPORT_STATIC_ALLOCATION == 1 ) &&  ( configSUPPORT_DYNAMIC_ALLOCATION == 1 )
-                        if((thread_def->buffer != NULL) && (thread_def->controlblock != NULL)) {
-                            handle = xTaskCreateStatic((TaskFunction_t)thread_def->pthread,(const portCHAR *)thread_def->name,
-                                    thread_def->stacksize, argument, makeFreeRtosPriority(thread_def->tpriority),
-                                    thread_def->buffer, thread_def->controlblock);
-                        }
-                        else {
-                            if (xTaskCreate((TaskFunction_t)thread_def->pthread,(const portCHAR *)thread_def->name,
-                                    thread_def->stacksize, argument, makeFreeRtosPriority(thread_def->tpriority),
-                                    &handle) != pdPASS)  {
-                            return NULL;
-                            } 
-                        }
-                        #elif( configSUPPORT_STATIC_ALLOCATION == 1 )
-            
-                            handle = xTaskCreateStatic((TaskFunction_t)thread_def->pthread,(const portCHAR *)thread_def->name,
-                                    thread_def->stacksize, argument, makeFreeRtosPriority(thread_def->tpriority),
-                                    thread_def->buffer, thread_def->controlblock);
-                        #else*/
+                        #else
                         if (xTaskCreate((TaskFunction_t)thread_def->pthread,(const portCHAR *)thread_def->name,
                                         thread_def->stacksize, argument, makeFreeRtosPriority(thread_def->tpriority),
                                         &handle) != pdPASS)  {
                             return NULL;
                         }     
                         #endif
-                
                         return handle;
                     }
             
@@ -224,6 +210,168 @@ SyntaxHighlighter.all()
                     <h4>TCB structure</h4>
                     <pre class="brush:cpp">
                         typedef tskTCB TCB_t;
+                        /* the tskTCB is highly configured by macro (FreeRTOSConfig.h), additional functions cause additional fields in the TCB structure e.g. using mutex 
+                        */
+                        typedef struct tskTaskControlBlock{
+                            volatile StackType_t	*pxTopOfStack;
+                            ListItem_t			xStateListItem;	/* The list that the state list item of a task is reference from denotes the state of that task (Ready, Blocked, Suspended ). */
+                            ListItem_t			xEventListItem; /* e.g. Waiting Queue's data or lock*/
+                            UBaseType_t			uxPriority;		/* The priority of the task.  0 is the lowest priority. */
+                            StackType_t			*pxStack;		/* Points to the start of the stack. */
+                            char				pcTaskName[ configMAX_TASK_NAME_LEN ];
+                            #if ( configUSE_MUTEXES == 1 )
+                                UBaseType_t		uxBasePriority;
+                                UBaseType_t		uxMutexesHeld;
+                            #endif
+                            #if( configUSE_TASK_NOTIFICATIONS == 1 )
+                                volatile uint32_t ulNotifiedValue;
+                                volatile uint8_t ucNotifyState;
+                            #endif
+                        }tskTCB;
+                    </pre>
+                </li>
+
+                <li>
+                    <h4>Initialize TCB</h4>
+                    <p>Initialized stack by port function, initialized TCB's name, priority, event list, state list</p>
+                    <pre class="brush:cpp">
+                        static void prvInitialiseNewTask( 	TaskFunction_t pxTaskCode,
+									const char * const pcName,
+									const uint32_t ulStackDepth,
+									void * const pvParameters,
+									UBaseType_t uxPriority,
+									TaskHandle_t * const pxCreatedTask,
+									TCB_t *pxNewTCB,
+									const MemoryRegion_t * const xRegions )
+                        {
+                            StackType_t *pxTopOfStack;
+                            UBaseType_t x;
+                            /*config TCB including stack pointer, name, priority, optional mutex*/
+
+                            /*
+                            * Nan: the stack is allocated from heap. pxStack is the small address in this chuck of memory
+                            * But stack is used from higher address to lower address, so we need caculate the top of the address;
+                            * Moreover, alignment is required by the hardware.
+                            */ 
+                            pxTopOfStack = pxNewTCB->pxStack + ( ulStackDepth - ( uint32_t ) 1 );
+		                    pxTopOfStack = ( StackType_t * ) ( ( ( portPOINTER_SIZE_TYPE ) pxTopOfStack ) & ( ~( ( portPOINTER_SIZE_TYPE ) portBYTE_ALIGNMENT_MASK ) ) ); /*lint !e923 MISRA exception.  Avoiding casts between pointers and integers is not practical.  Size differences accounted for using portPOINTER_SIZE_TYPE type. */
+                            pxNewTCB->pxTopOfStack = pxPortInitialiseStack( pxTopOfStack, pxTaskCode, pvParameters );
+		                    /* Check the alignment of the calculated top of stack is correct. */
+                            configASSERT( ( ( ( portPOINTER_SIZE_TYPE ) pxTopOfStack & ( portPOINTER_SIZE_TYPE ) portBYTE_ALIGNMENT_MASK ) == 0UL ) );
+                            
+                            for( x = ( UBaseType_t ) 0; x &lt; ( UBaseType_t ) configMAX_TASK_NAME_LEN; x++ )
+                            {
+                                pxNewTCB->pcTaskName[ x ] = pcName[ x ];
+
+                                /* Don't copy all configMAX_TASK_NAME_LEN if the string is shorter than
+                                configMAX_TASK_NAME_LEN characters just in case the memory after the
+                                string is not accessible (extremely unlikely). */
+                                if( pcName[ x ] == 0x00 )
+                                {
+                                    break;
+                                }
+                            }
+                            pxNewTCB->pcTaskName[ configMAX_TASK_NAME_LEN - 1 ] = '\0';
+                            if( uxPriority >= ( UBaseType_t ) configMAX_PRIORITIES )
+                            {
+                                uxPriority = ( UBaseType_t ) configMAX_PRIORITIES - ( UBaseType_t ) 1U;
+                            }
+                            pxNewTCB->uxPriority = uxPriority;
+
+                            /*Avoid priority inversion*/
+                            #if ( configUSE_MUTEXES == 1 )
+                            {
+                                pxNewTCB->uxBasePriority = uxPriority;
+                                pxNewTCB->uxMutexesHeld = 0;
+                            }
+                            *pxCreatedTask = ( TaskHandle_t ) pxNewTCB;
+                        }
+                    </pre>
+                </li>
+                <li>
+                    <h4>Scheduler</h4>
+                    <p>The scheduler defined a couple of global variables in the task.c source file.</p>
+                    <pre class="brush:cpp">
+                        // current running task 
+                        TCB_t * volatile pxCurrentTCB = NULL;
+                        PRIVILEGED_DATA static volatile UBaseType_t uxCurrentNumberOfTasks 	= ( UBaseType_t ) 0U;
+                        PRIVILEGED_DATA static volatile TickType_t xTickCount 				= ( TickType_t ) 0U;
+                        PRIVILEGED_DATA static volatile UBaseType_t uxTopReadyPriority 		= tskIDLE_PRIORITY;
+                        PRIVILEGED_DATA static volatile BaseType_t xSchedulerRunning 		= pdFALSE;
+                        PRIVILEGED_DATA static volatile UBaseType_t uxPendedTicks 			= ( UBaseType_t ) 0U;
+                        PRIVILEGED_DATA static volatile BaseType_t xYieldPending 			= pdFALSE;
+                        PRIVILEGED_DATA static volatile BaseType_t xNumOfOverflows 			= ( BaseType_t ) 0;
+                        PRIVILEGED_DATA static UBaseType_t uxTaskNumber 					= ( UBaseType_t ) 0U;
+                        PRIVILEGED_DATA static volatile TickType_t xNextTaskUnblockTime		= ( TickType_t ) 0U; /* Initialised to portMAX_DELAY before the scheduler starts. */
+                        PRIVILEGED_DATA static TaskHandle_t xIdleTaskHandle					= NULL;			/* Holds the handle of the idle task.  The idle task is created automatically when the scheduler is started. */
+
+                    </pre>
+                </li>
+                <li>
+                    <h4>STM32 stack initialize</h4>
+                    <p>This part is ported by STM32</p>
+                    <pre class="brush:cpp">
+                            StackType_t *pxPortInitialiseStack( StackType_t *pxTopOfStack, TaskFunction_t pxCode, void *pvParameters )
+                            {
+                                /* Simulate the stack frame as it would be created by a context switch
+                                interrupt. */
+                                pxTopOfStack--; /* Offset added to account for the way the MCU uses the stack on entry/exit of interrupts. */
+                                *pxTopOfStack = portINITIAL_XPSR;	/* xPSR */
+                                pxTopOfStack--;
+                                *pxTopOfStack = ( ( StackType_t ) pxCode ) & portSTART_ADDRESS_MASK;	/* PC */
+                                pxTopOfStack--;
+                                *pxTopOfStack = ( StackType_t ) prvTaskExitError;	/* LR */
+                            
+                                pxTopOfStack -= 5;	/* R12, R3, R2 and R1. */
+                                *pxTopOfStack = ( StackType_t ) pvParameters;	/* R0 */
+                                pxTopOfStack -= 8;	/* R11, R10, R9, R8, R7, R6, R5 and R4. */
+                            
+                                return pxTopOfStack;
+                            }
+                    </pre>
+                </li>
+                <li>
+                    <h4>Add TCB to ready list</h4>
+                    <p>This step is done under a critical section</p>
+                    <p>The scheduler has a </p>
+                    <pre class="brush:cpp">
+                        static void prvAddNewTaskToReadyList( TCB_t *pxNewTCB )
+                        {
+                            taskENTER_CRITICAL(); // critical section
+                            {
+                                uxCurrentNumberOfTasks++;
+                                if( pxCurrentTCB == NULL )
+                                {
+                                    /* There are no other tasks, or all the other tasks are in
+                                    the suspended state - make this the current task. */
+                                    pxCurrentTCB = pxNewTCB;
+                                    prvInitialiseTaskLists();
+                                }
+                                else
+                                {
+                                    /* If the scheduler is not already running, make this task the
+                                    current task if it is the highest priority task to be created
+                                    so far. */
+                                    if( xSchedulerRunning == pdFALSE )
+                                    {
+                                        if( pxCurrentTCB->uxPriority &lt;= pxNewTCB->uxPriority )
+                                        {
+                                            pxCurrentTCB = pxNewTCB;
+                                        }
+                                    }
+                                }
+                                uxTaskNumber++;
+                                prvAddTaskToReadyList( pxNewTCB );
+                                portSETUP_TCB( pxNewTCB );
+                            }
+                            taskEXIT_CRITICAL();
+                        }
+                    </pre>
+                    <pre class="brush:cpp">
+                        // prvAddTaskToReadyList does two things, first record the used priority
+                        ( uxReadyPriorities ) |= ( 1UL &lt;&lt; ( uxPriority ) )
+                        // second add to the corresponding priority ready list
+                        vListInsertEnd( &( pxReadyTasksLists[ ( pxTCB )->uxPriority ] ), &( ( pxTCB )->xStateListItem ) )
                     </pre>
                 </li>
             </ol>
