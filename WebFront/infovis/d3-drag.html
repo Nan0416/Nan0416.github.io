@@ -1,0 +1,257 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>D3&nbsp;Drag</title>
+<meta charset="utf-8">
+<meta name="date" content="2018-11-20">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>&nbsp;-&nbsp;</strong>
+</div>
+<p class="date"><span class="created-date">Created:2018-11-20</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-11-20</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#drag">Drag</a></li>
+<li><a href="#code">Code</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+    <h4>Data binding with a single object</h4>
+    <p>Create a data model and bind it to a single SVG object</p>
+    <pre class="brush:js">
+            let circle_data = {
+                cx: 100,
+                cy: 100,
+                r: 10,
+                color: "green",
+                stroke: "black"
+            }
+            // datum
+            let circle = circleG.append('circle')
+                .datum(circle_data);
+    </pre>
+    <h4>.call method</h4>
+    <p>Each object (node) has a method called .call. The argument of this method is a function that takes an object</p>
+    <pre class="brush:js">
+            function draw(circle_){
+                circle_
+                    .transition()
+                    .duration(20)
+                    .attr('r', d=>d.r)
+                    .attr('cx', d=>d.cx)
+                    .attr('cy', d=>d.cy)
+                    .style("fill", d=>d.color)
+                    .style("stroke", d=>d.stroke)
+                return circle_;
+            }
+            circle.call(draw);
+            // which is same as draw(circle)
+    </pre>
+</div>
+</li>
+<li>
+    <div class="content" id="drag">
+        <h3>Drag</h3>
+        <div>
+            <svg id="drag-svg" width="300" height="300" style="border: 1px solid gray">
+                <!--<circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red" />-->
+            </svg>
+        </div>
+        <script>
+            let svg = d3.select('#drag-svg');
+            let circle_data = {
+                cx: 100,
+                cy: 100,
+                r: 7,
+                color: "green",
+                stroke: "black"
+            }
+            let padding = 50;
+            
+            // {x,y}
+            let path_data = [];
+            let width = svg.attr('width');
+            let height = svg.attr('height');
+            
+            let canvas = svg.append('g')
+                .attr('transform', `translate(${padding}, ${padding})`);
+            let canvas_height = height - 2 * padding;
+            let canvas_width = width - 2 * padding;
+
+            function draw_circle(circle_){
+                circle_
+                    .attr('r', d=>d.r)
+                    .attr('cx', d=>d.cx)
+                    .attr('cy', d=>d.cy)
+                    .style("fill", d=>d.color)
+                    .style("stroke", d=>d.stroke);
+                return circle_;
+            }
+            
+            function draw_path(path_){
+                let fun = d3.line()
+                    .x((d)=>{ return d.x;})
+                    .y((d)=>{ return d.y;})
+                path_.attr('d', fun);
+            }
+
+            let circle = canvas.append('circle')
+                .datum(circle_data).call(draw_circle);
+            let path = canvas.append('path')
+                .datum(path_data)
+                .attr('fill', 'none')
+                .attr('stroke', 'blue')
+                .attr('stroke-width', '1px');
+
+            let drag = d3.drag()
+                .on('start', (d)=>{
+                    //console.log(d)
+                })
+                .on('drag', (d)=>{
+                    // the argument d is the data model
+                    // d3.event.x d3.event.y are the drag poisition within the top group (it count the transform)
+                    if(d3.event.y > d.r && d3.event.y < canvas_height){
+                        d.cy = d3.event.y; 
+                    }
+                    if(d3.event.x > d.r && d3.event.x < canvas_width){
+                        d.cx = d3.event.x;
+                    }
+                    path_data.push({
+                        x: d.cx, y:d.cy
+                    })
+                    circle.call(draw_circle);
+                    path.call(draw_path);
+                })
+                .on('end', (d)=>{
+
+                });
+            circle.call(drag);
+        </script>
+    </div>
+</li>
+<li>
+    <div class="content" id="code">
+        <h3>Code</h3>
+        <pre class="brush:js">
+                let svg = d3.select('#drag-svg');
+                let circle_data = {
+                    cx: 100,
+                    cy: 100,
+                    r: 7,
+                    color: "green",
+                    stroke: "black"
+                }
+                let padding = 50;
+                
+                // {x,y}
+                let path_data = [];
+                let width = svg.attr('width');
+                let height = svg.attr('height');
+                
+                let canvas = svg.append('g')
+                    .attr('transform', `translate(${padding}, ${padding})`);
+                let canvas_height = height - 2 * padding;
+                let canvas_width = width - 2 * padding;
+    
+                function draw_circle(circle_){
+                    circle_
+                        .attr('r', d=>d.r)
+                        .attr('cx', d=>d.cx)
+                        .attr('cy', d=>d.cy)
+                        .style("fill", d=>d.color)
+                        .style("stroke", d=>d.stroke);
+                    return circle_;
+                }
+                
+                function draw_path(path_){
+                    let fun = d3.line()
+                        .x((d)=>{ return d.x;})
+                        .y((d)=>{ return d.y;})
+                    path_.attr('d', fun);
+                }
+    
+                let circle = canvas.append('circle')
+                    .datum(circle_data).call(draw_circle);
+                let path = canvas.append('path')
+                    .datum(path_data)
+                    .attr('fill', 'none')
+                    .attr('stroke', 'blue')
+                    .attr('stroke-width', '1px');
+    
+                let drag = d3.drag()
+                    .on('start', (d)=>{
+                        //console.log(d)
+                    })
+                    .on('drag', (d)=>{
+                        // the argument d is the data model
+                        // d3.event.x d3.event.y are the drag poisition within the top group (it count the transform)
+                        if(d3.event.y > d.r && d3.event.y &lt; canvas_height){
+                            d.cy = d3.event.y; 
+                        }
+                        if(d3.event.x > d.r && d3.event.x &lt; canvas_width){
+                            d.cx = d3.event.x;
+                        }
+                        path_data.push({
+                            x: d.cx, y:d.cy
+                        })
+                        circle.call(draw_circle);
+                        path.call(draw_path);
+                    })
+                    .on('end', (d)=>{
+    
+                    });
+                circle.call(drag);
+        </pre>
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>
