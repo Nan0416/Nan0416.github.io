@@ -43,6 +43,7 @@ SyntaxHighlighter.all()
 <ul class="catalogItems">
 <li><a href="#intro">Heatmap</a></li>
 <li><a href="#example">Example</a></li>
+<li><a href="#code">Code</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -54,11 +55,44 @@ SyntaxHighlighter.all()
 <h3>Heatmap</h3>
 <h4>D3 Heatmap</h4>
 <p>There is nothing magic about d3 heatmap. D3 heatmap is created with SVG rect.</p>
+
 </div>
 </li>
 <li>
     <div class="content" id="example">
         <h3>Example</h3>
+        <div class="featureList">
+            <ol>
+                <li>Self-defined scale
+                    <pre class="brush:js">
+                        .attr('x', d=>{return d.hour * gridWidth; })
+                        .attr('y', d=>{return yPosition.get(d.field) * gridHeight});
+                    </pre>
+                </li>
+                <li>Draw Axis
+                    <pre class="brush:js">
+                        let hours = ["1a", "2a", "3a", "4a", "5a", "6a", "7a", "8a", "9a", "10a", "11a", "12a", "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p", "10p", "11p", "12p"];
+                        let days = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
+                        let xSVGAxis = svg.append('g')
+                            .attr('class', 'x axis')
+                            .attr('transform', `translate(${padding.l}, ${padding.t})`);
+
+                        // bind data and draw x axis
+                        let xAxisText = xSVGAxis.selectAll('text')
+                            .data(hours);
+                        let text_enter = xAxisText.enter()
+                            .append("text")
+                            .text(d=>d)
+                            .attr('x', (d,i)=>{return i * gridWidth})
+                            .attr('y', 0)
+                            .style("text-anchor", "middle")
+                            .attr("transform", "translate(" + gridWidth / 2 + ", -6)");
+
+                        // don't need update and remove since static data.
+                    </pre>
+                </li>
+            </ol>
+        </div>
         <div>
             <button onclick="onDays()">Days</button>
             <button onclick="onStartStation()">Start Station</button>
@@ -84,6 +118,25 @@ SyntaxHighlighter.all()
             let heatmapG = svg.append('g')
                 .attr('class', 'heatmap')
                 .attr('transform', `translate(${padding.l}, ${padding.t})`);
+            
+            let hours = ["1a", "2a", "3a", "4a", "5a", "6a", "7a", "8a", "9a", "10a", "11a", "12a", "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p", "10p", "11p", "12p"];
+            let days = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
+            let xSVGAxis = svg.append('g')
+                    .attr('class', 'x axis')
+                    .attr('transform', `translate(${padding.l}, ${padding.t})`);
+            
+            
+            function toDate(str){
+                //2018-08-01 05:03:03.6030
+                let year = parseInt(str.substr(0, 4));
+                let month = parseInt(str.substr(5, 7)) - 1;
+                let date = parseInt(str.substr(8, 10));
+                let hour = parseInt(str.substr(11, 13));
+                let min = parseInt(str.substr(14, 16));
+                let second = parseInt(str.substr(17, 19));
+                //console.log(str, year, month, date, hour, min, second);
+                return new Date(year, month, date, hour, min, second);
+            }
             /**
                 Support field: days, start_station_name, end_station_name
             */
@@ -97,9 +150,11 @@ SyntaxHighlighter.all()
                 if(field === "days"){
                     for(let i = 0; i < dataset.length; i++){
                         let item = dataset[i];
-                        let startHour = new Date(item['start_time']).getHours();
-                        let endHour = new Date(item['end_time']).getHours();
-                        let day = new Date(item['start_time']).getDay();
+                        let sT = toDate(item['start_time']);
+                        let eT = toDate(item['end_time']);
+                        let startHour = sT.getHours();
+                        let endHour = eT.getHours();
+                        let day = sT.getDay();
                         if(!map.has(day)){
                             let arr = new Array(24);
                             arr.fill(0, 0, 24);
@@ -115,8 +170,10 @@ SyntaxHighlighter.all()
                 }else{
                     for(let i = 0; i < dataset.length; i++){
                         let item = dataset[i];
-                        let startHour = new Date(item['start_time']).getHours();
-                        let endHour = new Date(item['end_time']).getHours();
+                        let sT = toDate(item['start_time']);
+                        let eT = toDate(item['end_time']);
+                        let startHour = sT.getHours();
+                        let endHour = eT.getHours();
                         if(!map.has(item[field])){
                             let arr = new Array(24);
                             arr.fill(0, 0, 24);
@@ -177,25 +234,39 @@ SyntaxHighlighter.all()
                     chartHeight = svg_height.get(field) - padding.t - padding.b;
                 }
                 let gridHeight = chartHeight / yPosition.size;
+                
+                colorScale.domain(d3.extent(data, (d)=>{
+                    return Math.sqrt(d.count);
+                }));
+                // x axis
+                let xAxisText = xSVGAxis.selectAll('text')
+                    .data(hours);
+                let text_enter = xAxisText.enter()
+                    .append("text")
+                    .text(d=>d)
+                    .attr('x', (d,i)=>{return i * gridWidth})
+                    .attr('y', 0)
+                    .style("text-anchor", "middle")
+                    .attr("transform", "translate(" + gridWidth / 2 + ", -6)");
+                
+                
+
                 let heatmap = heatmapG.selectAll('.block')
                     .data(data, (d)=>(d.field + d.hour)); // bind data with k
-                colorScale.domain(d3.extent(data, (d)=>{
-                    return d.count;
-                }));
                 let rect_enter = heatmap.enter()
                     .append('rect')
                     .attr('class', 'block')
                     .attr('fill', (d)=>{
-                        return colorScale(d.count);
+                        return colorScale(Math.sqrt(d.count));
                     })
                     .attr('height', gridHeight)
                     .attr('width', gridWidth)
                     .attr('x', d=>{return d.hour * gridWidth; })
-                    .attr('y', d=>{return yPosition.get(d.field) * gridHeight; });
+                    .attr('y', d=>{return yPosition.get(d.field) * gridHeight});
                 
                 rect_enter.merge(heatmap)
                     .attr('fill', (d)=>{
-                        return colorScale(d.count);
+                        return colorScale(Math.sqrt(d.count));
                     })
                     .attr('height', gridHeight)
                     .attr('width', gridWidth)
@@ -216,6 +287,198 @@ SyntaxHighlighter.all()
                 onField("start_station_name");
             }
         </script>
+    </div>
+</li>
+<li>
+    <div class="content" id="code">
+        <h3>Code</h3>
+        <pre class="brush:js">
+                let MAX_ROW = 20;
+                let svg = d3.select("#heatmap");
+                let padding = {t: 60, r: 40, b: 30, l: 40};
+                let svgWidth = +svg.attr('width');    
+                let chartWidth = svgWidth - padding.l - padding.r;
+                let gridWidth = chartWidth / 24;
+                let colorScale = d3.scaleSequential(d3.interpolateBlues);
+                
+                let support_fields = ["days", "start_station_name", "end_station_name"];
+                let svg_height = new Map();
+                svg_height.set("days", 300);
+                svg_height.set("start_station_name", 800);
+                svg_height.set("end_station_name", 800);
+    
+                let heatmapG = svg.append('g')
+                    .attr('class', 'heatmap')
+                    .attr('transform', `translate(${padding.l}, ${padding.t})`);
+                
+                let hours = ["1a", "2a", "3a", "4a", "5a", "6a", "7a", "8a", "9a", "10a", "11a", "12a", "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p", "10p", "11p", "12p"];
+                let days = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
+                let xSVGAxis = svg.append('g')
+                        .attr('class', 'x axis')
+                        .attr('transform', `translate(${padding.l}, ${padding.t})`);
+                
+                
+                function toDate(str){
+                    //2018-08-01 05:03:03.6030
+                    let year = parseInt(str.substr(0, 4));
+                    let month = parseInt(str.substr(5, 7)) - 1;
+                    let date = parseInt(str.substr(8, 10));
+                    let hour = parseInt(str.substr(11, 13));
+                    let min = parseInt(str.substr(14, 16));
+                    let second = parseInt(str.substr(17, 19));
+                    //console.log(str, year, month, date, hour, min, second);
+                    return new Date(year, month, date, hour, min, second);
+                }
+                /**
+                    Support field: days, start_station_name, end_station_name
+                */
+                function aggregate_data(dataset, field){
+                    /*
+                    *   [{field: string, time: time, count: number}]
+                    */
+                    let map = new Map();
+                    let result = []
+                    let yPosition = new Map();
+                    if(field === "days"){
+                        for(let i = 0; i &lt; dataset.length; i++){
+                            let item = dataset[i];
+                            let sT = toDate(item['start_time']);
+                            let eT = toDate(item['end_time']);
+                            let startHour = sT.getHours();
+                            let endHour = eT.getHours();
+                            let day = sT.getDay();
+                            if(!map.has(day)){
+                                let arr = new Array(24);
+                                arr.fill(0, 0, 24);
+                                map.set(day, arr);
+                            }
+                            for(let i = startHour; i &lt;= endHour && i &lt;  24; i++){
+                                map.get(day)[i]++;
+                            }
+                        }
+                        for(let i = 0; i &lt;  7; i++){
+                            yPosition.set(i, i );
+                        }
+                    }else{
+                        for(let i = 0; i &lt;  dataset.length; i++){
+                            let item = dataset[i];
+                            let sT = toDate(item['start_time']);
+                            let eT = toDate(item['end_time']);
+                            let startHour = sT.getHours();
+                            let endHour = eT.getHours();
+                            if(!map.has(item[field])){
+                                let arr = new Array(24);
+                                arr.fill(0, 0, 24);
+                                map.set(item[field], arr);
+                            }
+                            for(let i = startHour; i &lt;= endHour && i &lt; 24; i++){
+                                map.get(item[field])[i]++;
+                            }
+                        }
+                        // sort 
+                        let tempArr = [];
+                        map.forEach((v, k, _)=>{
+                            let c = 0;
+                            for(let i = 0; i &lt; v.length; i++){
+                                c += v[i];
+                            }
+                            tempArr.push({field: k, sum_count: c});
+                        });
+                        tempArr.sort((a, b)=>{
+                            return b.sum_count - a.sum_count;
+                        });
+                        let tempMap = new Map();
+                        for(let i = 0; i &lt;  MAX_ROW && i &lt;  tempArr.length; i++){
+                            yPosition.set(tempArr[i].field, i);
+                            tempMap.set(tempArr[i].field, map.get(tempArr[i].field));
+                        }
+                        map = tempMap;
+    
+                    }
+                    map.forEach((v, k, _)=>{
+                        for(let i = 0; i &lt;  v.length; i++){
+                            result.push({field: k, hour: i, count: v[i]});
+                        }
+                    });
+                    return {
+                        yPosition: yPosition,
+                        value: result
+                    };
+                }
+    
+    
+                let dataset;
+                let data;
+                console.log("Load Data", new Date());
+                d3.csv('./data/201808-fordgobike-tripdata.csv', (err, dataset_)=>{
+                    if(err){
+                        console.log('file to load data');
+                        return;
+                    }
+                    dataset = dataset_;
+                    onField("days");
+                });
+    
+                function draw(data, yPosition, field){
+                    let chartHeight = 500;
+                    if(svg_height.has(field)){
+                        svg.attr('height', svg_height.get(field));
+                        chartHeight = svg_height.get(field) - padding.t - padding.b;
+                    }
+                    let gridHeight = chartHeight / yPosition.size;
+                    
+                    colorScale.domain(d3.extent(data, (d)=>{
+                        return Math.sqrt(d.count);
+                    }));
+                    // x axis
+                    let xAxisText = xSVGAxis.selectAll('text')
+                        .data(hours);
+                    let text_enter = xAxisText.enter()
+                        .append("text")
+                        .text(d=>d)
+                        .attr('x', (d,i)=>{return i * gridWidth})
+                        .attr('y', 0)
+                        .style("text-anchor", "middle")
+                        .attr("transform", "translate(" + gridWidth / 2 + ", -6)");
+                    
+                    
+    
+                    let heatmap = heatmapG.selectAll('.block')
+                        .data(data, (d)=>(d.field + d.hour)); // bind data with k
+                    let rect_enter = heatmap.enter()
+                        .append('rect')
+                        .attr('class', 'block')
+                        .attr('fill', (d)=>{
+                            return colorScale(Math.sqrt(d.count));
+                        })
+                        .attr('height', gridHeight)
+                        .attr('width', gridWidth)
+                        .attr('x', d=>{return d.hour * gridWidth; })
+                        .attr('y', d=>{return yPosition.get(d.field) * gridHeight});
+                    
+                    rect_enter.merge(heatmap)
+                        .attr('fill', (d)=>{
+                            return colorScale(Math.sqrt(d.count));
+                        })
+                        .attr('height', gridHeight)
+                        .attr('width', gridWidth)
+                        .attr('x', d=>{return d.hour * gridWidth; })
+                        .attr('y', d=>{return yPosition.get(d.field) * gridHeight; });
+                    heatmap.exit().remove();
+                }
+                function onField(field){
+                    console.log("Analyze data", new Date());
+                    let data = aggregate_data(dataset, field);
+                    console.log("Draw data", new Date());
+                    draw(data.value, data.yPosition, field);
+                }
+                function onDays(){
+                    onField("days");
+                }
+                function onStartStation(){
+                    onField("start_station_name");
+                }
+        </pre>
     </div>
 </li>
 <li>

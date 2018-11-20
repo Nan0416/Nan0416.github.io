@@ -129,7 +129,27 @@ SyntaxHighlighter.all()
                 </li>
                 <li>Draw Other Objects (e.g. Scatterplot -- a lot of circles)
                     <pre class="brush:js">
-
+                        // create a group, transform
+                        let scatterplotG = svg.append('g').attr('class', 'scatter-plot');
+                        
+                        // rebind the updated data to chart for each redrawing
+                        let scatterPlot = scatterplotG.selectAll('.point')
+                            .data(data, (d)=>(d.time)); // bind data with k
+                        // for new 
+                        let sp_enter = scatterPlot.enter()
+                            .append('circle')
+                            .attr('class', 'point')
+                            .attr('fill', 'green')
+                            .attr('r', 3)
+                            .attr('cx', d=>{return xScale(d.time)})
+                            .attr('cy', d=>{return yScale(d.value)})
+                        // for update existed all
+                        sp_enter.merge(scatterPlot).transition()
+                            .attr('cx', d=>{return xScale(d.time)})
+                            .attr('cy', d=>{return yScale(d.value)})
+                        
+                        // for removed
+                        scatterPlot.exit().remove();
                     </pre>
                 </li>
             </ol>

@@ -38,7 +38,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>D3&nbsp;-&nbsp;Scale</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-09-15</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-11-11</span></p>
+<p class="date"><span class="created-date">Created:2018-09-15</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-11-19</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Scale</a></li>
@@ -138,6 +138,28 @@ SyntaxHighlighter.all()
                         var horizontalAxis =d3.axisBottom(widthScale)
                             .tickSizeInner(-1 * max-height) // show a grid
                             .tickValues([500, 1000, 2000, 4000, 8000, 16000, 32000, 64000]);
+                    </pre>
+                </li>
+                <li>
+                    Customized Axis:
+                    <br>D3's axis relies on scale, if we don't have scale such as Heatmap, we need to create axis by self.
+                    <br>Creating axis is same as create a chart, it involves binding data, then enter, update, and exit.
+                    <pre class="brush:js">
+                        // defined the label need to shown
+                        let days = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
+                        // create svg group and position
+                        let svgAxis = svg.append('g').attr('transform', );
+                        svgAxis.selectAll('text') // can be others
+                            .data(days);
+                        let text_enter = svgAxis.enter()
+                            .append('text')
+                            .text(d=>d)
+                            .attr('x' ,)
+                            .attr('y', )
+                        text_enter.merge(svgAxis)
+                            ...
+                        
+                        svgAxis.exit().remove();
                     </pre>
                 </li>
             </ol>
