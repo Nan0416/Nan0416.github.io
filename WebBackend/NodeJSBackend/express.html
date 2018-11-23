@@ -36,12 +36,13 @@ SyntaxHighlighter.all()
 </script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<center><strong>NodeJS&nbsp;-&nbsp;Express</strong></center>
+<strong>NodeJS&nbsp;-&nbsp;Express</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-04-07</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-04-07</span></p>
+<p class="date"><span class="created-date">Created:2018-04-07</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-11-23</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#expressIntro">Introduction</a></li>
+<li><a href="#template">Tiny Template</a></li>
 <li><a href="#expressMiddleware">Middleware</a></li>
 <li><a href="#expressRequest">Request</a></li>
 <li><a href="#expressResponse">Response</a></li>
@@ -83,6 +84,37 @@ app.use(bodyparser); // parsing http body
       the http request body and adds new properties to the request object and then call next()...</p>
 </div>
 </div>
+</li>
+<li>
+    <div class="content" id="template">
+        <h3>Tiny Template</h3>
+        <pre class="brush:js">
+            const express = require('express');
+            const logger = require('morgan');
+            const bodyParser = require('body-parser');
+            const app = express();
+
+            const port = 3000;
+
+            app.use(logger('dev'));
+            app.use(bodyParser.json());
+            app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+                limit: '50mb',
+                extended: true
+            }));
+
+            const router = express.Router();
+            router.route("/")
+            .post((req, res, next)=>{
+                res.json();
+            });
+
+            ////////////// Setup route /////////////////////////
+            app.use("/root", router);
+
+            app.listen(port);
+        </pre>
+    </div>
 </li>
 <li>
 <div class="content" id="expressMiddleware">
