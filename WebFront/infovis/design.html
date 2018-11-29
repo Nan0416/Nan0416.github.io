@@ -1,0 +1,381 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>InfoVis&nbsp;Design</title>
+<meta charset="utf-8">
+<meta name="date" content="2018-11-28">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>InfoVis&nbsp;-&nbsp;Design</strong>
+</div>
+<p class="date"><span class="created-date">Created:2018-11-28 @CS7450 Final Exam is tomorrow</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-11-28</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#design">Design Principles</a></li>
+<li><a href="#techniques">Techniques</a></li>
+<li><a href="#variation">Variations</a></li>
+<li><a href="#links">Interesting links</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+    <li>
+        <div class="content" id="design">
+            <h3>Design Principles</h3>
+            
+            <div class="featureList">
+                <h4>Types of data</h4>
+                <ol>
+                    <li>Univariate, Bivariate, Trivariate, Multi-variate (Hypervariate)
+                        <br>tables, scatterplot, [scatterplot matrix, chernoff faces, mosaic plot, parallel coordinates, 
+                        star plot (radar chart), star coordinate, table lens, crosstab, parallel set]
+                    </li>
+                    <li>Time series data
+                        <br>Lines, Bump charts, 
+                    </li>
+                    <li>Numerical vs. Categorical
+                        <br>Cateogircal: shape, color, icon
+                    </li>
+                    <li>
+                        set data
+                        <br>Venn Diagram &lt;3 ; Euler Diagram > 3 , bubble set
+                    </li>
+                </ol>
+                <h4>Focus of data</h4>
+                <ol>
+                    <li>Precise values
+                        <br>Table, stem-and-leaf plot, 
+                    </li>
+                    <li>Change over time (Time series)</li>
+                    <li>Distribution
+                        <br>Boxplot
+                    </li>
+                </ol>
+            </div>
+            <div>
+                <img src="./images/design_process.png" width="400" height="200">
+            </div>
+            <div class="featureList">
+                <h4>Tips</h4>
+                <ol>
+                    <li>Don't use rainbow color for quantitative data</li>
+                    <li>Value of Vis: Time (save time to answer) + Insight (discover insight, e.g. relationship)</li>
+                </ol>
+            </div>
+            <div class="featureList">
+                <h4>Gestalt Laws (从心理学角度了解人类视觉上的天性）</h4>
+                <ol>
+                    <li>Proximity, Similarity, Closure, </li>
+                </ol>
+            </div>
+            <div class="featureList">
+                <h4>Concept</h4>
+                <ol>
+                    <li>Pre-attentive: 200ms</li>
+                    <li>Cluster at high dimensions: deal with large variates. e.g. k-means, hierachical clustering, aggregation</li>
+                    <li>Interaction: selection,filter, abstract/elaborate, encode, reconfigure, explore</li>
+                    <li>Dynamic Query: +work is faster, very natural interaction, support undo, exploration, reversing. - cannot express complicated logic, </li>
+                    <li>Static vs Dynamic time-series visualization:
+                        <br>static: + show history, allow comparison
+                        <br>animation gives feel for process & change over time.
+                    </li>
+                </ol>
+            </div>
+            
+        </div>
+    </li>
+<li>
+<div class="content" id="techniques">
+<h3>Techniques</h3>
+<div class="featureList">
+    <h4>Topics</h4>
+    <ol>
+        <li><a href="#table">Tables</a></li>
+        <li><a href="#symbolic">Symbolic Visualization: Graphs, Charts</a></li>
+        <li><a href="">Statistical Graphs</a></li>
+        <li><a href="">Visual Perception</a></li>
+        <li><a href="">Designing Vizes</a></li>
+        <li><a href="">Multivariate Visual Representation</a></li>
+        <li><a href="">Interaction</a></li>
+        <li>Specific Graphs
+            <ol>
+                <li><a href="">Scatterplot</a>: Designed for two or three variates.</li>
+                <li><a href="">Pie Chart</a>: Not clear to show perceptage.</li>
+                <li><a href="#turkey">Turkey Box plot</a></li>
+                <li><a href="">Heatmap</a></li>
+                <li><a href="#stack">Stacked graph</a></li>
+                <li><a href="#scatterplotmatrix">Scatterplot Matrix</a></li>
+                <li><a href="#bump">Bump Charts</a></li>
+                <li><a href="#pareto">Pareto Chart</a></li>
+                <li><a href="#stem">Stem-and-leaf Plot</a></li>
+                <li><a href="#chernoff">Chernoff-face</a></li>
+                <li><a href="#mosaic">Mosaic Plot</a></li>
+                <li><a href="#parallel">Parallel Coordinate</a></li>
+                <li><a href="#star">Star Plot (Radar Chart)</a></li>
+                <li><a href="#star_coordinate">Star Coordinate</a></li>
+                <li><a href="#parallel_set">Parallel Set</a></li>
+                <li><a href="#table_len">Table lens</a></li>
+                <li><a href="#pixel">Pixel bar chart</a></li>
+                <li><a href="#bubbleset">Bubble set</a></li>
+                <li><a href="#histogram">Interactive stacked histograms</a></li>
+                <li><a href="#map">Map</a></li>
+                <li><a href="#gantt">Gantt Chart</a></li>
+                <li><a href="#">Word Cloud</a></li>
+                <li><a href="#">Parallel Tag Clouds</a></li>
+                <li><a href="#">Node Link diagrams:
+                    <br>tree grow far long on one paritcular branch
+                    <br>top-down, width of fan-out uses up
+                </a></li>
+                <li>SpaceTree</li>
+            </ol>
+        </li>
+    </ol>
+</div>
+<hr>
+<div class="featureList">
+    <ol>
+        <li id="table">
+            <h4>Tables</h4>
+            <p>Multivariate Data</p>
+            <p>Wide vs. Narrow tabular data
+                <pre style="border: 1px solid gray; width: 600px;">
+                Wide
+                    Name Age Gender
+                    Bob   21   M
+                    Nan   24   M
+                
+                Narrow
+                    Name Variable Value
+                    Nan   Gender    M
+                    Nan   Age       24
+                </pre>
+            </p>
+            <p><span style="color:red">Tables vs Graphs</span>
+                <br>Table: check and compare individual values, precise Value required
+                <br>Graph (encode value to shape): reveal relationships among values
+            </p>
+            <p><span style="color:red">Design Tables</span> Concise</p>
+            <div>
+                <img src="./images/design_table.png" width="300" height="300">
+            </div>
+        </li>
+        <li id="symbolic">
+            <h4>Symbolic Vis</h4>
+            <p>
+                Use Size, Shape, Color, Grayscale, Orientation, Position to represent numbers.
+                <br>Use picture (iconic represenation) to represent categories. e.g. dog
+            </p>
+            <ol>
+                <li>lines: connect value, show pattern and change over time</li>
+                <li>bar: emphasizes individual values, comparing individual values</li>
+                <li>(Turkey) box plot: show a distribution</li>
+            </ol>
+        </li>
+
+        <li id="turkey">
+            <h4>Turkey Box Plot</h4>
+            <div>
+                <img src="./images/box-plot-explained.gif" width="150" height="200">
+            </div>
+        </li>
+        <li id="bump">
+            <h4>Bump Chart</h4>
+            <p>
+                + Only show rank change over time<br>
+                - Cannot show values<br>
+                Time series data
+            </p>
+            <div>
+                <img src="https://2.bp.blogspot.com/-pvH_vOUTLOQ/WIAc3OM6sBI/AAAAAAAAGPs/BdBjLxnq3KQP7gg2oZvdQO-oiFzsaURDgCLcB/s1600/Simple%2BBump%2BSample.png" width="400" height="300">
+            </div>
+            <a href="https://www.kenflerlage.com/2017/01/my-thoughts-on-bump-charts-and-when-to.html" target="_blank">Reading</a>
+        </li>
+        <li id="pareto">
+            <h4>Pareto Chart</h4>
+            <p>A bar chart sorted by precentage, and a line that aggregate from the beginning</p>
+            <div>
+                <img src="./images/paretor.png" width="400" height="200">
+            </div>
+        </li>
+        <li id="stem">
+            <h4>Stem-and-leaf Plot</h4>
+            <p>Show individual values but has a bar chart like appearance</p>
+            <div>
+                <img src="./images/stem.png" width="300" height="120">
+            </div>
+        </li>
+        <li id="scatterplotmatrix">
+            <h4>Scatterplot Matrix</h4>
+            <p>Roughly determine if you have a linear correlation between multiple variables</p>
+            <div>
+                <img src="./images/matrix.png" width="300" height="300">
+            </div>
+        </li>
+        <li id="chernoff">
+            <h4>Chernoff face</h4>
+            <p>Encode different variables’ values in characteristicsof human face</p>
+            <div>
+                <img src="./images/face.png" width="300" height="200">
+            </div>
+        </li>
+        <li id="mosaic">
+            <h4>Mosaic Plots</h4>
+            <p>Presentation categories attributes and the count<br>
+             Cannot represent 4 features or above
+            </p>
+            <div>
+                <img src="./images/mosaic.png" width="300" height="200">
+            </div>
+        </li>
+        <li id="parallel"> 
+            <h4>Parallel Coordinates</h4>
+            <p>Represent multi-numerical attributes
+                <br>- too many data case, (variation: grayscale of line)
+            </p>
+            <div>
+                <img src="./images/parallel.png" width="300" height="200">
+            </div>
+        </li>
+        <li id="star">
+            <h4>Star Plot</h4>
+            <div>
+                <img src="./images/star.png" width="200" height="200">
+            </div>
+        </li>
+        <li id="star_coordinate">
+            <h4>Star Coordinate</h4>
+            <div>
+                <img src="./images/star_set.png" width="200" height="200">
+            </div>
+        </li>
+        <li id="parallel_set">
+            <h4>Parallel Set</h4>
+            <div>
+                <img src="./images/para_set.png" width="200" height="180">
+            </div>
+        </li>
+        <li id="table_lens">
+            <h4>Table Lens</h4>
+            <div>
+                <img src="./images/table_len.png" width="200" height="200">
+            </div>
+        </li>
+        <li id="bubbleset">
+            <h4>Bubble Set</h4>
+            <div>
+                <img src="./images/bubble-set.png" width="200" height="200">
+            </div>
+        </li>
+        <li id="histogram">
+            <h4>Interactive stacked histograms</h4>
+            <div>
+                <img src="./images/histogram.png" width="200" height="200">
+            </div>
+        </li>
+        <li id="map">
+            <h4>Map</h4>
+            <p>Choropleth Maps: Modifiable Areal Unit Problem </p>
+            <div>
+                <img src="./images/cons_map.png" width="200" height="200">
+            </div>
+            <p>Peters Projection is correct, Mercator Projection is popular</p>
+            <div>
+                <img src="./images/b.png" width="200" height="200">
+            </div>
+        </li>
+        <li>
+            <h4>Word Cloud</h4>
+            <div>
+                <img src="./images/wordcloud.png" width="200" height="200">
+            </div>
+        </li>
+        <li>
+            <h4>Parallel Tag Clouds</h4>
+            <p>Show word frequencies across multiple related documents</p>
+        </li>
+        <li>
+            <h4>Phrase Nets/sentance tree</h4>
+        </li>
+        <li>
+            <h4>Word tree</h4>
+            <p>Concordance</p>
+            <div>
+                <img src="./images/wordtree.png" width="200" height="200">
+            </div>
+        </li>
+    </ol>
+</div>
+</div>
+</li>
+<li>
+    <div class="content" id="variation">
+        <h3>Variation</h3>
+        <p>For each traditional type of graph, there exist many variation to add new features</p>
+        <div class="featureList">
+            <ol>
+                <li>A line chart + a reference line.</li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="links">
+        <h3>Interesting Links</h3>
+        <div class="featureList">
+            <ol>
+                <li><a href="http://www.dear-data.com/" target="_blank">Dear Data (Data Representation)</a></li>
+                <li><a href="https://www.anychart.com/chartopedia/chart-type/" target="_blank">Different Chart Types</a></li>
+                <li><a href="https://datavizproject.com" target="_blank">Different Charts</a></li>
+                <li><a href="https://gka.github.io/chroma.js/" target="_blank">js library for color picking</a></li>
+                <li><a href="https://www.cc.gatech.edu/gvu/ii/dnm/dustnmagnet.mov" target="_blank">Dust and Magnet</a></li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li><a href="https://www.cc.gatech.edu/~stasko/7450/schedule.html" target="_blank">Class Homepage</a></li>
+        <li><a href="https://flowingdata.com/2008/02/15/how-to-read-and-use-a-box-and-whisker-plot/">Turkey box</a></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>
