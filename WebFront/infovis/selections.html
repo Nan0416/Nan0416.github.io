@@ -38,40 +38,176 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>D3&nbsp;-&nbsp;Selection</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-09-08</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-09-08</span></p>
+<p class="date"><span class="created-date">Created:2018-09-08</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-11-30</span></p>
 <div class="catalog">
 <ul class="catalogItems">
-<li><a href="#d3select">D3 Selection</a></li>
 <li><a href="#d3Databinding">D3 Data Binding</a></li>
+<li><a href="#d3select">D3 Selection</a></li>
+<li><a href="#d3nestselection">D3 Nested Selection</a></li>
 <li><a href="#d3selectReferences">References</a></li>
 </ul>
 </div>
 <hr>
 <div class="contentContainer">
 <ol>
+    <li>
+    <div class="content" id="d3Databinding">
+        <h3>Data Binding</h3>
+        <div>
+            <p>1. rules: 
+                <br>Data is bound to each DOM element with adding the __data__ attribute.
+                <br>A group of elements e.g. selected with .classname, is bound to an array of object.
+                <br>Data and DOM element are joined by the array's index or a customized function that return a key.
+                <br>An individual element is bound to a single object.
+            </p>
+            <p>2. Index joining:
+                <div>
+                <img src="./images/join.png" height="200" width="700">
+                </div>
+            </p>
+            <p>3. key function joining:
+                .data(data, key_function) // the key_function takes a element of the data as input, and return a key that match the DOM element.
+                <span style="color:green">// ?????? is the key is the dom's id? Yes!!</span>
+            </p>
+        </div>
+    </div>
+</li>
 <li>
-<div class="content" id="d3select">
-<h3>D3 Selection</h3>
-<div>
-    <p>1. Group: D3 select/selectAll returns a group/ groups of array.
-        <br>e.g. select [Array(1)] or selectAll[Array(N)]
-        <br>The first array just has 1 element.
-        <br>selection -> one group / groups -> DOM or DOMs
-        <br><span style="color:red">selection's style, data, attr method are realized one the top of group/groups</span>
-    </p>
-    <p>2. Group vanish
-        <br>d3.selectAll('p'): selection -> (document) group -> p tags
-        <br>d3.selectAll('p').selectAll('a'): selection -> p groups -> a tags.
-        <br> the top group vanished. <span style="color:red">Only one layer of group can exist</span>
-        <br><span style="color:blue">Group vanish only happen when using selectAll (select does not affect)</span>
-        <pre class="brush:js">
-            var se = d3.select('body').select('p').select('a');
-            se[0].parentNode ; // -> document element.
-            var se = d3.select('body').select('p').selectAll('a');
-            se[0].parentNode ; // -> p element.
+    <div class="content" id="d3select">
+    <h3>D3 Selection</h3>
+    <p>d3 selection is used to select an HTML element or a group of HTML elements, and then optionally bind data to it/them and maniuplate on it/them.</p>
+    <div class="featureList">
+        <ol>
+            <li>
+                <h4>A single element</h4>
+                <p>A single element can be a path, a circle or a group.
+                    <br>Data binding with a single elements is done by <span style="color:red">.datum</span>
+                </p>
+                <pre class="brush:js">
+                    // get a circle from selection
+                    let circle = d3.select('#circle-12');
+                    // get a circle from creation
+                    let circle2 = d3.select('svg').append('circle');
+                    // bind data
+                    circle.datum({
+                        radius: 10,
+                        cx: 110,
+                        cy: 120,
+                        fill: 'green'
+                    });
+                </pre>
+            </li>
+            <li>
+                <h4>A group of element</h4>
+                <p>
+                    A group of element is selected by a group attributes, such as .classname or tag name.<br>
+                    Each data item can be bound to each element by a key or the default index.</br>
+                    Data bind to a group selection must be an array.
+                </p>
+                <p>
+                    A group selection is done by .selectAll(), it return a <span style="color:red">selection</span>.<br>
+                    A selection has three fields: enter, exit and group.
+                </p>
+                <p><span style="color:red">Understanding the three fields are very helpful to create and update charts when data is updated.</span></p>
+                <h4>Set operation</h4>
+                <ol>
+                    <li>enter: bound data item cannot find a corresponding html element.
+                        <br>We usually create the corresponding html element for it.
+                        <pre class="brush:js">
+                            let enter_circle = circles.enter();
+                            enter_circle.append('circle');
+                        </pre>
+                    </li>
+                    <li>exit: the html element cannot find a corresponding data item.
+                        <br>We usually delete the correspoind html elements.
+                        <pre class="brush:js">
+                            let exited_circle = circles.exit();
+                            enter_circle.exit().remove();
+                        </pre>
+                    </li>
+                    <li>group: the data items have corresponding item.
+                        <br>The default section.
+                        <pre class="brush:js">
+                            circle.
+                        </pre>
+                    </li>
+                    <li>
+                        merge:
 
-        </pre>
-    </p>
+                    </li>
+                    <li>
+                        filter:
+                    </li>                    
+                </ol>
+                <pre class="brush:js">
+                    let data = [
+                        {key: "123", value: 100},
+                        {key: "124", value: 110}
+                    ];
+                    let circles = d3.selectAll('.circle-g')
+                        .data(data, (d)=>{
+                            return d.key;
+                        });
+                    // issue: the group of selected html element may not match to the data.
+                    // e.g. data.length != circles length
+
+                    let new_circles = circles.enter(); // get the group of new (selection) circle data
+                    let exit_circles = circles.exit(); // remove selection
+                    let current_circles = new_circles.merge(circles); // merge includes all 
+                        .append('circle'); // append new circle
+                    
+                </pre>
+                <div>
+                    <svg id="group-selection" style="border:1px gray solid" width="400" height="200"></svg>
+                    <script>
+                        let circles_data = [
+                            {key: "a", radius: 10, cx: 100, cy:100, fill: 'green'},
+                            {key: "b", radius: 10, cx: 100, cy:140, fill: 'blue'},
+                            {key: "c", radius: 20, cx: 200, cy:100, fill: "red"},
+                        ];
+                        let circles_data_2 = [
+                            {key: "c", radius: 10, cx: 220, cy:100, fill: "red"},
+                            {key: "d", radius: 10, cx: 50, cy:50, fill: 'green'},
+                           
+                        ];                         
+                        let svg = d3.select('#group-selection');
+                        let circlePlot = svg.append('g');
+                        
+                        let circles_1 = circlePlot.selectAll('circle').data(circles_data, d=>d.key);    
+                        circles_1.enter().append('circle');
+                        
+                        
+                        setTimeout(()=>{
+                            let circles = circlePlot.selectAll('circle').data(circles_data_2, d=>d.key); // c
+                            let exited_circles = circles.exit();   // a, b  
+                            let entered_circles = circles.enter(); // d
+                            
+                            console.log(circles, exited_circles, entered_circles);
+
+                        }, 1000);
+                    </script>
+                </div>
+            </li>
+        </ol>
+        <p>1. Group: D3 select/selectAll returns a group/ groups of array.
+            <br>e.g. select [Array(1)] or selectAll[Array(N)]
+            <br>The first array just has 1 element.
+            <br>selection -> one group / groups -> DOM or DOMs
+            <br><span style="color:red">selection's style, data, attr method are realized one the top of group/groups</span>
+        </p>
+        <p>2. Group vanish
+            <br>d3.selectAll('p'): selection -> (document) group -> p tags
+            <br>d3.selectAll('p').selectAll('a'): selection -> p groups -> a tags.
+            <br> the top group vanished. <span style="color:red">Only one layer of group can exist</span>
+            <br><span style="color:blue">Group vanish only happen when using selectAll (select does not affect)</span>
+            <pre class="brush:js">
+                var se = d3.select('body').select('p').select('a');
+                se[0].parentNode ; // -> document element.
+                var se = d3.select('body').select('p').selectAll('a');
+                se[0].parentNode ; // -> p element.
+
+            </pre>
+        </p>
     <p>3. .parentNode
         <br>Each group's elements share one parentNode attribute that stored in the group object.
         <pre class="brush:js">
@@ -108,28 +244,7 @@ SyntaxHighlighter.all()
 </div>
 </div>
 </li>
-<li>
-    <div class="content" id="d3Databinding">
-        <h3>Data Binding</h3>
-        <div>
-            <p>1. rules: 
-                <br>Data is bound to each DOM element with adding the __data__ attribute.
-                <br>Each group has an array of data.
-                <br>Data and DOM element are joined by index or a customized function.
-                <br>Each group is join independently.
-            </p>
-            <p>2. Index joining:
-                <div>
-                <img src="./join.png" height="200" width="700">
-                </div>
-            </p>
-            <p>3. key function joining:
-                .data(data, key_function) // the key_function takes a element of the data as input, and return a key that match the DOM element.
-                <span style="color:green">// ?????? is the key is the dom's id? Yes!!</span>
-            </p>
-        </div>
-    </div>
-</li>
+
 <li>
 <div class="content" id="d3selectReferences">
 <h3>References</h3>
