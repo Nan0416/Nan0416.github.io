@@ -36,7 +36,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>System&nbsp;-&nbsp;System&nbsp;control</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-03-10</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-09-15</span></p>
+<p class="date"><span class="created-date">Created:2018-03-10</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-01-29</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#threadIntro">Introduction</a></li>
@@ -225,6 +225,13 @@ public class Priority extends Thread{
 
 </p>
 <p class="starMark">* After interrupting a thread, the thread is continuing running.</p>
+<p>Calling t1.interrupt() will set t1's interrupt flag. It MAY interrupt the t1 thread depending on if the t1 thread is currently sleep, wait or join.
+If so, the sleep, wait or join will throw the InterruptedException.</p>
+<p>So if t1 does not use any sleep, wait or join, we have to check the interrupt flag at regular time.</p>
+<p>Interrupt flag can be obtained by calling Thread.interrupted() [a static method] or Thread.currentThread().isInterrupted()<br>
+<span style="color:red">.interrupted() will also clear the interrupt flag, but isInterrupted does not.</span></p>
+<p>Interrupt flag is also cleared when the thread is terminated, or when the thread throws the interrupt exception.</p>
+<p>interrupt exception is thrown either 1). thread is sleep, wait, join and then an interrupt happens. or 2). the interrupt flag is set, and then thread sleep, wait or join.</p>
 <pre class="brush:java">
 public class ThreadManage {
     public static void main(String [] args) throws InterruptedException{
@@ -286,13 +293,13 @@ public class ThreadManage2 {
         // final Sync s2 = new Sync(0);
         Thread t1 = new Thread(()->s.dec());
         Thread t2 = new Thread(()->s.inc());
-// dec() and inc() use the same lock even though they are not the same object.
+        // method dec() and inc() use the same lock because they are invoked on the same object.
 
-        t1.start();
+        t1.start(); // t1 obtains the lock, but its while loop blocks itself.
         Thread.sleep(100);
-        t2.start();
+        t2.start(); // t2 wait t1's lock
         System.out.println("start");
-        t2.join(); // blocked here
+        t2.join(); // blocked here: main thread join (wait) t2 (until it finish).
         System.out.println("t2 end");
         t1.join();
         System.out.println("end");
@@ -365,7 +372,8 @@ class Sync{
 </pre>
 <h4>Synchronized code block in instance methods</h4>
 <p>Sometimes, it is not necessary to synchronize the entire method.</p>
-<p>Synchronized block also need to select the target sync object. Usually, it is just the instance itself, this.</p>
+<p>Synchronized block also need to select the target sync object. <br>
+    Usually, it is just the instance itself, this. It can also synchronize on different object.</p>
 <pre class="brush:java">
 public class ThreadManage4 {
     // private String name;
@@ -380,7 +388,7 @@ public class ThreadManage4 {
         }
     }
     public void func3(){
-        synchronized (this.toString()){
+        synchronized (this.toString()){ //// This block does not work, because .toString() return a new string on each invocation.
             System.out.println("func3");
         }
     }
@@ -389,13 +397,15 @@ public class ThreadManage4 {
         Thread t1 = new Thread(()->m4.func1());
         Thread t2 = new Thread(()->m4.func2());
         Thread t3 = new Thread(()->m4.func3());
+        Thread t4 = new Thread(()->m4.func3());
         t1.start();
         Thread.sleep(1000);
         t2.start();
         t3.start();
-        t2.join();
-        t3.join();
-        // t1 blocks t2, but t3 synchronizes on a different object, so t3 can run.
+        Thread.sleep(1000);
+        t4.start(); 
+        // t1 blocks t2, 
+        // but t3 and t4 can run on the same time because .toString() return two objects.
     }
 }
 </pre>
@@ -417,7 +427,7 @@ public class BB {
     private int len;
 
     public BB(int size){
-        this.size = 0;
+        this.size = size;
         len = 0;
         container = new LinkedList&lt;>();
     }
