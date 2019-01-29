@@ -56,7 +56,7 @@ SyntaxHighlighter.all()
 <p>Java IO: two types of stream</p>
 <div class="featureList">
 <h4>I. Byte: (1byte)</h4>
-<p><strong>abstract</strong> class InputStream implements <strong>Closeable</strong> and <strong>AutoCloseable</strong></p>
+<p><strong>abstract</strong> class InputStream implements <strong>Closeable</strong> and <strong>AutoCloseable (JDK 7)</strong></p>
 <p><strong>abstract</strong> class OutputStream implements <strong>flushable</strong>, <strong>Closeable</strong> and <strong>AutoCloseable</strong></p>
 
 <ol>
@@ -80,9 +80,12 @@ SyntaxHighlighter.all()
 <li>close(): autoflash</li>
 </ol>
 <h4>II. char: (2byte Unicode)</h4>
+<p><span style="color:red">char and String can understand and represent "好", "a". However, byte can only understand 0x7F.<br>
+char and String can convert "好"，"a" to bytes according to charset, e.g. GBK or UTF-8.
+</span></p>
+<p>So Java char stream are built on Java byte stream with an extra encoding/decoding function.</p>
 <p><strong>abstract</strong> class Reader implements <strong>Readable</strong> and <strong>Closeable</strong>,没有auotcloseable</p>
 <p><strong>abstract</strong> class Writer implements <strong>Closeable</strong>, <strong>Flushable</strong>, <strong>Appendable</strong>, and <strong>AutoCloseable</strong></p>
-
 <ol>
 <li>int read(): blocked read, return a char value from 0x0000-0x00ff. -1 indicates end</li>
 <li>abstract int read(char [] buf, int off, int len): </li>
@@ -106,7 +109,8 @@ SyntaxHighlighter.all()
 <p>Closeable: defines a close function: which is intented to relinquish resources.</p>
 <p>AutoCloseable: defines a close function: which can be used with the try-with-resources statement (since Java7)</p>
 <p>byte vs char: byte没有ready,char没有avaliable, reader没有autocloseable</p>
-<p><img src="./img/javaio.png" width="800" height="400"></p>
+<p><img src="./img/javaio.png" width="800" height="250"></p>
+<p><img src="./img/javaio2.png" width="800" height="250"></p>
 </div>
 </div>
 </li>
@@ -220,6 +224,8 @@ public class FileIO4 {
     }
 }
 </pre>
+<h4>DataInputStream/DataOutputStream</h4>
+<p>These two classes can read a datum and convert (interpret) it to as certain types, such as byte, float, long, UTF (a character)</p>
 </div>
 </li>
 <li>
