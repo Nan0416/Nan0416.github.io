@@ -36,12 +36,13 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Java&nbsp;-&nbsp;File I/O</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-03-11</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-10-27 @ Twilio OA</span></p>
+<p class="date"><span class="created-date">Created:2018-03-11</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-01-29</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#ioIntro">Introduction</a></li>
 <li><a href="#ioFileByte">File I/O Byte</a></li>
 <li><a href="#ioFileChar">File I/O Char</a></li>
+<li><a href="#ioflush">Flush</a></li>
 <li><a href="#ioFile">File Class</a></li>
 <Li><a href="#ioRedirection">Redirection</a></Li>
 <li><a href="#ioReference">References</a></li>
@@ -117,7 +118,6 @@ char and String can convert "好"，"a" to bytes according to charset, e.g. GBK 
 <li>
 <div class="content" id="ioFileByte">
 <h3>File I/O Byte</h3>
-
 <pre>
 InputStream &lt;- FileInputStream
 OutputSream &lt;- FileOutputStream
@@ -287,6 +287,18 @@ Writer &lt;-OutputSreamWriter &lt;- FileWriter
     }
 </pre>
 </div>
+</li>
+<li>
+    <div class="content" id="ioflush">
+        <h3>IO flush</h3>
+        <p>
+            When writing data to network or files, data is not write until close or flush.
+            <br>PrintStream/PrintWrite has a autoflush function that auto invoking the flush when encountering a new line. e.g. println() or print('qinnan/n');
+        </p>
+        <p>
+            When read data from network or files, Buffered input's readLine will not return until a /n is encoutering. This readLine function eliminates the new line char. 
+        </p>
+    </div>
 </li>
 <li>
 <div class="content" id="ioFile">

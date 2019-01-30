@@ -34,12 +34,13 @@ SyntaxHighlighter.all()
 </script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<center><strong>Java&nbsp;-&nbsp;Socket</strong></center>
+<strong>Java&nbsp;-&nbsp;Socket</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-03-14</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-03-14</span></p>
+<p class="date"><span class="created-date">Created:2018-03-14</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-01-29</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#socketIntro">Introduction</a></li>
+<li><a href="#socketTCP">TCP</a></li>
 <li><a href="#socketReference">References</a></li>
 </ul>
 </div>
@@ -49,23 +50,156 @@ SyntaxHighlighter.all()
 <li>
 <div class="content" id="socketIntro">
 <h3>Introduction</h3>
+<h4>Java Network Programming</h4>
+<p>Java supports transport layer (TCP/UDP) and above layer's programming. IP layer and MAC layer will need 3rd party libraries.</p>
+<p>java.net package provides networking programming functionilities.</p>
+</div>
+</li>
+<li>
+<h3>TCP</h3>
 <div class="featureList">
 <h4>TCP: Server-side</h4>
 <ol>
 <li>ServerSocket: binding to a network interface, a port, and a maximum number of connection</li>
-<li>ServerSocket object accepts connection, returns a socket object. <span style="color:red">The "delegate" socket has the same port number of the ServerSocket.</span></li>
+<li>ServerSocket object <spin style="color:red">accepts accept()</spin> connection, returns a socket object.<span style="color:red">The "delegate" socket has the same port number of the ServerSocket.</span></li>
 <li>Get Input/OutputStream from the socket to communicate with the client.</li>
 <li>Close Input/OutputStream, Socket and ServerSocket</li>
+<li>
+<pre class="brush:java">
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.*;
+// a light, on and off
+public class TCPServer {
+    private ServerSocket server;
+    public Thread listener;
+    private String host;
+    private int port;
+    public TCPServer(String host, int port){
+        this.host = host;
+        this.port = port;
+    }
+    public boolean start() {
+        try{
+            server = new ServerSocket(this.port, 10);
+            listener = new Thread(()->{
+                while(true){
+                    Socket worker;
+                    try {
+                        System.out.println("Waiting client");
+                        worker = server.accept();
+
+                        new Thread(()->{
+                            try{
+                                worker(worker);
+                            }catch (IOException e){
+                                e.printStackTrace();
+                            }
+                        }).start();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        continue;
+                    }
+                }
+            });
+            listener.start();
+        }catch (IOException e) {
+            System.out.print(e.toString());
+            return false;
+        }
+        return true;
+    }
+    public void worker(Socket s) throws IOException{
+        BufferedReader dataIn = new BufferedReader(new InputStreamReader(s.getInputStream()));
+        DataOutputStream dataOut = new DataOutputStream(s.getOutputStream());
+        System.out.println("Serving client: " + s.getPort());
+        while(true){
+            String cmd = dataIn.readLine();
+            switch (cmd){
+                case "on": System.out.print("Light on"); dataOut.writeByte(1); dataOut.flush();break;
+                case "off": System.out.print("Light off"); dataOut.writeByte(1); dataOut.flush();break;
+                case "down": System.out.print("disconnect"); dataOut.writeByte(1); dataOut.flush();return;
+                default:System.out.print("Unknown cmd: " + cmd); dataOut.writeByte(0); dataOut.flush();return;
+            }
+        }
+    }
+    public static void main(String [] args){
+        TCPServer server = new TCPServer("localhost", 6655);
+        if(!server.start()){
+            return;
+        }
+        System.out.println("Server started");
+        try {
+            server.listener.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    }
+}
+
+</pre>
+</li>
 </ol>
 <h4>TCP: Client-side</h4>
 <ol>
-<li>Socket: create with InetAddress, and Port</li>
+<li>Socket: client side socket is created by designating host addr and host port, and optional local addr and local port (a client can have multiple network interface).</li>
 <li>Get Input/OutputStream from the socket</li>
 <li>Close Input/OutputStream, and Socket.</li>
+<pre class="brush:java">
+import java.io.*;
+import java.net.*;
+public class TCPClient {
+    public static void main(String [] args) throws IOException, InterruptedException{
+        Socket s = new Socket("localhost", 6655);
+        DataInputStream dataIn = new DataInputStream(s.getInputStream());
+        PrintWriter dataOut = new PrintWriter(new OutputStreamWriter(s.getOutputStream()), true);
+        Thread.sleep(1000);
+        dataOut.println("on");
+        Thread.sleep(1000);
+        System.out.println(dataIn.readByte());
+        while(true);
+
+    }
+}
+</pre>
+<li><span style="color:red">When one side's writing stream is closed, if the other side is try to read. Then it returns null.</span>
+
+</li>
 </ol>
 </div>
 <h4>Network Address</h4>
-<p></p>
+<p>Address can be represented by a string .e.g "127.0.0.1", "google.com" or by a InetAddress class</p>
+<p>Network address help resolve host name to its real ip address (DNS)</p>
+<pre class="brush:java">
+// obtain ip address of www.sousys.com
+import java.net.*;
+public class address {
+    public static void main(String [] args){
+        InetAddress [] addresses;
+
+        try{
+            addresses = InetAddress.getAllByName("www.sousys.edu");
+        }catch (UnknownHostException e){
+            System.out.println(e.toString());
+            return;
+        }
+        for(int i = 0; i &lt; addresses.length; i++){
+            printBytes(addresses[i].getAddress());
+            System.out.println();
+        }
+    }
+    public static void printBytes(byte [] data){
+        if(data == null) return;
+        int tmp = 0xff;
+        for(int i = 0; i &lt; data.length; i++){
+            System.out.print((data[i] & tmp) + "(" + String.format("0x%02X", data[i]) + ") ");
+        }
+    }
+}
+</pre>
 </div>
 </li>
 </ol>
