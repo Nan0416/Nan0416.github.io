@@ -2,7 +2,7 @@
 <!-- NewPage -->
 <html lang="en">
 <head>
-<title>&nbsp;</title>
+<title>LeetCode&nbsp;Array</title>
 <meta charset="utf-8">
 <meta name="date" content="2019-02-03">
 <meta name="keywords" content="">
@@ -35,12 +35,13 @@ SyntaxHighlighter.all()
 </script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<strong>&nbsp;-&nbsp;</strong>
+<strong>Array&nbsp;-&nbsp;Pioneer</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-02-03</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-03</span></p>
+<p class="date"><span class="created-date">Created:2019-02-03 都他妈的过年了，可我却在做leetcode，操蛋！！！</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-03</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
+<li><a href="#example">Examples</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -48,9 +49,49 @@ SyntaxHighlighter.all()
 <div class="contentContainer">
 <ol>
 <li>
-<div class="content" id="intro">
-<h3>Introduction</h3>
-</div>
+    <div class="content" id="intro">
+    <h3>Introduction</h3>
+
+    </div>
+</li>
+<li>
+    <div class="content" id="example">
+        <h3>Examples</h3>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4><a href="https://leetcode.com/problems/best-time-to-buy-and-sell-stock/">Best time to buy and sell stock</a></h4>
+                    <pre class="brush:java">
+/* pionner always tries to use the next value, so the poinner's value may go down or 
+go up. But once pioneer gets a change to bigger than the global max, then we assign 
+pioneer to global max. 
+When pionner becomes less than 0, we ignore all the pervious value and reset pioneer to 0, because having a negative value always makes the pioneer samll.
+*/
+class Solution {
+    public int maxProfit(int[] prices) {
+        if(prices == null || prices.length &lt; 2){
+            return 0;
+        }
+        int max = 0;
+        int pioneer = 0;
+        for(int i = 1; i &lt; prices.length; i++){
+            pioneer += prices[i] - prices[i-1];
+            if(pioneer > max){
+                max = pioneer;
+            }
+            if(pioneer &lt; 0){
+                pioneer = 0;
+            }
+        }
+        return max;
+        
+    }
+}
+                    </pre>
+                </li>
+            </ol>
+        </div>
+    </div>
 </li>
 <li>
 <div class="content" id="reference">
