@@ -89,6 +89,36 @@ class Solution {
 }
                     </pre>
                 </li>
+                <li>
+                    <h4><a href="https://leetcode.com/problems/majority-element/">Majority element</a></h4>
+                    <p>The numebr of majority element is larger than n/2</p>
+                    <pre class="brush:java">
+/**
+The majority variable can be modified during this process. But eventually, the real 
+majority element will win.
+*/
+class Solution {
+    public int majorityElement(int[] nums) {
+        if(nums == null) return 0;
+        
+        int count = 0;
+        int majority = nums[0];
+        for(int i = 1; i &lt; nums.length; i++){
+            if(majority == nums[i]){
+                count++;
+            }else{
+                count--;
+            }
+            if(count &lt; 0){
+                count = 0;
+                majority = nums[i];
+            }
+        }
+        return majority;
+    }
+}
+                    </pre>
+                </li>
             </ol>
         </div>
     </div>
