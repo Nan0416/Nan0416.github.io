@@ -35,7 +35,7 @@ SyntaxHighlighter.all()
 </script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<strong>Array&nbsp;-&nbsp;Pioneer</strong>
+<strong>LeetCode&nbsp;-&nbsp;Array Pioneer (Two Pointers)</strong>
 </div>
 <p class="date"><span class="created-date">Created:2019-02-03 都他妈的过年了，可我却在做leetcode，操蛋！！！</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-03</span></p>
 <div class="catalog">
@@ -51,7 +51,8 @@ SyntaxHighlighter.all()
 <li>
     <div class="content" id="intro">
     <h3>Introduction</h3>
-
+<p>Array的题先去想能不能用sort的方式解决。如何和index有关系，（e.g. 2sum 让返回index, container水的体积），那么有可能会用hashmap去记录&lt;value, index></p>
+<p>Array还有一种tricky的是用two pointers (container水的体积): 有一个max，还有两个pointers在尝试</p>
     </div>
 </li>
 <li>
@@ -115,6 +116,37 @@ class Solution {
             }
         }
         return majority;
+    }
+}
+                    </pre>
+                </li>
+                <li>
+                    <h4><a href="https://leetcode.com/problems/container-with-most-water/">Container With most water</a></h4>
+                    <pre class="brush:java">
+// Two pointers
+class Solution {
+    public int maxArea(int[] height) {
+        int left = 0;
+        int right = height.length - 1;
+        int max = 0; 
+        while(right > left){
+            int temp = (right - left) * Math.min(height[left], height[right]);
+            if(temp > max){
+                max = temp;
+            }
+            if(height[left] &lt; height[right]){
+                left++;
+            }else if(height[left] == height[right]){
+                if(height[left+1] > height[right-1]){
+                    left++;
+                }else{
+                    right--;
+                }
+            }else{
+                right--;
+            }
+        }
+        return max;
     }
 }
                     </pre>
