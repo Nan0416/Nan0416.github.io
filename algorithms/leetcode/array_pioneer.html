@@ -37,7 +37,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>LeetCode&nbsp;-&nbsp;Array Pioneer (Two Pointers)</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-02-03 都他妈的过年了，可我却在做leetcode，操蛋！！！</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-03</span></p>
+<p class="date"><span class="created-date">Created:2019-02-03 都他妈的过年了，可我却在做leetcode，操蛋！！！</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-04</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -147,6 +147,87 @@ class Solution {
             }
         }
         return max;
+    }
+}
+                    </pre>
+                </li>
+                <li>
+                    <h4><a href="https://leetcode.com/problems/trapping-rain-water/">Trapping rain water</a></h4>
+                    <pre class="brush:java">
+/**
+* two pointer, moving with restriction and greedy
+* restriction: only the min height side can be used.
+* greedy: as long as it can be counted to the volume, we add it.
+*/
+
+class Solution {
+    
+    public int trap(int[] height) {
+        if(height == null || height.length == 0) return 0;
+        int leftmax = height[0], rightmax = height[height.length - 1];
+        int leftpointer = 0, rightpointer = height.length - 1;
+        int volume = 0;
+        while(leftpointer &lt; rightpointer){
+            if(leftmax &lt; rightmax){
+                // moving left
+                if(leftmax > height[leftpointer + 1]){
+                    volume += leftmax - height[leftpointer + 1];
+                }else{
+                    leftmax = height[leftpointer + 1];
+                }
+                leftpointer++;
+            }else{
+                // moving right
+                if(rightmax > height[rightpointer - 1]){
+                    volume += rightmax - height[rightpointer - 1];
+                }else{
+                    rightmax = height[rightpointer - 1];
+                }
+                rightpointer--;
+            }
+        }
+        return volume;
+    }
+}
+                    </pre>
+                </li>
+                <li>
+                    <h4><a href="https://leetcode.com/problems/longest-substring-without-repeating-characters/">Longest Substring Without Repeating Characters</a></h4>
+                    <pre class="brush:java">
+/**
+* My mistake: using a set to record visited characters. When get a duplicated char,
+* start from 0. This is not correct e.g. "dvdef", when encountering the second "d", * we don't have to start from 0, instead we start from 1 with counting 'v'.
+*
+* This problem can be solved with sliding windows (two pointers).
+*
+* Using a map to record each visited char's index. A left pointer and a rigth 
+* pointer, when encounting a duplicated, mvoing the left pointer by 1.
+*
+* substring length is represent as rightIndex - leftIndex + 1, both side inclusive.
+* both side inclusive required string length >= 1.
+
+left side inclusive, right side exclusive: right - left = length;
+*/
+
+class Solution {
+    public int lengthOfLongestSubstring(String s) {
+        if(s == null) return 0;
+        Map&lt;Character, Integer> hm = new HashMap&lt;Character, Integer>();
+        int leftPointer = 0, rightPointer = 0, max = 0;
+        for(; rightPointer &lt; s.length(); rightPointer++){
+            if(hm.containsKey(s.charAt(rightPointer))){
+                //update leftPointer to the non-duplicated one
+                /*
+                * Using math.max to guarantee leftPointer only goes left.
+                */
+                leftPointer = 
+                    Math.max(hm.get(s.charAt(rightPointer)) + 1, leftPointer);
+            }
+            max = Math.max(max, rightPointer + 1 - leftPointer);
+            hm.put(s.charAt(rightPointer), rightPointer);
+        }
+        return max;
+        
     }
 }
                     </pre>
