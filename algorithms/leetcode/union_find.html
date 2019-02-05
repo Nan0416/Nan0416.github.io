@@ -41,6 +41,7 @@ SyntaxHighlighter.all()
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
+<li><a href="#example">Examples</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -54,6 +55,8 @@ SyntaxHighlighter.all()
     <br>Union(e1, e2): Union the set that contains e1 and the set that contains e2
     <br>Find(e1): Find the set that has e1.
 </p>
+<p><span style="color:red">UnionFind usually is used to verify connectivity, and it takes O(n^3) on n elements.
+<br> Connectivity can also be done by DFS or BFS</span></p>
 <h4>Implementation</h4>
 <p>
     Let each set be represented by an element, and this element is called parent of other element in this set.
@@ -63,12 +66,125 @@ SyntaxHighlighter.all()
     Find(e1) {return hashmap.get(e1);}
     <br>
     Union(e1, e2) {p1 = e1's parent, p2 = e2's parent. For-loop hashmap, if(e's parent = p1) e's parent = p2;}
+    <br>
+    In reality, if e1 or e2 is not found in any set, the Union operation may also need to create the element.
+<pre class="brush:java">
+    Union(int i, int j){
+        i == j{
+            if i existed return
+            else i's parent = i
+        }
+        map.containsKey(i) && map.containsKey(j){
+            map.get(i) == map.get(j){
+                return;
+            }else{
+                int oldParent = map.get(i);
+                int newParent = map.get(j);
+                for(entry: map){
+                    entry.parent = oldParent{
+                        entry.parent = newParent;
+                    }
+                }
+            }
+        }
+        map.containsKey(i){
+            map.put(j, map.get(i));
+        }
+        map.containsKey(j){
+            map.put(i, map.get(j));
+        }
+        else{
+            map.put(i, j);
+            map.put(j, j);
+        }
+
+    }
+</pre>
 </p>
 <h4>Application</h4>
 <p>
-    
+1). Keep track of the "connected components" of an undirected graph so that we know which two elements has relationship.<br>
+e.g. (#friend_circle, evaluting equations, #island, #connected_component)
 </p>
 </div>
+</li>
+<li>
+    <div class="content" id="example">
+        <h3>Examples</h3>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4></h4>
+                    <pre class="brush:java">
+/**UnionFind solution, but can also be done with DFS e.g. number of island*/
+class Solution {
+    public int findCircleNum(int[][] M) {
+        UnionFind uf = new UnionFind(M.length);
+        for(int i = 0; i &lt; M.length; i++){
+            for(int j = 0; j &lt;= i; j++){
+                if(M[i][j] == 1){
+                    uf.union(i, j);
+                }
+            }
+        }
+        return uf.numOfCircle();
+    }
+}
+class UnionFind{
+    private int[] relationship;
+    private int[] leader;
+    UnionFind(int size){
+        relationship = new int[size];
+        leader = new int[size];
+        Arrays.fill(relationship, -1);
+        Arrays.fill(leader, -1);
+    }
+    void union(int i , int j){
+        if(i == j && relationship[i] == -1){
+            relationship[i] = i;
+            leader[i] = 1;
+        }
+        if(relationship[i] != -1 && relationship[j] != -1){
+            if(relationship[i] == relationship[j]){
+                // they already have the common friend leader;
+                return;
+            }else{
+                // let i's friends have j's leader.
+                int oldLeader = relationship[i];
+                int newLeader = relationship[j];
+                for(int c = 0; c &lt; relationship.length; c++){
+                    if(relationship[c] == oldLeader){
+                        relationship[c] = newLeader;
+                    }
+                }
+                leader[oldLeader] = -1;
+            }
+        }else if(relationship[i] == -1){
+            relationship[i] = relationship[j];
+        }else if(relationship[j] == -1){
+            relationship[j] = relationship[i];
+        }else{
+            relationship[j] = i;
+            relationship[i] = i;
+            leader[i] = 1;
+        }
+    }
+    
+    int numOfCircle(){
+        int counter = 0;
+        for(int i = 0; i &lt; leader.length; i++){
+            if(leader[i] != -1){
+                counter++;
+            }
+        }
+        return counter;
+    }
+}
+                    </pre>
+                </li>
+            </ol>
+        </div>
+    </div>
 </li>
 <li>
 <div class="content" id="reference">
