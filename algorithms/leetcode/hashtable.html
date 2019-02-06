@@ -2,9 +2,9 @@
 <!-- NewPage -->
 <html lang="en">
 <head>
-<title>Array&nbsp;Sorting</title>
+<title>HashTable&nbsp;Map</title>
 <meta charset="utf-8">
-<meta name="date" content="2019-02-04">
+<meta name="date" content="2019-02-05">
 <meta name="keywords" content="">
 <meta name="keywords" content="">
 <meta name="keywords" content="">
@@ -35,9 +35,9 @@ SyntaxHighlighter.all()
 </script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<strong>Array&nbsp;-&nbsp;Sorting</strong>
+<strong>HashTable&nbsp;-&nbsp;Map</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-02-04</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-04</span></p>
+<p class="date"><span class="created-date">Created:2019-02-05</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-05</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -50,49 +50,11 @@ SyntaxHighlighter.all()
 <li>
 <div class="content" id="intro">
 <h3>Introduction</h3>
-<p>Math: XOR <a href="https://leetcode.com/problems/single-number/">Single Number</a></p>
+<p>Hash table can used to 1). record a pair of data, e.g. &lt;value, index></p>
+<p><span style="color:red">If the value has a range, which means we can use an array to behave as a map.</span></p>
+<h4>Examples</h4>
+<p>1). Jewels and Stones 2). 2Sum</p>
 </div>
-</li>
-<li>
-    <div class="content" id="example">
-        <h3>Example</h3>
-        <div class="featureList">
-            <ol>
-                <li>
-                    <h4><a href="https://leetcode.com/problems/merge-intervals/">Merge Interval</a></h4>
-                    <pre class="brush:java">
-/**
-* Java 8 lambda sorting
-* intervals.sort((i1, i2)->Integer.compare(i1.start, i2.start));
-*/
-class Solution {
-    public List&lt;Interval> merge(List&lt;Interval> intervals) {
-        intervals.sort((i1, i2)->Integer.compare(i1.start, i2.start));
-        List&lt;Interval> result = new LinkedList&lt;Interval>();
-        Interval interv = null;
-       
-        for(int i = 0; i &lt; intervals.size(); i++){
-            Interval temp = intervals.get(i);
-            if(interv == null){
-                interv = temp;
-            }else if(interv.end >= temp.start){
-                // merge
-                interv.end = interv.end > temp.end? interv.end: temp.end;
-            }else{
-                result.add(interv);
-                interv = temp;
-            }
-        }
-        if(interv!=null)
-            result.add(interv);
-        return result;
-    }
-}
-                    </pre>
-                </li>
-            </ol>
-        </div>
-    </div>
 </li>
 <li>
 <div class="content" id="reference">

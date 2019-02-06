@@ -37,7 +37,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Java&nbsp;-&nbsp;Cheatsheet</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-10-14</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-10-14</span></p>
+<p class="date"><span class="created-date">Created:2018-10-14</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-05</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#string">String</a></li>
@@ -53,6 +53,45 @@ SyntaxHighlighter.all()
 <ol>
 <li>
 <div class="content" id="string">
+
+<h4>Stack</h4>
+<pre class="brush:java">
+    Stack&lt;String> st = new Stack&lt;>();
+    st.push("example"); // different from "add" than append items, push/pop will add/remove the element at the first (addFirst). 
+    String value = st.pop();
+    String value = st.peek(); // return the top value but not pop.
+</pre>
+<h4>StringBuilder</h4>
+<pre class="brush:java">
+    StringBuilder sb = new StringBuilder();
+    sb.append(* any type); // return a refernce to self so that can be chainable
+    int len = sb.length();
+    char c = sb.charAt(10);
+    String result = sb.toString();
+</pre>
+<h4>List [LinkedList, ArrayList]</h4>
+<pre class="brush:java">
+    List&lt;String> ll = LinkedList&lt;>();
+    ll.add("example") ;// add to the end;
+    ll.add(0, "first") ; // add to the front;
+    ll.remove(1) ;// remove
+    ll.set(1, "new") ; // update
+    String str = ll.get(1) ; // return 
+    boolean con = ll.contains("example"); // check existance.
+    int pos = ll.indexOf("new"); // return -1 if not found.
+    ll.clear(); // clear all
+    int len  = ll.size(); 
+    for(String str: ll){
+        // loop
+    }
+    ll.sort((i1, i2)->Integer.compare(i1.length(), i2.length());
+</pre>
+<h4>Facilities</h4>
+<pre class="brush:java">
+    int value = Integer.parseInt("102"); // convert string to int.
+    
+
+</pre>
 <h3>String</h3>
 <h4><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html" target="_blank">String</a></h4>
 <div class="featureList">
@@ -121,7 +160,7 @@ SyntaxHighlighter.all()
     <div class="content" id="collections">
         <h3>List/Set/Map</h3>
         <style>
-            table {
+table {
     border-collapse: collapse;
     font-size: 13px;
 }
@@ -129,7 +168,6 @@ SyntaxHighlighter.all()
 table, th, td {
     border: 1px solid black;
 }
-
         </style>
         <h4>Summary</h4>
         <table>

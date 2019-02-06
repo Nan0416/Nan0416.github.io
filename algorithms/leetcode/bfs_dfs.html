@@ -2,9 +2,9 @@
 <!-- NewPage -->
 <html lang="en">
 <head>
-<title>Array&nbsp;Sorting</title>
+<title>BFS&nbsp;DFS</title>
 <meta charset="utf-8">
-<meta name="date" content="2019-02-04">
+<meta name="date" content="2019-02-05">
 <meta name="keywords" content="">
 <meta name="keywords" content="">
 <meta name="keywords" content="">
@@ -35,12 +35,13 @@ SyntaxHighlighter.all()
 </script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<strong>Array&nbsp;-&nbsp;Sorting</strong>
+<strong>&nbsp;-&nbsp;</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-02-04</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-04</span></p>
+<p class="date"><span class="created-date">Created:2019-02-05</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-05</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
+<li><a href="#example">Examples</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -50,42 +51,44 @@ SyntaxHighlighter.all()
 <li>
 <div class="content" id="intro">
 <h3>Introduction</h3>
-<p>Math: XOR <a href="https://leetcode.com/problems/single-number/">Single Number</a></p>
+<p>The trivial alogrithms for BFS is Queue, DFS is recursion.</p>
+<p>BFS only has one order, DFS has 3 different orders (preorder, inorder and postorder)</p>
+<h4>Preorder and Postorder</h4>
+<p>When you traverse a graph, postorder and preorder's order are not complete reverse. But the right-dominant preorder is in the reverse order of postorder.</p>
+<p>
+<img src="./images/postorder.png" height="300" width="400"> 
+</p>
 </div>
 </li>
 <li>
     <div class="content" id="example">
-        <h3>Example</h3>
+        <h3>Examples</h3>
         <div class="featureList">
             <ol>
                 <li>
-                    <h4><a href="https://leetcode.com/problems/merge-intervals/">Merge Interval</a></h4>
+                    <h4><a href="https://leetcode.com/problems/binary-tree-postorder-traversal/">Binary Tree Postorder Traversal</a></h4>
                     <pre class="brush:java">
-/**
-* Java 8 lambda sorting
-* intervals.sort((i1, i2)->Integer.compare(i1.start, i2.start));
-*/
+ /**
+ * Postorder is same as the reverse of right domniant preorder. 
+ */
 class Solution {
-    public List&lt;Interval> merge(List&lt;Interval> intervals) {
-        intervals.sort((i1, i2)->Integer.compare(i1.start, i2.start));
-        List&lt;Interval> result = new LinkedList&lt;Interval>();
-        Interval interv = null;
-       
-        for(int i = 0; i &lt; intervals.size(); i++){
-            Interval temp = intervals.get(i);
-            if(interv == null){
-                interv = temp;
-            }else if(interv.end >= temp.start){
-                // merge
-                interv.end = interv.end > temp.end? interv.end: temp.end;
-            }else{
-                result.add(interv);
-                interv = temp;
+    public List&lt;Integer> postorderTraversal(TreeNode root) {
+        List&lt;Integer> ll = new LinkedList&lt;>();
+        if(root == null) return ll;
+        Stack&lt;TreeNode> st = new Stack&lt;TreeNode>();
+        st.push(root);
+        while(st.size() != 0){
+            TreeNode node = st.pop();
+            ll.add(0, node.val);
+            if(node.left != null){
+                // right is  domniant
+                st.push(node.left);
+            }
+            if(node.right != null){
+                st.push(node.right);
             }
         }
-        if(interv!=null)
-            result.add(interv);
-        return result;
+        return ll;
     }
 }
                     </pre>
