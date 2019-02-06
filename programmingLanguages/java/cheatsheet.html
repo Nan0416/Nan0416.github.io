@@ -86,11 +86,31 @@ SyntaxHighlighter.all()
     }
     ll.sort((i1, i2)->Integer.compare(i1.length(), i2.length());
 </pre>
+<h4>Queue</h4>
+<pre class="brush:java">
+// With list
+LinkedList&lt;String> queue = new LinkedList&lt;String>();
+queue.addLast("String");
+queue.addFirst("String");
+String first = queue.get/peekFirst(); // no such element exception / null
+String last = queue.getLast();
+String first = queue.pollFirst();
+String last = queue.pollLast();
+
+</pre>
+<h4>TreeMap</h4>
+<h4>Heap (PriorityQueue)</h4>
+<pre class="brush:java">
+    PriorityQueue&lt;Integer> heap = new PriorityQueue&lt;>((n1, n2)-> ...);
+    int min = heap.poll() ; // pop the min
+    heap.add(10) ; // add an element
+    int min = heap.peek(); // return the min;
+</pre>
 <h4>Facilities</h4>
 <pre class="brush:java">
     int value = Integer.parseInt("102"); // convert string to int.
-    
-
+    double value = Math.ceil((double)10.223) // 11;
+    Collections.reverse(List);
 </pre>
 <h3>String</h3>
 <h4><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html" target="_blank">String</a></h4>
