@@ -1,0 +1,235 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>Graph&nbsp;SCC</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-02-08">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>Graph&nbsp;-&nbsp;SCC</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-02-08</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-08</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#algorithms">CC</a></li>
+<li><a href="#scc">SCC</a></li>
+<li><a href="#applications">Applications</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+<h4>Connected Component</h4>
+<p>A connected component is a term described that a set of vertices are directly or indirectly connected by paths in 
+    an <span style="font-size:bold">undirected</span> graph.<br>
+   In other word, if two vertices are in the same CC, then there exists at least one path between the two vertices.
+</p>
+<h4>Strongly Connected Component</h4>
+<p>A strongly connected component is a term described that a set of vertices are directly or indirectly connected by paths in 
+    a <span style="font-size:bold">directed</span> graph.</p>
+<p>DFS is used to find CC or SCC. (Another algorithm is Union Find).</p>
+<p>Find the "number of island" is an application of CC.</p>
+</div>
+</li>
+<li>
+    <div class="content" id="algorithms">
+        <h3>CC</h3>
+        <div class="featureList">
+            <ol>
+                <li><h4>CC</h4>
+                <pre style="border:1px solid blue">
+DFS(G):
+	input: G=(V,E) in adjacency list representation
+	output: vertices labelled by connected component id.
+	cc = 0 	// connected component id
+	for all v &lt;- V, 
+		visited(v) = False // a map keeps track if we visited this vertex
+		ccnum(v) = 0 // a map stores each vertex’s cc id.
+	for all v &lt;- V, 
+		if not visited(v), then 
+			cc++
+			Explore(v)
+Explore(z)
+	ccnum(z) = cc
+	visited(z) = True
+	for all (z, w) &lt;- E:
+        if not visited (w)
+            // prev(w) = z; // keep track paths.
+            Explore(w)
+
+O(n + m) n = |V|, m = |E|
+                </pre>
+                <p>
+                    If we want to find a path between two vertices in a CC, then we meed setup a map whose key is a vertex, and value is key's parent. 
+                </p>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="scc">
+        <h3>SCC</h3>
+        <p>Strongly connected component is on a directed graph, find the maximum set of vertice that can reach each other.</p>
+        <p><img src="./img/scc.png" width="300" height="130"></p>
+        <div class="featureList">
+            <ol>
+                <li>
+                <h4>DFS on Directed Graph</h4>
+                <p>1. Different from DFS on an undirected graph that uses CC id to keep track of CC, DFS on a directed graph will use preorder and postorder to recover SCC.<br>
+                <br>2. The preorder and postorder are realized by a "clock" counter.</p>
+<pre style="border:1px solid blue">
+DFS(G):
+	// input: G=(V,E) in adjacency list representation
+	// output: vertices labelled by connected components
+	clock = 1
+	for all v &lt;- V
+		visited(v) = False
+	for all v &lt;- V
+		if not visited(v)
+			Explore(v)
+Explore(z)
+	pre(z) = clock
+	clock++
+	visited(z) = True
+	for all (z, w) &lt;- E:
+		if not visited (w), then Explore(w)
+	post(z) = clock
+	clock++
+
+O(n + m) n = |V|, m = |E|
+
+</pre>
+                
+                <p>Example: running the algorithm on the following graph</p>
+                <p>
+                    <img src="./img/example.png" width="300" height="200">
+                </p>
+                <p>Type of edges
+                <br>1. Tree edge (black) [b->a, a->d, postorder(parent) > postorder(child)]: these edges are the used edge. We use them to explore the directed graph.
+                <br>2. Forward edge (blue) [b->e, d->g, postorder(parent) > postorder(child)]: these edges are skipped during exploring.
+                <br>3. Cross edge (blue) [f->h, h->g, postorder(parent) > postorder(child)]
+                <br>4. Back edge (blue) [e->a, f->b, <span style="color:red">postorder(parent) &lt; postorder(child)</span>]
+                </p>
+                <h4>Properties</h4>
+                <p>1. A Graph has cycle iff its DFS tree has a back edge
+                    <br>Proof: 1). cycle -> backedge 2). backedge -> cycle
+                  
+                </p>
+                </li>
+                <li>
+                    <h4>Postorder on Directed Acyclic Graph (DAG)</h4>
+                    <p>Properties
+                        <br>1. Because DAG does not have a cycle, it does not have any back edges.
+                        <br>2. Postoder along DAG's edge only decreases because of no back edges.
+                        <br>3. <b>Only</b> DAG has the topological ordering that sorted by postorder. ** Because there may exist multiple assignments of postorder, there exist multiple topological oderings.
+                        <br>4. DAG has at least source vertices (no incomming edge), and at least sink vertices (no outgoing edge)
+                        <br><img src="img/dag.png" width="300" height="200">
+                    </p>
+               
+                    <h4>Get one topological soring</h4>
+                    <p>Method 1. The sorting happens when running the DFS. We create an array of 2n (range of postorder is 1 to 2n), when a vertex get a postorder, we put the vertex to arr[postorder] = vertex.
+                    <br>Method 2. Get sink/source vertex, remove it from the graph. Re-run DFS, and obtain the new sink/source vertex.
+                    <pre>
+                        arr[n]
+                        counter = 0
+                        while(#vertex != 0)
+                            sink_vertex = DFS(G).sink_vertex;
+                            arr[counter] = sink_vertex;
+                            counter++
+                            G.remove(sink_vertex);
+                    </pre>
+                    </p>
+                </li>
+                <li>
+                    <h4>Find SCC and its topological ordering</h4>
+                    <h4>Metagraph</h4>
+                    <p>Metagraph: view each SCC of a DG as a single vertex, then the metagraph of a DG is a DAG. (Proof by contradiction)</p>
+                    <p>
+                        <img src="./img/dag2.png" wdith="300" height="200">
+                    </p>
+                    <p>Every directed graph is a DAG of its SCCs, so SCCs can be order in a topological ordering.
+                        <br>
+                        Algorithm: Find sink SCC, remove it from the Graph. Find the new sink SCC again, remove it again ...
+                        <br> <span style="color:red">**** why using sink SCC instead of source SCC? **** </span>
+                        <br> One vertex in the sink SCC can only reach vertices in the sink SCC, so it's easy to remove the sink SCC. 
+                        But a vertex in source SCC can reach all vertex in the graph, it is not easy to remove source SCC.
+                        <br> <span style="color:red">**** How to find sink SCC? **** </span>
+                        <br>Wrong: <strike>The vertex with lowest postorder must be in the sink SCC.</strike>
+                        <br><img src="./img/dag3.png" width="200" height="80">
+                    </p>
+                </li>
+                <li>
+                    <h4>Find sink SCC</h4>
+                    <p>Reverse the edge, find a vertex in source SCC. Then this vertex must lie in the sink SCC in the non-reverse graph.
+                    <br>Proof ...
+                    </p>
+                    <br>The highest postorder must lie in the source SCC
+                    <br>Proof ...
+                    </p>
+                </li>
+                <li>
+                    <h4>Algorithm</h4>
+                    <p>
+                        1. Reverse graph
+                        <br><img src="./img/scc1.png" width="300" height="100">
+                        <br>2. Run DFS on the reverse graph and sort by postordre (** this sorting is not the topological order because the graph itself is not a DAG)
+                        <br><img src="./img/scc2.png" width="300" height="200">
+                        <br>3. Run DFS on the original graph in the order generated by the reverse graph.
+                        <br><img src="./img/scc3.png" width="300" height="200"><img src="./img/final.png" width="300" height="200">
+                    </p>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li><a href="https://classroom.udacity.com/courses/ud401/lessons/10159691481/concepts/101975518340923" target="_blank">Gatech CS6515 Graduate Algorithms</a></li>
+        <li><a href="https://en.wikipedia.org/wiki/Strongly_connected_component" target="_blank">SCC Wiki</a></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>
