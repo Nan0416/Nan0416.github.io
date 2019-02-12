@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>Hadoop&nbsp;HDFS</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-02-03">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>Hadoop&nbsp;-&nbsp;HDFS</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-02-11</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-11</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#arch">Architecture</a></li>
+<li><a href="#usage">How to use</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+<p>HDFS (Hadoop Distributed FS)</p>
+<h4>Design Principle</h4>
+<div class="featureList">
+    <ol>
+        <li>HDFS implements POSIX APIs with some exception. HDFS is good at batch processing, which means it focus on high throughtput instead of low latency. (A typical file in HDFS is gigabytes to terabytes in size)</li>
+        <li>Write once read many: Modification on a file only allows to append or truncate at the end of file instead of arbitrary points.</li>
+        <li>No hardlink and softlink concept</li>
+    </ol>
+</div>
+
+</div>
+</li>
+<li>
+    <div class="content" id="arch">
+        <h3>Architecture</h3>
+        <div class="featureList">
+            <ol>
+                <li>client program: break a file into blocks (64MB or 128MB), calculate checksum, asking NameNode about a few DataNode for each block</li>
+                <li><pre>
+NameNode: (single point of failure) manage DataNodes, handle “under replicated” case, provide APIs, such as opening, closing, and renaming files and directories, 
+and store file’s metadata, such as
+    filename -> [
+        block 1-> [DN1, DN3, DN6],
+        block 2 ->[DN2, DN4, DN5],
+        block 3 ->[DN1, DN2, DN5]]
+    datanode->[
+        DN1 -> [block 1, block 3]
+            …
+        ]
+    *** how to select datanodes?
+    1). Each datanode only has one replica
+    2). At most two selected datanode on the same rack.
+[DataNodes are organized in racks. Each rack has multiple datanodes]
+                    </pre>
+                </li>
+                <li>
+                    DataNode: store data along checksum, help forward data, send heartbeat to NameNode, periodically sent BLOCKReport to name server.
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="usage">
+        <h3>How to use</h3>
+        <p>HDFS provide a FS shell, Java API, C API to developers.</p>
+        
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li><a href="./files/HDFS.pdf" target="_blank">HDFS architecture</a></li>
+        <li><a href="http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/HdfsDesign.html#Introduction" target="_blank">HDFS Apache</a></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>

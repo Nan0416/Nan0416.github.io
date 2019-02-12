@@ -37,7 +37,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Hadoop&nbsp;-&nbsp;Introduction</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-10-07</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-10-07</span></p>
+<p class="date"><span class="created-date">Created:2018-10-07</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-11</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -51,9 +51,38 @@ SyntaxHighlighter.all()
 <li>
 <div class="content" id="intro">
 <h3>Introduction</h3>
-<p>Hadoop is open-source distributed framework used to process big data. It is written in Java, with some native C and shell script command line tools.</p>
-<p>Hadoop relies on clusters of commodity hardware, helps handle failure. (Hadoop was demonstrated to work with 2000 nodes)</p>
-<p>The core of Hadoop contains Hadoop Common (utilities), Hadoop Distributed File System (HDFS), Hadoop YARN (job scheduler), Hadoop MapReduce (task runner), and Hadoop Ozone (object store, a new subproject)</p>
+<p>Hadoop is open-source distributed programming framework used to process big data. It simplified distributed programming.
+    It is written in Java, with some native C and shell script command line tools.</p>
+<h4>The generations of distributed programming frameworks</h4>
+<div class="featureList">
+    <ol>
+        <li>MapReduce</li>
+        <li>Spark</li>
+        <li>Flink</li>
+    </ol>
+</div>
+<p>Hadoop relies on clusters of commodity hardware, helps handle failure. 
+    (Hadoop was demonstrated to work with 2000 nodes)</p>
+<div class="featureList">
+    <h4>Components</h4>
+    <ol>
+        <li>Hadoop common: the common utilities that support the other Hadoop modules.</li>
+        <li>Hadoop Distributed File System (HDFS)</li>
+        <li>Hadoop YARN: A framework for job scheduling and cluster resource management<br>
+            ** scheduling is done at runtime depends on #mapper and #reducers, and how to break data<br>
+            ** Runtime’s consideration<br>
+                1). location of files created by completed mappers<br>
+                2). scoreboard of mapper/reducer assignment<br>
+                3). start new instances if timeout, duplicated result<br>
+                4). task granularity<br>
+                5). locality management<br>
+                6). backup tasks<br>
+        </li>
+        <li>4). Hadoop MapReduce: A YARN-based system for parallel processing of large data sets.
+                MAP generated intermediately data is stored in the HDFS (This is why Hadoop is slow than Spark since Spark can use memory)
+        </li>
+    </ol>
+</div>
 <p>Inspired by Google File Systems and MapReduce</p>
 <h4>Operation Modes</h4>
 <p>Hadoop has three operation modes</p>

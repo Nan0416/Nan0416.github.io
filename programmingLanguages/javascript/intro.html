@@ -37,7 +37,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Javascript&nbsp;-&nbsp;Syntax</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-03-26</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-10-08</span></p>
+<p class="date"><span class="created-date">Created:2018-03-26</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-11</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#jsIntro">Introduction</a></li>
@@ -127,7 +127,45 @@ l2();
 <div class="featureList">
 <ol>
 <li>Module:</li>
-<li>Global variable:  any variables declared at any location without "var".
+<li>var: <span style="color:red">A function scope variable instead of C/C++/Java block scope</span>
+<pre class="brush:js">
+var local = 10;
+if(true){
+	var local = 15; // does not create a new variable
+}
+console.log(local); 15
+</pre>
+<pre class="brush:js">
+var local = 100;
+var local = 101; // same as above
+function f(){
+	var local = 105; // create a new variable and effective inside the block
+}
+f();
+console.log(local); // 101
+</pre>
+</li>
+<li>let: <span style="color:red">A block scope variable</span>
+<pre class="brush:js">
+let local = 10;
+if(true){
+	let local = 15; // create a new variable
+}
+console.log(local); // 10
+</pre>
+</li>
+<li>const: <span style="color:red">A block scope variable</span></li>
+<li>Global variable: any variables declared at any location without "var".
+<br>
+<span style="color:red">Global variable before function block variable</span>
+<pre class="brush:js">
+local = 10; // global variable since without prefix var or let.
+var local = 15; // because this function block variable is defined outside function, so it is same as a global variable, and it can override the above global variable.
+if(true){
+	var local = 20; // it is the above function block variable.
+}
+console.log(local); // this "local" is the function block variable.
+</pre>
 <p>
 	NodeJs <span style="color:blue">(No browser)</span> provides a couple of built-in global variables (and functions):<br>
 	<div class="termniology">
@@ -153,21 +191,18 @@ l2();
 <pre class="brush:js">
 var variable = "variable in global";
 function show(){
-     
     console.log(variable);  // undefined
     var variable = "variable in local"; 
     console.log(variable);  // "variable in local"
 };
-show(); // "variable in local"
+show();
 // ==================================================
 var variable = "variable in global";
 function show(){
-     
     console.log(variable);  // "variable in global"
-    // var variable = "variable in local"; 
     console.log(variable);  // "variable in global"
 };
-show(); // "variable in global"
+show();
 </pre>
 <p>JS first scans the code and finds that the show(){} defines the variable, so it will use the local variable.</p>
 <p>However when executing the first console.log, the local variable is undefined yet, so print undefined.</p>

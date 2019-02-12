@@ -1,0 +1,197 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>JS&nbsp;TS</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-02-11">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>JS&nbsp;-&nbsp;TS</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-02-11</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-11</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#syntax">Syntax</a></li>
+<li><a href="#qa">Q&A</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+<p>Typescript is a superset of Javascript, which means a javascript program is also a typescript program, but a typescript program may not be a javascript program.</p>
+<p>TS is developed by Microsoft.</p>
+<p>Typescript helps develop large project with JS framework.</p>
+<p>Typescript supports classes, modules, and arrow function ECMAScript 2015.</p>
+<h4>How to run</h4>
+<p>
+    1). using tsc compile .ts file into js file.<br>
+    2). using Node.js or browser environment to run the .js file
+</p>
+<h4>tsconfig.json</h4>
+<p>tsconfig.json tells tsc how to compile the project.</p>
+<pre>
+{
+    "files": [
+        "src/main.ts"
+    ],
+    "compilerOptions": {
+        "noImplicitAny": true,
+        "target": "es5"
+    }
+}
+</pre>
+<h4>use Gulp to automate compiling, testing</h4>
+<pre style="border:1px solid blue">
+$npm init
+$npm install -g gulp-cli
+$npm install --save-dev typescript gulp gulp-typescript # install for development phase
+
+# organize code as following
+project/
+    src/
+    dist/
+#write .ts file in src, output .js in dist
+</pre>
+<p>In order to use Gulp, a js code should be supplied to gulp to tell it how to do the automation.
+    <br>create gulpfile.js under the project directory
+</p>
+<pre class="brush:js">
+// an example
+var gulp = require("gulp");
+var ts = require("gulp-typescript");
+var tsProject = ts.createProject("tsconfig.json");
+
+gulp.task("default", function () {
+    return tsProject.src()
+        .pipe(tsProject())
+        .js.pipe(gulp.dest("dist"));
+});
+
+</pre>
+</div>
+</li>
+<li>
+    <div class="content" id="syntax">
+        <h3>Syntax</h3>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <p>Optional type after variable:</p>
+<pre class="brush:js">
+    function greeting(value: string):string{
+        return "Hello, " + value;
+    }
+    let value:string = "Nan";
+    console.log(greeting(value));
+</pre>
+                </li>
+                <li>
+                    <p>Basic types:</p>
+<pre>
+    boolean: false, true
+    string: "hello!"
+    number: 1, 1.23 
+    number[]: [1,2,3]
+    [number, string, number]: [1, "one", 1]; // order matter
+</pre>   
+                </li>
+
+<li>
+    <p>Special types:</p>
+    <p>1).any: Just link pure JS variable, this variable can be any type. Because of the freedom, it can cause runtime error.</p>
+<pre class="brush:js">
+let value:any = 10;
+console.log(value);
+value = "string";
+function printing(input: number){
+    console.log(input + 1); 
+    // even though the input is expected to be a number, and then perform arithemtical addition.
+    // but since "any" can be an input, then the input can be an actual string.
+}
+printing(value); // string1
+
+//runtime error
+let value:any = "string";
+console.log(value.toFixed()); // .toFixed is a method for decimal number, but compiler does not check during compiling phase, this caused a runtime error.
+</pre>
+</li>
+<li>
+    <p>Type assertion: a way to tell the compiler "trust me, I know what I’m doing."</p>
+    <pre class="brush:js">
+class Data{
+    special_function(){
+        console.log("Special function");
+    }
+}
+let value:any = "string";
+(value as Data).special_function(); // this also work without type assertion.
+    </pre>
+</li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="qa">
+        <h3>Q&A</h3>
+        <div class="featureList">
+            <ol>
+                <li>
+                    Why needs Type?<br>
+                    Types help enhance code quality and understandability. When project becomes big, types are important to maintain code.<br>
+                    It’s better for the compiler to catch errors than to have things fail at runtime.<br>
+                </li>
+
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>
