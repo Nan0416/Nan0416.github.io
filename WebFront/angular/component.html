@@ -1,0 +1,206 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>Angular&nbsp;Component</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-02-12">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<style>
+pre{
+    border: 2px brown solid;
+}
+</style>
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>Angular&nbsp;-&nbsp;Component</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-02-12</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-12</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#example">.ts Example</a></li>
+<li><a href="#html">HTML Example</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+<div class="featureList">
+    <ol>
+        <li>Component is a bridge (data-binding/action) between users and the core of this app.</li>
+        <li>Create component: ng generate component login-page # login-page is component's name</li>
+        <li>A component contains:<br>
+            1). .ts: logic file.<br>
+            2). .spec.ts: testing file.<br>
+            3). [optional] .html: template<br>
+            4). [optional] .scss or .css: style file.
+        </li>
+    </ol>
+</div>
+</div>
+</li>
+<li>
+    <div class="content" id="example">
+        <h3>Example</h3>
+        <div class="featureList">
+            <ol>
+                <li>import functionality</li>
+                <li>component decorator: specifies where is the HTML template and stylesheet.</li>
+                <li>component class: 1). constructor 2). life cycle 3). event_handlers 4). properties 5). normal functions</li>
+            </ol>
+        </div>
+        <div class="featureList">
+            <h4>Code example</h4>
+            <ol>
+                <li>import, decorator, implement a certain lifecycle.
+<pre class="brush:js">
+import { Component, OnInit } from '@angular/core';
+import { UserOperationService } from '../services/user-operation.service';
+import {Router , NavigationEnd} from '@angular/router';
+@Component({
+  selector: 'app-login-page',
+  templateUrl: './login-page.component.html',
+  styleUrls: ['./login-page.component.scss']
+})
+export class LoginPageComponent implements OnInit {
+</pre>
+<h4>Service Injection</h4>
+<p>Service only initialized once, and then its reference will be injected to components by components' constructors</p>
+<pre class="brush:js">
+    constructor(     
+        private targetOperator: TargetOperationService,
+        private dataContainer: DataContainerService,
+        private router: Router
+    ) { 
+        this.dynamic_styles = new Map();
+    }
+</pre>
+<h4>Decorator</h4>
+<p>
+Decorator is a special function can be applied to class, function, priority, and parameters.
+@Component<br>
+@ViewChild<br>
+@Input<br>
+@Output<br>
+</p>
+<h4>Lifecycle</h4>
+<p>
+    1). ngOnChanges(): invoked when angular set/reset data-bound input properties.<br>
+    2). ngOnInit(): invoked shortly after creating the component. (After first ngOnChanges())<br>
+    subscribe service<br>
+    3). ngAfterContentInit(): invoked after receiving external data. e.g. a child component received parent's parameter passing.
+    3). ngAfterViewInit(): invoked after the component and child components are rendered.<br>
+    4). ngOnDestroy(): invoked before angular deletes the component.<br>
+    unsubscribe service<br>
+</p>
+                </li>
+            </ol>
+        </div>
+       
+    </div>
+</li>
+<li>
+    <div class="content" id="html">
+        <h3>HTML Example</h3>
+        <p>html template has directive e.g. *ngFor, data-binding e.g. {{ data }}, event-binding</p>
+        <div class="featureList">
+            <h4>Directive</h4>
+            <ol>
+                <li>*ngFor="let target of targets"</li>
+                <li>*ngIf="!isLoginPage"</li>
+            </ol>
+        </div>
+        <div class="featureList">
+            <h4>Data-binding</h4>
+            <ol>
+                <li>interpolation: {{ expression }} first evaluating, then convert to string.
+                    <pre>
+&lt;p>{{title}}&lt;/p>
+&lt;div>&lt;img src="{{itemImageUrl}}">&lt;/div>
+&lt;p>The sum of 1 + 1 is {{1 + 1}}.&lt;/p>
+                    </pre>
+                </li>
+                <li>Expression context: [attribute-name]="expression"
+                    <pre>
+&lt;img [src]="itemImageUrl2">
+&lt;div class="occupied" [ngStyle]="{'width': convertToWidth(target.name, 'CPU') + 'px'}">&lt;/div>
+                    </pre>
+                </li>
+                <li>
+Context priority: template variable reference > directive context > component context.<br>
+All above title, itemImageUrl, target are referred to the component's properties.<br>
+Support the component has a property called customer and customers, then<br>
+<pre>
+&lt;li *ngFor="let customer of customers">{{customer.name}}&lt;/li> #the {{customer.name}} is the directive context, instead of component context.
+</pre>
+template variable reference
+<pre>
+&lt;input #phone placeholder="phone number>
+&lt;button (click)="callPhone(phone.value)">Call&lt;/button>
+</pre>
+#phone is a template variable reference. It is a DOM element that refer to the &lt;input>. This variable can be referred at anywhere inside the template.
+                </li>
+                <li>
+** Two-way data-binding<br>
+&lt;input type="password" [(ngModel)]="password">
+                </li>
+            </ol>
+        </div>
+        <div class="featureList">
+            <h4>Event-binding</h4>
+            <ol>
+                <li>(click)="event_handler()"
+                    <pre>
+&lt;button (click)="deleteHero($event)">Delete hero&lt;/button>
+                    </pre>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>

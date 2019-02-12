@@ -38,7 +38,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Angular&nbsp;-&nbsp;Intro</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-08-30</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-10-16</span></p>
+<p class="date"><span class="created-date">Created:2018-08-30</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-11</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#init">Project Initialization</a></li>
@@ -54,7 +54,7 @@ SyntaxHighlighter.all()
 <div class="featureList">
 <ol>
     <li>install ng (Angular CLI): <code style="color:green">npm install -g @angular/cli</code></li>
-    <li>initialize new project and use scss as stylesheet: <code style="color:green">ng new my-app — — style=scss</code></li>
+    <li>initialize new project and use scss as stylesheet: <code style="color:green">ng new my-app — — style=scss # my_app is invalid</code></li>
     <li>install common modules: 
         <ol>
             <li>material: <code style="color:green">npm install --save @angular/material @angular/cdk @angular/animations</code></li>
@@ -68,8 +68,42 @@ SyntaxHighlighter.all()
             <li>font-awesome: <code style="color:green">&lt;link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous"&gt;</code></li>
         </ol>
     </li>
-    <li>ng serve --open</li>
+    <li>ng serve --open # developing</li>
+    <li>ng build --prod # build</li>
 </ol>
+</div>
+<h4>Project structure</h4>
+<pre style="border:1px solid blue; width:300px;">
+    project/
+        src/
+            index.html
+            main.ts
+            styles.scss
+            assets/
+                img/
+            app/
+                services/
+                data-structure/
+                utilities/
+                component1/
+                component2/
+                    component.html
+                    component.scss
+                    component.ts
+                    component.spec.ts
+</pre>
+<div class="featureList">
+    <ol>
+        <li>index.html: Include other .js, css. Define meta tag. Include the <span style="color:red">app-root</span> component</li>
+        <li>style.scss: Define the general style. e.g. <pre>
+body{
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-width: 400px;
+}
+        </pre></li>
+    </ol>
 </div>
 </div>
 </li>

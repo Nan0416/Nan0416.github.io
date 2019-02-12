@@ -191,9 +191,9 @@ SyntaxHighlighter.all()
                             ) { }
 
                             ngOnInit() {
-                                this.eventHub.childrenSay$.subscribe(data=>{
-                                this.data = "parent received: " + data;
-                                })
+                                this.subscription = this.eventHub.childrenSay$.subscribe(data=>{
+                                    this.data = "parent received: " + data;
+                                });
                             }
                             ngOnDestroy(){
                                 this.subscription.unsubscribe(); // avoid component be null.
