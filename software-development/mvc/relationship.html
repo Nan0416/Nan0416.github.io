@@ -33,9 +33,9 @@ SyntaxHighlighter.all()
 </script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<center><strong>System&nbsp;-&nbsp;System&nbsp;control</strong></center>
+<strong>System&nbsp;-&nbsp;System&nbsp;control</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-03-04</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-03-04</span></p>
+<p class="date"><span class="created-date">Created:2018-03-04</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-12</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#orIntro">Introduction</a></li>
@@ -50,15 +50,10 @@ SyntaxHighlighter.all()
 <h3>Introduction</h3>
 <div class="terminology">
 <ul>
-<li>Association: all object are created outside other objects, each object has its own lifecycle. Each object can have multiple other objects' references.
-    Each object can be referenced by multiple objects.
-</li>
-<li>Aggregation: all object are created outside other objects, each object has its own lifecycle. But there is a master object that has references of all other slave objects.
-And a slave object can only be referenced by one master objects.
-</li>
-<li>
-Composition: A master object creates its slave objects. When it is deleted, its slave objects are also being deleted.
-</li>
+<li>Dependency (usa-a): a particular function object A (e.g. Printer) is given to one of the method of an object B. B only use A inside the its method, and B does not have a property that always hold A.</li>
+<li>Association/Aggregation: all object are created outside other objects, each object has its own lifecycle. Each object can have multiple other objects' references. Each object can be referenced by multiple objects.</li>
+<li>Composition (has-a): A master object creates its slave objects. When it is deleted, its slave objects are also being deleted.</li>
+<li>Inhertance (is-a): </li>
 </ul>
 </div>
 </div>
