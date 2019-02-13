@@ -551,8 +551,11 @@ div.contentContainer h3{
 div.contentContainer p{
     font-size: 14px;
 }
-div.termnology h4, div.termnology li{
-    font-size:14px;
+div.termnology h4{
+    font-size: 14px;
+} 
+div.termnology li{
+    font-size:13px;
 }
 div.register table, div.connection table, div.generalTable table{
     width:90%;
