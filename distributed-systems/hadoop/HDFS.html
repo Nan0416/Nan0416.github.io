@@ -37,7 +37,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Hadoop&nbsp;-&nbsp;HDFS</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-02-11</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-11</span></p>
+<p class="date"><span class="created-date">Created:2019-02-11</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-18</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -96,8 +96,87 @@ and store file’s metadata, such as
 </li>
 <li>
     <div class="content" id="usage">
-        <h3>How to use</h3>
-        <p>HDFS provide a FS shell, Java API, C API to developers.</p>
+        <h3>How to use (Hadoop 2.9.2)</h3>
+        <div class="featureList">
+            <h4>Starting a HDFS cluster</h4>
+            <p>Two Linux machines: One Linux (linux: 192.168.0.110) runs a NameNode and a DataNode, another Linux (linux-e435:192.168.0.102) runs a DataNode</p>
+            <ol>
+                <li>
+1). sudo ufw disable # disable firewall
+2). configure /etc/hosts to correct addresses, make sure no duplicated hostnames
+                </li>
+                <li>Configure /etc/hadoop/core-site.xml to tell using HDFS and its address
+<pre style="border:1px green solid">
+    &lt;configuration>
+        &lt;property>
+            &lt;name>fs.defaultFS&lt;/name>
+            &lt;value>hdfs://localhost:9000&lt;/value>
+        &lt;/property>
+    &lt;/configuration>
+</pre>
+                </li>
+                <li>Configure /etc/hadoop/hdfs-site.xml, tell where is data physicall stored and #replication ( the replication number &lt;= actual #data nodes)<br>
+                    We also need to create the directory /home/nan/Documents/hadoop/project/cluster
+<pre style="border:1px green solid">
+    &lt;property>
+        &lt;name>dfs.namenode.name.dir&lt;/name>
+	    &lt;value>/home/nan/Documents/hadoop/project/cluster/namenode&lt;/value>
+    &lt;/property>
+    &lt;property>
+        &lt;name>dfs.datanode.data.dir&lt;/name>
+	    &lt;value>/home/nan/Documents/hadoop/project/cluster/datanode&lt;/value>
+    &lt;/property>	
+	&lt;property>
+        &lt;name>dfs.replication&lt;/name>
+		&lt;value>1&lt;/value>
+    &lt;/property>
+</pre>
+                </li>
+                <li>Configure workers' addresses in /etc/hadoop/slaves
+<pre style="border:1px green solid">
+    linux-e435
+    linux
+</pre>
+                </li>
+                <li>
+<pre class="brush:bash">
+$hdfs namenode -format #initalize formatting
+$start-dfs.sh #start namenode, secondary namenode and datanodes
+$stop-dfs.sh #stop namenode, secondary namenode and datanodes
+</pre>
+                </li>
+            </ol>
+        </div>
+        <div class="featureList">
+            <h4>Use a HDFS</h4>
+            <ol>
+                <li>Web interface: namenode @ IP:50070, datanode @ IP:50075</li>
+                <li>API programming: namenode @ IP:9000, datanode @ IP:50010</li>
+                <li>CLI
+                    <pre class="brush:bash">
+hdfs dfs -df -h # check storage capacity
+hdfs dfs -ls / # list contents of the hdfs's root directory
+hdfs dfs -mkdir /data # make dir
+hdfs dfs -put /local/file.txt /data # copy data from local fs to hdfs
+hdfs dfs -get /data/file.txt /local # copy data from hdfs to local fs
+hdfs dfs -cat /data/file.txt # print file.txt in hdfs
+                    </pre>
+                </li>
+            </ol>
+        </div>
+        <div class="featureList">
+            <h4>Common Error and solution</h4>
+            <ol>
+                <li>Remote DataNodes do not show up?<br>
+Issue 1: Version. Manually delete the namenode and datanode directory. And reformat.<br>
+Issue 2: Firewall. sudo ufw disable #disable firewall<br>
+Isuue 3: Duplicated entries in /etc/hosts 
+                </li>
+                <li>Reconfigure #datanodes?<br>
+Have to delete two directories and reformat.
+                </li>
+            </ol>
+        </div>
         
     </div>
 </li>

@@ -90,7 +90,9 @@ SyntaxHighlighter.all()
     <ol>
         <li>Local/Stondalone Mode: (default), run as a single java process</li>
         <li>Pseudo Distributed Mode: run serveral java processes in a single machine, (good for development and debugging)</li>
-        <li>Fully Distributed Mode: run on serveral machines (nodes)</li>
+        <li>Fully Distributed Mode: run on serveral machines (nodes)
+            <p>Two head (master) nodes, and rest of nodes are workers. Each worker works as HDFS's DataNode and YARN's NodeManager</p>
+        </li>
     </ol>
 </div>
 </div>
