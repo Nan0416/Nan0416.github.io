@@ -37,7 +37,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Graph&nbsp;-&nbsp;MST</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-02-14</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-14</span></p>
+<p class="date"><span class="created-date">Created:2019-02-14</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-18</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -120,8 +120,34 @@ return {Y, X}
                 <li>tree: #edges = #vertices - 1</li>
                 <li>tree: exactly one path exists between any two vertices</li>
             </ol>
+            <h4>Cut</h4>
+            <ol>
+                <li>Cut: A cut of a graph is a partition of a group into two subset of vertices V = S U S_bar</li>
+                <li>Cut edges: the edges across S and S_bar
+                    <p><img src="img/cut.png" width="300" height="180"></p>
+                </li>
+                <li>Any edge that is the minimum weight across a cut, it will be part of some MST.</li>
+            </ol>
+            <p></p>
+
         </div>
-        <p>Suppose </p>
+        <h4>Proof</h4>
+        <p>Induction: Running the Kruskal aglorithm, we get an intermidate subgraph X. Then induction's assumption is this X belongs to the MST. (The difficulty here is we have mulitple MST exist.)<br>
+        The next step is to choose the next minimum edge e* across a cut and add it to the subgraph X, then we need to prove X U e is still part of some MST.
+        </p>
+        <p><img src="img/cut_proof.png" width="300" height="180"></p>
+        <p>T is the old MST, T' is to be proved as a MST after adding e*.
+            <br>Condition 1). e* is in T, then e* U X is still part of MST.
+            <br>Condition 2). e* is not part of T, then proving e* U X is part of another tree T'. And T' is MST (T' can be built by modifying T, T' = T U e* - e').
+            <br>e* is a cut edge, so e* U X is part of tree.
+            <br>T U e* creates a circle, remove one edge from the circle to form a tree. The edge dropped should have at least weight of e*. Because only cut edges have at least weigth than e* (above picture)
+        </p>
+        <p><img src="./img/cut_proof2.png" width="200" height="200"></p>
+        <p>T' = T U e* - e'
+            <br>1). T' is a tree. A tree is connected (any two vertex are connected) and n-1 edges.
+            <br>2). T' is a MST. weight(T') = weight(T) + w(e*) - w(e')
+        </p>
+
     </div>
 </li>
 <li>
