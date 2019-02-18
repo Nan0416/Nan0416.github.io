@@ -2,7 +2,7 @@
 <!-- NewPage -->
 <html lang="en">
 <head>
-<title>Hadoop&nbsp;YARN</title>
+<title>Hadoop&nbsp;MapReduce</title>
 <meta charset="utf-8">
 <meta name="date" content="2019-02-18">
 <meta name="keywords" content="">
@@ -35,13 +35,12 @@ SyntaxHighlighter.all()
 </script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<strong>Hadoop&nbsp;-&nbsp;YARN</strong>
+<strong>&nbsp;-&nbsp;</strong>
 </div>
 <p class="date"><span class="created-date">Created:2019-02-18</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-18</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
-<li><a href="#usage">How to use</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -51,60 +50,15 @@ SyntaxHighlighter.all()
 <li>
 <div class="content" id="intro">
 <h3>Introduction</h3>
-<p>YARN is a resource manager. It has a master node called ResourceManager, it also typically runs a NodeManager on each DataNode (moving computational power to data) to create tasks</p>
-<p>YARN is added since Hadoop 2.0. Hadoop MapReduce can be run without YARN. And YARN can also be used in other framework that requires resource management.</p>
+
 </div>
-</li>
-<li>
-    <div class="content" id="usage">
-        <h3>How to use</h3>
-        <div class="featureList">
-            <h4>Configuration</h4>
-            <ol>
-                <li>Tell MapReduce use YARN, /etc/hadoop/mapred-site.xml
-<pre style="border:1px green solid">
-&lt;configuration>
-    &lt;property>
-        &lt;name>mapreduce.framework.name&lt;/name>
-        &lt;value>yarn&lt;/value>
-    &lt;/property>
-&lt;/configuration>
-</pre>
-                </li>
-                <li>Configure YARN, /etc/hadoop/yarn-site.xml
-<pre style="border:1px green solid">
-&lt;configuration>
-    &lt;property>
-        &lt;name>yarn.nodemanager.aux-services&lt;/name>
-        &lt;value>mapreduce_shuffle&lt;/value>
-    &lt;/property>
-&lt;/configuration>
-</pre>
-                </li>
-                <li>Start YARN
-<pre class="brush:bash">
-$start-yarn.sh
-$stop-yarn.sh
-</pre>
-                </li>
-            </ol>
-        </div>
-        <div class="featureList">
-            <h4>Usage</h4>
-            <ol>
-                <li>Web interface http://ip:8088<br>
-                    Service API ip:8032
-                </li>
-            </ol>
-        </div>
-    </div>
 </li>
 <li>
 <div class="content" id="reference">
 <h3>References</h3>
 <div class="featureList">
     <ol>
-        <li><a href="https://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/SingleCluster.html" target="_blank">Hadoop: Setting up a Single Node Cluster.</a></li>
+        <li></li>
     </ol>
 </div>
 </div>

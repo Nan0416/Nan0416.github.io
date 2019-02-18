@@ -1,46 +1,4 @@
 
-
-3. 
-bin/hdfs namenode -format #initalize formatting
-sbin/start-dfs.sh #start namenode, secondary namenode and datanodes
-sbin/stop-dfs.sh #stop namenode, secondary namenode and datanodes
-
-start YARN
-ResourceManager
-web-protal: 8088
-service: 8032
-
-NodeManager
-
-
-sbin/start-yarn.sh
-sbin/stop-yarn.sh
-
-
-physical storage location
-/tmp/hadoop-nan/dfs/data/current
-
-
-///// cluster /////
-Typical configuration.
-one machine (master): namenode
-one machine (master): resource manager
-
-
-
-
-
-
-
-5. format on the namenode
-hdfs namenode -format.
-***
-when update the slave number or node configuration, such as adding new nodes.
-you have to reformat hdfs. But before reformatting, manually delete the namenode and datanode directory.
-
-
-
-
 python hadoop streaming
 Hadoop read a single large file, create a couple of mappers.
 Hadoop split this single large file and distribute them to mappers.
