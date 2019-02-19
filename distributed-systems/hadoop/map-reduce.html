@@ -35,9 +35,9 @@ SyntaxHighlighter.all()
 </script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<strong>&nbsp;-&nbsp;</strong>
+<strong>Hadoop&nbsp;-&nbsp;MapReduce</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-02-18</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-18</span></p>
+<p class="date"><span class="created-date">Created:2019-02-19</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-19</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -50,7 +50,38 @@ SyntaxHighlighter.all()
 <li>
 <div class="content" id="intro">
 <h3>Introduction</h3>
-
+<p>Inspired by Lisp functional programming Map and Reduce. Most of data processing jobs can be asbstract as a 
+    MapReduce job. So Google and Hadoop's MapReduce frameworks provide a programming model that run task in parallel.</p>
+<p>The framework help create jobs, scheduling, fault tolerance.</p>
+<div class="featureList">
+    <h4>Workflow</h4>
+    <div class="featureList">
+        <ol>
+            <li>Partitioning the input data into a set of M splits (16MB -> 64MB) and invoke M mappers across the cluster. (The input data is stored in a DFS e.g. HDFS, MapReduce will create job on the same node that stores data)</li>
+            <li>Intermediate key/value pairs produced by mappers are first buffered in memory then write into local FS on disk. Each intermediate file is created R copies, each copy is used by a reducer. The location of the R copies will be reported to master.</li>
+            <li>Master can create reducers before mapper. When the first mapper is done, the master notifies each reducer and tell them intermediate result’s location.</li>
+            <li>Shuffle: Each reducer selects a partition and ask the partition from each mapper’s local FS. This step is started after the first map is finished. It invokes network transmission.  
+                The partition function supplied by the user e.g. “hash(key) mod R”</li> 
+            <li>A reducer obtain a partition of intermediate data and sort this partition and group them by key (sort inside a parition and it is done on a reducer), and then pass to the user-defined reduce function.</li>
+            <li>Each reducer output a file in the local FS. When a reducer finished, this file will be renamed atomically and goes to dfs. (The number of final output = #reducers)</li>
+        </ol>
+    </div>
+    <h4>Features</h4>
+    <div class="featureList">
+        <ol>
+            <li>Supply data via iterator: Reducer partitioned, sorted and grouped data will be supply to the user-defined reduce function via an iterator. This allows to handle lists of values that are too large to fit in memory.</li>
+            <li>Fault tolerance: The master pings each worker to check if it is dead. If a worker is dead, then the master will reset (mark as idle) any in-process or completed map tasks or any in-process reduce tasks that are located on this worker. Once they are marked idle, they will be re-scheduled.
+                <span style="color:red">Why also mark completed map tasks as idle? </span>
+                <br>Completed map tasks are also re-executed on a failure because their output is stored on the local disk(s) of the failed machine and is therefore inaccessible.
+                <br>Completed reduce tasks do not need to be re-executed since their output is stored in a distributed file system.
+            </li>
+            <li>Combiner: help reduce network traffic, it run on after each map task</li>
+            <li>Straggler Issue: a machine that takes an unusually long time to complete one of the last few map or reduce tasks in the computation.<br>
+                Solution: When a MapReduce operation is close to completion, the master schedules backup executions of the remaining in-progress  tasks
+            </li>
+        </ol>
+    </div>
+</div>
 </div>
 </li>
 <li>
@@ -58,7 +89,8 @@ SyntaxHighlighter.all()
 <h3>References</h3>
 <div class="featureList">
     <ol>
-        <li></li>
+        <li><a href="./files/mapreduce-osdi04.pdf" target="_blank">MapReduce: Simplied Data Processing on Large Clusters</a></li>
+        <li><a href="https://stackoverflow.com/questions/28600078/mapreduce-intermediate-data-output-location" target="_blank">Location of intermediate map output</a>        </li>
     </ol>
 </div>
 </div>
