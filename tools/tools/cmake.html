@@ -52,7 +52,7 @@ SyntaxHighlighter.all()
 <li>
 <div class="content" id="intro">
 <h3>Introduction</h3>
-<p>CMake is used to build C++ project.</p>
+<p>CMake is automation tool to help build complicated projects. Before using CMake, you have to know how to build the project manually.</p>
 <h4>CMake vs Make</h4>
 <p>CMake is command based</p>
 <h4>Command</h4>
@@ -79,7 +79,7 @@ cmake . # run cmake on the current directory, it will search CMakeLists.txt in .
 <li>
     <div class="content" id="example">
         <h3>Examples</h3>
-        <p>CMake is automation tool to help build complicated projects. Before using CMake, you have to know how to build the project manually.</p>
+       
         <div class="featureList">
             <h4>Simple example</h4>
             <ol>
@@ -129,10 +129,8 @@ CMAKE_BINARY_DIR  # the folder run cmake
 CMAKE_MODULE_PATH #
                     </pre>
                 </li>
-                <li>Commands
+                <li>Simple Commands
 <pre class="brush:bash">
-find_package(OpenCV REQUIRED) ##...exaple
-
 # Create a directory. If the string is a relative value, the directory is created at the folder has CMAKELists.txt 
 file(MAKE_DIRECTORY "output") 
 
@@ -141,6 +139,19 @@ link_libraries(grpc++_unsecure grpc gpr) #link library
 
 message(WARNING, "Message ${variable}") # print content, there exist different mode other than WARNING
 </pre>
+                </li>
+                <li>find_package:
+                    <p>find_package(Protobuf REQUIRED) will find the protobuf library and create a few variables. For example, 
+                        <br>PROTOBUF_LIBRARY
+                        <br>PROTOBUF_LIBRARIES
+                        <br>PROTOBUF_INCLUDE_DIR
+                        <br>PROTOBUF_PROTOC_EXECUTABLE
+                    </p>
+                    <p>How it works: find_package has two modes:
+                        <br>1). Config mode: find file outside the project and created by install command when build other libraries e.g. opencv, grpc, glog.<br>
+                        These installed library will create a cmake directory, .e.g. /usr/local/lib/cmake/glog/. Inside this directory, it has &lt;lib>-config.cmake file. And this file will provide the three variables.
+                        <br>2). Module mode: find file inside the project. The project should provide Find&lt;lib>.cmake
+                    </p>
                 </li>
             </ol>
         </div>
@@ -151,7 +162,7 @@ message(WARNING, "Message ${variable}") # print content, there exist different m
 <h3>References</h3>
 <div class="featureList">
     <ol>
-        <li></li>
+        <li><a href="https://stackoverflow.com/questions/20746936/cmake-of-what-use-is-find-package-if-you-need-to-specify-cmake-module-path-an" target="_blank">find_package() stackoverflow</a></li>
     </ol>
 </div>
 </div>
