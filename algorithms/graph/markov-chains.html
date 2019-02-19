@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>Graph&nbsp;Markov Chains</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-02-18">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>Graph&nbsp;-&nbsp;Markov Chains</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-02-18</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-18</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#pagerank">Applications (PageRank)</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+<p>Markov Chains (wiki): a stochastic model describing a sequence of possible events in which the probability of each event depends only on the state attained in the previous event.</p>
+<p>This model can be represented by a connected directed graph, edge' weight is the probability to shift to next state (vertex) from the current state (vertex)</p>
+<p>Time is discrete, each time is one move</p>
+<p><img src="./img/markov-1.png" width="200" height="200"></p>
+<p>The sum of out edge on a vertex is 1</p>
+<p>Matrix representation of the graph, it is also called transition matrix, P(i,j) = Pr(i->j) = Pr (next = j | current = i)</p>
+<p><img src="./img/markov-2.png" width="180" height="150"></p>
+<div class="featureList">
+    <h4>Properties of the transition matrix</h4>
+    <ol>
+        <li>P is a stochastic matrix: each row's sum = 1 (If column's sum is also 1, then P is a doubly stochastic)</li>
+        <li>N-step transition: P^N is the distribution after moving N steps (N time)<br>
+        e.g. 2-step P^2. P^2(check-email -> star-craft) = P^2(2, 3) = 0.35 = 0.5 * 0.7<br>
+        <img src="./img/markov-3.png" width="180" height="150">
+        </li>
+        <li>Infinite Time: when P becomes larger and larger, P^N converage (unchanged) and row are the same. It means no matter where you start, the probability of ending at a state is same.
+            <br>
+            <img src="./img/markov-4.png" width="220" height="120">
+            <br>
+            π is a stationary distribution
+        </li>
+        <li><span style="color:red">π is an eigenvector with eigenvalue = 1</span><br>
+        distribution at (t) * P = distribution at (t+1). For a stationary distribution, we have πP = π. So π is an eigenvector with eigenvalue = 1<br>
+        <img src="img/markov-5.png" width="230" height="150">
+        </li>
+    </ol>
+</div>
+<div class="featureList">
+    <h4>Unique stationary distribution</h4>
+    <p><span style="color:red">Ergodic Markov Chain, aperiodic & irreducible, has one unique stationary distribution</span></p>
+    <ol>
+        <li>Counterexample that markov chains have a periodical structure: e.g. A bipartite markov chains
+            <br>
+            <img src="./img/markov-6.png" width="150" height="180">
+        </li>
+        <li>Eliminate the periodical strcuture by letting matrix's diagonal > 0
+            <br>
+            <img src="./img/markov-7.png" width="240" height="180">
+        </li>
+        <li>Counterexample that markov chains have multiple SCC: e.g. starting from a sink SCC never reaches other SCC</li>
+        <li>Make sure markov chains is <span style="color:red">irreducible</span>, namely, only one SCC. To do this, manully add a tiny weigth edge between any two vertices that are not connected.</li>
+    </ol>
+</div>
+</div>
+</li>
+<li>
+    <div class="content" id="pagerank">
+        <h3>PageRank</h3>
+        <p>PageRank is an algorithm to give each webpage (url) a quantity of its "importance". 
+            And the importance is used to sort webpages to make sure the webpages are shown in the order of relevance.</p>
+        <p>Each page is a vertex, each hyperlink is a edge</p>
+        <div class="featureList">
+            <h4>Webgraph</h4>
+            <ol>
+                <li>each webpage is a vertex, each hyperlink is an edge</li>
+                <li>π(x) is the rank (importance) of x</li>
+                <li>Out(x) is out-neighbors of x</li>
+                <li>In(x) is in-neighbors of x</li>
+                <li><span style="color:red">Intuitive method</span>: the importance of a webpage = how many webpages cite this webpage #In(x), how many webpages In(x) cite, how important are In(x).
+                    <br>A webpage cites 1000 webpages, which includes p1. A webpage only cites p2. p2 is famous than p1.
+                    <br>=sum 1/out(y) over y in In(x)
+                    <br>A infamous webpage only cites p1, a CNN webpage cites 1000 webpages which include p2. p2 is famous than p1.
+                    <br>=sum <span style="color:red">π(y)</span>/out(y) over y in In(x)
+                </li>
+                <li>
+                    <span style="color:red">Random walk method</span>: 
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>
