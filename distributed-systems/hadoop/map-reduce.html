@@ -92,7 +92,97 @@ SyntaxHighlighter.all()
         <h3>Hadoop MapReduce</h3>
         <h4>Architecture</h4>
         <p>A single master ResourceManager, one slave NodeManager per cluster-node, and MRAppMaster per application </p>
+        <div class="featureList">
+            <h4>Configuration</h4>
+            <ol>
+                <li>MapReduce's configuration is via mapred-site.xml. This file controls the size of the buffer of map temporary output; intermediate file localtion, customized #mapper, #reducer.</li>
+                <li>Default values <a href="https://hadoop.apache.org/docs/r2.9.2/hadoop-mapreduce-client/hadoop-mapreduce-client-core/mapred-default.xml" target="_blank">here</a></li>
+               
+            </ol>
+        </div>
         <h4>How to use</h4>
+        <div class="featureList">
+            <ol>
+                <li>Example from Hadoop MapReduce website.
+                <pre class="brush:java">
+// emit import 
+public class WordCount {
+
+  public static class TokenizerMapper extends Mapper&lt;Object, Text, Text, IntWritable>{
+    /* Object, Text, Text, IntWritable = Input key, Input value, Output Key, Output Value
+    * The input key, value are determined by InputFormat.
+    */
+    private final static IntWritable one = new IntWritable(1);
+    /*IntWritable is Comparable and Writable
+    *1). Writable serial data to local disk
+    *2). Comparable interface is used for comparing when the reducer sorts the keys
+    */
+    private Text word = new Text();
+    // Text is like a string's implementation of Writable and Comparable interfaces.
+    
+    public void map(Object key, Text value, Context context ) throws IOException, InterruptedException {
+        /* Context provide a mechinism for this mapper task to interact with the hadoop system.
+        * org.apache.hadoop.mapreduce.Mapper.Context
+        * MapContext -> JobContext -> MRJobConfig
+                    -> TaskInputOutputContext [write(KEYOUT, VALUEOUT)]
+        */
+        /*
+        * 1. report progress
+        * 2. update Counter
+        * 3. write data to local disk
+        * 4. read .xml configuration
+        */ 
+      StringTokenizer itr = new StringTokenizer(value.toString());
+      while (itr.hasMoreTokens()) {
+        word.set(itr.nextToken());
+        context.write(word, one);
+
+      }
+    }
+  }
+
+  public static class IntSumReducer extends Reducer&lt;Text, IntWritable,Text,IntWritable> {
+    private IntWritable result = new IntWritable();
+    public void reduce(Text key, Iterable&lt;IntWritable> values, Context context ) throws IOException, InterruptedException {
+      int sum = 0;
+      for (IntWritable val : values) {
+        sum += val.get();
+      }
+      result.set(sum);
+      context.write(key, result);
+    }
+  }
+
+  public static void main(String[] args) throws Exception {
+    Configuration conf = new Configuration();
+    Job job = Job.getInstance(conf, "word count");
+    // configure this job
+    job.setJarByClass(WordCount.class);
+    job.setMapperClass(TokenizerMapper.class);
+    job.setCombinerClass(IntSumReducer.class);
+    job.setReducerClass(IntSumReducer.class);
+    job.setOutputKeyClass(Text.class);
+    job.setOutputValueClass(IntWritable.class);
+    FileInputFormat.addInputPath(job, new Path(args[0]));
+    FileOutputFormat.setOutputPath(job, new Path(args[1]));
+    System.exit(job.waitForCompletion(true) ? 0 : 1);
+  }
+}
+                </pre>
+                </li>
+            </ol>
+        </div>
+        <div class="featureList">
+            <h4>InputFormat</h4>
+            <ol>
+                <li>InputFormat: validate the input-specification of the job, split input.<br>
+                    FileInputFormat: the base class for all file-based InputFormats<br>
+                    TextInputFormat: the default concrete InputFormat. Files are broken into lines. Either linefeed or carriage-return are used to signal end of line. Keys are the position in the file, and values are the line of text.
+                </li>
+                <li>InputSplit: An input split represents the data to be processed by an <span style="color:red">individual</span> mapper. It knows where the data is stored, how it replicated.</li>
+                <li>RecordReader&lt;KEYIN,VALUEIN,KEYIN>: takes an input split and format it as key,value. This key,value will be given to mapper's map function.</li>
+            </ol>
+        </div>
         <h4>MapReduce REST API</h4>
     </div>
 </li>
