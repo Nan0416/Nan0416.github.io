@@ -21,6 +21,7 @@
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#proIntro">Introduction</a></li>
+<li><a href="#program">Developing a program</a></li>
 <li><a href="#proCompilation">From code to executable</a></li>
 <li><a href="#procReference">References</a></li>
 </ul>
@@ -59,6 +60,33 @@
     </ol>
 </div>
 </div>
+</li>
+<li>
+    <div class="content" id="program">
+        <h3>Developing a program</h3>
+        <p>Developing a program requires its programming languages, tools (e.g. compiler, package manager), runtime/interpreter and libraries (SDK).</p>
+        
+        <div class="generalTable">
+            <h4>Comparison</h4>
+            <table>
+                <tr><th>Name</th><th>Language</th><th>Runtime</th><th>Library</th><th>Tools</th></tr>
+                <tr><td>C++ program</td><td>C++</td><td>machine code on amd64, i386, ARM ...</td><td>c++ standard libray</td><td>g++</td></tr>
+                <tr><td>Java program</td><td>Java</td><td>bytecode code on JVM</td><td>Java SE/EE/ME</td><td>javac, jar, javadoc</td></tr>
+                <tr><td>.NET program</td><td>C#/F#/VB</td><td>MSIL code on .net runtime</td><td>.NET Core/.NET Framwork</td><td>dotnet</td></tr>
+                <tr><td>Python2 program</td><td>Python</td><td>python code on Python Interpreter/Jython</td><td>Python standard library</td><td>python</td></tr>
+                <tr><td>JavaScript program</td><td>JavaScript</td><td>JS code on broswer/node.js</td><td>Node.js API</td><td>nodejs, npm</td></tr>
+            </table>
+        </div>
+        <p>Runtimes can be implemented as either hardware, such as amd64 and ARM, or software such as JVM and .net CoreCLR<br>
+            Interprets can [only] be implemented as software, such as Python.
+        </p>
+        <p>A runtime/interpret defines a standard/specification of how to interpret code, and this standard/specification can have multiple concrete implementations. For example,
+            both Intel and AMD processor implement amd64. Python interpreter has the traditional C version python interpreter and Java version's Jython.
+        </p>
+        <p>Library/Standard/Specialization also can have multiple implementations. For example, Java EE specialization has Tomcat and Glassfish.</p>
+        <p>The feature that a program can support mutliple languages totally depends on the compilers. For example, .NET compiler can compile C# and F# to MSIL. 
+            If Java code can also be compiled into MSIL, then .NET will also support Java.</p>
+    </div>
 </li>
 <li>
 <div class="content" id="proCompilation">

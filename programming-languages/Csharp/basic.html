@@ -38,7 +38,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>C#&nbsp;-&nbsp;Basic</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-09-28</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-09-28</span></p>
+<p class="date"><span class="created-date">Created:2018-09-28</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-23</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Types</a></li>
@@ -54,26 +54,30 @@ SyntaxHighlighter.all()
 <li>
 <div class="content" id="intro">
 <h3>Types</h3>
-<p>C# has two kinds of types: value types and reference types.</p>
-<p>value types (Java primitive type) can be further divided into 4 categories: simple types, enum types, struct types, and nullable value.</p>
+<p>C# has two kinds of types: value types and reference types. But all types, including int, inherit from object.</p>
+<h4>Value types</h4>
+<p>Value types: primitive types, enum, struct, and null.</p>
 <div class="featureList">
-    <h4>Value types</h4>
     <ol>
         <li>sbyte, byte, short, ushort, int, uint, long, ulong, char, float, double, <span style="color:red">decimal (128bit high-percision decimal)</span>, bool
             <br>(Java only has signed numbers)
         </li>
-    </ol>
-</div>
-<p>reference types (Java primitive type) can be further divided into 4 categories: Class types, Interface types, Array types, and Delegate value.</p>
-<div class="featureList">
-    <h4>Value types</h4>
-    <ol>
-        <li>Delegate <span style="color:red">function pointer</span>: delegate type represents references to methods with a particular parameter list and return type.
+        <li>
+            struct: Java does not have struct, this struct is similar to C/C++ struct
         </li>
     </ol>
-    <h4>Naming conventions</h4>
-    <p>1. namespace capitalized. (Java package use company ... lower case)</p>
 </div>
+<h4>Reference types</h4>
+<p>reference types: Class, Interface, Array, and Delegate.</p>
+<div class="featureList">
+    <ol>
+        <li>Delegate (<span style="color:red">function pointer</span>): delegate type represents references to methods with a particular parameter list and return type.
+        </li>
+    </ol>
+</div>
+<h4>Naming conventions</h4>
+<p>1. namespace capitalized. (Java package use company ... lower case)</p>
+
 </div>
 </li>
 <li>

@@ -52,7 +52,8 @@ SyntaxHighlighter.all()
 <li>
 <div class="content" id="intro">
 <h3>Introduction</h3>
-<p>Terms: C# (C sharp), .NET, .NET Framework, Common Language Runtime</p>
+<p>Keywords: C# (C sharp), .NET, .NET Core, .NET Framework, Common Language Runtime</p>
+<p>This notes is on C# language, <span style="color:red">.NET Core</span> runtime and library</p>
 <div class="featureList">
     <h4>Things need to know</h4>
     <ol>
@@ -60,8 +61,7 @@ SyntaxHighlighter.all()
         <li>C# is very like to Java in terms of syntax and runtime. Microsoft wanted C# to replace Java.</li>
         <li>C# is first compiled to MSIL (Microsoft Intermediate Language), and then use JIT (Common Language Runtime) to translate into machine code (.exe or .dll [dynamic-link library] file) and run.</li>
         <li>dotnet.exe is a tool that can run the invoke the main function in .dll file. (We cannot directly run .dll because it is a library, dotnet can help us invoke .dll)</li>
-        <li>.java -> .class -> (Java Virtual Machine)</li>
-        <li>Some other languages, such as C++, VB, J#, can also be compiled into MSIL, which means C#, C++, VB can be used together.</li>
+        <li>Other languages, such as VB and F#, can also be compiled into MSIL, which means C#, F# and VB can run together.</li>
         <li>.NET contains the .NET framework libraries and CLR</li>
         <li>C# file has .cs extension.</li>
     </ol>
@@ -70,13 +70,16 @@ SyntaxHighlighter.all()
     <h4>C# language features</h4>
     <div class="featureList">
     <ol>
-        <li>Single inhertance, all inherited from object.</li>
-        <li>Based on C++, but no pointer, only reference</li>
-        <li>Like C++, and unlike Java, C# programmers must use the keyword virtual to allow methods to be overridden by subclasses</li>
+        <li>Single inhertance, all inherited from "object".</li>
+        <li>C# supports reference and value types (Java only support primitive value type). Value types are realized through structs, enum.</li>
+        <li>C# supports Delegates, which is similar to C++ function pointer. Java can use interface to achieve the same feature but more code</li>
+        <li>C# supports operator overloading. Only the most commonly overloaded operators in C++ may be overloaded in C#.</li>
+        <li>Like C++, and unlike Java, C# use the keyword virtual to allow methods to be overridden by subclasses</li>
         <li>A C# namespace provides the same level of naming isolation as a Java package or a C++ namespace. <br>
             However, C#'s namespace is just for naming isolation. Java package also used to organized code. C#'s namespace is closer to C++ namespace.<br>
             imported with the "using" function.</li>
-        <li>However, unlike Java, C# supports operator overloading. Only the most commonly overloaded operators in C++ may be overloaded in C#.</li>
+        <li>Class name can be different from filename. A .cs file can define multiple namespaces and multiple classes</li>
+        <li>Main function is capitalized Main, string is lowercase</li>
     </ol>
     </div>
 </div>
