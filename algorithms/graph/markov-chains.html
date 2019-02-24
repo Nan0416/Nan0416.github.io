@@ -116,7 +116,21 @@ SyntaxHighlighter.all()
                     <br>=sum <span style="color:red">π(y)</span>/out(y) over y in In(x)
                 </li>
                 <li>
-                    <span style="color:red">Random walk method</span>: 
+                    <span style="color:red">Random walk method</span>: start from a webpage, equally randomly select a hyperlink to go to the next page. In order word, 
+                    Pr(from page y to page x) = Pr(y - > x) = 1/out(y). We can use this to construct a markov-chain transition matrix.  
+                </li>
+            </ol>
+            <h4>Webgraph stationary distribution</h4>
+            <ol>
+                <li>The webgraph may have multiple SCC.</li>
+                <li>Make sure a stationary distribution: add an random edge (hyperlink) on each node (webpage)<br>
+                    select a damping factor a, (0 &lt; a &lt;=0). With a probability, we will use the original transition. 1 - a probability to use the random edge. 
+                    (Google use a = 0.85, a = 0 when the node is a sink node)<br>
+                    smaller a faster converagence<br>
+                    bigger a more precise.
+                </li>
+                <li>Erogic MC
+                    <p><img src="img/markov-9.png" width="240" height="100"></p>
                 </li>
             </ol>
         </div>
