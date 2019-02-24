@@ -1,0 +1,163 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>C#&nbsp;Class</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-02-03">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>C#&nbsp;-&nbsp;Class</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-02-23</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-23</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#modifier">Modifier</a></li>
+<li><a href="#constructor">Constructor</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+</div>
+</li>
+<li>
+    <div class="content" id="modifier">
+        <h3>Modifier</h3>
+        <p>C#'s class has some new features compared with Java. But most of these features are provided by C++.</p>
+        <div class="featureList">
+            <ol>
+                <li>Access modifier</li>
+                <li>Operator overload</li>
+                <li>Indexer operator i.e. []</li>
+                <li>Events (Different from Java Object notify, which is used for synchronization, C# events is a publisher-subscriber, which is used in the event-driven programming.)</li>
+                <li>Finalizer (Destructor)</li>
+                <li>Nested Types (Java inner class)</li>
+            </ol>
+        </div>
+        <h4>Modifier for accessibility</h4>
+        <div class="featureList">
+            <ol>
+                <li>public: all</li>
+                <li>protected: self and drived class</li>
+                <li>internal (default): access limited to the current assembly (assembly is a .dll library or a .exe, it is not a namespace. (different from java's package))</li>
+                <li>protected internal: protected internal has a more border accessibility than internal. It is like protected || internal.
+                    <br>
+                    <pre class="brush:java">
+                        // assembly1.dll
+                            public class BaseClass
+                            {
+                               protected internal int myValue = 0;
+                            }
+                    </pre>
+                    <pre class="brush:java">
+                        // assembly2.dll
+                            public class SubClass:BaseClass{
+                                public static void Main(){
+                                    BaseClass bc = new BaseClass();
+                                    // bc.myValue // error since different assembly
+                                    SubClass a = new SubClass();
+                                    a.myValue; // correct since drived class.
+                                }
+                            }
+                    </pre>
+                </li>
+                <li>private: inside the class</li>
+                <li>private protected: subclass can access private field if the subclass and baseclass in the same assembly.</li>
+            </ol>
+            <h5>Rules</h5>
+            <ol>
+                <li>Default access modifier of class is Internal. And private for class member.</li>
+                <li>Subclass's accessibility &lt; Parent class e.g. Subclass Public and Parent class Internal is an error.</li>
+            </ol>
+        </div>
+        <h4>Overload operator</h4>
+        <div class="featureList">
+            <ol>
+                <li>Overload Indexer.
+                    <pre class="brush:java">
+                        // []
+                        class XXX{
+                            public int this[int index] { // get, set, value are keywords in C#
+                                get {
+                                    return 0;
+                                }
+                                set {
+                                    Console.WriteLine(value);
+                                }
+                            }
+                        }
+                    </pre>
+                </li>
+                <li>Operator Overload.<br>
+                    In C++, overloading a operator can be done as either a function member or a friend function. However, in C#, only the "friend function" like
+                    overloading is allowed. C# does not have "friend function" concept, it use public static method member.
+                    <pre class="brush:java">
+                        public class XXX{
+                            public static string operator + (XXX a, XXX b){
+
+                            }
+                        }
+                    </pre> 
+                </li>
+                <li>Casting Overload<br>
+                    <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/conversion-keywords" target="_blank">Here.</a>
+
+                </li>
+            </ol>
+        </div>
+        <h4>Event with Function Delegate</h4>
+        <div>
+            <p>C# event subscribing can be done with IDE's drag. But also can be done programmatically with Delegate.</p>
+        </div>
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li><a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/access-modifiers" target="_blank">Access Modifier</a></li>
+        <li><a href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/events/" target="_blank">C# class events.</a></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>

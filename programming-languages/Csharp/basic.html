@@ -42,9 +42,9 @@ SyntaxHighlighter.all()
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Types</a></li>
+<li><a href="#array">Array</a></li>
 <Li><a href="#expression">Expression</a></Li>
 <li><a href="#flowcontrol">Flow control</a></li>
-<li><a href="#class">Class</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -56,7 +56,7 @@ SyntaxHighlighter.all()
 <h3>Types</h3>
 <p>C# has two kinds of types: value types and reference types. But all types, including int, inherit from object.</p>
 <h4>Value types</h4>
-<p>Value types: primitive types, enum, struct, and null.</p>
+<p>Value types: primitive types, enum, struct, and nullable.</p>
 <div class="featureList">
     <ol>
         <li>sbyte, byte, short, ushort, int, uint, long, ulong, char, float, double, <span style="color:red">decimal (128bit high-percision decimal)</span>, bool
@@ -65,6 +65,7 @@ SyntaxHighlighter.all()
         <li>
             struct: Java does not have struct, this struct is similar to C/C++ struct
         </li>
+        <li><span style="color:red">Each type except null, e.g. int, string, has a nullable type e.g. int?, string?. The nullable type's value can be a normal value or null.</span></li>
     </ol>
 </div>
 <h4>Reference types</h4>
@@ -75,10 +76,38 @@ SyntaxHighlighter.all()
         </li>
     </ol>
 </div>
-<h4>Naming conventions</h4>
-<p>1. namespace capitalized. (Java package use company ... lower case)</p>
-
+<p><span style="color:red">Primitive types, null and array are provided by C#, developers can use them but not define them.</span><br>
+Enum, struct, class interface and delegate are definable.<br>
+class, struct, interface, delegate support generics.
+</p>
+<h4>Box/Unbox</h4>
+<pre class="brush:cpp">
+    int i = 123;
+    object o = i;    // Boxing: allocate a space from heap, copy the value type's value into the reference type's space.
+    int j = (int)o;  // Unboxing: check if the box has the related value type; then copy the data out of the box into the value variable (on stack)
+</pre>
 </div>
+</li>
+<li>
+    <div class="content" id="array">
+        <h3>Array</h3>
+        <div class="featureList">
+            <ol>
+                <li>Loop a multi-dimensional array
+                    <pre class="brush:c++">
+                            int [,] arr= new int[2,2] {{1,2}, {3,4}};
+                            for (int i = 0; i &lt; arr.GetLength(0); i++)
+                            {
+                                for (int j = 0; j &lt; arr.GetLength(1); j++)
+                                {
+                                    Console.WriteLine(arr[i,j]); // 1 2 3 4
+                                }
+                            }
+                    </pre>
+                </li>
+            </ol>
+        </div>
+    </div>
 </li>
 <li>
     <div class="content" id="expression">
@@ -90,6 +119,25 @@ SyntaxHighlighter.all()
                 <li>(T)object: casting <span style="color:red">!!!!In C#, user can define how to cast variables. NEVER SEEN IN OTHER LANGUAGES.</span></li>
                 <li>object as T: return a casted object. If cannot cast, return null.</li>
                 <li>object is T: return true if object's type is T</li>
+                <li>default operator
+                    <pre class="brush:c++">
+                        int i = default(int); // use default to obtain the default type 
+                        string str = default(string);
+                        Console.WriteLine(i); // 0
+                        Console.WriteLine(str == null); // true
+                    </pre>
+                </li>
+                <li>check/uncheck operator<br>
+                    By default, variable value operation casued overflow is allowed. immediate value operation caused overflow is not allowed.
+                     is used to explicitly enable overflow checking for integral-type arithmetic operations and conversions
+                    <pre class="brush:c++">
+                        // Console.writeLine(2147483647 + 10); // immediate value addition overflow is not allowed, compile error.
+                        Console.WriteLine(unchecked(2147483647 + 10)); // -2147483639, ignore this error.
+                        int ten = 10;
+                        Console.writeLine(2147483647 + ten); // -2147483639
+                        Console.WriteLine(checked(2147483647 + ten)); // throw System.OverflowException 
+                    </pre>
+                </li>
             </ol>
         </div>
     </div>
@@ -104,106 +152,43 @@ SyntaxHighlighter.all()
                 </li>
                 <li>Traditional if else if else, while, do-while, for</li>
                 <li>foreach(string s in string_arr){} can be used if string_arr implemented System.Collections.IEnumerable
-                    <br><span style="color:red">for(String s: string_collections/string_arr){} 
-                        for(Iterator&lt;String> it = string_collections.iterator(); it.hasNext();) // java syntactic sugar for iterable collections
-                        <br>for(int i = 0; i &lt; string_arr.length; i++){} // for array.
-                    </span>
+                    <pre class="brush:c++">
+                        for(String s: string_arr){
+
+                        } 
+                        for(Iterator&lt;String> it = string_collections.iterator(); it.hasNext();) {
+                            // java syntactic sugar for iterable collections
+                        }
+                        for(int i = 0; i &lt; string_arr.length; i++){
+                            // for array.
+                        } 
+                    </pre>
                 </li>
                 <li>
                     yield (python also has yield, and same function) is used to implement a iterator.
-                </li>
-            </ol>
-        </div>
-    </div>
-</li>
-<li>
-    <div class="content" id="class">
-        <h3>Class</h3>
-        <p>C#'s class has some new features compared with Java. But most of these features are provided by C++.</p>
-        <div class="featureList">
-            <ol>
-                <li>Access modifier</li>
-                <li>Operator overload</li>
-                <li>Indexer operator i.e. []</li>
-                <li>Events (Different from Java Object notify, which is used for synchronization, C# events is a publisher-subscriber, which is used in the event-driven programming.)</li>
-                <li>Finalizer (Destructor)</li>
-                <li>Nested Types (Java inner class)</li>
-            </ol>
-        </div>
-        <h4>Modifier for accessibility</h4>
-        <div class="featureList">
-            <ol>
-                <li>public: all</li>
-                <li>protected: self and drived class</li>
-                <li>internal: access limited to the current assembly (assembly is a .dll library or a .exe, it is not a namespace. (different from java.))</li>
-                <li>protected internal: protected internal has a more border accessibility than internal. It is like protected || internal.
-                    <br>
-                    <pre class="brush:java">
-                        // assembly1.dll
-                            public class BaseClass
+                    <pre class="brush:c++">
+                        using System;
+                        using System.Collections.Generic;
+                        class X{
+                            public IEnumerable&lt;int> action(){
+                                yield return 1;
+                                yield return 2;
+                                yield return 3;
+                            }
+                        }
+                        class Program
+                        {
+                            static void Main(string[] args)
                             {
-                               protected internal int myValue = 0;
-                            }
-                    </pre>
-                    <pre class="brush:java">
-                        // assembly2.dll
-                            public class SubClass:BaseClass{
-                                public static void Main(){
-                                    BaseClass bc = new BaseClass();
-                                    // bc.myValue // error since different assembly
-                                    SubClass a = new SubClass();
-                                    a.myValue; // correct since drived class.
-                                }
-                            }
-                    </pre>
-                </li>
-                <li>private: inside the class</li>
-                <li>private protected: subclass can access private field if the subclass and baseclass in the same assembly.</li>
-            </ol>
-            <h5>Rules</h5>
-            <ol>
-                <li>Default access modifier of class is Internal. And private for class member.</li>
-                <li>Subclass's accessibility &lt; Parent class e.g. Subclass Public and Parent class Internal is an error.</li>
-            </ol>
-        </div>
-        <h4>Overload operator</h4>
-        <div class="featureList">
-            <ol>
-                <li>Overload Indexer.
-                    <pre class="brush:java">
-                        // []
-                        class XXX{
-                            public int this[int index] { // get, set, value are keywords in C#
-                                get {
-                                    return 0;
-                                }
-                                set {
-                                    Console.WriteLine(value);
+                                X temp = new X();
+                                foreach(int c in temp.action()){
+                                    Console.WriteLine(c); // 1 2 3
                                 }
                             }
                         }
                     </pre>
                 </li>
-                <li>Operator Overload.<br>
-                    In C++, overloading a operator can be done as either a function member or a friend function. However, in C#, only the "friend function" like
-                    overloading is allowed. C# does not have "friend function" concept, it use public static method member.
-                    <pre class="brush:java">
-                        public class XXX{
-                            public static string operator + (XXX a, XXX b){
-
-                            }
-                        }
-                    </pre> 
-                </li>
-                <li>Casting Overload<br>
-                    <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/conversion-keywords" target="_blank">Here.</a>
-
-                </li>
             </ol>
-        </div>
-        <h4>Event with Function Delegate</h4>
-        <div>
-            <p>C# event subscribing can be done with IDE's drag. But also can be done programmatically with Delegate.</p>
         </div>
     </div>
 </li>
@@ -213,8 +198,7 @@ SyntaxHighlighter.all()
 <div class="featureList">
     <ol>
         <li><a href="https://docs.microsoft.com/en-us/dotnet/csharp/tour-of-csharp/types-and-variables" target="_blank">Types and variables</a></li>
-        <li><a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/access-modifiers" target="_blank">Access Modifier</a></li>
-        <li><a href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/events/" target="_blank">C# class events.</a></li>
+        <li><a href="https://docs.microsoft.com/en-us/dotnet/csharp/tour-of-csharp/expressions" target="_blank">Expression</a></li>
     </ol>
 </div>
 </div>
