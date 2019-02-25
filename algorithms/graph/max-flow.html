@@ -5,9 +5,9 @@
 <title>Graph&nbsp;Max-flow</title>
 <meta charset="utf-8">
 <meta name="date" content="2019-02-03">
-<meta name="keywords" content="">
-<meta name="keywords" content="">
-<meta name="keywords" content="">
+<meta name="keywords" content="max-flow">
+<meta name="keywords" content="min-cut">
+<meta name="keywords" content="ford-fulkerson">
 <link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
 <script type="text/javascript" src="../../script.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
@@ -35,12 +35,15 @@ SyntaxHighlighter.all()
 </script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<strong>&nbsp;-&nbsp;</strong>
+<strong>Graph&nbsp;-&nbsp;Max-flow</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-02-03</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-03</span></p>
+<p class="date"><span class="created-date">Created:2019-02-24</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-24</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
+<li><a href="#ford-fulkerson">Ford-Fulkerson Algorithm</a></li>
+<li><a href="#min-cut">Min-cut=Max-flow</a></li>
+<li><a href="#edmonds-karp">Edmonds-Karp Algorithm</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -50,14 +53,105 @@ SyntaxHighlighter.all()
 <li>
 <div class="content" id="intro">
 <h3>Introduction</h3>
+<h4>Max-flow problem</h4>
+<div class="featureList">
+    <ol>
+        <li>Input: a flow network, which includes a graph (V,E), <span style="color:red">positive integer</span> edge capacities and a source vertex s, a target vertex t.</li>
+        <li>Goal: find a maximum flow from s to v (The maximum flow can use multiple paths, which differs from the maximum bottleneck program [The widest path problem].)</li>
+        <li>Constraints: each edge's flow inside [0, edge-capacity]; 
+            <br>for all vertex except s and t, input flow = output flow
+        </li>
+    </ol>
 </div>
+<h4>Anti-parallel edges</h4>
+<p>To simplify algorithm, we suppose there does not exist parallel edges. If exists, using the following method to remove one edge.</p>
+<p>
+    <img src="img/max-flow-1.png" width="350" height="150">
+</p>
+</div>
+</li>
+<li>
+    <div class="content" id="ford-fulkerson">
+        <h3>Ford-Fulkerson Algorithm</h3>
+        <div class="featureList">
+            <h4>Concept</h4>
+            <ol>
+                <li>Flow network (defined before)</li>
+                <li>Flow (f): based on the residual network, find one augmenting path. Add this augmenting path to the pervious flow. (A flow network exists multiple possible flows)</li>
+                <li>Available capacity network: after reduce the use flow from the flow network, the remaining capacity construct a avaliable network</li>
+                <li>Residual network (G_f): Remove the 0 flow edge from the avaiable capacity network, and create reverse edge with capacity equals to assigned flow from the flow.</li>
+                <li>Example
+                    <p><img src="img/max-flow-2.png" width="600" height="400"></p>
+                </li>
+                <li>st-path: a path from the source vertex s to the target vertex t.</li>
+            </ol>
+            <h4>Algorithm</h4>
+            <ol>
+                <li>Initialized a flow network with each edge of flow = 0</li>
+                <li>Generate available capacity network based on Input Network and Flow network</li>
+                <li>Generate residual network based on avaliable capacity network and flow network</li>
+                <li>Run DFS or BFS on the residual network to find a st-path.<span style="color:red">If no path found, return</span></li>
+                <li>Find the minimum edge weight along this st-path. Suppose it is w.</li>
+                <li>Update (Augment) the flow network with the w on the st-path.<br>
+                    ** If the used edge has the same direction on the original flow, the increase. Otherwise decrease.</li>
+                <li>Repeat step 2.</li>
+            </ol>
+        </div>
+        <h4>Runtime</h4>
+        <p>Each iteration will increase the flow by at least one unit. Each iteration takes O(|V + E|) = O(E). The max-flow size is C. So O(|E|*C).
+            <br><span style="color:red">pseudo-polynomial runtime: The runtime is depends on the input.</span>
+        </p>
+    </div>
+</li>
+<li>
+    <div class="content" id="min-cut">
+        <h3>Min-cut=Max-flow</h3>
+        <div class="featureList">
+            <h4>Concepts</h4>
+            <ol>
+                <li>Min-cut=Max-flow: The size of max-flow on a flow network is the min-cut capacity of the st-cut.</li>
+                <li>A cut (L, R) is a partition of V = L U R.</li>
+                <li>st-cut: The cut is identified by the vertex s and vertex t, where are the source and target of the flow-network.</li>
+                <li>Capacity(L,R): sum of weight of all <span style="color:red">out-edges</span> from L to R</li>
+            </ol>
+        </div>
+        <h4><span style="color:red">size(f) = f_out(L) - f_in(L)</span></h4>
+        <p>Size of a flow is the out-flow across the cut substracts the in-flow across the cut.</p>
+        <p>Intution: size(f) = f_out(s), f_in(s) = 0; all other vertices except s and t have f_in = f_out</p>
+        <p><img src="img/min-cut-proof-1.png" width="600" height="300"></p>
+        <h4 id="sizef*"><span style="color:red">size(f*) = cap(L,R)</span></h4>
+        <div class="featureList">
+            <ol>
+                <li>f* is generate by Ford-Fulkerson algorithm so we have there does not exist a st-path on the residual network.(1)</li>
+                <li>The out-edge across from L to S must disappear in the residual network, otherwise it violates (1). If an edge disappear in the residual network, it means it is fully occupied. So f*_out(L) = sum(out-edge weight) = cap(L,R)</li>
+                <li>The in-edge across from L to S must have flow 0 otherwise, it has create an out-edge from L to S in the residual network, which violates (1). So f*_in(L) = 0</li>
+                <li>Therefore, size(f*) = f*_out(L) - f*_in(L) = cap(L,R)</li>
+            </ol>
+        </div>
+
+        <h4>Proof</h4>
+        <h4>I.  max size(f) &lt;= min cap(L,R)</h4>
+        <p>max-flow &lt;= min st-cut  is equalient to any flow &lt;= any st-cut<br>
+            size(f) = f_out(f) - f_in(L) &lt;= f_out(f) &lt;= cap(L,R)
+        </p>
+        <h4>II. max size(f) => min cap(L,R)</h4>
+        <p>Because max flow(f) >= <a href="#sizef*">size(f*) = cap(L,R)</a> >= min cap(L,R), we have max size(f) => min cap(L,R)
+            <br><span style="color:red">Even though we know ford-fulkerson can generated the max-flow, but since we did not prove, so we have max-flow >= f*</span>
+        </p>
+  
+</li>
+<li>
+    <div class="content" id="edmonds-karp">
+        <h3>Edmonds-Karp Algorithm</h3>
+
+    </div>
 </li>
 <li>
 <div class="content" id="reference">
 <h3>References</h3>
 <div class="featureList">
     <ol>
-        <li></li>
+        <li><a href="https://classroom.udacity.com/courses/ud401/lessons/e4f767e0-9806-46b6-a7e2-5516c4572aff/concepts/968c3d8c-ea3a-485b-9e30-162ff4db7440" target="_blank">Udacity CS6505 Gatech Algorithm</a></li>
     </ol>
 </div>
 </div>
