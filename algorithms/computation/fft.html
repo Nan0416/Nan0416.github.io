@@ -1,0 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>Computation&nbsp;FFT</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-02-26">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>Computation&nbsp;-&nbsp;FFT</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-02-26</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-26</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#algorithm">FFT Algorithm</a></li>
+<li><a href="#inverse">Convert from value to coefficient</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+<p>FFT is used to solve polynomial multiplication problem. The alogrithm is an application of divide and conquer.</p>
+<div class="featureList">
+    <h4>Polynomial representation</h4>
+    <ol>
+        <li>Coefficient: A(x) = a0 + a1*x^1 + a2*x^2 + a3*x^3 + ... or A = (a0, a1, a2 ... an-1)</li>
+        <li>Value (n points): [x1, A(x1)], [x2, A(x2)], [x3, A(x3)] ... [xn-1, A(xn-1)]</li>
+    </ol>
+</div>
+<h4>Polynomial Multiplication By Coefficient</h4>
+<p>Two polynomial: 
+    <br>A(x) = a0 + a1*x^1 + a2*x^2 + a3*x^3 + ...
+    <br>B(x) = b0 + b1*x^1 + b2*x^2 + b3*x^3 + ...
+    <br>Goal: find C(x) = A(x)*B(x), where suppose C(x) = c0 + c1*x^1 + c2*x^2 + ..., then what are c0, c1, c2 ....?
+</p>
+<p>Runtime:<br>
+    From each ci, we have ci =a0 * bi + a1 * bi-1 + a2 * bi-2 ..., which takes O(n)<br>
+    There are 2n ci, so runtime is O(n^2).
+</p>
+<h4>Polynomial Multiplication By Value</h4>
+<p>Suppose polynomial A and B are order of n, then A*B will result in an order of 2n polynomial.<br>
+    So we can choose 2n different x and compute their A(x) and B(x). 
+    <span style="color:red">Runtime of this step is O(n^2) by using naive approach, but FFT use O(nlgn). 
+        <br>For each x, naive approach takes O(n). We have 2n x, so it takes O(n^2). But FFT use O(nlgn), the key idea is how to choose these 2n x.</span><br>
+    Then polynomial A*B can be represented by [x1, A(x1)*B(x1)], [x2, A(x2)*B(x2)], ... [x2n-1, A(x2n-1)*B(x2n-1)], which takes O(n)<br>
+    ** FFT also shows how to convert the value representation back to coefficient representation. ** 
+</p>
+</div>
+</li>
+<li>
+    <div class="content" id="algorithm">
+        <h3>FFT Algorithm</h3>
+        <h4>Prerequisite: Complex Numbers</h4>
+        <p>
+            <img src="img/fft-1.png" width="400" height="170">
+        </p>
+        <h4>Reduce 2n to n</h4>
+        <p><img src="img/fft-4.png" width="400" height="200"></p>
+        <p>With n different x, we can obtain 2n points. <br>
+            The next step will treat A_even and A_odd as two new polynomials with order of n/2. And we need to find the n different x on both of the two new polynomials.<br>
+            But with the same idea, we only need find n/2 different x and obtain n points from them. So here we use recursion. And it takes O(nlgn).
+        </p>
+        <h4>Using complex number</h4>
+        <p>For A to A_even and A_odd, we also suppose x^2 to be y. When finding A_even and A_odd, we want to obtain the n/2 free values which requires y can be negative.<br>
+            It means x^2 can be negative. Because we use recursion, it also requires x^2i can be negative. Therefore, the selection of x should include complex number.</p>
+        <h4>FFT as a block box</h4>
+        <p><img src="img/fft-2.png" width="500" height="120"></p>
+        <h4>FFT core</h4>
+        <p><img src="img/fft-3.png" width="500" height="230"></p>
+    </div>
+</li>
+<li>
+    <div class="content" id="inverse">
+        <h3>Convert from value to coefficient</h3>
+        <h4>Linear Algebra View</h4>
+        <p><img src="img/fft-6.png" width="400" height="230"></p>
+        <p>So to compare coefficient, we can compute the inverse of the matrix.</p>
+        <p><img src="img/fft-7.png" width="400" height="230"></p>
+        <h4>Proof of lemma</h4>
+        <div class="featureList">
+            <ol>
+                <li>For any nth root of unity w where w != 1, we have 1 + w + w^2 + .. w^n-1 = 0.<br>
+                <img src="img/fft-8.png" width="400" height="230">
+                </li>
+                <li>Proof of lemma can be done by doing the following<br>
+                <img src="img/fft-9.png" width="200" height="50">
+                </li>
+                <li>Expanding, and the diagonal will = n, other entry = 0.</li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li><a href="https://classroom.udacity.com/courses/ud401/lessons/1116db07-2358-40d6-9aec-c61dab930087/concepts/f03430ab-43a6-4aa2-ae21-d8e2140adabb" target="_blank">Udacity CS6505</a></li>
+        <li><a href="files/hw.zip">FFT Homework</a></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>
