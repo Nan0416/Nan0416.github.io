@@ -1,0 +1,287 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>C#&nbsp;Inheritance</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-02-26">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>C#&nbsp;-&nbsp;Inheritance</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-02-26</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-26</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#constructor">Constructor Inheritance</a></li>
+<li><a href="#finalizer">Destructor/Finalizer ??? It is not called</a></li>
+<li><a href="#inheritance">Method Inheritance</a></li>
+<li><a href="#sealed">Sealed class [TODO]</a></li>
+<li><a href="#object">Object class</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+<p>1). C# constructor and constructor inhertiance has the same rule as Java, but similar syntax to C++.<br>
+    static/instance constructor and finalizers are not inherited.<br>
+2). C# child class override parent class required using override keyword, same as "virtual" in C++.<br>
+3). C# only supports single inheritance
+</p>
+<div class="featureList">
+    <h4>Visibility</h4>
+    <p>Even through all members except constructors and finalizer are inherited by the child class, no every parent member can be directly accessed by the child class.</p>
+    <ol>
+        <li>private: only in</li>
+    </ol>
+</div>
+</div>
+</li>
+<li>
+    <div class="content" id="constructor">
+        <h3>Constructor Inheritance</h3>
+        <div class="featureList">
+            <h4>Rules</h4>
+            <ol>
+                <li>If no constructor is defined, then compiler provide a default constructor without argument and doing nothing.</li>
+                <li>If a developer-defined constructor exists, then the compile will not provide the default no argument constructor.</li>
+                <li>Child class must implicitly or explicitly invoke a parent's constructor at the very beginning.<br>
+                    implicitly: if the developer does not explicitly invoke parent constructor, then compiler will invoke the parent's no argument constructor that either provided by the compiler or defined by a developer.
+                    <pre class="brush:c++">
+                        class Program
+                        {
+                            static void Main(string[] args)
+                            {
+                                Child c = new Child();
+                            /*
+                                This is parent constructor
+                                Child constructor
+                                */
+                            }
+                        }
+                        public class Parent { 
+                            public Parent() {
+                                Console.WriteLine("This is parent constructor");
+                            }
+                        }
+                        public class Child: Parent { 
+                            public Child() {
+                                Console.WriteLine("Child constructor");
+                            }
+                        }
+                    </pre>
+                    explicitly: invoking is through keyword <span style="color:red">base</span>
+                    <pre class="brush:c++">
+                        class Program
+                        {
+                            static void Main(string[] args)
+                            {
+                                Child c = new Child();
+                            /*
+                                This is parent constructor: child
+                                Child constructor*/
+                            }
+                        }
+                        public class Parent { 
+                            public Parent(string str) {
+                                Console.WriteLine("This is parent constructor: " + str);
+                            }
+                        }
+                        public class Child: Parent { 
+                            public Child():base("child") {
+                                Console.WriteLine("Child constructor");
+                            }
+                        }
+                    </pre></li>
+            </ol>
+        </div>
+
+    </div>
+</li>
+<li>
+    <div class="content" id="finalizer">
+        <h3>Destructor/Finalizer</h3>
+        <div class="featureList">
+            <ol>
+                <li>Destructor cannot be inherited</li>
+                <li>Developers cannot invoke a destructor, a destructor is invoked by runtime. (GC)</li>
+                <li>Destructor chain: child destructor is invoked first and then parent destructor.</li>
+                <li>.NET runtime do well with memory management, the destructor mainly used to release other resources such as network connection, file handler, closing windows</li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="inheritance">
+        <h3>Method Inheritance</h3>
+        <p>Different from Java that child class method override parent class method by default, C#'s polymorphism is much more like C++. C# has <span style="color:red">virtual, new, override, abstract</span> keywords for using polymorphism.</p>
+        <div class="featureList">
+            <ol>
+                <li>A parent method without virtual, abstract, override modifier cannot be overriden. It can only use new, fake polymorphism.
+                    <pre class="brush:c++">
+class Program
+{
+    static void Main(string[] args)
+    {
+        Parent p = new Parent();
+        Child c = new Child();
+        Parent cp = new Child();
+        p.method(); // Parent method
+        c.method(); // Child method
+        cp.method(); // Parent method
+    }
+}
+class Parent 
+{
+    public void method()
+    {
+        Console.WriteLine("Parent method");
+    }
+}
+class Child:Parent 
+{ 
+    public new void method() // the new can be ignored, but it gives a warning.
+    {
+        Console.WriteLine("Child method");
+    }
+}
+                    </pre>
+                </li>
+                <li>A parent method has virtual/override keyword can still be modified with new keyword, and the behavior is same as above. However, the most expected case is using parent virtual/child override
+<pre class="brush:c++">
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Parent p = new Parent();
+            Child c = new Child();
+            Parent cp = new Child();
+            p.method(); // Parent method
+            c.method(); // Child method
+            cp.method(); // Child method
+    
+        }
+    }
+    class Parent 
+    {
+        public virtual void method()
+        {
+            Console.WriteLine("Parent method");
+        }
+    }
+    class Child:Parent 
+    { 
+        public override void method() 
+        {
+            Console.WriteLine("Child method");
+        }
+    }
+</pre>
+                </li>
+                <li>If a child class method is designated to override a parent method, then the child method cannot change the parent defined modifier.<br>
+                    However, using "new" is just like to create a new function and this function has no relationship with the parent class's method, so it have modify the modifier.
+                    <pre class="brush:c++">
+class Program
+{
+    static void Main(string[] args)
+    {
+        Parent p = new Parent();
+        Child c = new Child();
+        Parent cp = new Child();
+        //p.method(); // Parent method
+        c.method(); // Parent method\nChild new method
+        //cp.method(); // Child method
+
+    }
+}
+class Parent 
+{
+    protected virtual void method()
+    {
+        Console.WriteLine("Parent method");
+    }
+}
+class Child:Parent 
+{ 
+    /*protected override void method() 
+    {
+        Console.WriteLine("Child method");
+    }*/
+    public new void method() {
+        base.method(); // invoking parent function by explicitly using the base. 
+        Console.WriteLine("Child new method");
+    }
+}
+                    </pre>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="object">
+        <h3>Object class</h3>
+        <p>An empty class class A{} will have 9 members, a default construtor provided by the compiler and 8 member inherited from Object.</p>
+        <div class="featureList">
+            <ol>
+                <li>public virtual string ToString (); // by default return class name, implemented by reflection</li>
+                <li>public virtual int GetHashCode (); // used by collection class.</li>
+                <li>public virtual bool Equals (object obj); <br>
+                    public static bool Equals (object objA, object objB);
+                    public static bool ReferenceEquals (object objA, object objB); // determine if two instances are same. By default using reference comparison</li>
+                <li>public Type GetType (); // return a Type, java .getClass()</li>
+                <li>~Object (); // Destructor allows an object to try to free resources and perform other cleanup operations before it is reclaimed by garbage collection. java protected void finalize()</li>
+                <li>protected object MemberwiseClone (); // Creates a shallow copy of the current Object, C++ assignment constructor.</li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li><a href="https://docs.microsoft.com/en-us/dotnet/csharp/tutorials/inheritance" target="_blank">Microsoft Docs C# Inheritance</a></li>
+        <li><a href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/destructors" target="_blank">Destructor</a></li>
+        <li><a href="https://stackoverflow.com/questions/44573392/c-sharp-my-destructor-isnt-being-called" target="_blank">Destructor invokation stackoverflow.</a></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>

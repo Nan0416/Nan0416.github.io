@@ -42,6 +42,9 @@ SyntaxHighlighter.all()
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
 <li><a href="#modifier">Modifier</a></li>
+<li><a href="#static">Static member</a></li>
+<li><a href="#inner">Inner class</a></li>
+<li><a href="#setter-getter">Setter/Getter</a></li>
 <li><a href="#constructor">Constructor</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
@@ -95,7 +98,29 @@ SyntaxHighlighter.all()
                             }
                     </pre>
                 </li>
-                <li>private: inside the class</li>
+                <li>private: inner class and inner child class.
+                    <pre class="brush:c++">
+    class Program {
+        static void Main(string[] args)
+        {
+            Out.Inner t = new Out.Inner();
+            t.printOutX();
+        }
+    }
+    public class Out {
+        private int x;
+        public Out() {
+            x = 10;
+        }
+        public class Inner { 
+            public void printOutX() {
+                Out o = new Out();
+                Console.WriteLine(o.x);
+            }
+        }
+    }
+                    </pre>
+                </li>
                 <li>private protected: subclass can access private field if the subclass and baseclass in the same assembly.</li>
             </ol>
             <h5>Rules</h5>
