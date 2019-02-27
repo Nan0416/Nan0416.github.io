@@ -61,6 +61,17 @@ SyntaxHighlighter.all()
 3). C# only supports single inheritance
 </p>
 <div class="featureList">
+    <h4>Restriction</h4>
+    <ol>
+        <li>A static class can only and must only derive from Object.</li>
+        <li>A static class can have children class (Is sealed).</li>
+        <li>A static method cannot be marked as virtual, abstract or override. <br>
+            <span style="color:red">A static member belongs to the class, and all the derived classes.</span>
+        </li>
+        <li>A struct ...</li>
+    </ol>
+</div>
+<div class="featureList">
     <h4>Visibility</h4>
     <p>Even through all members except constructors and finalizer are inherited by the child class, no every parent member can be directly accessed by the child class.</p>
     <ol>

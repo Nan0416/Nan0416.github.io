@@ -138,6 +138,14 @@ class, struct, interface, delegate support generics.
                         Console.WriteLine(checked(2147483647 + ten)); // throw System.OverflowException 
                     </pre>
                 </li>
+                <li>C# string interploation<br>
+                <pre class="brush:c++">
+                    string name = "Tom";
+                    int age = 2;
+                    string sentence = $"{name} is {age} year{(age == 1 ? "" : "s")} old.";
+                    Console.WriteLine(sentence); // Tom is 2 years old.
+                </pre>
+                </li>
             </ol>
         </div>
     </div>

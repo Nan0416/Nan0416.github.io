@@ -41,11 +41,11 @@ SyntaxHighlighter.all()
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
+<li><a href="#static">Static</a></li>
+<li><a href="#inner">Inner Class</a></li>
 <li><a href="#modifier">Modifier</a></li>
-<li><a href="#static">Static member</a></li>
-<li><a href="#inner">Inner class</a></li>
 <li><a href="#setter-getter">Setter/Getter</a></li>
-<li><a href="#constructor">Constructor</a></li>
+<li><a href="#operator">Override Operator</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -56,6 +56,67 @@ SyntaxHighlighter.all()
 <div class="content" id="intro">
 <h3>Introduction</h3>
 </div>
+</li>
+<li>
+    <div class="content" id="static">
+        <h3>Static</h3>
+        <div class="featureList">
+            <ol>
+                <li><h4>Static classes</h4>
+                    <p>A static class is only allowed to have static members, and it cannot be instantiated.<br>
+                    <span style="color:red">Java only allows inner static class, C# allows static class at any place.</span></p>
+                    <p>The different between a static class (e.g. C# Math) and a non-static class have all static member (e.g. Java Math) is that you still can "new" an instance.
+                        Although it is meaningless. With C#, the meaningless action can be avoided.
+                    </p>
+                    <pre class="brush:c++">
+                        // A static class commonly used as facility class ,e.g. Math. 
+                        public static class Math;
+                    </pre>
+                </li>
+                <li><h4>Static properties, methods, events</h4>
+                    <p>[Same rules as Java] Static members can only be accessed by class name.<br>
+                        Non-static members can access static member but static members cannot access non-static members<br>
+                        A static member belongs to the class and all derived classes.
+                        <pre class="brush:c++">
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine(Parent.y); // 0
+            Child.Hello();
+            Console.WriteLine(Parent.y); // 10
+        }
+
+    }
+    public class Parent {
+        public static int y = 0;
+    }
+    public class Child: Parent {
+        public static void Hello() {
+            y += 10;
+        }
+    }
+                        </pre>
+                    </p>
+                </li>
+                
+            </ol>
+        </div>
+        
+    </div>
+</li>
+<li>
+    <div class="content" id="inner">
+        <h3>Inner Class</h3>
+        <div class="featureList">
+            <ol>
+                <li><h4>Class defined non-static inner class</h4></li>
+                <li><h4>Class defined static inner class</h4></li>
+                <li><h4>Member defined non-static inner class</h4></li>
+                <li><h4>Member defined non-static inner class</h4></li>
+            </ol>
+        </div>
+    </div>
 </li>
 <li>
     <div class="content" id="modifier">
@@ -167,6 +228,63 @@ SyntaxHighlighter.all()
         <h4>Event with Function Delegate</h4>
         <div>
             <p>C# event subscribing can be done with IDE's drag. But also can be done programmatically with Delegate.</p>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="setter-getter">
+        <h3>Setter/Getter</h3>
+        <div class="featureList">
+            <ol>
+                <li>A feature similar to swift.<span style="color:red">It gives the caller a clear syntax.</span>
+                    <h4>Comparison</h4>
+                    <pre class="brush:java">
+                            // Java without this feature, update the age if the age >= 0
+                            private int age;
+                            public void setAge(int value){
+                                if(age >= age){
+                                    this.age = age;
+                                }
+                            }
+                            public int getAge(){
+                                return this.age;
+                            }
+                            // caller
+                            instance.setAge(9);
+                            int age = instance.getAge();
+                        </pre>
+                        <pre class="brush:c++">
+                            // C# with setter/getter, it provide the caller a clear syntax.
+                            private int _age;
+                            public int age {
+                                get {return _age;}
+                                set {
+                                    if(value >= 0){
+                                        _age = value;
+                                    }
+                                }
+                            }
+                            // caller
+                            instance.age = 9;
+                        </pre>
+                </li>
+                <li>
+                        Value is the designated contextual keyword to represent the caller assigned value.
+                </li>
+                <li>
+                    <h4>Avoid infinite set.</h4>
+                    <pre class="brush:c++">
+
+                    </pre>
+                </li>
+                <li>
+                    <h4>Setter/Getter Polymorphism</h4>
+                    Setter/Getter is actually treated as method, so they can be override.
+                    <pre class="brush:c++">
+                        
+                    </pre>
+                </li>
+            </ol>
         </div>
     </div>
 </li>
