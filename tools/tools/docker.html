@@ -37,11 +37,12 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Tools&nbsp;-&nbsp;Docker</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-10-10 @ Hurricane Michael</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-10-11</span></p>
+<p class="date"><span class="created-date">Created:2018-10-10 @ Hurricane Michael</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-28</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
 <li><a href="#container">Container</a></li>
+<li><a href="#network">Network</a></li>
 <li><a href="#gui">GUI</a></li>
 <li><a href="#image">Image</a></li>
 <li><a href="#reference">References</a></li>
@@ -53,17 +54,27 @@ SyntaxHighlighter.all()
 <li>
 <div class="content" id="intro">
 <h3>Introduction</h3>
-<p>Docker is a container engine. The function of a container is to be a running environment for software. Different from VM, the software within a container directly invoke the host OS's kernel.</p>
-<p>The container just has the software code and dependent libraries, it does not include a kernel.</p>
-<p>Docker is a container engine, which helps manage containers.</p>
-<h4>Installation</h4>
-<p>There are three versions of docker today (2018.10.10), Docker CE (Community Edition), EE (Enterprise Edition) and Customized Edition.
-    <br>Install Docker CE on Ubuntu, go <a href="https://docs.docker.com/install/linux/docker-ce/ubuntu/#uninstall-old-versions" target="_blank">here</a>.</p>
+<p>Docker is a container engine. The function of a container is to construct an isolated running environment for applications. 
+    Different from VM, different containers use the same kernel and applications within a container directly invoke the host OS's kernel.</p>
+<p>Docker is a container engine, which helps manage (create, update, delete) containers.</p>
+<div class="featureList">
+    <h4>Isolation</h4>
+    <ol>
+        <li>Process: memory isolation [used technology: MMU, virtual memory]</li>
+        <li>Container: logical isolation, e.g. hostname, PID, users, IPC, network [used technology: Linux namespace, cgroup, UnionFS]</li>
+        <li>VM: kernel isolation</li>
+    </ol>
+</div>
+
 </div>
 </li>
 <li>
     <div class="content" id="container">
         <h3>Container</h3>
+<h4>Installation</h4>
+<p>There are three versions of docker today (2018.10.10), Docker CE (Community Edition), EE (Enterprise Edition) and Customized Edition.
+    <br>Install Docker CE on Ubuntu, go <a href="https://docs.docker.com/install/linux/docker-ce/ubuntu/#uninstall-old-versions" target="_blank">here</a>.</p>
+<h4>Docker workflow</h4>
         <pre>
                 |
             (docker pull)
@@ -115,6 +126,38 @@ SyntaxHighlighter.all()
                 <li><span style="font-weight: bold">docker image rm IMAGE_ID</span>: remove the image</li>
             </ol>
         </div>
+        <h4>Dockerfile</h4>
+        <p>A dockerfile is used to build an new docker image. For example, it select a base image, specify user's application code, how to start the application.</p>
+
+    </div>
+</li>
+<li>
+    <div class="content" id="network">
+        <h3>Network</h3>
+        <p>Docker provides 4 different network types to configure how containers communicate with external world.</p>
+        <div class="featureList">
+            <ol>
+                <li><h4>Bridge</h4>
+                <p>Each container has a virtual network interface, the docker host creates a software bridge that connects them together to form a docker internal network so that containers can communicate with each other.
+                    The bridge (host) also forward packets between the docker internal network and the external network.
+                </p>
+                <p>
+                    <img src="img/docker0.png" width="400" height="240">
+                </p>
+                <p>When docker is installed, a default bridge is also installed. But user can still create new bridges. And each container can also connects to multiple bridges.<br>
+                User-defined bridge over default bridge:<br>
+                1). A User-defined bridge provides automatic DNS resolution between containers. You can use hostname to communicate with other containers.</p>
+                2). Containers can be attached and detached from user-defined networks on the fly.
+                3). Export all port to other containers and no port to outside world.
+                </li>
+                <li><h4>Bridge network configuration</h4>
+                <pre class="brush:bash">
+                    $docker network create my-bridge
+                    $docker network rm my-bridge
+                </pre>
+                </li>
+            </ol>
+        </div>
     </div>
 </li>
 <li>
@@ -139,7 +182,8 @@ SyntaxHighlighter.all()
 <h3>References</h3>
 <div class="featureList">
     <ol>
-        <li></li>
+        <li><a href="https://stackoverflow.com/questions/31237663/os-containers-isolation-vs-process-isolation" target="_blank">Container vs. Process</a></li>
+        <li><a href="https://developer.ibm.com/recipes/tutorials/networking-your-docker-containers-using-docker0-bridge/" target="_blank">Networking your docker containers using docker0 bridge</a></li>
     </ol>
 </div>
 </div>
