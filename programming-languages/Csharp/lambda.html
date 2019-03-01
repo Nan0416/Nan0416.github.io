@@ -40,7 +40,7 @@ SyntaxHighlighter.all()
 <p class="date"><span class="created-date">Created:2019-02-27</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-27</span></p>
 <div class="catalog">
 <ul class="catalogItems">
-<li><a href="#intro">Introduction</a></li>
+<li><a href="#intro">Delegate & Event</a></li>
 <li><a href="#lambda">Lambda</a></li>
 <li><a href="#closure">Closure</a></li>
 <li><a href="#java">Compare with Java</a></li>
@@ -57,28 +57,93 @@ SyntaxHighlighter.all()
     <ol>
         <li>
             <h4>Delegate</h4>
-            <p>C# supports a kind of type called delegate, which is basically function pointer. 
+            <p>C# supports a kind of type called delegate type, which is basically function pointer. (A Java interface with a single method)
                     A delegate type defines a signature of a function, including return type, parameters' types, and parameters' order.</p>
-                <p>Delegate belongs to reference type, it is on the same level as Class, Interface, and Struct.</p>
+                <p>Delegate belongs to reference type, it is on the same level as Class, Interface, and Struct.
+                    <span style="color:red">Moreover, a delegate instance is not just a function, it also has its own methods (like a class instance)</span>
+                    Every type in C# derived from object, including delegate. So a delegate instance will have the .ToString() method.</p>
+                <h4>Instantiate a delegate instance</h4>
                 <pre class="brush:c++">
-                    delegate void f1(int n, string str);
-                    delegate void f2(string str, int n);
-                
-                    static class Utility { 
-                        public static void print(int n, string s)
+                        delegate void delegate_type(int n, string str);
+                        class Program
                         {
-                            Console.WriteLine($"{s}: {n}");
+                            // a class method
+                            static void Func(int n, string str) {
+                                Console.WriteLine("Func");
+                            }
+                            static void Main(string[] args)
+                            {
+                                delegate_type d1 = new delegate_type(Func); // instantiate a delegate instance
+                                delegate_type d2 = Func; // concise syntax provided by C# 2.0 and later
+                                // C#2.0 and later also support to use anonymous method to instantiate a delegate instance.
+                                delegate_type delegate_ref = delegate (int n, string str)
+                                {
+                                    Console.WriteLine($"1");
+                                };
+                                // C#3.0 and later also support to use lambda to instantiate a delegate instance.
+                                delegate_type lambda_ref = (int n, string str) => Console.WriteLine($"Lambda {n}, {str}"); 
+                            }
                         }
-                    }
+                </pre>
+        </li>
+        <li>
+                <h4>Function (Method) vs. Delegate</h4>
+                <p>A delegate instance is a container and manager of a set of functions. A delegate can add more function to it by using + or += operator. The invocation of the delegate is a multicasting on its functions.</p>
+                <pre class="brush:c++">
+    delegate void delegate_type(int n, string str);
+    class Program
+    {
+        // a class method
+        static void Func(int n, string str) {
+            Console.WriteLine("Func");
+        }
+        static void Main(string[] args)
+        {
+            delegate_type d1 = Func;
+            delegate_type d2 = Func;
+            d1 = d1 + d2; 
+            d1(0, "Zero"); // Func printed twice;
+        }
+    }
+                </pre>
+        </li>
+        <li>
+            <h4>Event</h4>
+            <p>An event modifier must be a member of a class. It is a filter that decides what delegate cannot be added or removed</p>
+            <pre class="brush:c++">
+                    delegate void delegate_type(int n, string str);
                     class Program
                     {
-                        static void Main(string[] args)
+                        // event is a pair of method add/remove
+                        private delegate_type _evt; // the actual delegate that stores functions. 
+                        public event delegate_type evt //
                         {
-                            f1 fun = Utility.print;
-                            fun(10, "Ten");
+                            add {
+                                _evt += value; // user-defined add/remove method
+                                Console.WriteLine(value);
+                            }
+                            remove {
+                                Console.WriteLine(value);
+                            }
+                        }
+                        protected virtual void onFire() {
+                            _evt(1, "one");
+                        }
+                        public Program(){
+                            evt += (int n, string str) => Console.WriteLine(n + str);
+                        }
+                        static void Main(string [] args) {
+                            new Program().onFire();
                         }
                     }
-                </pre>
+            </pre>
+            <p>Shortcut: add any and remove any delegate. C# shortcut also uses lock to guarantee thread safe.</p>
+            <pre class="brush:c++">
+                    public event delegate_type evt;
+                    protected virtual void onFire(){
+                        evt(1, "one");
+                    }
+            </pre>
         </li>
     </ol>
 </div>
@@ -123,6 +188,7 @@ SyntaxHighlighter.all()
 <div class="featureList">
     <ol>
         <li><a href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/statements-expressions-operators/lambda-expressions" target="_blank">Lambda Expression</a></li>
+        <li><a href="http://csharpindepth.com/Articles/Events" target="_blank">C# in depth Delegates and Events</a></li>
     </ol>
 </div>
 </div>
