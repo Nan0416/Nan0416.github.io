@@ -38,7 +38,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Tools&nbsp;-&nbsp;Regex</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-03-01</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-03-01</span></p>
+<p class="date"><span class="created-date">Created:2019-03-01</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-03-02</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#regexIntro">Introduction</a></li>
@@ -54,61 +54,93 @@ SyntaxHighlighter.all()
 <h3>Introduction</h3>
 <p>A regular expression (regex) is a sequence of characters that define a search pattern.</p>
 <p>The pattern is constructed with logic.</p>
-<div class="featureList">
-    <h4>Rules</h4>
-    <ol>
-        <li><span style="color:red">wildcard</span>: . matches any character, but only match one.</li>
-        <li><span style="color:red">boolean or</span>: | <br>
-            "hello|hi" => hello, hi
-            </li>
-        <li><span style="color:red">character classes</span>: a special character matches a set of characters.<br>
-        \w matches alphanumeric characters plus "_", \d matches all digitals, \s matches space<br>
-        \W matches all characters except \w (\w|\W) = .<br>
-        <span style="color:red">user-defined character class with []</span>:<br>
-        [aqsx] matches a|q|s|x<br>
-        [^aqsx] matches all except a|q|s|x<br>
-        [a-n] matches all a to n characters
-        </li>
-        <li><span style="color:red">grouping</span>: () create a group, \1 capture the first parenthese-delimited express<br>
-        "h(ello|i)" => hello|hi => hello, hi<br>
-        "(hi){2,3}" => hihi, hihihi<br>
-        <h4>\1</h4>
-        e.g. "Hello, Hello" will match H(ello|i),\sH\1, the first group matched "ello", then the \1 will be "ello"<br>
-        H(ello|i),\sH(ello|i) != H(ello|i),\sH\1, because the first one also matches "Hello, Hi"
-        </li>
-        <li><span style="color:red">Lookaround</span></li>
-        <li><span style="color:red">quantification (specify the expected number of repeat)</span>: *, ?, +, {}<br>
-        * matches 0 or more, ? matches 0 or 1, + match one or more, {3} exactly three, {3, 5} match 3 - 5, {1, } one or more, <span style="text-decoration: line-through">{,4} four or less.</span><br>
-        "qin{0,2}an" => qian|qinan|qinnan<br>
-        "q\w*" => q....<br>
-        ".*" => match anything
-        </li>
-        <li><span style="color:red">anchor (specify a position in the string):</span>^ start position of the string, $ end position of the string, \b word boundary (two end of a word), \B non-word boundary<br>
-        ^q => q,<br>
-        ^q.* => q, q....<br>
-        ^\w.* => must start with a \w<br>
-        q$ => q<br>
-        .*q$ => ...q<br>
-        ^q\w*n$ => q...n<br>
-        <h4>word boundary</h4>
-        e.g. "How are you?" word boundary will be "H...w...a...e...y...u"<br>
-        \bH.* matches "How are you?"<br>
-        \ba.*e\b matches "are"<br>
-        \ba.*u\b matches "are you"<br> 
-        </li>
-    </ol>
-</div>
 </div>
 </li>
 <li>
     <div class="content" id="rules">
         <h3>Rules</h3>
         <div class="featureList">
+            <h4>Wildcard</h4>
             <ol>
-                <li>"abc": exactly match "abc"</li>
-                <li>"ab[a-c]": match aba, abb, abc<br>
+               <li><span style="color:red">.</span> matches any character, but only match one.</li>
+            </ol>
+            <h4>Boolean Or</h4>
+            <ol>
+                <li><span style="color:red">|</span> hello|hi match either "hello" or "hi"</li>
+            </ol>
+            <h4>Character Classes</h4>
+            <p>A special character matches a set of characters.</p>
+            <ol>
+                <li><span style="color:red">\w</span>: matches alphanumeric characters plus "_"</li>
+                <li><span style="color:red">\W</span>: matches all characters except \w, (\w|\W) = .</li>
+                <li><span style="color:red">\d</span>: matches all digitals</li>
+                <li><span style="color:red">\s</span>: matches space</li>
                 
+                <li><span style="color:red">user-defined character class with []</span>:<br>
+                    [aqsx] matches a|q|s|x<br>
+                    [^aqsx] matches all except a|q|s|x<br>
+                    [a-n] matches all a to n characters
+                </li> 
+            </ol>
+            <h4>Grouping</h4>
+            <ol>
+                <li><span style="color:red">()</span>: <br>
+                    h(ello|i) => hello|hi => hello, hi<br>
+                    (hi){2,3} => hihi, hihihi    
                 </li>
+                <li><span style="color:red">\1</span> back reference the first delimited group<br>
+                    e.g. "Hello, Hello" will match H(ello|i),\sH\1. The first group matched "ello", then the \1 will be restricted to "ello"<br>
+                    H(ello|i),\sH(ello|i) != H(ello|i),\sH\1, because the first one also matches "Hello, Hi"
+                </li>
+                <li><span style="color:red">(?:)</span> non-capturing group: back reference will ignore this the group with ?:<br>
+                    (?:qin|nan) (has|had) a car. This car \1 a GPS equipment. // The \1 refers to (has|had) instead of (qin|nan)
+                </li>
+            </ol>
+            <h4>Lookaround (zero-width assertion)</h4>
+            <ol>
+                <li><span style="color:red">(?=)</span> positive lookahead: the group must be matched but it is not included in the result<br>
+                    "qin(?=\snan)" matches "qin nan", but the (?=\snan) only does an assertion, itself is not included in the result.
+                </li>
+                <li><span style="color:red">(?!)</span> negative lookahead: the group must not be matched<br>
+                    "qin(?!\snan)" matches "qin others".
+                </li>
+            </ol>
+            <h4>Quantification</h4>
+            <p>Specify the expected number of repeat</p>
+            <ol>
+                <li><span style="color:red">*</span>: 0 or more</li>
+                <li><span style="color:red">?</span>: 0 or 1</li>
+                <li><span style="color:red">+</span>: 1 or more</li>
+                <li><span style="color:red">{}</span>: user-defined quantification<br>
+                    {3} exactly three, {3,5} repeat 3 to 5 times, {1, } at least once, <span style="text-decoration: line-through">{,4} four or less.</span><br>
+                    "qin{0,2}an" => qian|qinan|qinnan<br>
+                    "q\w*" => q....<br>
+                    ".*" => match anything
+                </li>
+            </ol>
+            <h4>Anchor</h4>
+            <p>Specify the position of expected characters</p>
+            <ol>
+                <li><span style="color:red">^</span>: expected the following character(s) at start position<br>
+                    ^qin.* matches all strings starting with qin. (^qin only matches qin).<br>
+                </li>
+                <li><span style="color:red">$</span>: expected the pervious character(s) at end position<br>
+                    .*qin$ matches all strings ending with qin. (qin$ only matches qin).<br>
+                </li>
+                <li><span style="color:red">\b</span>: word boundary break a string into "word", and the desired positions are at the beginning and end of a word.<br>
+                    <span style="color:gray"> How to break a string into words? <br>
+                    1). Before the first character in the string, if the first character is a word character.<br>
+                    2). After the last character in the string, if the last character is a word character.<br>
+                    3). Between two characters in the string, where one is a word character and the other is not a word character.]
+                    For example "How are you?" => "H...w...a...e...y...u", the last ? is not count as a boundary even through it is the last character.</span><br>
+                    "Hello, Hi" => \bH matches two H<br>
+                    "Hello, Hi" => \bH.*o\b matches Hello
+                </li>
+            </ol>
+            <h4>Escaped character</h4>
+            <ol>
+                \. \? \+ \* \\ \t \n \r <br>
+                regex "\\\?" matches string "\?"
             </ol>
         </div>
     </div>
