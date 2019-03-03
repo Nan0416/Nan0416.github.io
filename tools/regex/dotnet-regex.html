@@ -1,0 +1,150 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>Regex&nbsp;.NET</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-03-02">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>Regex&nbsp;-&nbsp;.NET</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-03-02</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-03-02</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#example">Examples</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+<p>.NET standard defines System.Text.RegularExpressions namespace and related types. Both .NET core and .NET framework implement them.</p>
+<div class="featureList">
+    <h4>Operations</h4>
+    <p>.NET regex implement regex as static methods.</p>
+    <ol>
+        <li>Determine whether the regular expression pattern occurs. Regex.IsMatch</li>
+        <li>Retrieve one or all occurrences of text that matches the regular expression pattern. Regex.Match / Regex.Matches</li>
+        <li>Replace text that matches the regular expression pattern. Regex.Replace</li>
+    </ol>
+</div>
+<h4>.NET regex</h4>
+<p>.NET regex is defined as a string. When the regex need to use \, such as using \+ to match +, the string itself has to first escape \, which leads
+    <pre class="brush:c++">
+        string pattern = "\\+"; // => regex \+ => match +
+    </pre>
+</p>
+</div>
+</li>
+<li>
+    <div class="content" id="example">
+        <h3>Example</h3>
+        <div class="featureList">
+            <ol>
+                <li>
+                <h4>Assertion IsMatch</h4>
+                <pre class="brush:c++">
+// print all expressions that contains addition
+using System;
+using System.Text.RegularExpressions;
+
+public class Example
+{
+    public static void Main()
+    {
+        string pattern = ".*\\+.*";
+        string[] operations = { "1 + 2", "3 * 4", "1+2*3" };
+        foreach (string operation in operations)
+            if (Regex.IsMatch(operation, pattern))
+            {
+                /*
+                 * 1 + 2
+                 * 1+2*3                
+                 */
+                Console.WriteLine(operation); 
+            }
+    }
+}
+                </pre>
+                </li>
+                <li>
+                    <h4>Match/Matches</h4>
+                    <p>A string may exist multiple matches to a pattern, and using Regex.Matches will return a MatchCollection.</p>
+                    <pre class="brush:c++">
+                            string pattern2 = "\\s\\+\\s";
+                            string operation = "1 + 2 + 3";
+                            MatchCollection matches = Regex.Matches(operation, pattern2);
+                            foreach (Match match in matches) {
+                                /*
+                                * V: + I: 1
+                                * V: + I: 5
+                                */
+                                Console.WriteLine("V:" +  match.Value + "I: " + match.Index);
+                            }
+                    </pre>
+                    <pre class="brush:c++">
+                        //longest match
+                        string pattern = ".*\\+.*"; // the .* chooses all the match.
+                        string operation = "1 + 2 + 3";
+                        MatchCollection matches = Regex.Matches(operation, pattern);
+                        foreach (Match match in matches) {
+                            // V:1 + 2 + 3I: 0
+                            Console.WriteLine("V:" +  match.Value + "I: " + match.Index);
+                        }
+                    </pre>
+                </li>
+                <li>
+                    <h4>Replace</h4>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li><a href="https://docs.microsoft.com/en-us/dotnet/standard/base-types/regular-expressions" target="_blank">.NET Regex</a></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>
