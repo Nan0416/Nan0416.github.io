@@ -2,9 +2,9 @@
 <!-- NewPage -->
 <html lang="en">
 <head>
-<title>&nbsp;</title>
+<title>C#&nbsp;Interface</title>
 <meta charset="utf-8">
-<meta name="date" content="2019-02-03">
+<meta name="date" content="2019-03-03">
 <meta name="keywords" content="">
 <meta name="keywords" content="">
 <meta name="keywords" content="">
@@ -35,13 +35,15 @@ SyntaxHighlighter.all()
 </script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<strong>&nbsp;-&nbsp;</strong>
+<strong>C#&nbsp;-&nbsp;Interface</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-02-03</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-03</span></p>
+<p class="date"><span class="created-date">Created:2019-03-03</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-03-03</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
+<li><a href="#example">Interface</a></li>
 <li><a href="#abstract">Abstract</a></li>
+<li><a href="#generics">Generics</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -51,7 +53,64 @@ SyntaxHighlighter.all()
 <li>
 <div class="content" id="intro">
 <h3>Introduction</h3>
+<div class="featureList">
+    <h4>Interface Rules</h4>
+    <ol>
+        <li>C# interface can be defined public or internal (default). Interface members cannot have modifier, they are public by default.</li>
+        <li>C# interface can have properties (not fields), method, event, indexer</li>
+        <li>An interface can inherit multiple interfaces</li>
+        <li>A class can implement multiple interfaces</li>
+    </ol>
 </div>
+</div>
+</li>
+<li>
+    <div class="content" id="example">
+        <h3>Interfaces</h3>
+        <div class="featureList">
+            <ol>
+                <li><h4>Example</h4>
+                    <pre class="brush:c++">    
+                    public interface IMonitor { // default modifier is internal
+                        // method
+                        bool setImage(string url); // No access modifiers can be applied to interface members, always public by default.
+                        int ppi { get;  }  // properties must declare with getter/setter
+                        event EventHandler click; // events
+                        int this[int row, int col] { get; set; } // indexer
+                    }
+                    public interface IProduct {
+                        string vendor { get; set; }
+                    }
+                    public interface IVendorMonitor: IMonitor, IProduct { 
+                        
+                    }
+                
+                    class DellMonitor: IVendorMonitor 
+                    {
+                        public int this[int row, int col]
+                        {
+                            get { return row + col; }
+                            set { Console.WriteLine(row+col+value); }
+                        }
+                        public bool setImage(string url) {
+                            Console.WriteLine(url);
+                            return true;
+                        }
+                        public event EventHandler click;
+                        public string vendor { get; set; }
+                        public int ppi { get; }
+                
+                        static void Main(string[] args)
+                        {
+                            Console.WriteLine("Hello World!");
+                        }
+                    }
+                    class T: DellMonitor, IMonitor, IProduct { 
+                    }</pre></li>
+                <li>C# does not support to use anonymous types/class to implement interface.</li>
+            </ol>
+        </div>
+    </div>
 </li>
 <li>
 <div class="content" id="reference">

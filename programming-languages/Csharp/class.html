@@ -73,7 +73,7 @@ SyntaxHighlighter.all()
                         public static class Math;
                     </pre>
                 </li>
-                <li><h4>Static properties, methods, events</h4>
+                <li><h4>Static fields, properties, methods, events</h4>
                     <p>[Same rules as Java] Static members can only be accessed by class name.<br>
                         Non-static members can access static member but static members cannot access non-static members<br>
                         A static member belongs to the class and all derived classes.
@@ -121,23 +121,11 @@ SyntaxHighlighter.all()
 <li>
     <div class="content" id="modifier">
         <h3>Modifier</h3>
-        <p>C#'s class has some new features compared with Java. But most of these features are provided by C++.</p>
-        <div class="featureList">
-            <ol>
-                <li>Access modifier</li>
-                <li>Operator overload</li>
-                <li>Indexer operator i.e. []</li>
-                <li>Events (Different from Java Object notify, which is used for synchronization, C# events is a publisher-subscriber, which is used in the event-driven programming.)</li>
-                <li>Finalizer (Destructor)</li>
-                <li>Nested Types (Java inner class)</li>
-            </ol>
-        </div>
-        <h4>Modifier for accessibility</h4>
         <div class="featureList">
             <ol>
                 <li>public: all</li>
                 <li>protected: self and drived class</li>
-                <li>internal (default): access limited to the current assembly (assembly is a .dll library or a .exe, it is not a namespace. (different from java's package))</li>
+                <li>internal (default to class/struct if no modifier is specified): access limited to the current assembly (assembly is a .dll library or a .exe, it is not a namespace. (different from java's package))</li>
                 <li>protected internal: protected internal has a more border accessibility than internal. It is like protected || internal.
                     <br>
                     <pre class="brush:java">
@@ -159,7 +147,7 @@ SyntaxHighlighter.all()
                             }
                     </pre>
                 </li>
-                <li>private: inner class and inner child class.
+                <li>private (default to class/struct members and inner class.): inner class and inner child class.
                     <pre class="brush:c++">
     class Program {
         static void Main(string[] args)
@@ -186,7 +174,7 @@ SyntaxHighlighter.all()
             </ol>
             <h5>Rules</h5>
             <ol>
-                <li>Default access modifier of class is Internal. And private for class member.</li>
+                <li>Default access modifier of class is Internal. And private for class members and inner class.</li>
                 <li>Subclass's accessibility &lt; Parent class e.g. Subclass Public and Parent class Internal is an error.</li>
             </ol>
         </div>

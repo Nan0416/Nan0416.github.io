@@ -41,7 +41,7 @@ SyntaxHighlighter.all()
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
-<li><a href="#tap">Task-based Asynchrous Pattern (TAP)</a></li>
+<li><a href="#tap">Task-based Asynchronous Pattern (TAP)</a></li>
 <li><a href="#tpl">Task Parallel Library (TPL)</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
@@ -57,10 +57,96 @@ SyntaxHighlighter.all()
 </li>
 <li>
     <div class="content" id="tap">
-        <p>C# defines a type called Task, it represents a currently running task.</p>
-        <pre class="brush:c++">
-            
-        </pre>
+        <h3>Task-based Asynchronous Pattern</h3>
+        <p>C# defines a type called Task, it represents a currently running task. Using "await" keyword to yield a task and await on it.</p>
+        <div class="featureList">
+            <ol>
+                <li><h4>Execution order</h4>
+                    <p>For example, foo function execute synchronously until hit the "await" statement. When it hit the await statement, 
+                            the function immediate yield a Task&lt;int> object to the main function. The main function goes to do other jobs. 
+                            When the await statement is done, foo() function continue execute synchronously.</p>
+                        <pre class="brush:c++">
+                            public static void Main() {
+                                Task&lt;int> t = foo(); // 1 call, 5 yield
+                                t.Wait(); //6 wait, 10 finish
+                                Console.WriteLine("Main: after test()"); 
+                
+                            }
+                            static async Task&lt;int> foo() {
+                                HttpClient client = new HttpClient(); // 2
+                                Console.WriteLine("Doo: before http request"); // 3
+                                String text = await client.GetStringAsync("http://www.sousys.com"); // 4 yeild, 7 done
+                                Console.WriteLine("Doo: after http request"); // 8
+                                return text.Length; // 9
+                            }
+                        </pre>
+                </li>
+                <li>
+                    <h4>Rules</h4>
+                    <p>1). "async" function can only return void, Task, Task&lt;T>.<br>
+                       2). "await" and "async "keyword must be used together.<br>
+                       3). A Task object can be created by calling another async function or Task.Run method. (Task.Run is used to run CPU-bound task)
+                        <pre class="brush:c++">
+                            static async void foo() {
+                                await Task.Run(() => 1 + 1);
+                            }
+                            static async Task foo() {
+                                await Task.Run(() => 1 + 1);
+                            }
+                            static async Task&lt;int> foo() {
+                                await Task.Run(() => 1 + 1);
+                                return 10;
+                            }
+                        </pre>
+                        4). .Wait() method awaits a task in synchronous manner; await keyword awaits a task in asyncrhonous manner.
+                        <pre class="brush:c++">
+                            static int foo() {
+                                int x = 0;
+                                Task.Run(() => x = 1 + 1).Wait();
+                                return x;
+                            }
+                        </pre>
+                        5). CPU-bound task using Task.Run is running in background thread;<br>
+                        Underneath, IO-bound async task is handled by the runtime with the OS (in the same thread).<br>
+                        <img src="img/async-io.png" width="400" height="400">
+                    </p>
+                </li>
+                <li><h4>Using .ContinueWith to get async .Wait() result</h4>
+                    <p style="color:red">.ContinueWith return a new task, so invoking .Wait() on this new task.</p>
+                <pre class="brush:c++">
+    public static void Main()
+    {
+        int v = 0;
+        Task&lt;int> t = foo(); // 1 enter , 5 yeild
+        Task t2 = t.ContinueWith( // 6
+            (r) => {            // 11
+                Console.WriteLine(r.Result); 
+                v = r.Result; 
+                }); 
+        t2.Wait(); // 7 wait , 12 done
+        Console.WriteLine("Main: after test()" + v); // 13
+
+    }
+    static async Task&lt;int> foo() {
+        HttpClient client = new HttpClient(); // 2
+        Console.WriteLine("Doo: before http request"); // 3
+        String text = await client.GetStringAsync("http://www.sousys.com"); // 4 yeild, 8 done
+        Console.WriteLine("Doo: after http request"); // 9 
+        return text.Length; // 10
+    }
+                </pre>
+                </li>
+                <li>
+                    <h4>Promise Model</h4>
+                </li>
+            </ol>
+        </div>
+       
+    </div>
+</li>
+<li>
+    <div class="content" id="tpl">
+        <h3>Task Parallel Library (TPL)</h3>
     </div>
 </li>
 <li>
@@ -68,7 +154,7 @@ SyntaxHighlighter.all()
 <h3>References</h3>
 <div class="featureList">
     <ol>
-        <li></li>
+        <li><a href="https://docs.microsoft.com/en-us/dotnet/standard/async-in-depth" target="_blank">Async in Depth</a></li>
     </ol>
 </div>
 </div>
