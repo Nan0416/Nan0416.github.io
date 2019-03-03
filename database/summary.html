@@ -22,7 +22,6 @@
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#databaseIntro">Introduction</a></li>
-<li><a href="#databaseSQLNoSQL">SQL vs. NoSQL</a></li>
 <li><a href="#databaseDocument">Document database (Mongodb)</a></li>
 </ul>
 </div>
@@ -32,40 +31,21 @@
 <li>
 <div class="content" id="databaseIntro">
 <h3>Introduction</h3>
-<p>Database: SQL, NoSQL. ACID (atomicity, consistency, isolation, durability)</p>
-<p>transaction</p>
+<p>Today (2019) there exists different types of database (storage service) for different purposes.</p>
+<div class="featureList">
+    <ol>
+        <li>RDBMS (MySQL, PostgreSQL): ACID (atomicity, consistency, isolation, durability), strong consistency, support transactions.</li>
+        <li>Redis: key-value, in memory</li>
+        <li>MongoDB: document-oriented database provides strong consistency, transaction on a single document, plenty of query.</li>
+        <li>Dynamo: key-value and document database runs on cloud, built for scalability!!!, high throughput, availability and reliability in present of failures (no single master node)<br>
+        It provides eventual consistency instead of strong consistency.
+        </li>
+        <li>Cassandra: Column-family database</li>
+    </ol>
+</div>
 </div>
 </li>
-<li>
-<div class="content" id="databaseSQLNoSQL">
-<h3>SQL vs NoSQL</h3>
-<div class="featureList">
-<h4>SQL</h4>
-<p>Stored <strong>structured</strong> information: data organized as rows that stored in a table</p>
-<ol>
-<li>MySQL</li>
-<li>Oracle Database</li>
-<li>PostgreSQL</li>
-</ol>
-</div>
-<div class="featureList">
-<h4>NoSQL</h4>
-<p>No object-relation mapping required</p>
-<p>+ Easy for distributed
-<br>+ Parition tolerance (CAP???)
-<br>+ Consistency 
-<br>+ Scalability
-<br>+ Avaliablity
-</p>
-<p>There are different types of NoSQL database</p>
-<ol>
-<li>Mongodb: document database</li>
-<li>Redis: key-value database</li>
-<li>Cassandra: Column-family database</li>
-<li>Neo4J: graph database</li>
-</ol>
-</div>
-</li>
+
 <li>
 <div class="content" id="databaseDocument">
 <h3>Document database (Mongodb)</h3>
