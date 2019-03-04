@@ -110,8 +110,59 @@ SyntaxHighlighter.all()
         <h3>Inner Class</h3>
         <div class="featureList">
             <ol>
-                <li><h4>Class defined non-static inner class</h4></li>
-                <li><h4>Class defined static inner class</h4></li>
+                <li><h4>Class defined non-static inner class</h4>
+                <p>
+                    1). The default inner class is private if no modifier is specified.<br>
+                    2). Inner (nested) class can access all member of the outter class, including private<br>
+                    3). Inner class can directly access outter class's static member, and access non-static members via an outter class instance.<br>
+                    4). <span style="color:red">Static outter class can define non-static class. The reason is that the defined class is not a class member,
+                         and static class only requires static members. For example, a static class can also has normal delegate declaration.</span><br>
+                    5). Inner class is kind of like C++ friend class that can access all member of the outter class. 
+                </p>
+                <pre class="brush:c++">
+                        public class Program
+                        {
+                            public static void Main()
+                            {
+                                Outter.Inner i = new Outter.Inner();
+                            }
+                        }
+                        public class Outter{
+                            private int local_counter;
+                            private static int counter;
+                            
+                            public class Inner{
+                                private int inner_c;
+                                public Inner(){
+                                    inner_c = counter;
+                                    inner_c = (new Outter()).local_counter; // . has higher priority than new.
+                                }
+                            }
+                        }
+                </pre>
+                </li>
+                <li><h4>Class defined static inner class</h4>
+                <pre class="brush:c++">
+                        public class Program
+                        {
+                            public static void Main()
+                            {
+                                Outter o = new Outter();
+                                Outter.Inner.print();
+                            }
+                        }
+                        public class Outter{
+                            private int local_counter;
+                            private static string message = "qinnan";
+                            
+                            public delegate int fun();
+                            public static class Inner{
+                                public static void print(){
+                                    Console.WriteLine(Outter.message);
+                                }
+                            }
+                        }
+                </pre></li>
                 <li><h4>Member defined non-static inner class</h4></li>
                 <li><h4>Member defined non-static inner class</h4></li>
             </ol>

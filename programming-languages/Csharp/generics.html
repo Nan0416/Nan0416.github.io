@@ -1,0 +1,225 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>C#&nbsp;Generics</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-03-04">
+<meta name="keywords" content="c#">
+<meta name="keywords" content="generics">
+<meta name="keywords" content="">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>C#&nbsp;-&nbsp;Generics</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-03-04</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-03-04</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#example">Rules & Examples</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+<p>Generics (C# 2.0 and later support) gives functions (delegates), classes, interfaces, struct type parameters. Generics in C# and .NET is an runtime features.</p>
+<div class="featureList">
+    <h4>Consideration</h4>
+    <p>When learning generics, some common features should be evaluated.</p>
+    <ol>
+        <li>Generics inheritance: Is G&lt;Child> is a subclass of G&lt;Parent>? No</li>
+        <li>Generics type parameter restriction, e.g. the generics type must implement a specific interface.</li>
+        <li>Generics nested type: Outter&lt;T> and Inner...</li>
+        <li></li>
+    </ol>
+    <h4>Naming</h4>
+    <p>Generics type start with prefix T, e.g. public class SpecialCollection&lt;TItem></p>
+</div>
+<p>Generics </p>
+</div>
+</li>
+<li>
+    <div class="content" id="example">
+        <h3>Rules and Examples</h3>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>Generic Class</h4>
+                    <p>T can be treated as a special parameter called type parameter at a special position.</p>
+                    <pre class="brush:c++">
+using System;
+using System.Net.Http;
+public class Program
+{
+	public static void Main()
+	{
+		/*
+		t is updated
+		10
+		t is updated
+		System.Net.Http.HttpClient*/
+		G&lt;int> g_int = new G&lt;int>(10);
+		g_int.print();
+		G&lt;HttpClient> c_int = new G&lt;HttpClient>(new HttpClient());
+		c_int.print();
+	}
+}
+public class G&lt;T>{
+	private T _t;
+	public T t {
+		get{
+			return this._t;
+		}
+		set{
+			Console.WriteLine("t is updated");
+			this._t = value;
+		}
+	}
+	public G(T t){
+		this.t = t;
+	}
+	public void print(){
+		Console.WriteLine(t.ToString());
+	}
+}
+                    </pre>
+                </li>
+                <li>
+                    <h4>Generic & Nested Class</h4>
+                    <p>Nested class can refer to container's class parameter type.<br>
+                        Nested class can also have its own parameter type.
+                    </p>
+                    <p><span style="color:red">Parameter type can be declared in class, delegate, interface, struct,</span>
+                        <pre class="brush:c++">
+                                public class Outter&lt;T>{};
+                                public interface Outter&lt;T>;
+                                public struct Outter&lt;T>{};
+                                public delegate A fun&lt;A, B>(B arg);
+                        </pre>
+                         and <span style="color:red">can be referenced in the declarations of class, delegate, interface, struct, local variables, fields, 
+                            properties, constructor and method (method including parameter, return value)</span></p>
+                    <pre class="brush:c++">
+                            public class Program
+                            {
+                                public static void Main()
+                                {
+                                    Outter&lt;string> o = new Outter&lt;string>("qinnan");
+                                    Outter&lt;string>.Inner&lt;int> i1 = new Outter&lt;string>.Inner&lt;int>("qinnan", 23);
+                                    Outter&lt;string>.Inner&lt;int> i2 = new Outter&lt;string>.Inner&lt;int>(o); // Outter`1 [System.String]
+                                }
+                            }
+                            public class Outter&lt;T>{
+                                public T t;
+                                public Outter(T t){
+                                    this.t = t;
+                                }
+                                public class Inner&lt;M>{
+                                    public Inner(T t, M m){
+                                        Console.WriteLine(t + ", " + m);
+                                    }
+                                    public Inner(Outter&lt;T> o){
+                                        Console.WriteLine(o);
+                                    }
+                                    /*public Inner(Outter&lt;N> o){
+                                        N is not declared, N can only be referenced here.
+                                    }*/
+                                }
+                            }
+                    </pre>
+                    <p>delegate usage: declaration and reference of parameter type.</p>
+                    <pre class="brush:c++">
+                            public class Program
+                            {
+                                public static void Main()
+                                {
+                                    Outter&lt;string>.Inner&lt;int>.fun&lt;HttpClient> foo = delegate(HttpClient arg){return "qinnan";};	
+                                    Console.WriteLine(foo(new HttpClient())); // qinnan
+                                }
+                            }
+                            public class Outter&lt;T>{
+                                public class Inner&lt;M>{
+                                    public delegate T fun&lt;B>(B arg);
+                                }
+                            }
+                    </pre>
+                    <p>Generic Interface</p>
+                    <pre class="brush:c++">
+public interface IGenerics&lt;T>{
+	T add(T t1, T t2);
+}
+public class SpecialString: IGenerics&lt;string>{
+	public string add(string s1, string s2){
+		return s1 + s2;
+	}
+}
+public class CGenerics&lt;T>: IGenerics&lt;T>{ // class declare T, interface references T
+	public T add(T t1, T t2){
+		return t1;
+	}
+}
+                    </pre>
+                </li>
+                <li><h4>Generics Inheritance</h4>
+                    <pre class="brush:c++">
+                            public class Program
+                            {
+                                public static void Main()
+                                {
+                                    P p = new C();
+                                    //GenericsC&lt;P> gp = new GenericsC&lt;C>();
+                                }
+                            }
+                            public class P{}
+                            public class C:P{}
+                            public class GenericsC&lt;T>{}
+                    </pre>
+                </li>
+
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li><a href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/generics/generics-in-the-run-time" target="_blank">Generics in Runtime</a></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>
