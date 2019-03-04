@@ -1,0 +1,145 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>PostgreSQL&nbsp;ER diagram & Conceptual schema</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-03-03">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>PostgreSQL&nbsp;-&nbsp;ER diagram & Conceptual Schema</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-03-03</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-03-03</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">ER diagram</a></li>
+<li><a href="#consideration">ER Design Consideration</a></li>
+<li><a href="#conceptual">Conceptual Schema Design</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>ER diagram</h3>
+<p>ER stands for Entity and Relationship.</p>
+<p>ER model defines entity, relationship, aggregation, ISA inheritance, constraints</p>
+<div class="featureList">
+    <h4>Entity (A noun)</h4>
+    <ol>
+    <li>An <span style="color:red">entity</span> is an object, e.g. a person, a building, a company.</li>
+    <li>An entity has <span style="color:red">attributes</span>, such as company name, address, #employees, revenue.</li>
+    <li>An attributes has <span style="color:red">a domain</span> of value, such as #employees > 0.</li>
+    <li>A <span style="color:red">key</span> is a minimal set of attributes whose values uniquely identify an entity in the entity set.</li>
+    <li><span style="color:red">Candidate key</span>: an entity set may have multiple keys, every key is called a candidate key.</li>
+    <li><span style="color:red">Primary key</span>: a designated candidate key.</li>
+    <li>Entity representation: rectangle [entity name], oval [attributes], domain along with attribute, underlining primary key's attributes<br>
+        <img src="img/er-e.png" width="300" height="150">
+    </li>
+    </ol>
+    <h4>Relationship (A verb)</h4>
+    <ol>
+        <li>A <span style="color:red">relationship</span> is an association among two or more entities, such as employee and company, denoted by a tuple (e1, e2, .. en). e.g. (Marc, Facebook)</li>
+        <li>A <span style="color:red">relationship set</span> is a set of similar relationship e.g. {(Marc, Facebook), (Tianhao, Facebook), (Fangzhou, Amazon)}</li>
+        <li>A <span style="color:red">relationship attribute</span> is a attribute describes this relationship, e.g. (Tianhao, Facebook, since: 2018, role: SDE)</li>
+        <li>Representation: diamond [relationship name], oval [atttributes]<br>
+            <img src="img/er-r.png" width="300" height="150">
+        </li>
+    </ol>
+    <h4>Aggregation (A meta-relationship)</h4>
+    <ol>
+        <li>An <span style="color:red">aggregation</span> describes a relationship between another relationship and an entity. e.g. [Student] --- &lt;study with> ---[Professor]. &lt;study with> --- &lt;monitored by> --- [Director]<br>
+        <img src="img/aggregation.png" width="300" height="190">
+        </li>
+    </ol>
+    <h4>Weak entity and identifying relationship</h4>
+    <p>An entity may not have a unique key, then to identify an entity in a entity set requires another entity.<br>
+        e.g. An employee entity and an dependent entity. When an employee leaves a company, his/her dependent is meaningless, so the dependent should only exist when the employee exist.<br>
+        To identify an dependent, we need the employee id and the dependent's name.<br>
+        The weak entity has to be an total participation, key constraint is not necessary; the relationship is called identifying relationship<br>
+        <img src="img/dependent.png" width="500" height="150">
+    </p>
+    <h4>How an entity join a relationship (constraints)</h4>
+    <ol>
+        <li>key constraints: an entity join a relationship at most once <br>
+            in the relationship set, this entity appear at more once. <br>
+            e.g. A company at most has one CEO.
+            
+        </li>
+        <li>total participation: an entity join a relationship at least once<br> 
+            in the relationship set, this entity appear at least once.<br>
+            e.g. A company at least has one employee.
+                
+        </li>
+        <li>exact one participation: key constraint + total participation constraint<br>
+            <img src="img/contraints.png" width="300" height="140">
+        </li>
+    </ol>
+    <h4>ISA</h4>
+    <p>ISA inheritance Hourly_Employee and Contract_Employee are derived from Employee.<br>
+        1). overlap constraints: if hold, whether two subclasses are allowed to contain the same entity. <br>
+        2). covering constraints: if hold, every Employee must belong to one of the subclass.<br>
+        <img src="img/isa.png" width="300" height="200">
+        </p>
+    
+
+</div>
+</div>
+</li>
+<li>
+    <div class="content" id="consideration">
+        <h3>ER Design Considerations</h3>
+        <div class="featureList">
+            <ol>
+                <li><h4>Entity vs. Attribute</h4>
+                    A person's address is XXXXXX, the address can be an attribute of the person, but can also be an entity and conntect to the person via a relationship.
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>
