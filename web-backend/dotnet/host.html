@@ -2,9 +2,9 @@
 <!-- NewPage -->
 <html lang="en">
 <head>
-<title>ASP.NET Core&nbsp;Intro</title>
+<title>ASP.NET Core&nbsp;Host</title>
 <meta charset="utf-8">
-<meta name="date" content="2019-02-03">
+<meta name="date" content="2019-03-06">
 <meta name="keywords" content="">
 <meta name="keywords" content="">
 <meta name="keywords" content="">
@@ -35,12 +35,13 @@ SyntaxHighlighter.all()
 </script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<strong>ASP.NET Core&nbsp;-&nbsp;Intro</strong>
+<strong>&nbsp;-&nbsp;</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-02-03</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-03-06</span></p>
+<p class="date"><span class="created-date">Created:2019-03-06</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-03-06</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
+<li><a href="#kestrel">Kestrel</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -50,9 +51,40 @@ SyntaxHighlighter.all()
 <li>
 <div class="content" id="intro">
 <h3>Introduction</h3>
-<p>ASP.NET Core is framework for building web applications and web api (restful api)</p>
-<p>It has the same concept as Node.js Express middleware pipeline. At the end of pipeline, it can have a MVC or a API controller.</p>
+<p>When the application is runnng, the Main function will create a host instance, which is responsible for app startup and lifetime management. The Startup class specify how to configure <a href="./middleware.html">middleware</a> and <a href="#">controller/MVC.</a></p>
+
 </div>
+</li>
+<li>
+    <div class="content" id="kestrel">
+        <h3>Kestrel</h3>
+        <div class="featureList">
+            <ol>
+                <li><h4>Basic</h4>
+                    <pre class="brush:c++">
+    using Microsoft.AspNetCore;
+    using Microsoft.AspNetCore.Hosting;
+    public class Application
+    {
+        public static void Main(string[] args)
+        {
+            IWebHostBuilder hostBuilder = WebHost.CreateDefaultBuilder(args); // create a kestrel instance.
+            hostBuilder.UseStartup&lt;Startup>();
+            IWebHost host = hostBuilder.Build();
+            host.Run();
+        }
+    }
+                    </pre>
+                    <p>ASP.NET Core use Kestrel as the default web (http) server. Kestrel instance is created when calling 
+                        <span style="color:red"><a href="#code">Code</a></span></p>
+                    <p>Kestrel web server helps handle HTTPS, HTTP/2. It is based on the libuv library (Node.js event-loop)</p>
+                </li>
+                <li>
+
+                </li>
+            </ol>
+        </div>
+    </div>
 </li>
 <li>
 <div class="content" id="reference">

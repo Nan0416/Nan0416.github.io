@@ -2,7 +2,7 @@
 <!-- NewPage -->
 <html lang="en">
 <head>
-<title>C#&nbsp;Interface</title>
+<title>C#&nbsp;Interface/Abstract/Extension</title>
 <meta charset="utf-8">
 <meta name="date" content="2019-03-03">
 <meta name="keywords" content="">
@@ -35,7 +35,7 @@ SyntaxHighlighter.all()
 </script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<strong>C#&nbsp;-&nbsp;Interface</strong>
+<strong>C#&nbsp;-&nbsp;Interface/Abstract/Extension</strong>
 </div>
 <p class="date"><span class="created-date">Created:2019-03-03</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-03-03</span></p>
 <div class="catalog">
@@ -43,7 +43,7 @@ SyntaxHighlighter.all()
 <li><a href="#intro">Introduction</a></li>
 <li><a href="#example">Interface</a></li>
 <li><a href="#abstract">Abstract</a></li>
-<li><a href="#generics">Generics</a></li>
+<li><a href="#extension">Extension method</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -110,6 +110,101 @@ SyntaxHighlighter.all()
                 <li>C# does not support to use anonymous types/class to implement interface.</li>
             </ol>
         </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="extension">
+        <h3>Extension method</h3>
+        <p>C# 3.0 and later support extension method, which allow developers to add new method to existing class, <br>
+            interface, and struct without needing to derive it. And the extented methods are directly add to the original type.</p>
+        <div class="featureList">
+            <h4>Rules</h4>
+            <ol>
+                <li>Extension method is a runtime feature. Extension methods have the low priority. For example, when an extension method has the same signature as one of the type's method, extension method is never called.</li>
+                <li>A class cannot have duplicated same signature extension methods, caused ambiguity.</li>
+                <li>Extension methods are brought into scope at the namespace level.</li>
+                <li>Extension methods on an interface will be effective for all classes that implement this interface</li>
+                <li>When an extension method on a interface has the same signature as one of the methods of a concrete class or a subclass of the concrete class, then<br>
+                    <span style="color:red">Extension method wins when the declaring type is the interface;<br>
+                    Method member wins when the declaring type is the concrete class;
+                    </span></li>
+                <li>Extension methods are also inherited by child class.</li>
+            </ol>
+        </div>
+        <p>Extension methods are implemement using a static class wrapper. It is kind of like Python defined method<br>the first argument is "this"</p>
+        <div class="featureList">
+            <ol>
+                <li>
+<h4>Extension method on class/struct</h4>
+<pre class="brush:c++">
+public class Program { 
+    public static void Main(string [] args) {
+        string str = "qinnan";
+        Console.WriteLine(str.Length);
+        Console.WriteLine(str.Substring(1)); // cannot be override by the extension method.
+        Console.WriteLine(str.longerthan4());
+        Console.WriteLine(1.inc()) ;// struct
+    }
+}
+public static class ExtensionString { 
+    public static bool longerthan4(this string str) {
+        return str.Length > 4;
+    }
+    public static string Substring(this string str){
+        return "hello";
+    }
+    public static int inc(this int x){
+        return x + 1;
+    }
+}
+public static class ExtensionString2{
+    /*public static bool longerthan4(this string str) {
+        return str.Length > 4;
+    }*/
+}
+
+                    </pre>
+                </li>
+                <li>
+                    <h4>Interface extension</h4>
+                    <pre class="brush:c++">
+public class APP{
+    public static void Main(string [] args){
+        ITest a = new A();
+        Console.WriteLine(a.fullName()); // This is A, A
+        B b = new B();
+        Console.WriteLine(b.fullName()); // 10
+       /////////// different from B 
+        ITest ib = new B();
+        Console.WriteLine(ib.fullName()); // This is B, B
+    }
+}
+public interface ITest{
+    string name();
+}
+public class A: ITest{
+    public string name(){
+        return "This is A";
+    }
+}
+public class B: ITest{
+    public string name(){
+        return "This is B";
+    }
+    public int fullName(){
+        return 10;
+    }
+}
+public static class ExtensionITest{
+    public static string fullName(this ITest itest){
+        return itest.name() + ", " + itest.ToString();
+    }
+}
+                    </pre>
+                </li>
+            </ol>
+        </div>
+        <p>Extension method is heavily used in ASP.NET Core.</p>
     </div>
 </li>
 <li>
