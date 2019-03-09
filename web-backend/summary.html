@@ -20,7 +20,8 @@
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
-
+<li><a href="#server">HTTP Servers</a></li>
+<li><a href="#reference">References</a></li>
 </ul>
 </div>
 <hr>
@@ -31,6 +32,35 @@
         <h3>Introduction</h3>
         <h4>Roadmap</h4>
         <img src="img/backend-roadmap.png" width="400" height="600">
+    </div>
+</li>
+<li>
+    <div class="content" id="server">
+        <h3>HTTP Servers</h3>
+        <p>There are different kinds of HTTP servers for different purposes. Mainly, it has two types of HTTP servers:<br>
+        1). Server serving static HTML, CS, JS, image and other files. e.g. Apache HTTP server. This kind of server is also called Web Server, HTTP Server.<br>
+        2). Server passing HTTP requests to applications to dynamically generate web contents. e.g. Tomcat, Glassfish, Kestrel. This kind of server is also called <span style="color:red">Web container</span>, Application server.
+        </p>
+        <p>Other kinds of server including (reverse) proxy server/load balancer, such as Nginx.</p>
+        <p>There is no clear distinction of a specific server being a specific type. For example, the Kestrel is mainly used as a web container for ASP.NET Core web applications, but it can also be used to serving static file.</p>
+        <h4>Web container</h4>
+        <p>A web application is a program that runs inside a web container. In Java's jargon, a web application is called a servlet.</p>
+        <div class="featureList">
+            <ol>
+                <li>Managing the lifecycle of servlets</li>
+                <li>Receiving http requests and create corresponding http request objects, e.g. HttpContext, that can be understood by applications.</li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="reference">
+        <h3>References</h3>
+        <div class="featureList">
+            <ol>
+                <li><a href="https://www.nginx.com/resources/glossary/application-server-vs-web-server/" target="_blank">What Is an Application Server vs. a Web Server?</a></li>
+            </ol>
+        </div>
     </div>
 </li>
 </ol>

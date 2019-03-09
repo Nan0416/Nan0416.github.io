@@ -51,8 +51,15 @@ SyntaxHighlighter.all()
 <li>
 <div class="content" id="intro">
 <h3>Introduction</h3>
-<p>When the application is runnng, the Main function will create a host instance, which is responsible for app startup and lifetime management. The Startup class specify how to configure <a href="./middleware.html">middleware</a> and <a href="#">controller/MVC.</a></p>
-
+<p>When the application is runnng, the Main function will create a host instance, which is responsible for app startup 
+    and lifetime management. The Startup class specify how to configure <a href="./middleware.html">middleware</a> and <a href="#">controller/MVC.</a></p>
+<h4>Host</h4>
+<div class="featureList">
+    <ol>
+        <li>The default used host is Kestrel with enabling IIS integration ???</li>
+        <li>Kestrel receive http requests and create corresponding HttpContext object to invoke Application's middleware.</li>
+    </ol>
+</div>
 </div>
 </li>
 <li>
@@ -75,12 +82,46 @@ SyntaxHighlighter.all()
         }
     }
                     </pre>
-                    <p>ASP.NET Core use Kestrel as the default web (http) server. Kestrel instance is created when calling 
-                        <span style="color:red"><a href="#code">Code</a></span></p>
+                    <p>ASP.NET Core use Kestrel as the default web (http) server. Kestrel instance is created when calling .CreateDefaultBuilder(args);</p>
                     <p>Kestrel web server helps handle HTTPS, HTTP/2. It is based on the libuv library (Node.js event-loop)</p>
+                    <h4>.CreateDefaultBuilder(args);</h4>
+                    <p>
+                        1). .UseKestrel(); // use Kestrel as the web server<br>
+                        2). .UseIISIntegration(); // enable IIS integration<span style="color:red">???</span><br>
+                        2). .UseContentRoot(Directory.GetCurrentDirectory()); // content root is the directory that contains the application content files, .GetCurrentDirectory() is the current working directory.<br>
+                        3). load IConfiguration from 'appsettings.json' and 'appsettings.[EnvironmentName].json'; // 
+                    </p>
                 </li>
                 <li>
+                    <h4>Configuration Mechanism</h4>
+                    <p>ASP.NET Core provides a built-in configuration framework that takes a variety of sources, such as .json files, .xml files, environment variables, and command-line arguments.</p>
+                    <pre class="brush:c++">
+                        // 
+                        IConfigurationBuilder configBuilder = new ...();
+                        configBuilder.AddCommandLine(args); // .AddCommandLine is a extension method on the IConfigurationBuilder interface;
+                        IConfiguration config = configBuilder.Build(); // interface defined method;
+                    </pre>
 
+                    <br>2). The ".CreateDefaultBuilder(args)" loads configuration from appsettings.json, environment variables, command line arguments, and other sources.
+                    <br>3). This configuration will be encaspulated in IConfiguration object, which is avaliable to the Startup class.</p>
+                    <pre class="brush:c++">
+                            public Startup(IConfiguration configuration)
+                            {
+                                Configuration = configuration;
+                                Console.WriteLine(configuration["AllowedHosts"]); // come from appsettings.json
+                                Console.WriteLine(configuration["name"]); // come from args command-line --name=qinnan 
+                            }
+                    </pre>
+                    <p>Precedence: </p>
+                </li>
+                <li>
+                    <h4>Configure Kestrel</h4>
+                    <pre class="brush:c++">
+                            .ConfigureKestrel((context, options) =>
+                            {
+                                // Set properties and call methods on options
+                            });
+                    </pre>
                 </li>
             </ol>
         </div>
@@ -91,7 +132,9 @@ SyntaxHighlighter.all()
 <h3>References</h3>
 <div class="featureList">
     <ol>
-        <li></li>
+        <li><a href="https://docs.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel?view=aspnetcore-2.2#how-to-use-kestrel-in-aspnet-core-apps" target="_blank">How to use Kestrel in ASP.NET Core apps</a></li>
+        <li><a href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.webhost.createdefaultbuilder?view=aspnetcore-2.2" target="_blank">WebHost.CreateDefaultBuilder Method</a></li>
+        <li><a href="https://docs.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel?view=aspnetcore-2.2#kestrel-options" target="_blank">Kestrel Options</a></li>
     </ol>
 </div>
 </div>
