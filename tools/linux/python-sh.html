@@ -1,0 +1,132 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>Linux&nbsp;Python Script</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-03-10">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushPython.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>Linux&nbsp;-&nbsp;Python Script</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-03-10</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-03-10</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Examples</a></li>
+<!--<li><a href="#reference">References</a></li>-->
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Examples</h3>
+<p>Using python avoid to study bash syntax.</p>
+<p>The example use subprocess.Popen, which is supported by python3.6 and later. 
+    It create a subprocess to run at the background. 
+    subprocess.Popen allows to modify stdin/stdout/stderr and wait/kill the subprocess.</p>
+<div class="featureList">
+    <ol>
+        <li><h4>Basic</h4>
+        <pre class="brush:python">
+            import subprocess
+            subprocess.Popen(["ls", "-al"]) # ls -al
+            '''
+            subprocess.Popen create a sperate process, it returns a process object. With the process object,
+            you can call wait, kill and other methods to interact with the child process.
+
+            class subprocess.Popen(args, bufsize=-1, executable=None, stdin=None, stdout=None, stderr=None, 
+                preexec_fn=None, close_fds=True, shell=False, cwd=None, env=None, universal_newlines=None, 
+                startupinfo=None, creationflags=0, restore_signals=True, start_new_session=False, pass_fds=(), 
+                *, encoding=None, errors=None, text=None)
+            '''
+            child_proc = subprocess.Popen(["./complicate_program.sh"])
+            child_proc.wait()
+
+            child_proc.pid # return its pid
+            child_proc.args # return the input list e.g. ["ls", "-al"]
+
+
+        </pre>
+        </li>
+        <li><h4>Set working directory</h4>
+        <p style="color:red">Cannot use "~/"</p>
+        <pre class="brush:python">
+            subprocess.Popen(["ls", "-al"]), cwd="/Users/hatakusunoki/Documents/")
+            subprocess.Popen(["ls", "-al"]), cwd="/Users/hatakusunoki/Documents")
+        </pre>
+        </li>
+        <li><h4>Pipe</h4>
+        <pre class="brush:python">
+            #redirect
+            stdout_file = open('stdin.txt', 'w+')
+            stderr_file = open('stderr.txt', 'w+')
+            subprocess.Popen(["ls", "-al"], stdout=stdout_file, stderr=stderr_file)
+
+            #pipe
+            cat = subprocess.Popen(["cat", "ls-output.txt"], cwd="/Users/hatakusunoki/Desktop", stdout=subprocess.PIPE) # using subprocess.PIPE avoid output to stdout
+            wc = subprocess.Popen(["wc"], stdin=cat.stdout) # 45 400 2994
+
+            #read out data
+            cat = subprocess.Popen(["cat", "ls-output.txt"], cwd="/Users/hatakusunoki/Desktop", stdout=subprocess.PIPE)
+            b = cat.stdout.read()
+            result = b.decode('utf-8')
+
+            #send string to stdin
+            wc = subprocess.Popen(["wc"], stdin=subprocess.PIPE)
+            wc.communicate(b"How are you, World?") # the input should be byte stream. output to stdout, stderr
+            (stdout_data, stderr_data) = subprocess.Popen(["wc"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate(b"How are you, World?") # the output returns as truple
+            
+        </pre>
+        </li>
+        <li><h4>Attention</h4>
+        <p>;</p>
+        </li>
+    </ol>
+</div>
+</div>
+</li>
+<!--<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li></li>
+    </ol>
+</div>
+</div>-->
+</li>
+</ol>
+</div>
+    
+</body>
+</html>
