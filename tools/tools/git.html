@@ -17,7 +17,7 @@
 <div class="bar">
 <strong>Tools&nbsp;-&nbsp;Git</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-04-01</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-10-06 @UMN Bio-Library</span></p>
+<p class="date"><span class="created-date">Created:2018-04-01</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-10-06 @UMN Bio-Library / 2019-03-12</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#gitIntro">Git Concepts</a></li>
@@ -25,6 +25,7 @@
 <li><a href="#gitconfig">Git Config</a></li>
 <li><a href="#gitFilestate">File state and local operations</a></li>
 <li><a href="#gitBranch">Branch model</a></li>
+<li><a href="#password">Github push without password</a></li>
 <li><a href="#gitReferences">References</a></li>
 </ul>
 </div>
@@ -224,6 +225,22 @@ sync, delete and so on.</p>
 </ol>
 </div>
 </div>
+</li>
+<li>
+    <div class="content" id="password">
+        <h3>Github push without password</h3>
+        <p>Git push code to remote repo (e.g. Github) by using either HTTPS or SSH. By default, it uses HTTPS. When using HTTPS, a push will require the user to input username and password.
+            By using SSH (public/private key-pair), requiring username/password can be avoid.</p>
+        <p>MacOS uses keychain software to manage password, and automatically supply password when push. So we don't need to use SSH on MacOS to achieve push without password. However, MacOS's keychain is an account per domain, which means you cannot use two github accounts together.</p>
+        <h4>Linux uses Github SSH</h4>
+        <p>
+            1). clone or switch to ssh.<br>
+            git remote set-url origin git@github.com:Nan0416/Nan0416.github.io.git<br>
+            git clone git@github.com:Nan0416/Nan0416.github.io.git<br>
+            2). generate ssh private/public key pair.<br>
+            3). upload public key to github. <a href="https://github.com/settings/keys" target="_blank">https://github.com/settings/keys</a><br>
+        </p>
+    </div>
 </li>
 <li>
 <div class="content" id="gitReference">

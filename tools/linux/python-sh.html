@@ -108,8 +108,44 @@ SyntaxHighlighter.all()
             
         </pre>
         </li>
-        <li><h4>Attention</h4>
-        <p>;</p>
+        <li><h4>Interactive Input with stdin</h4>
+            <p>A program may require a user to input data when it is running. At this time, 
+                the user need to use the stdin to give input. However, stdin is shared by parent process and child processes if no redirection used. (When stdin is shared by multiprocess, the behavior is unpredictable)</p>
+            <pre class="brush:c++">
+// a C program that require user to give 3 input at runtime.
+#include &lt;stdio.h>
+int main(){
+    int x, y;
+    printf("Please Input a number: ");
+    scanf("%d %d", &x, &y);
+    printf("Hello, %d and %d\nPlease Input another number: ", x, y);
+    scanf("%d", &x);
+    printf("Hi, %d\n",x);
+    return 0;
+}
+            </pre>
+            <pre class="brush:python">
+                subprocess.Popen(["./a.out"], stdin=subprocess.PIPE).communicate(b"12 123 13")
+                # Please Input a number: Hello, 12 and 123
+                # Please Input another number: Hi, 13
+
+                #if no enough input is provided, the communicate will replay its data
+                subprocess.Popen(["./a.out"], stdin=subprocess.PIPE).communicate(b"12 123")
+                # Please Input a number: Hello, 12 and 123
+                # Please Input another number: Hi, 12 // 12 123 is replayed and 12 is used, 123 is ignored
+            </pre>
+        </li>
+        <li>
+            <h4>Examples</h4>
+            <pre class="brush:python">
+                # run command on a remote machine with ssh
+                # -o StrictHostKeyChecking no                avoid prompt Are you sure you want to continue connecting (yes/no)? 
+                subprocess.Popen(["ssh", "-o", "StrictHostKeyChecking no", "nan@40.121.42.192", "mkdir", "test"]) 
+                # ssh kill remote processes that occupy a port with fuser
+                subprocess.Popen(["ssh", "-o", "StrictHostKeyChecking no", "nan@40.121.42.192", "fuser", "-k", "-n", "tcp", "50051"])
+                # scp upload file
+                subprocess.Popen(["scp", "-o", "StrictHostKeyChecking no", "local_file.txt", "nan@40.121.42.192" + ":" + "~/"]))
+            </pre>
         </li>
     </ol>
 </div>
