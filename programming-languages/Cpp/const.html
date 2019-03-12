@@ -33,9 +33,9 @@ SyntaxHighlighter.all()
 </script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<center><strong>System&nbsp;-&nbsp;System&nbsp;control</strong></center>
+<strong>System&nbsp;-&nbsp;System&nbsp;control</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-01-30</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-01-30</span></p>
+<p class="date"><span class="created-date">Created:2018-01-30</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-03-12</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#constIntro">Introduction</a></li>
@@ -78,41 +78,32 @@ SyntaxHighlighter.all()
 <ol>
 <li>
 <h4>Const pointer</h4>
-<p>There are two type of const pointer. 1) cannot modify the data that is pointed by the pointer; 2) cannot modify where the pointer is pointing.<br>
-The first case is just like a reference, program cannot modify the pointer and the data pointed by pointer. The second case treats the pointer as a regular variable that stored an address.</p>
+<p>There are two type of const pointers. 1) cannot modify the data that is pointed by the pointer; 2) cannot modify where the pointer is pointing.<br>
+The first case is just like a reference, program can modify the pointer's value (address) but not the content pointed by pointer. (type const *)<br>
+The second case treats the pointer as a regular variable that stored an address, and the address cannot be modified. (type * const)</p>
 <p>
-<h4>Pointer as a reference "const int * p;"</h4>
-<p>In this case, the pointer's content cannot be modified, but the ptr can point to a new data location.</p>
+<h4>The pointer's content cannot be modified, but the ptr can point to a new data location. (type const *)</h4>
 <pre class="brush: cpp">
-#include &lt;iostream>
-using namespace std;
-class F{
-public:
-    int x;
-    F(){
-        x = 10;
-    }
-};
-const static int  y = 1;
-int main(){
-
-    int y = 1, z = 2;
-    y++; // the y here  is the local y.
-    int const * x = &y;
-    //(*x) = 10; // read-only variable is not assignable
-    x = &z;
-    // pointer as a const reference
-    F g, h;
-    F const * f = &g; // f's content cannot be modified
-    cout &lt;&lt; g.x &lt;&lt; endl;
-    //f->x = 11; //cannot assign to variable 'f' with const-qualified type 'const F *'
-    cout &lt;&lt; g.x &lt;&lt; (*f).x &lt;&lt; endl;
-    f = &h;
-    return 0;
-}
+        #include &lt;iostream>
+        using namespace std;
+        
+        int main(){
+            int container = 0;
+            int const * const_value_pointer = &container;
+            int * value_pointer = &container;
+            cout << container << *const_value_pointer << *value_pointer << endl; // 000
+            container++;
+            (*value_pointer)++;
+            cout << container << *const_value_pointer << *value_pointer << endl; // 222
+            int another_container = -1;
+            const_value_pointer = & another_container;
+            cout << *const_value_pointer << endl;// -1
+            
+            return 0;
+        }
 
 </pre>
-<h4>Pointer as a variable "int * const p;"</h4>
+<h4>The pointer itself cannot be modified, but its content can be modified. (type * const)</h4>
 <pre class="brush: cpp">
 #include &lt;iostream>
 using namespace std;
@@ -255,12 +246,12 @@ int main(){
 </pre>
 </li>
 <li>
-<h4>vlaue is const</h4>
+<h4>value is const</h4>
 <p>The function signature indicates to use the reference or pointer type. However, the past arguments are const or pointing to const.
 In this case, the function cannot be called. (no matching function).
 </p>
 <p class="starMake">* Once you have a const object, it cannot be assigned to a non-const reference or use functions that are known to be capable of changing the state of the object. [1]</p>
-<p>It is meaningful.</p>
+<p>It is meaningful. <span style="color:red">const variable narrow down the function it can invoke.</span></p>
 <pre class="brush: cpp">
 #include &lt;iostream>
 using namespace std;

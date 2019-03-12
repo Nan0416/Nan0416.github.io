@@ -109,10 +109,14 @@ Management includes stop, deallocate, and delete.
         <li><h4>Create a VM instance</h4>
         <p>When creating a VM instance, you need to consider: image(ubuntu 14.04, windows), location(us-east, us-west), size(#cpu/memory)</p>
         <p>
-            az vm list-sizes --location eastus # list avaliable size in eastus<br>
-
+        1). az vm list-sizes --location eastus # list avaliable size in eastus<br>
+        2). az vm create --resource-group nqin8-resource-group --name map-reduce-node-1 <br>
+                --image nqin8-workshop8-image --admin-username nan --ssh-key-value ~/.ssh/id_rsa.pub <br>
+                --size Standard_B1s --location eastus --private-ip-address 10.0.0.5<br>
+                # the first and last IP in the subnet and x.x.x.1, x.x.x.2, x.x.x.4 are reserved
         </p>
         </li>
+        <li><a href="./python-script-create-delete-vm.zip">Python scripts for creating and deleting VM instances</a></li>
     </ol>
 </div>
 </div>
