@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>Linux&nbsp;Commands</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-03-02">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushPython.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>Handy&nbsp;-&nbsp;Commands</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-03-13</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-03-13</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#disk">Disk Operation</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+</div>
+</li>
+<li>
+    <div class="content" id="disk">
+        <h3>Disk operation</h3>
+        <p>A disk can be paritioned into several logic units (windows 分区成C盘，D盘). Each parition (logic unit) 
+            can be formatted into different types of file systems, such as NTFS, exFat. <br>
+            When a disk is physically pluged into a PC, the PC OS/administrator needs to mount a parition into a OS existed file system's directory.
+            And the OS must have corresponding file system driver in order to mount it.
+        </p>
+        <p>The recommended file system for install Linux is Ext4</p>
+        <p><img src="./img/fs_comparison.png" width="500" height="300"></p>
+        <p>Setting up /home on a separate partition is beneficial because your settings, files, and desktop will be maintained if you upgrade, (re)install Ubuntu or another distro</p>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>Check existed disk</h4>
+                    <pre class="brush:bash">
+                        #df list size, avaliable size, type, mounted directory of each parition
+                        df -hT # -h human readable, -T FS type of each parition
+                    </pre>
+                </li>
+                <li>
+                    <h4>Parition a disk</h4>
+                    <p>A disk is represented as a file under the /dev directory, it has a name like, sda, sdb, sdc ...</p>
+                    <p>sda represent the disk, sda1, sda2, sda14 represents the paritions of the disk.</p>
+                    <p>
+                        1). Partition Format MBR vs. GPT<br>
+                        MBR (Master Boot Record): an old partition format released in 1983. In MBR, the first sector is a the <a href="https://www.sousys.com/linux/things/boot.html#bios">first stage bootloader (GRUB2 boot.img) and 4 parition entries.</a> 
+                        It can only support a disk up to 2TB size and 4 paritions<br><br>
+                        GPT (GUID Partition Table): Each parition has a GUID<br>
+                        It has a BIOS boot partition to store the second stage of bootloader (e.g. GRUB2 core.img)<br>
+                        It has a EFI System partition to store the third stage bootloader
+                    </p>
+                    <p>
+                        2). Primary partition vs. Extended partition<br>
+                        In MBR partition type, because it only support 4 paritions. If more partitions are expected, a primary partition will be used as a container that contains multiple partitions, which are called extended partitions.
+                    </p>
+                    <p>3). Swap partition: Swap partition does not have a file system, it is purely used as swap space.</p>
+                    <pre class="brush:bash">
+                        #fdisk is a tool to check, create, modify MBR paritions on a disk
+                        #gdisk is for GPT
+                        
+                        gdisk /dev/sdc # enter interactive mode on this disk                        
+                    </pre>
+                </li>
+                <li>
+                    <h4>Format a disk</h4>
+                    <pre class="brush:bash">
+                        #mkfs is a tool to create a FS on a partition. (It is unusual to create a FS directly on a disk)
+                        mkfs -t=vfat --verbose /dev/sdc2 # vfat is Fat32
+                    </pre>
+                </li>
+                <li>
+                    <h4>Mount a disk</h4>
+                    <p>A partition is mounted default as root and normal users do not have access right</p>
+                    <pre class="brush:bash">
+                        sudo mount /dev/sdc2 /datadrive # the datadrive need root permission
+                        sudo mount -o uid=nan,gid=nan /dev/sdc2 /datadrive # the datadrive can be accessed by nan
+                        sudo umount /datadrive # unmount this partition
+                    </pre>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li><a href="https://unix.stackexchange.com/questions/18239/understanding-dev-and-its-subdirs-and-files" target="_blank">Understanding /dev and its subdirs and files</a></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>

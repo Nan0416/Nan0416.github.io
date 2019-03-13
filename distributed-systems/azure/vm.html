@@ -121,10 +121,8 @@ Management includes stop, deallocate, and delete.
             <h4>VM disk/storage</h4>
             A VM has one OS disk (usually 30GB SSD), one temporary disk, and multiple optional data disks (for example, standard_b1s supports 2 data disk).<br>
             Big data storage should use seperate storage service.
-        </li>
-        <li>
-            <h4>VM deletion</h4>
-            <p>Deleting a VM instance will not delete its disk and IP</p>
+            <h4>Azure storage account</h4>
+            Azure storage is the place for store non-VM related data, such as azure system management (VM logs), Hadoop data
         </li>
         <li>
             <h4>Network</h4>
@@ -132,6 +130,10 @@ Management includes stop, deallocate, and delete.
                 instance can attach multiple (virtual) network interface cards. Each network interface card can associate with a private IP and a public IP.
                  Each network interface card must connect to a virtual network (the switch)</p>
             <p>Inbound data free</p>
+        </li>
+        <li>
+            <h4>VM deletion</h4>
+            <p>Deleting a VM instance will not delete its disk and IP</p>
         </li>
         <li><a href="./python-script-create-delete-vm.zip">Python scripts for creating and deleting VM instances</a></li>
     </ol>
