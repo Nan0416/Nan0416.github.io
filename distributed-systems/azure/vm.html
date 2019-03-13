@@ -107,7 +107,8 @@ Management includes stop, deallocate, and delete.
         </p>
         </li>
         <li><h4>Create a VM instance</h4>
-        <p>When creating a VM instance, you need to consider: image(ubuntu 14.04, windows), location(us-east, us-west), size(#cpu/memory)</p>
+        <p>When creating a VM instance, you need to consider: <br>
+        <span style="color:red">image(ubuntu 14.04, windows), disk, location(us-east, us-west), size(#cpu/memory), private network, public IP</span></p>
         <p>
         1). az vm list-sizes --location eastus # list avaliable size in eastus<br>
         2). az vm create --resource-group nqin8-resource-group --name map-reduce-node-1 <br>
@@ -115,6 +116,22 @@ Management includes stop, deallocate, and delete.
                 --size Standard_B1s --location eastus --private-ip-address 10.0.0.5<br>
                 # the first and last IP in the subnet and x.x.x.1, x.x.x.2, x.x.x.4 are reserved
         </p>
+        </li>
+        <li>
+            <h4>VM disk/storage</h4>
+            A VM has one OS disk (usually 30GB SSD), one temporary disk, and multiple optional data disks (for example, standard_b1s supports 2 data disk).<br>
+            Big data storage should use seperate storage service.
+        </li>
+        <li>
+            <h4>VM deletion</h4>
+            <p>Deleting a VM instance will not delete its disk and IP</p>
+        </li>
+        <li>
+            <h4>Network</h4>
+            <p>Azure virtual network resoruce is like a switch used to connect a set of VM instance to construct a private network. A VM 
+                instance can attach multiple (virtual) network interface cards. Each network interface card can associate with a private IP and a public IP.
+                 Each network interface card must connect to a virtual network (the switch)</p>
+            <p>Inbound data free</p>
         </li>
         <li><a href="./python-script-create-delete-vm.zip">Python scripts for creating and deleting VM instances</a></li>
     </ol>
