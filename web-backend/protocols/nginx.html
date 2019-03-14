@@ -2,7 +2,7 @@
 <!-- NewPage -->
 <html lang="en">
 <head>
-<title>Tools&nbsp;Nginx</title>
+<title>Backend&nbsp;Nginx</title>
 <meta charset="utf-8">
 <meta name="date" content="2018-10-26">
 <meta name="keywords" content="">
@@ -35,13 +35,14 @@ SyntaxHighlighter.all()
 </script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<strong>Tools&nbsp;-&nbsp;Nginx</strong>
+<strong>Backend&nbsp;-&nbsp;Nginx</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-10-26</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-10-26</span></p>
+<p class="date"><span class="created-date">Created:2018-10-26</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-03-13</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
 <li><a href="#config">Configuration</a></li>
+<li><a href="#certificate">Certificate</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -119,13 +120,16 @@ SyntaxHighlighter.all()
                 </li>
                 <li> location /url {}
                     <br>the url prefix that match the url will be handled by this block.
-                    <br><pre>
+                    <br>
+                    <div class="asm" style="width: 800px">
+                    <pre>
                         location /sitemap {
                             root /home/ubuntu/SEO;
                         }
                         url = http://home.sousys.com/sitemap/sitemap-1.xml
                         this url will be routed into this block and the file location is /home/ubuntu/SEO + /sitemap/sitemap-1.xml
                     </pre>
+                    </div>
                 </li>
                 <li>root path;
                     <br> the file path prefix
@@ -133,10 +137,96 @@ SyntaxHighlighter.all()
                 <li>
                     proxy_pass origin;
                     <br>proxy_pass http://localhost:3003; redirect request to this location.
+                    <div class="asm" style="width: 800px">
                     <pre>
                         url = http://home.sousys.com/content/page-1.html
                         -> http://localhost:3003/content/page-1.html
                     </pre>
+                    </div>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="certificate">
+        <h3>Certificate</h3>
+        <p>X.509 is a protocol/standard/format that utilizes public/private to define certificate for verification propose. Applications of X.509 include HTTPS, Digital Signature.</p>
+        <div class="featureList">
+            <ol>
+                <li>    
+                <h4>How it works?</h4>
+                <p>In HTTPS, the purpose of X.509 is to guarantee 1). the communication is encrypted, 2). you are communicating with the right website.<br>
+                    The certificate contains a name/domain, a public key, a signature signed by a CA over all the information.<br><br>
+                    1). The certificate public key guarantees that the communication is encrypted. At beginning, the client generates a symmetric key and encrypted with the public key, then send to the server.
+                    Only the server can decrypt the message with its private key, so the symmetric key is secure. Later on, client-server use the symmetric key to communicate.<br>
+                    2). Because everyone can generate a (name/domain, public key) to declare is google.com. So this information must be signed by a certificate authority (CA). CA also use public/private key method to sign this website's certificate.
+                </p>
+                </li>
+                <li>
+                    <h4>CA</h4>
+                    <p>Two levels of CA existed. Root CAs and Intermediate CAs. Root CAs are trusted by browsers, they sign certificate to intermediate CAs. Intermediate CAs sign certificates to website.</p>
+                    <p>Certificate is signed with private key, verified with public key. Root CAs's public key is stored locally (e.g. stored in browsers or MacOS's keychain.</p>
+                    <p>When a user visits a website, the browser downloads the intermediate CA's public key to verify the website certificate, and also verify intermediate CA's certificate with root CA's public key.</p>
+                </li>
+                <li>
+                    <h4>Self-signed certificate</h4>
+                    <p style="color:red">*** Self-signed certificates causes browser to complain, so they are not recommended. ***</p>
+                    <pre class="brush:bash">
+                        # There are two encoding method for certificate, PEM vs. DER
+                        # by default it used PEM encoding
+                        openssl req -newkey rsa:2048 -nodes -keyout certificate.key -x509 -days 365 -out certificate.crt
+                        # decode the certificate to check content
+                        openssl x509 -in certificate.crt -text -noout
+                    </pre>
+                </li>
+                <li>
+                        <h4>Let's encrypted</h4>
+                        <p>Let's encrytped is an intermediate CA that signs certificate for free. It use ACME protocol to automate the signing process.
+                             At the core, it asks the domain machine to do a challenge that can only be done by the domain owner. For example, posting a file at a specific url and ACME can do this file at this url.</p>
+                        <p>certbot is the client to generate certificate, private keys</p>
+                </li>
+                <li>
+                    <h4>Nginx with SSL</h4>
+                    <div class="asm" style="width:700px">
+                        <pre>
+server{
+	listen [::]:443 ssl ipv6only=on;
+    listen 443 ssl;
+    ssl_certificate /etc/letsencrypt/live/node-1.eastus.cloudapp.azure.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/node-1.eastus.cloudapp.azure.com/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; 
+	root /var/www/html;
+
+	# Add index.php to the list if you are using PHP
+	index index.html index.htm index.nginx-debian.html;
+    server_name node-1.eastus.cloudapp.azure.com; 
+
+
+	location / {
+		# First attempt to serve request as file, then
+		# as directory, then fall back to displaying a 404.
+		try_files $uri $uri/ =404;
+	}
+
+}
+server {
+    # redirect
+    if ($host = node-1.eastus.cloudapp.azure.com) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+	listen 80 ;
+	listen [::]:80 ;
+    server_name node-1.eastus.cloudapp.azure.com;
+    return 404; # managed by Certbot
+
+
+}
+                        </pre>
+                    </div>
                 </li>
             </ol>
         </div>
@@ -147,7 +237,7 @@ SyntaxHighlighter.all()
 <h3>References</h3>
 <div class="featureList">
     <ol>
-        <li></li>
+        <li><a href="https://www.cnblogs.com/guogangj/p/4118605.html" target="_blank">那些证书相关的玩意</a></li>
     </ol>
 </div>
 </div>

@@ -43,6 +43,8 @@ SyntaxHighlighter.all()
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
 <li><a href="#disk">Disk Operation</a></li>
+<li><a href="#sshx">X11 Forwarding</a></li>
+<li><a href="#package">Package Management</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -110,12 +112,18 @@ SyntaxHighlighter.all()
                     <p>A partition is mounted default as root and normal users do not have access right</p>
                     <pre class="brush:bash">
                         sudo mount /dev/sdc2 /datadrive # the datadrive need root permission
-                        sudo mount -o uid=nan,gid=nan /dev/sdc2 /datadrive # the datadrive can be accessed by nan
+                        sudo mount -o uid=nan,gid=nan /dev/sdc2 /datadrive # the datadrive can be accessed by nan , mount 2.31.x
                         sudo umount /datadrive # unmount this partition
                     </pre>
                 </li>
             </ol>
         </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="package">
+        <h3>Package Management</h3>
+        <p>Ubuntu use the same Debian package management. It helps install, update, remove software packages, and resolve dependencies.</p>
     </div>
 </li>
 <li>
