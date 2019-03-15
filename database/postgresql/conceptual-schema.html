@@ -12,7 +12,7 @@
 <script type="text/javascript" src="../../script.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
-<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushSql.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
@@ -37,9 +37,10 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>PostgreSQL&nbsp;-&nbsp;Conceptual Schema</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-03-07</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-03-07</span></p>
+<p class="date"><span class="created-date">Created:2019-03-15</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-03-15</span></p>
 <div class="catalog">
 <ul class="catalogItems">
+<li><a href="#table">PostgreSQL creates tables</a></li>
 <li><a href="#conceptual">Conceptual Schema Design</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
@@ -48,9 +49,97 @@ SyntaxHighlighter.all()
 <div class="contentContainer">
 <ol>
 <li>
-<div class="content" id="conceptual">
-<h3>Conceptual Schema Design</h3>
+<div class="content" id="table">
+<h3>PostgreSQL creates tables</h3>
+<div class="featureList">
+    <h4>Concepts</h4>
+    <ol>
+        <li>relation: a relation consists of a relation schema (column heads of a table) and a relation instance (the table)</li>
+        <li>relation schema: relation's name, name of each field/column/attribute, domain of each field.</li>
+        <li>relation instance: a set of <span style="color:red">unique</span> tuples/records</li>
+        <li>cardinality: # of tuples</li>
+        <li>degree/arity: # of fields</li>
+        <li>domain constraints: the value of a field must reside in a range specified by the domain constraints.</li>
+        <li>database instance: a collection of relation instances</li>
+        <li>integrity constraints (ICs): a condition specified on a database schema and restricts the data that can be stored in a database instance.</li>
+
+    </ol>
+    <h4>PostgreSQL domain types</h4>
+    <ol>
+        
+    </ol>
+    <h4>SQL (Structured Query Language)</h4>
+    <ol>
+        <li>Table: a relation is called a table in SQL.</li>
+        <li>SQL DDL (Data definition Lanaguage): a subset of SQL that is used to create, modify (insert), delete a table.</li>
+        <li>Login to PostgreSQL:<br>
+            Usage PostgreSQL in Linux: postgresql create a separate user called "postgres". By default only this user (and root) can access this PostgreSQL.<br>
+            [Different from MySQL], database is created outside postgre prompt.
+            <pre class="brush:bash">
+                nan$: sudo -i -u postgres
+                postgres$: createdb myDB 
+                postgres$: dropdb myDB 
+                postgres$: psql myDB # enter the database
+                myDB=#: 
+            </pre>
+        </li>
+        <li>PostgreSQL commands:<br>
+            <pre class="brush:bash">
+                # inside myDB=#:
+                \l # list all databases
+                \c db_name # connect to different db
+                \dt # list all tables
+                \dn # ??????
+            </pre>
+        </li>
+        <li>SQL syntax:<br>
+            Inside the interactive client terminal, a SQL command is executed after entering a ;<br>
+            SQL keyword is <span style="color:red">not case-sensitive</span>. But using capital letters by convention.
+            <pre class="brush:sql">
+                -- get the current date
+                SeLeCt CuRrEnT_dAtE; 
+                -- get current postgresql version
+                SELECT version();
+            </pre>
+        </li>
+    </ol>
+    <h4>Types of ICs and Table Creation</h4>
+    <ol>
+        <li>Key constraints: specify a subset of fields are unique. One of the key can be designated as the primary key.
+            <pre class="brush:sql">
+                CREATE TABLE Student ( sid CHAR(20), 
+                                    name CHAR(30), 
+                                    age INTEGER, 
+                                    gpa REAL, 
+                                    CONSTRAINT name_age_unique UNIQUE (name, age),  /*contraint name_age_unqie is optional*/
+                                    CONSTRAINT studentKey PRIMARY KEY (sid));
+            </pre>
+        </li>
+        <li>Foreign key constraints: a relation has a field that refer to the <span style="color:red">primary key (cannot be other fields)</span> defined in another relation. <br>
+        Foreign key field can also refer to the field of the same relation. For example, a student relation has a field called partner.
+            <pre class="brush:sql">
+                CREATE TABLE Enrolled ( studid CHAR(20), 
+                                        grade CHAR(10), 
+                                        PRIMARY KEY (studid, grade), 
+                                        FOREIGN KEY (studid) REFERENCES Student); 
+            </pre>
+        </li>
+        <li><span style="color:red">Deferred vs. Immediate constraints</span>:<br>
+            Two relations refer to each other as foregin keys. Without the creating of another, the one cannot be created. Then we need to defer the constraints.<br>
+            We construct a transaction. Within the transaction, multiple relations are modified. Then manually commit this transaction.<br>
+            <img src="./img/defer-constraints.png" width="500" height="300">
+        </li>
+        <li>Table constraints: </li>
+        <li>Assertion: </li>
+        
+    </ol>
 </div>
+</div>
+</li>
+<li>
+    <div class="content" id="conceptual">
+        <h3>Conceptual Schema Design</h3>
+    </div>
 </li>
 <li>
 <div class="content" id="reference">
