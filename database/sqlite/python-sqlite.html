@@ -13,7 +13,7 @@
 <script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushPython.js"></script>
-<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushSql.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
@@ -57,10 +57,121 @@ SyntaxHighlighter.all()
 <p>It does not provide user administrator, but does provide transaction and indexing.</p>
 <p>It is written in C, but provide interfaces for other languages.</p>
 </div>
+<div class="featureList">
+    <h4>datatypes</h4>
+    <ol>
+        <li>SQLite is a dynamic type SQL database, meaning that <span style="color:red">a field does not have a domain</span>. It can store any data. <br>
+            A datatype is associated with a value instead of a field.
+            <pre class="brush:sql">
+                    CREATE TABLE student (sid, name, birthday, birthmonth, birthyear);
+            </pre>
+        </li>
+        <li>Storage class: A class of a set of specific types, including NULL, Integer, Real, Text, Blob</li>
+        <li>NULL: only a NULL value</li>
+        <li>Integer: INT, INTEGER, TINYINT, SMALLINT, MEDIUMINT, BIGINT, UNSIGNED BIG INT, INT2, INT8</li>
+        <li>Real: ...</li>
+        <li>Type Affinity: declare a recommended type for field. But the field cannot still store any type. SQLite will only <span style="color: red">try, not enforce</span> to convert the data into the recommended type.</li>
+    </ol>
+    <h4>Speical features</h4>
+    <ol>
+        <li><span style="color:red">Primary key can be null, a NOT NULL must be explicitly given</span>. In SQL-standard, the primary key column must not contain NULL values. It means that the primary key column has an implicit NOT NULL constraint.
+            However, to make the current version of SQLite compatible with the earlier versions, SQLite allows the primary key column to contain NULL values.</li>
+    </ol>
+</div>
 </li>
 <li>
     <div class="content" id="python">
         <h3>Python Interface</h3>
+        <div class="featureList">
+            <ol>
+                <li><h4>Create tables</h4>
+                <pre class="brush:python">
+                        import sqlite3
+                        conn = sqlite3.connect('./local.db') # connect to a database,  create if not existed.
+                        c = conn.cursor() # get a cursor object
+                        # Entity: people, company, relationship: job, since, salary many to many
+                        # primary key should have explicit NOT NULL, otherwise it can be null.
+                        c.execute('''create table if not exists people
+                                        (pid text NOT NULL, 
+                                        pname text NOT NULL, 
+                                        address text,
+                                        primary key (pid))''')
+                        c.execute('''create table if not exists company
+                                        (cid text NOT NULL, 
+                                        cname text NOT NULL, 
+                                        address text,
+                                        primary key (cid))''')
+                        c.execute('''create table if not exists working
+                                        (pid text NOT NULL, 
+                                        cid text NOT NULL,
+                                        since text,
+                                        job text,
+                                        salary integer,
+                                        primary key (pid, cid),
+                                        FOREIGN KEY (pid) REFERENCES people (pid),
+                                        FOREIGN KEY (cid) REFERENCES company (cid))''')
+                        
+                        
+                        conn.commit() # need to manually commit the changes
+                        c.close() # close the cursor if we are done with it
+                        
+                </li>
+                <li><h4>Insert data</h4>
+                <pre class="brush:python">
+                        import sqlite3
+                        conn = sqlite3.connect('./local.db') # connect to a database,  create if not existed.
+                        c = conn.cursor() # get a cursor object
+                        
+                        c.execute('''insert into people 
+                                  (pid, pname, address)
+                                  values
+                                  ("1", "Nan Qin","1023 Howell Mill Road")''')
+                        
+                        c.execute('''insert into people values
+                                  ("2","Blob","2139 Northdrive Avenue")''')
+                        
+                        c.execute('''insert into company values
+                                  ("1","Doctier","10th Street")''')
+                        
+                        c.execute('''insert into company values
+                                  ("3","Sousys","University Ave")''')
+                        
+                        c.execute('''insert into working values
+                                  ("1", "1", "2012-01-10", "CEO", 9000000)''')
+                        
+                        c.execute('''insert into working values
+                                  ("1", "2", "2014-01-23", "CTO", 1200000)''')
+                        c.execute('''insert into working values
+                                  ("2", "2", "2014-03-12", "Enginner", 3000)''')
+                        conn.commit() # need to manually commit the changes
+                        c.close() # close the cursor if we are done with it
+                        
+                </pre>
+                </li>
+                <li>
+                    <h4>Query</h4>
+                    <pre class="brush:python">
+                            import sqlite3
+                            conn = sqlite3.connect('./local.db') # connect to a database,  create if not existed.
+                            c = conn.cursor() # get a cursor object
+                            c.execute('select * from people where pid="1"')
+                            for row in c:
+                                print(row)
+                            c.execute('select cname, address from company')
+                            for row in c:
+                                print(row)
+                            c.execute('select * from working where salary > 10000')
+                            for row in c:
+                                print(row)
+                            c.execute('select * from people JOIN working ON people.pid = working.pid')
+                            for row in c:
+                                print(row)
+                            c.close() # close the cursor if we are done with it
+                            
+                    </pre>
+                </li>
+            </ol>
+        </div>
     </div>
 </li>
 <li>
@@ -68,7 +179,8 @@ SyntaxHighlighter.all()
 <h3>References</h3>
 <div class="featureList">
     <ol>
-        <li><a href="https://www.sqlite.org/serverless.html">SQLite Is Serverless</a></li>
+        <li><a href="https://www.sqlite.org/serverless.html" target="_blank">SQLite Is Serverless</a></li>
+        <li><a href="https://www.tutorialspoint.com/sqlite/sqlite_data_types.htm" target="_blank">Datatypes</a></li>
     </ol>
 </div>
 </div>
