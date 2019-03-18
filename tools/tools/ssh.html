@@ -13,12 +13,9 @@
 <script type="text/javascript" src="../../script.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
-<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
 <link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
 <link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
-
-
-
 </head>
 <body>
 <script>
@@ -33,16 +30,17 @@ SyntaxHighlighter.all()
 </script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<center><strong>Tools&nbsp;-&nbsp;SSH</strong></center>
+<strong>Tools&nbsp;-&nbsp;SSH</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-02-22</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-02-22</span></p>
+<p class="date"><span class="created-date">Created:2018-02-22</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-03-18 @ Wahu 250 Spring Break</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#sshIntro">Introduction</a></li>
 <li><a href="#sshkey">Public-Private key</a></li>
 <li><a href="#sshSetup">Setup</a></li>
 <li><a href="#sshProcess">Verification process</a></li>
-
+<li><a href="#sshPortForwarding">Port Forwarding</a></li>
+<li><a href="#sshX11Forwarding">X11 forwarding</a></li>
 </ul>
 </div>
 <hr>
@@ -139,6 +137,58 @@ Copy the client's public key and append to the server's user side's ./ssh/author
 </ol>
 </div>
 </div>
+</li>
+
+<li>
+    <div class="content" id="sshPortForwarding">
+        <h3>Port Forwarding</h3>
+        <div class="featureList">
+            <ol>
+                <li><h4>Why Port Forwarding?</h4>
+                    <p>Suppose a scenario that we have three machines, host A, host B and host C. For some reasons, host A and host C cannot communicate with each other. 
+                        But host B can communicate with host A and host C. [ *** One possible reason is that host A and host C are in two different networks, host B has two 
+                        network interfaces that connect to the networks where host A and host C are, respectively. So intuitively, we want host B helps to forward traffic 
+                        between host A and host C. *** ]
+                    </p>
+                </li>
+                <li>
+                    <h4>Solution: ssh -L</h4>
+                    <p>By using ssh -L we can achieve this. Suppose host A has IP 10.130.250.12, host B has IP 10.130.250.65 and 172.16.221.3, host C has IP 172.16.221.128. 
+                        Because host A and host C are not in the same network, they cannot communicate. Now, we hope that host A can directly ssh into host C. So we can run
+                    </p>
+                    <pre class="brush:bash">
+                        # [ssh -L localPort:targetIP:targetPort intermediary-username@intermediary-host]
+                        ssh -L 2721:172.16.221.128:22 username@10.130.250.65
+                    </pre>
+                    <p>in host A. This command creates a socket to listen port 2721 on host A. Whenever it detects traffic that goes to port 2721, it will forward the traffic
+                         to 172.16.221.128:22 (host C) via 10.130.250.65 (host B). Therefore, if we run ssh username@localhost -p 2721, openssh will forward it to the
+                        172.16.221.128:22 (host C).</p>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="sshX11Forwarding">
+        <h3>X11 Forwarding</h3>
+        <div class="featureList">
+            <ol>
+                <li><h4>X11 Server and client</h4>
+                <p>A GUI application is the client of X11 Server, it calls X11 Server's methods to draw GUI. X11 uses a client-server model, which means the client and the server can run on different machines.</p>
+                <p>For example, using a MacOS ssh into a remote ubuntu server that does not have a GUI. Launch ubuntu's Geany application, Geany will be the client of X11 and call the local MacOS X11 server. The Geany's GUI will show on the MacOS.</p>
+                </li>
+                <li><h4>MacOS X11 Server and Forwarding</h4>
+                <p>XQuartz is the MacOS version of X11.</p>
+                <p>1). Configure SSH Server @ Remote Host /etc/ssh/sshd_config, add "X11Forwarding yes". This enable ssh server to forward x11 client's requests<br>
+                2). Configrue SSH client @ Local [MacOS] add xauth path "XAuthLocation /opt/X11/bin/xauth" to ~/ssh/.config<br>
+                3). Open SSH connect with -X e.g. ssh -X username@remote (does not use -Y since it is not the secure version)<br>
+                Enable the -X option by default, add "ForwardX11 yes" to ~/.ssh/config
+                </p>
+                <p>echo $DISPLAY will show a value</p>
+                </li>
+            </ol>
+        </div>
+    </div>
 </li>
 </ol>
 </div>
