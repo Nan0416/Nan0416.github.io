@@ -48,21 +48,9 @@ SyntaxHighlighter.all()
 <li>
 <div class="content" id="abstractIntro">
 <h3>Introduction</h3>
-<p>Abstract class in C++ is similar to Java but without using abstract keyword. In C++, abstract class is achieved throught the virtual function.</p>
-<pre class="brush: cpp">
-    virtual void abstractFunction() = 0; // pure virtual function
-</pre>
+
 <p>The above line is called pure virtual function.</p>
-<div class="featureList">
-<h4>Abstract class features</h4>
-<ol>
-<li>An abstract class: a class has at least one pure virtual function</li>
-<li><span style="color:red">It is a compilation error to create an object of an abtract class.</span></li>
-<li>The drived class must implement parent pure virtual function, otherwise it is still an abstract class. <span style="color:red">
-Even if the virtual function is defined as a private function and it is not visible to the child class, the child class also has to implement it.
-</span></li>
-</ol>
-</div>
+
 
 </div>
 </li>
