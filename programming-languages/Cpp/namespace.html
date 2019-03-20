@@ -33,28 +33,44 @@ SyntaxHighlighter.all()
 </script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<center><strong>C++&nbsp;-&nbsp;Namespace</strong></center>
+<strong>C++&nbsp;-&nbsp;Namespace</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-02-12</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-02-12</span></p>
+<p class="date"><span class="created-date">Created:2018-02-12</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-03-19</span></p>
 <div class="catalog">
 <ul class="catalogItems">
-<li><a href="#namespaceIntro">Introduction</a></li>
-<li><a href="#namespacedefine">Namespace</a></li>
-<!--<li><a href="#namespaceReference">References</a></li>-->
+<li><a href="#file-struture">C++ File Structure</a></li>
+<li><a href="#namespace">Namespace</a></li>
+<li><a href="#reference">References</a></li>
 </ul>
 </div>
 <hr>
 <div class="contentContainer">
-<ol>
+  <ol>
+      <li>
+          <div class="content" id="file-structure">
+          <h3>C++ File Structure</h3>
+          <p>C++ does not have strict rules for organizing source files. The source files can be typically divided into two categories, declaration files (.h) and implementation files (.cpp) 
+          Different from Java that puts declaration and implementation together and the file name must be the public class's name, <mark>the class name, .h file name and .cpp file name can be totally different</mark>.
+          Moreover, one definition file can contain more than one class's definitions and be implemented by several source files. (One source file can even just have one function implemented). Also, one .cpp file can implement
+          several .h files.
+          </p>
+          <p>The .cpp files is binded to .h files by #include directive. The implementation function is connected to function declaration by <mark>Class::</mark> symbol.</p>
+          <p>The .h file also can contain the implementation. This is actually a feature of <a href="./inline.html">inline</a> function. This implementation is treated as inline function and the inline keyword is added by default when ignored.</p>
+          <p>The .cpp file can contain class declaration: but treat an an java private. and must be implemented here.</p>
+          </div>
+          <div class="termnology">
+          <h4>Term</h4>
+          <ul>
+          <li>driver file: The .cpp file contains the main function, which is the entry point for this program.</li>
+          <li>definition (implmentation):</li>
+          <li>declaration:</li>
+          </ul>
+          </div>
+      </li>
 <li>
-<div class="content" id="namespaceIntro">
-<h3>Introduction</h3>
-<p>Namespace keeps program name clean. Program can define functions that have the same name but in different namespace.</p>
-</div>
-</li>
-<li>
-<div class="content" id="namespaceExample">
+<div class="content" id="namespace">
 <h3>Namespace</h3>
+<p>Namespace keeps program name clean. Program can define functions that have the same name but in different namespace.</p>
 <h4>Define/specify namespace</h4>
 <p>namespace name{// this scope is under the a namespace}</p>
 <h4>Specify namespace</h4>
@@ -62,49 +78,67 @@ SyntaxHighlighter.all()
 <p>A file can have multiple namespaces, a namespace can be mentioned in a couple of files</p>
 <p>The header file's class declaration and source file's class implementation must in the same namespace.</p>
 <p><span style="color:red">The main function cannot be placed in any namespace.</span></p>
-<h4>Example</h4>
-<pre class="brush:cpp">
-// .h file
-namespace H {
 
-class F{
- public:
-  void print();
-};
-
-}  // namespace H
-namespace K {
-
-class F{
- public:
-  void print(){
-    std::cout &lt;&lt; "K-F" &lt;&lt; std::endl;
-  }
-};
-
-}  // namespace K
-</pre>
-<pre class="brush:cpp">
-// .cc file
-namespace H {
-
-void F::print(){
-    std::cout &lt;&lt; "H-F" &lt;&lt; std::endl;
-}
-
-}  // namespace H
-
-int main(){
-  H::F f;
-  K::F e;
-  f.print();
-  e.print();
-}
-</pre>
+<div class="featureList">
+  
+  <ol>
+    <li><h4>Example</h4>
+        <pre class="brush:cpp">
+        // .h file
+        namespace H {
+        
+        class F{
+         public:
+          void print();
+        };
+        
+        }  // namespace H
+        namespace K {
+        
+        class F{
+         public:
+          void print(){
+            std::cout &lt;&lt; "K-F" &lt;&lt; std::endl;
+          }
+        };
+        
+        }  // namespace K
+      </pre>
+      <pre class="brush:cpp">
+      // .cc file
+      namespace H {
+      
+      void F::print(){
+          std::cout &lt;&lt; "H-F" &lt;&lt; std::endl;
+      }
+      
+      }  // namespace H
+      
+      int main(){
+        H::F f;
+        K::F e;
+        f.print();
+        e.print();
+      }
+      </pre>
+    </li>
+  </ol>
+</div>
 </div>
 </li>
+
+<li>
+    <div class="content" id="reference">
+    <h3>References</h3>
+    <div class="featureList">
+    <ol>
+    <li><a href="http://www.cplusplus.com/articles/2LywvCM9/">inline function (cplusplus.com)</a></li>
+    </ol>
+    </div>
+    </div>
+</li>
+
 </ol>
-</div>
-    
+</div>    
 </body>
 </html>
