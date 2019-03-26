@@ -1,0 +1,168 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>Linux&nbsp;System Tools</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-03-26">
+<meta name="keywords" content="linux">
+<meta name="keywords" content="systemd">
+<meta name="keywords" content="">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushPython.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>Linux&nbsp;-&nbsp;System Tools</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-03-26</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-03-26</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#systemd">Systemd</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+</div>
+</li>
+<li>
+<div class="content" id="systemd">
+<h3>Systemd (System Daemon)</h3>
+<div class="featureList">
+    <h4>Concept</h4>
+    <ol>
+        <li>Daemon (process): a type of processes whose parent PID is 1 (systemd).</li>
+        <li>Orphan (process): a process whose parent is dead will become orphan, but the systemd will adopt it. Then the orphan process becomes a daemon process.</li>
+        <li>Zombie (process): a process has terminated but still has an entry in the process table. <br>
+        When a process terminated, all resource associated with it will be deallocated (e.g. VM page). 
+        But it sill has an entry and PID in the process table. The entry is removed by parent using system call "wait". If parent does not successfully invoke "wait", then the entry will not be removed, and child pid will not be reused.
+        </li>
+    </ol>
+    <h4>stdin/out/err</h4>
+    <p>Opening a terminal will create stdin/out/err and open them. When using the terminal to launch a regular program, the running process will also obtain the same stderr/out/in file descriptor. Even when the running process becomes
+         orphan -> daemon, it still have the stderr/in/out to the terminal. (Think terminal's as three regular files)</p>
+</div>
+<p>Systemd is a set of software, which provides fundamental building blocks for a Linux. systemd manage system services (service daemon), such as nginx, sshd. It includes <br>
+1). systemd init daemon: The first process to boot and last process to terminate.<br>
+2). journald daemon:<br>
+3). logind daemon:<br>
+4). networkd daemon:</p>
+<h4>Configuration of systemd</h4>
+<div class="featureList">
+    <ol>
+        <li><p>Systemd is configured with unit files. A unit file can define different type of configuration, including individual service, target, timer ...</p>
+            <p>Unit files are stored in three directories<br>
+                1). /lib/systemd/system: install package's service, such as nginx.service. This directory has lowest priority<br>
+                2). /run/systemd/system: <br>
+                3). /etc/systemd/system: highest priority<br>
+                4). /usr/lib/systemd/system: </p>
+        </li>
+        <li><p>.service unit file: A service unit describes how to manage a service or application on the server. This will include how to start or stop the service, 
+            under which circumstances it should be automatically started, and the dependency and ordering information for 
+            related software.<a href="https://www.digitalocean.com/community/tutorials/understanding-systemd-units-and-unit-files#types-of-units" target="_blank">credit: Digitalocean</a></p>
+            <p>nginx.service</p>
+            <div class="asm" style="width: 700px">
+                <pre>
+                        [Unit]
+                        Description=nginx - high performance web server
+                        Documentation=http://nginx.org/en/docs/
+                        After=network-online.target remote-fs.target nss-lookup.target
+                        Wants=network-online.target
+                        
+                        [Service]
+                        Type=forking
+                        PIDFile=/var/run/nginx.pid
+                        ExecStart=/usr/sbin/nginx -c /etc/nginx/nginx.conf
+                        ExecReload=/bin/kill -s HUP $MAINPID
+                        ExecStop=/bin/kill -s TERM $MAINPID
+                        
+                        [Install]
+                        WantedBy=multi-user.target
+                </pre>
+            </div>
+           <h4>Unit section and its directives</h4>
+            <p>Dependency directives: Requires (strong dependencies), Wants (weak dependencies)<br>
+               Starting order: [not dependencies] After, Before<br>
+               BindsTo=: <br>
+               Conflicts=
+            </p>
+            <h4>Install section and its directives</h4>
+            <p>
+                WantedBy: attached to a target.
+            </p>
+            <h4>Service section and its directives</h4>
+            <p>
+
+            </p>
+        </li>
+        <li><p>A target chain defines which services should be started. It run as a switch statement without break.</p>
+            <pre class="brush:cpp">
+                switch(user-selected-target){
+                    case grahical.target:{
+                        grahical.service;
+                    };
+                    case multi-user.target:{
+                        network-manager.service;
+                    };
+                    case basic.target:{
+                        sshd.service
+                    }
+                }
+            </pre>
+            <pre class="brush:bash">
+                systemctl get-default # check current target
+                systemctl list-units --type target # check the targets involved on current target chain.
+            </pre>
+        </li>
+    </ol>
+</div>
+
+
+</div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li><a href="https://en.wikipedia.org/wiki/Systemd" target="_blank">Systemd Wiki</a></li>
+        <li><a href="https://www.digitalocean.com/community/tutorials/understanding-systemd-units-and-unit-files" target="_blank">Understanding Systemd Units and Unit Files</a></li>
+        <li><a href="https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/system_administrators_guide/sect-managing_services_with_systemd-targets" target="_blank">WORKING WITH SYSTEMD TARGETS</a></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>

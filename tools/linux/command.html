@@ -42,7 +42,6 @@ SyntaxHighlighter.all()
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
-<li><a href="#systemd">Systemd</a></li>
 <li><a href="#disk">Disk Operation</a></li>
 <li><a href="#pgp">PGP / GPG</a></li>
 <li><a href="#package">Package Management</a></li>
@@ -52,12 +51,7 @@ SyntaxHighlighter.all()
 <hr>
 <div class="contentContainer">
 <ol>
-<li>
-<div class="content" id="systemd">
-<h3>Systemd</h3>
-<h4><a href="http://www.ruanyifeng.com/blog/2018/03/systemd-timer.html" target="_blank">Systemd 定时器教程</a></h4>
-</div>
-</li>
+
 <li>
     <div class="content" id="disk">
         <h3>Disk operation</h3>
@@ -212,7 +206,20 @@ SyntaxHighlighter.all()
                     1). create a .list file under /etc/apt/sources.list.d/
                     2). add "deb [arch=amd64] https://artifacts.elastic.co/packages/6.x/apt stable main" to .list files
                 </li>
-                <li>apt-key: A remote repo should be signed with PGP</li>
+                <li>apt-key: A remote repo should be signed with openpgp standard. This key is a public key used to verify repo signature signed by repo owner.
+                    <pre class="brush:bash">
+                        curl -fsSL https://nginx.org/keys/nginx_signing.key | sudo apt-key add -
+                        # - means import from stdin.
+                    </pre>
+                    If you don't have the key, apt update cannot verify the remote repo siguature. It will give the error:<br>
+                    <span style="color:red">Err:8 http://nginx.org/packages/ubuntu bionic InRelease<br>
+                        The following signatures couldn't be verified because the public key is not available: NO_PUBKEY ABF5BD827BD9BF62<br>
+                        Reading package lists... Done
+                    </span>
+                    Becasue everyone can sign a repo said it's offical ubuntu repo. We need to verify the public key is from the real ubuntu offical.<br>
+                    To do that, ubuntu offical will publish a fingerprint of the public key on its website. We can compute the public key's fingerprint and compare with the one shown on the offical website.
+                </li>
+                <li>apt update: update repo index</li>
             </ol>
         </div>
     </div>
