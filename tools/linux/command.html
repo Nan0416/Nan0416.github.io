@@ -44,6 +44,7 @@ SyntaxHighlighter.all()
 <li><a href="#intro">Introduction</a></li>
 <li><a href="#systemd">Systemd</a></li>
 <li><a href="#disk">Disk Operation</a></li>
+<li><a href="#pgp">PGP / GPG</a></li>
 <li><a href="#package">Package Management</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
@@ -122,9 +123,98 @@ SyntaxHighlighter.all()
     </div>
 </li>
 <li>
+    <div class="content" id="pgp">
+        <h3>PGP / GPG</h3>
+        <p>OpenPGP standard: an encryption and signature standard.<br>
+        PGP (Pretty Good Privacy): an implementation of OpenPGP standard owned by Symantec.<br>
+        GPG (GunPG): another implementation of OpenPGP standard.
+        </p>
+        <div class="featureList">
+            <ol>
+                <li><h4>GPG key management</h4>
+                    <pre class="brush:bash">
+                        # generate a pair of key under the its default home directory ~/.gunpg
+                        gpg --gen-key 
+
+                        # check public keys and private keys under the home directory
+                        gpg --list-keys
+                        gpg --list-secret-keys
+
+                        # public key and private key are stored in binary format, using --armor to print in ASCII
+                        gpg [--keyring /etc/apt/trusted.gpg] --armor --export #keyring designate a key location
+                        gpg --armor --export-secret-key
+
+                        # export my public key and import others' public keys
+                        gpg --export --armor > my_public.key
+                        gpg --import other-public.key
+                    </pre>
+                </li>
+                <li>
+                    <h4>Encrypt/Decrypt Data</h4>
+                    <pre class="brush:bash">
+                
+                        # Suppose Bob gets a public key from a person who declares she is Alice,
+                        # Because everyone can create a public key with the name of Alice, 
+                        # Before using the public key to encrypt data, Bob has to confirm this key really comes from Alice.
+
+                        gpg --edit-key 89A82E9F
+                        gpg> trust
+
+                        # Bob use Alice's public key to encrypts data
+                        gpg --recipient "Alice" --output secret.enc --encrypt secret.txt
+
+                        # Alice use her private key to decrypt data
+                        gpg --decrypt secret.enc
+                    </pre>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
     <div class="content" id="package">
         <h3>Package Management</h3>
-        <p>Ubuntu use the same Debian package management. It helps install, update, remove software packages, and resolve dependencies.</p>
+        <p>Ubuntu employees the same Debian package management. <span style="color:red">APT (advanced packaging tool)</span>. It helps install, update, remove software packages, and resolve dependencies.</p>
+        <h4>dpkg (Debain package manager)</h4>
+        <p>1). dpkg-deb: packs, unpacks and provides information about Debian archives.<br>
+        2). dpkg-query: show information of installed packages.<br>
+        3). dpkg: install local .deb packages (without automatically installing dependencies), remove installed packages and build packages. A wrapper of dpkg-deb and dpkg-query<br>
+           </p>
+        <div class="featureList">
+            <ol>
+                <li>dpkg --info elasticsearch-6.6.2.deb # get information about a .deb</li>
+                <li>sudo dpkg -i elasticsearch-6.6.2.deb # install elasticsearch-6.6.2.deb (it depends on java, but java will not be automatically installed)</li>
+                <li>dpkg -l # list all installed package</li>
+                <li>dpkg -L openjdk-8-jre-headless # list all the installed file of java-common package.</li>
+                <li>dpkg -S /var/run/elasticsearch # find which package install this file</li>
+                <li><h4>find which package installed current java</h4>
+                <pre class="brush:bash">
+                    which java                        # /usr/bin/java
+                    ls -al /usr/bin/java              # /usr/bin/java -> /etc/alternatives/java
+                    ls -al /etc/alternatives/java     # /etc/alternatives/java -> /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java
+                    dpkg -S /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java 
+                    # openjdk-8-jre-headless:amd64: /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java
+                </pre>
+                </li>
+            </ol>
+        </div>
+        <h4>signature verification</h4>
+
+        <h4>APT (advanced packaging tool)</h4>
+        <p>apt-* tools: download remote .deb, upgrade packages, resolve dependencies</p>
+        <p>apt get remote package from DebainRepository. <br>
+            /etc/apt/sources.list and /etc/apt/sources.list.d/* have a list of remote repo urls.<br>
+        </p>
+
+        <div class="featureList">
+            <ol>
+                <li>[manually] add repo<br>
+                    1). create a .list file under /etc/apt/sources.list.d/
+                    2). add "deb [arch=amd64] https://artifacts.elastic.co/packages/6.x/apt stable main" to .list files
+                </li>
+                <li>apt-key: A remote repo should be signed with PGP</li>
+            </ol>
+        </div>
     </div>
 </li>
 <li>
@@ -133,6 +223,8 @@ SyntaxHighlighter.all()
 <div class="featureList">
     <ol>
         <li><a href="https://unix.stackexchange.com/questions/18239/understanding-dev-and-its-subdirs-and-files" target="_blank">Understanding /dev and its subdirs and files</a></li>
+        <li><a href="https://blog.csdn.net/a13526758473/article/details/79247478" target="_blank">apt-get软件包管理命令 和 apt-key命令</a></li>
+        <li><a href="http://www.ruanyifeng.com/blog/2013/07/gpg.html" target="_blank">GPG入门教程</a></li>
     </ol>
 </div>
 </div>
