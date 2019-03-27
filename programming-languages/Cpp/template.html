@@ -10,11 +10,10 @@
 <meta name="keywords" content="C++">
 <link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
 <script type="text/javascript" src="../../script.js"></script>
-
-
 <script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
 <link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
 <link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
 
@@ -36,12 +35,13 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>C++&nbsp;-&nbsp;Template</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-03-19</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-03-19</span></p>
+<p class="date"><span class="created-date">Created:2019-03-26</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-03-26</span></p>
 <div class="catalog">
 <ul class="catalogItems">
-<li><a href="#intro">Introduction</a></li>
-<li><a href="#function">Function Template</a></li>
-<li><a href="#class">Class Template</a></li>
+<li><a href="#intro">Comparison: C++, Java, C#</a></li>
+<li><a href="#examples">Template Examples</a></li>
+<li><a href="#collection">Collections</a></li>
+<li><a href="#reference">References</a></li>
 </ul>
 </div>
 <hr>
@@ -49,9 +49,174 @@ SyntaxHighlighter.all()
 <ol>
 <li>
 <div class="content" id="rvIntro">
-<h3>Introduction</h3>
+<h3>Comparison</h3>
+<p>Reusable code: function provides value/reference as parameter, generics provides type as parameter.</p>
+<h4>Implementation</h4>
+<div class="featureList">
+    <ol>
+        <li>C++ [compile time feature] compiler generates separate source code for each declared types.</li>
+        <li>Java [compile time feature] compiler provide compile-time syntax checking and insert necessary casting.</li>
+        <li>C# [runtime feature]</li>
+    </ol>
 </div>
+</div>
+</li>
+<li>
+    <div class="content" id="examples">
+        <h3>Examples</h3>
+        <div class="featureList">
+            <ol>
+                <li><h4>Principle 1</h4>
+                <p>C++ first generates source code without using template. After generating the source code, native function has higher priority than template code.<br>
+                   using "nm a.out" to check the symbol table</p>
+                <pre class="brush:cpp">
+template &lt;class T>
+void swap_values(T & var1, T & var2){
+    T temp = var2;
+    var2 = var1;
+    var1 = temp;
+}
+void swap_values(char & s1, char & s2){ }
+int main(){
+    int x = 1, y = 10; double dx = 0.3, dy = 3.4; 
+    char letter = 'q';
+    swap_values(x, y);           // __Z11swap_valuesIiEvRT_S1_
+    swap_values(dx, dy);         // __Z11swap_valuesIdEvRT_S1_
+    swap_values(letter, letter); // __Z11swap_valuesRcS_ (native function has the highest priority)
+    return 0;
+}
+                </pre>
+                </li>
+                <li>
+                    <h4>Principle 2</h4>
+                    <p>After convert template source code to source code without template, C++ do the default casting.</p>
+                    <pre class="brush:cpp">
 
+#include &lt;string>
+using namespace std;
+
+int inc(int i) {return i+1;}; // c++ cast double to int, c++ cannot cast string to int. So it cause error.
+
+template &lt;class T>
+void swap_values(T & var1, T & var2){
+    T temp = inc(var2);
+    var2 = var1;
+    var1 = temp;
+}
+
+int main(){
+    double dx = 0.3, dy = 3.4; 
+    string name = "qinnan";
+    swap_values(dx, dy);     
+    //swap_values(name, name);
+    return 0;
+}
+                    </pre>
+                </li>
+                <li>
+                    <h4>Class Template</h4>
+                    <p>Template class need explicitly supply type parameter, but template function does not need to supply the used class.</p>
+                    <pre class="brush:cpp">
+#include &lt;string>
+template &lt;class K, class V>
+class Pair{
+private:
+    K key; V value;
+public:
+    Pair(K key, V value){
+        this->key = key; 
+        this->value = value;
+    }
+    template&lt;class T>
+    void add(T t){}
+};
+
+int main(){
+    // type has to be supplied here. template function does not need to supply the used class.
+    Pair&lt;std::string, int> p("one", 1);
+    p.add('q');
+}
+                    </pre>
+                </li>
+                <li>
+                    <h4>Nested Template</h4>
+                    <p>Nested template happens when the type parameter also be a type with template</p>
+                    <pre class="brush:cpp">
+template &lt;template &lt;typename , typename > class P, typename T>
+void add(P&lt;int, int> p, T t){
+    p.add(t);
+}
+                    </pre>
+                    <p>1). typename and class can interchangable in most cases.<br>
+                    2). The outter layer template defined two type parameter, P and T<br>
+                    3). The type parameter, P, is a template class that has two type parameters.<br>
+                    <span style="color:red">4). the outter layer function "add" cannot access and infer inner type parameters</span></p>
+                    <pre class="brush:cpp">
+int main(){
+    // type has to be supplied here. template function does not need to supply the used class.
+    Pair&lt;int, int> p(100, 100);
+    add(p, "string");
+}
+                    </pre>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="collection">
+        <h3>Collections (STL)</h3>
+        <p>C++ STL (standard template library) is a set of C++ template classes that provide common programming data structures and functions. It contains 4 components<br>
+            containers: vector, list, queue, set, unordered_set, map, unordered_map
+            algorithms: sort, search
+            iterators:
+            higher order functions:
+        </p>
+        <div class="featureList">
+            <ol>
+                <li><h4>Vector: (Java ArrayList)</h4>
+                    <p>When using value type, the default constructor and copy constructor are implicitly invoked.</p>
+                    <pre class="brush:cpp">
+#include &lt;iostream>
+#include &lt;vector>
+using namespace std;
+class P{
+public:
+    P(){cout &lt;&lt; "Default P constructor" &lt;&lt; endl;}
+    P(const P& p) {cout &lt;&lt; "Copy constructor" &lt;&lt; endl;}
+    P & operator = (const P & p) { 
+        cout &lt;&lt; "Assignment operator" &lt;&lt; endl ; 
+        return *this;
+    }
+    void print(){ cout &lt;&lt; "print()" &lt;&lt; endl;}
+};
+int main(){
+    vector&lt;&lt;P> vp;
+    vp.resize(10); // resize the container. Default P constructor * 10.
+    P p1;
+    vp.push_back(p1); // Copy constructor * 5
+    vp.push_back(p1);
+    vp.push_back(p1);
+    vp.push_back(p1);
+    vp.push_back(p1);
+}
+                    </pre>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="reference">
+        <h3>References</h3>
+        <div class="featureList">
+            <ol>
+                <li><a href="https://stackoverflow.com/questions/2023977/difference-of-keywords-typename-and-class-in-templates" target="_blank">Difference of keywords typename and class in templates?</a></li>
+                <li><a href="https://www.geeksforgeeks.org/the-c-standard-template-library-stl/" target="_blank">The C++ Standard Template Library (STL)</a></li>
+            </ol>
+        </div>
+        
+    </div>
 </li>
 </ol>
 </div>
