@@ -37,13 +37,14 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>C#&nbsp;-&nbsp;Generics</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-03-04</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-03-04</span></p>
+<p class="date"><span class="created-date">Created:2019-03-04</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-03-26</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
 <li><a href="#example">Rules & Examples</a></li>
-<li><a href="#type-constraints">Type Constraints</a></li>
+<li><a href="#type-constraints">Type Constraints [todo]</a></li>
 <li><a href="#behavior">Runtime Behavior</a></li>
+<li><a href="#collection">Collections</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -58,10 +59,10 @@ SyntaxHighlighter.all()
     <h4>Consideration</h4>
     <p>When learning generics, some common features should be evaluated.</p>
     <ol>
-        <li>Generics inheritance: Is G&lt;Child> is a subclass of G&lt;Parent>? No</li>
-        <li>Generics type parameter restriction, e.g. the generics type must implement a specific interface.</li>
+        <li>Generics inheritance: Is G&lt;Child> is a subclass of G&lt;Parent>? No. Because of the implementation of generics, they are two different classes.</li>
+        <li>Generics type parameter restriction, e.g. the generics type must implement a specific interface. <span style="color:red">C++ does not support</span></li>
         <li>Generics nested type: Outter&lt;T> and Inner...</li>
-        <li></li>
+
     </ol>
     <h4>Naming</h4>
     <p>Generics type start with prefix T, e.g. public class SpecialCollection&lt;TItem></p>
@@ -173,7 +174,7 @@ public class G&lt;T>{
                                 }
                             }
                     </pre>
-                    <p>Generic Interface</p>
+                    <p>Generic Interface: A generic class can implement a generic interface. A non-generic class can only implement the generic interface that has been given a type argument.</p>
                     <pre class="brush:c++">
 public interface IGenerics&lt;T>{
 	T add(T t1, T t2);
@@ -211,11 +212,67 @@ public class CGenerics&lt;T>: IGenerics&lt;T>{ // class declare T, interface ref
     </div>
 </li>
 <li>
+    <div class="content" id="behavior">
+        <h3>Runtime Behavior</h3>
+        <h4>Type parameter is value type</h4>
+        <p>Supplied type parameter is a value type, then it behaves like C++. Specialized generic types are created one time for each unique 
+            value type that is used as a parameter. <span style="color:red">The reason is the sizes of values of different value types are
+                 different.</span></p>
+        <h4>Type parameter is reference type</h4>
+        <p>Supplied type parameter is a reference type, then it behaves like Java.  The first time a generic type is
+             constructed with any reference type, the runtime creates a specialized generic type with object references substituted for 
+             the parameters in the MSIL. Then, every time that a constructed type is instantiated with a reference type as its parameter,
+              regardless of what type it is, the runtime reuses the previously created specialized version of the generic type. 
+              <span style="color:red">This is possible because all references are the same size.</span></p>
+    </div>
+</li>
+<li>
+    <div class="content" id="collection">
+        <h3>Collections</h3>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>List</h4>
+                    <pre class="brush:cpp">
+                            using System;
+                            using System.Collections.Generic;
+                            namespace collection_test
+                            {
+                                class Program
+                                {
+                                    static void Main(string[] args)
+                                    {
+                                        // string is reference type
+                                        List&lt;string> salmons = new List&lt;string>();
+                                        salmons.Add("chinook");
+                                        salmons.Add("coho");
+                                        salmons.Add("pink");
+                                        salmons.Add("sockeye");
+                                        // Iterate through the list.  
+                                        foreach (string salmon in salmons)
+                                        {
+                                            Console.WriteLine(salmon);
+                                        }
+                                        for (int index = 0; index &lt; salmons.Count; index++)
+                                        {
+                                            Console.WriteLine(salmons[index]);
+                                        }
+                                    }
+                                }
+                            }
+                    </pre>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
 <div class="content" id="reference">
 <h3>References</h3>
 <div class="featureList">
     <ol>
         <li><a href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/generics/generics-in-the-run-time" target="_blank">Generics in Runtime</a></li>
+        <li><a href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/collections" target="_blank">Collection (C#)</a></li>
     </ol>
 </div>
 </div>
