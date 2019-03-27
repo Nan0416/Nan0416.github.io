@@ -63,7 +63,7 @@ SyntaxHighlighter.all()
     <ol>
         <li>ephemeral node: A client creates an ephmeral znode, this znode will be delete after the client safely ends the connection to the zookeeper server. 
             If the client died without safely terminating the connection, the znode will be deleted later after the server detected this disconnection <span style="color:red">???? how long ???</span><br>
-            Can a empheral node have children node? 
+            Can a empheral node have children? <span style="color:red">No</span>
         </li>
     </ol>
 </div>
@@ -99,6 +99,36 @@ SyntaxHighlighter.all()
 
 <h4>zkCli.sh</h4>
 </div>
+</li>
+<li>
+    <div class="content" id="conservator">
+        <h3>Conservator</h3>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <pre class="brush:cpp">
+                        unique_ptr&lt;ConservatorFramework> framework; // global
+                        void watch_leader(zhandle_t *zh, int type,
+                             int state, const char *path,void *watcherCtx) {
+                            leader_election(); // re-run leader election
+                        }
+                        void leader_election(){
+                            framework->create()->forPath("/master", (char *) "master-nodes");
+                            string nodename = "/master/leader";
+                            if(framework->create()->withFlags(ZOO_EPHEMERAL)->forPath(nodename, nodename.c_str()) == ZOK){
+                              is_leader = 1;
+                              start_leader();
+                            }else{
+                              is_leader = 0; // watch leader
+                              framework->checkExists()->withWatcher(watch_leader, &framework)->forPath("/master/leader");
+                              return;
+                            }
+                        }
+                    </pre>
+                </li>
+            </ol>
+        </div>
+    </div>
 </li>
 <li>
 <div class="content" id="reference">
