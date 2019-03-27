@@ -1,0 +1,117 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>Tools&nbsp;Zookeeper</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-03-27">
+<meta name="keywords" content="zookeeper">
+<meta name="keywords" content="hadoop">
+<meta name="keywords" content="tools">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushPython.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>Tools&nbsp;-&nbsp;Zookeeper</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-03-27</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-03-27</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<Li><a href="#intro">Conservator (C++ wrapper)</a></Li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+<p>Zookeeper provides primitive to implement other distributed higher level functions, such as leader election, syncrhonization service, message queue</p>
+<p>Zookeeper is implemented as a 1). high availiable 2). atomic broadcast in total order "file system"/key-value store.</p>
+<p>1). high availiablity: replication<br>
+    2). atomic broadcast:
+</p>
+<h4>Types of znodes</h4>
+<p>Different from FS, a znode can be both a file and a directory, meaning it can have value as well as children.</p>
+<div class="featureList">
+    <ol>
+        <li>ephemeral node: A client creates an ephmeral znode, this znode will be delete after the client safely ends the connection to the zookeeper server. 
+            If the client died without safely terminating the connection, the znode will be deleted later after the server detected this disconnection <span style="color:red">???? how long ???</span><br>
+            Can a empheral node have children node? 
+        </li>
+    </ol>
+</div>
+<h4>Watch</h4>
+<h4>Installation</h4>
+<p>Instead of using apt install, it can be directly downloaded the package from apache website, which allows to run zookeeper without root privilege.</p>
+<h4>Configuration of cluster mode</h4>
+<p>Directory structure</p>
+<div class="asm" style="width: 700px">
+<pre>
+    /
+        conf/     # configuration files zoo.cfg
+        bin/      # script to run zookeeper server and client.
+</pre>
+</div>
+<p>Example of zoo.cfg</p>
+<div class="asm" style="width: 700px">
+<pre>
+        tickTime=2000                   # the basic time unit in milliseconds used by 
+                                        # ZooKeeper. It is used to do heartbeats (2s) and the 
+                                        # minimum session timeout will be twice the tickTime.
+        dataDir=/tmp/zookeeper/data     # the directory used to store zookeeper file (snapshot of in-memory data) 
+                                        # <span style="color:red">create a file "myid" in this directory. the value of myid is </span> 
+                                        # <span style="color:red">a number that indicates the server's id</span>
+        clientPort=2181                 # client port
+        initLimit=5                     # a timeout value 5 * base_time = 5 * 2000 = 10000ms = 10s. If a zookeeper server (follower) cannot connect to the zookeeper leader within the timeout when the cluster starts running, this server is considered to be disconnected.
+        syncLimit=2                     # after the cluster is running, the timeout value between follower and leader.
+        server.1=zookeeper-1:2888:3888         # server.id 1 is the id, which has hostname zookeeper-1.
+        server.2=zookeeper-2:2888:3888
+        server.3=zookeeper-3:2888:3888
+</pre>
+</div>
+
+<h4>zkCli.sh</h4>
+</div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li><a href="http://zookeeper.apache.org/doc/current/zookeeperAdmin.html#sc_maintenance" target="_blank">Zookeeper Configuration Parameters</a></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>
