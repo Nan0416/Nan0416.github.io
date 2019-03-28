@@ -1,0 +1,145 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>PostgreSQL&nbsp;Admin</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-03-28">
+<meta name="keywords" content="postgresql">
+<meta name="keywords" content="admin">
+<meta name="keywords" content="">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushPython.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>PostgreSQL&nbsp;-&nbsp;Admin</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-03-02</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-03-02</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+<div class="featureList">
+    <ol>
+        <li>Role vs User<br>
+            https://stackoverflow.com/questions/22501705/how-to-check-role-of-current-postgresql-user-from-qt-application
+        <br></li>
+        <li>Authentication and pg_hba.conf</li>
+        <li>pgAdmin</li>
+    </ol>
+</div>
+</div>
+</li>
+<li>
+    <div class="content" id="role">
+        <h3>Role Vs User</h3>
+        <p>PostgreSQL database uses Role to manage users. A role is like a Linux user, which has specific privileges. When installing PostgreSQL, a OS user named postgres and a DB role named postgres will be created.
+        When you login Postgre, postgre will use the role has the same name as the current OS user by default. So first switch to OS user postgres, "sudo -i -u postgres", and then login, "psql".
+        </p>
+        <h4>Postgres Password</h4>
+        <p>PostgreSQL sets password for neither OS postgres nor DB postgres. The administor needs to setup them<br>
+        $sudo passwd postgres<br>
+        postgres=> ALTER USER postgres WITH PASSWORD 'new_password';
+        </p>
+        <h4>Create a role</h4>
+        <p>
+            CREATE ROLE name LOGIN; # create a role that can login. same as CREATE USER name;
+        </p>
+    </div>
+</li>
+<li>
+    <div class="content" id="authentication">
+        <h3>Login Authentication</h3>
+        <p>PostgreSQL login authentication is controlled by /etc/postgresql/10/main/pg_hba.conf. </p>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>Example</h4>
+                    <div class="asm">
+                    <pre>
+                    #type   database-name   role-name   source-address     authentication-method
+                    local   all             all                                     peer      
+                    host    all             all             127.0.0.1/32            md5
+                            # IPv6 local connections:
+                            host    all             all             ::1/128                 md5
+                            # Allow replication connections from localhost, by a user with the
+                            # replication privilege.
+                            local   replication     all                                     peer
+                            host    replication     all             127.0.0.1/32            md5
+                            host    replication     all             ::1/128                 md5
+                            host    gps-tracker     postgres        0.0.0.0/0               md5
+                    </pre>
+                    </div>
+                </li>
+                <li>
+                    PostgreSQL distinguishes the behavior of local login (local, unix domain socket) and remote login (host, socket).<br>
+                    local login does not need a source address
+                </li>
+                <li>0.0.0.0/0 matches all</li>
+                <li>authentication method<br>
+                md5: using role password to login <br>
+                peer: the OS username same as Role name. #<span style="color:red">this is why another OS user (nan) cannot login  
+                    DB role postgres. After change this field to md5, nan can login postgres. ** But only one auth method can be used for a rule ** </span>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="pgadmin">
+        <h3>pgAdmin</h3>
+        <p>pgAdmin is a GUI for managing PostgreSQL. In server mode, it is run a python2 flask web server on the backend. The "backend" can 
+            run everywhere, such as on the same machine of postgresql, same machine of the frontend browser, or an independent machine.</p>
+        <p>Download and install through <a href="https://www.pgadmin.org/download/pgadmin-4-python-wheel/" target="_blank">Python Wheel</a><br>
+            Before connecting to a PostgreSQL server, make sure the server pg_hba.conf is configured to be allowed to connect from the backend machine.</p>
+        <p>$psql -U </p>
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li><a href="https://www.postgresql.org/docs/10/user-manag.html" target="_blank">Chapter 21. Database Roles</a></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>

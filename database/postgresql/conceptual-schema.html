@@ -139,6 +139,35 @@ SyntaxHighlighter.all()
 <li>
     <div class="content" id="conceptual">
         <h3>Conceptual Schema Design</h3>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>Entity to Relation</h4>
+                    <p><img src="./img/entity-table.png" width="400" height="500"></p>
+                </li>
+                <li>
+                    <h4>Relationship with key constraints (at most once)</h4>
+                    <p>1). Because a entity join a relationship at most once, we can setup the key of the relationship's table as the foreign key to the entity's primary key.</p>
+                    <p>
+                        <img src="./img/key-constraint.png" width="400" height="300">
+                    </p>
+                    <p>2). Merge the relationship into the entity.</p>
+                    <p>
+                        <img src="./img/key-constraint-2.png" width="400" height="100">
+                    </p> 
+                </li>
+                <li>
+                    <h4>Relationship with participation constraints and key constraints(exactly once)</h4>
+                    <p>Merge the relationship into that entity and set foreight key not null.</p>
+                </li>
+                <li><h4>Relationship with participation constraints (at least once)</h4>
+                    <p>Table assertion</p>
+                </li>
+                <li><h4>Weak Entity</h4>
+                    <p><img src="./img/weak-entity.png" width="400" height="370"></p>
+                </li>
+            </ol>
+        </div>
     </div>
 </li>
 <li>
@@ -146,7 +175,7 @@ SyntaxHighlighter.all()
 <h3>References</h3>
 <div class="featureList">
     <ol>
-        <li></li>
+        <li>Ramakrishnan - Database Management Systems 3rd Edition (chapter 3)</li>
     </ol>
 </div>
 </div>
