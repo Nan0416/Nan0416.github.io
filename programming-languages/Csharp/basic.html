@@ -38,13 +38,14 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>C#&nbsp;-&nbsp;Basic</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-09-28</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-23</span></p>
+<p class="date"><span class="created-date">Created:2018-09-28</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-03-28</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Types</a></li>
 <li><a href="#array">Array</a></li>
 <Li><a href="#expression">Expression</a></Li>
 <li><a href="#flowcontrol">Flow control</a></li>
+<li><a href="#cmd">Command Line</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -195,6 +196,56 @@ class, struct, interface, delegate support generics.
                             }
                         }
                     </pre>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="cmd">
+        <h3>Command Line</h3>
+        <div class="featureList">
+            <ol>
+                <li><h4>dotnet</h4>
+                    dotnet is command line to for launching applications, initializing projects, installing dependencies<br>
+                    dotnet cmd-name [cmd-options] [arguments] 
+                </li>
+                <li><h4>dotnet new template-name [template-options] [new-options]</h4>
+                <pre class="brush:bash">
+                    # dotnet create projects based on some well-defined template, such as console application template, asp.net template
+                    dotnet new console --name test-project --output dir # create a project based on console template, which have name "test-project" and created in dir.
+                </pre>
+                </li>
+                <li><h4>dotnet run [run-options] [program-inputs]</h4>
+                    <p>run-options goes before program-inputs</p>
+                    <pre class="brush:bash">
+                        # run-options:  --project project-location, default is current
+                        #               --verbose show building message
+                        #               --launch-profile, a profile is launchSetting.json used to configure ASP.NET apps. Console application does not have it by default.
+                        #array                              by convention, console app is configured by appsettings.json
+                        dotnet run
+                    </pre>
+                </li>
+                <li><h4>dependencies</h4>
+                    <p>Microsoft using <a href="https://www.nuget.org" target="_blank">NuGet</a> (same as the tool of Node.js npm) to manage packages. Go to https://www.nuget.org and find a right 
+                        package, its webpage will also give a command to download this package.
+                    </p>
+                    <pre class="brush:bash">
+                        dotnet add package Newtonsoft.Json --version 12.0.1
+                    </pre>
+                    <h4>NuGet</h4>
+                    <p>NuGet's default configuration file is in ~/.nuget/NuGet/NuGet.Config, which specify the where to find desired packages. e.g. Newtonsoft.Json.
+                    Once the package is found, it will be download into ~/.nuget/packages.
+                    </p>
+                    <p>When using "dotnet add package", it will create a entry <br>
+                        <span style="color:red"> &lt;Include="Newtonsoft.Json" Version="12.0.1" /></span> <br>
+                        inside the .csproj, which indicates the project depends on Newtonsoft.Json version 12.0.1. 
+                    Moreover, "dotnet add" will also automatically download this package to ~/.nuget/packages. And when running this app, the dotnet runtime 
+                    will try to find the package under the ~/.nuget/package by default.
+                    </p>
+                    <h4>dotnet restore</h4>
+                    <p>dotnet restore will download the package that specified in .csproj</p>
+
                 </li>
             </ol>
         </div>
