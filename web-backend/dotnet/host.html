@@ -149,13 +149,16 @@ SyntaxHighlighter.all()
                     <h4>Inside .CreateDefaultBuilder(args);</h4>
                     <p>
                         1). .UseKestrel(); // use Kestrel as the web server<br>
-                        2). .UseIISIntegration(); // enable IIS integration<span style="color:red">???</span><br>
+                        <span style="text-decoration: line-through">2). .UseIISIntegration(); // enable IIS integration</span><br>
                         3). .UseContentRoot(Directory.GetCurrentDirectory()); // content root is the directory that contains the application content files, .GetCurrentDirectory() is the current working directory.<br>
                         4). .AddCommandLine(); // activate command-line provider <a href="https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-2.2#arguments" target="_blank"> format </a><br>
                         5). load IConfiguration from 'appsettings.json' and 'appsettings.[EnvironmentName].json';<br>
                         6). .AddEnvironmentVariables(prefix: "ASPNETCORE_"); // activate environment variables with prefix and without prefix.<br>
                             .AddEnvironmentVariables(); // <span style="color:red">environment variable is the last one to configure since has highest priority.</span>
                     </p>
+                    <h4>Environment
+                    <p>ASP.NET core supports three meaningful environment: Development, Staging, and Production, which is usually specified as an environment variable in the launch profile.</p>
+                    <p>Host use this value to configure its logging behavior.</p>
                 </li>
                 <li>
                     <h4>Configure Kestrel</h4>
@@ -205,6 +208,7 @@ SyntaxHighlighter.all()
     <div class="content" id="environment">
         <h3>Environment</h3>
         <p>ASP.NET core supports three meaningful environment: Development, Staging, and Production</p>
+        
     </div>
 </li>
 <li>
