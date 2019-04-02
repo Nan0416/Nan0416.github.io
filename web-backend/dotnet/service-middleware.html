@@ -2,12 +2,12 @@
 <!-- NewPage -->
 <html lang="en">
 <head>
-<title>&nbsp;</title>
+<title>ASP.NET Core&nbsp;-&nbsp;Service & Middleware</title>
 <meta charset="utf-8">
-<meta name="date" content="2019-03-02">
-<meta name="keywords" content="">
-<meta name="keywords" content="">
-<meta name="keywords" content="">
+<meta name="date" content="2019-04-01">
+<meta name="keywords" content="asp.net">
+<meta name="keywords" content="service">
+<meta name="keywords" content="middleware">
 <link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
 <script type="text/javascript" src="../../script.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
@@ -35,12 +35,14 @@ SyntaxHighlighter.all()
 </script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<strong>&nbsp;-&nbsp;</strong>
+<strong>ASP.NET Core&nbsp;-&nbsp;Service & Middleware</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-03-02</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-03-02</span></p>
+<p class="date"><span class="created-date">Created:2019-04-01</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-04-01</span></p>
 <div class="catalog">
 <ul class="catalogItems">
-<li><a href="#intro">Introduction</a></li>
+<li><a href="#service">Services & Dependency Injection</a></li>
+
+<li><a href="#middleware">Middleware</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -48,8 +50,24 @@ SyntaxHighlighter.all()
 <div class="contentContainer">
 <ol>
 <li>
-<div class="content" id="intro">
-<h3>Introduction</h3>
+<div class="content" id="service">
+<h3>Services & Dependency Injection</h3>
+<p>Logger, Configuration are services. A class can use these services by obtaining their instances, and instances are obtained by service injection.</p>
+<p>ASP.NET Core provides IServiceProvider, registering Service in "Startup.ConfigureServices" method. Service instances are initialized, given to class constructor, and destoried by ASP.NET core.</p>
+<h4>Dependency chain</h4>
+<p>A service can use another service, which results in a dependency chain.</p>
+<h4>Service Abstraction</h4>
+<p>A service usually abstract as an interface, and interface name is given to class's constructors.<br>
+Interfaces are implemented by concrete classes. These concrete classes are registered to the service injection.
+</p>
+<h4>Parameter's of A Service's constructor</h4>
+<p>1. via configuration, 2. via explicity initialization.</p>
+<h4>framework-provided service</h4>
+<p>
+
+</p>
+<h4>Service lifetime</h4>
+<p>Longer lifetime services cannot use shorter lifetime services.</p>
 </div>
 </li>
 <li>

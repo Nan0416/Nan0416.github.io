@@ -38,7 +38,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Linux&nbsp;-&nbsp;Commands</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-03-13</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-03-13</span></p>
+<p class="date"><span class="created-date">Created:2019-03-13</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-04-01</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -215,11 +215,15 @@ SyntaxHighlighter.all()
                     <span style="color:red">Err:8 http://nginx.org/packages/ubuntu bionic InRelease<br>
                         The following signatures couldn't be verified because the public key is not available: NO_PUBKEY ABF5BD827BD9BF62<br>
                         Reading package lists... Done
-                    </span>
-                    Becasue everyone can sign a repo said it's offical ubuntu repo. We need to verify the public key is from the real ubuntu offical.<br>
+                    </span><br>
+                    In addition, becasue everyone can sign a repo said it's offical ubuntu repo. We need to verify the public key is from the real ubuntu offical.<br>
                     To do that, ubuntu offical will publish a fingerprint of the public key on its website. We can compute the public key's fingerprint and compare with the one shown on the offical website.
                 </li>
                 <li>apt update: update repo index</li>
+                <li>apt upgrade: upgrade software</li>
+                <li>apt clean: all installed packages will have their .deb package stored in /var/cache/apt/archives. This command will deleted the download .deb packages.</li>
+                <li>autoremove: remove installed packages that were automatically installed to satisfy dependencies for some package and that are no longer needed.</li>
+                <li>apt-get --purge: remove a packet along with its configuration file. —purge</li>
             </ol>
         </div>
     </div>

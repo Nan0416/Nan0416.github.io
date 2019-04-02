@@ -15,7 +15,7 @@
 <script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
-<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushXml.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
 <link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
 <link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
@@ -209,6 +209,28 @@ class, struct, interface, delegate support generics.
                 <li><h4>dotnet</h4>
                     dotnet is command line to for launching applications, initializing projects, installing dependencies<br>
                     dotnet cmd-name [cmd-options] [arguments] 
+                </li>
+                <li><h4>.csproj</h4>
+                    .csproj is the file defined project, dependecies and so on. It is like Node.js "package.json"
+                    
+                    <pre class="brush:xml">
+&lt;Project Sdk="Microsoft.NET.Sdk.Web">
+    &lt;PropertyGroup>
+        &lt;TargetFramework>netcoreapp2.2&lt;/TargetFramework>
+        &lt;AspNetCoreHostingModel>InProcess&lt;/AspNetCoreHostingModel>&lt;!--App configuration properties, see ASP.NET framework-->
+        &lt;RootNamespace>dotnet_web_api&lt;/RootNamespace>
+    &lt;/PropertyGroup>
+                          
+    &lt;ItemGroup>
+        &lt;PackageReference Include="Microsoft.AspNetCore.App" />
+        &lt;PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
+        &lt;PackageReference Include="Npgsql" Version="4.0.5" />
+    &lt;ItemGroup>
+                          
+&lt;/Project>
+                          
+                    </pre>
+                   <p><span style="color:red">.sln is Visual Studio IDE speicified file.</span></p>
                 </li>
                 <li><h4>dotnet new template-name [template-options] [new-options]</h4>
                 <pre class="brush:bash">
