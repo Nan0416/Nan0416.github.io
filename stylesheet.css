@@ -599,3 +599,11 @@ div.asm{
     width: 90%;
     margin: 0 auto 0 auto;
 }
+p.reference-box{
+    background-color: tan;
+    padding: 15px;
+    font-weight: 500;
+    font-size: 12px;
+    border: 1px solid gray;
+    border-radius: 4px;
+}

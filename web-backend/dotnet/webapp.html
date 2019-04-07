@@ -1,0 +1,254 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>ASP.NET Core&nbsp;Web App</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-04-02">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushPython.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushXml.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>ASP.NET Core&nbsp;-&nbsp;Web App</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-04-06</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-04-06</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#routing">Routing</a></li>
+<li><a href="#controller">Controller</a></li>
+<li><a href="#razor">Razor View Engine</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+<p>ASP.NET core's web app use MVC design pattern. MVC is implemented as a middleware in the ASP.NET Core framework. (We can still use asp.net core without mvc, mvc is only a middleware).</p>
+<p>1). How does Mvc get controller class?<br>
+Mvc find controllers based on reflection that a class is a controller if it is derived from Controller class. Mvc specifies "soft" conventions: Controllers/ folder
+</p>
+<p>2). How does a controller find a view<br>
+</p>
+</div>
+</li>
+<li>
+    <div class="content" id="routing">
+        <h3>Routing</h3>
+        <p>Web App use conventional routing mechanism. Based on this routing, mvc mapps each request to a controller's action with optional parameter. <br>
+            A controller is class derived from <span style="color:green">Microsoft.AspNetCore.Mvc.Controller</span>; An action is a public method of this controller.</p>
+        <div class="featureList">
+            <ol>
+                <li><h4>Default Routing</h4>
+                <pre class="brush:cpp">
+                    // using mvc service 
+                    services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+                    // enable mvc with default route
+                    app.UseMvcWithDefaultRoute();
+                </pre>
+                <p>Default routing defines "{controller=Home}/{action=Index}/{id?}". Mvc use this controller and action's values to find the right method. 
+                    How does Mvc resolve this url is specified by the general conventional routing mechanism.</p>
+                <p style="font-size:12px;color:red">The controller and action are like the directive (keyword) defined by the Mvc middleware.</p>
+                <h4>Matched Url</h4>
+                <p>1). http://domain/HelloWorld/Index/12, http://domain/helloworld/index, http://domain/HElLoWoRld/ invoke the HelloWorldController.Index<br>
+                2). http://domain/HelloWorld/Ask invokes the HelloWorldController.Ask
+                </p>
+                <p>Action (method) name should be captialized. This convention is defined by the Mvc middlware.</p>
+                </li>
+                <li><h4>Customized Routing</h4>
+                <pre class="brush:cpp">
+                    
+                        app.UseMvc(routes =>
+                        {
+                            // routes is a IRouteBuilder instance.
+                           routes.MapRoute("blog", "blog-new/{*article}",
+                                    defaults: new { controller = "Blog", action = "Article" });
+                           routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                        });
+                        // .UseMvc will append its handler to this route. And Mvc's handler always needs controller and action parameter with values.
+                        // So the first route gives controller and action's fixed values. In this condition, url /blog-new/my-article always mapps to BlogController.Article
+                </pre>
+                <h4>Matched Url</h4>
+                <p>1). http://domain/blog-new/my-article matches Blog.Article via the first route.<br>
+                    2). http://domain/blog/article matches Blog.Article via the second route.
+                </p>
+                </li>
+            </ol>
+        </div>
+        <h4>Attribute routing</h4>
+        <p>Conventional routing has a few naming restriction due to the "convention". Moreover, Mvc's conventional routing matchs all Http Verbs.</p>
+    </div>
+</li>
+<li>
+    <div class="content" id="controller">
+        <h3>Controller</h3>
+        <p>In conventional routing, a controller's method is invoked by a route, which corresponding to a url.<br>
+        The Web Api Mvc controller should be derived from Controller class. 
+        </p>
+        <div class="featureList">
+            <ol>
+                <li><h4>Basic example</h4>
+                <pre class="brush:cpp">
+                            using Microsoft.AspNetCore.Mvc;
+                            public class BlogController : Controller
+                            {
+                                public string Article()
+                                {
+                                    return "BlogController.Article";
+                                }
+                                public string Index(){
+                                    return "BlogController.Index";
+                                }
+                               
+                            }
+                </pre>
+                </li>
+                <li><h4>Dependency injection via Constructor</h4>
+                <pre class="brush:cpp">
+                        using Microsoft.AspNetCore.Mvc;
+                        using Microsoft.Extensions.Configuration;
+                        public class BlogController : Controller
+                        {
+                            private readonly IConfiguration _configuration;
+                            public BlogController(IConfiguration configuration){
+                                _configuration = configuration;
+                            }
+                            public string Article()
+                            {
+                                return "BlogController.Article..." + _configuration["article"];
+                            }
+                            public string Index(){
+                                return "BlogController.Index";
+                            }
+                        }
+                </pre>
+                </li>
+            </ol>
+        </div>
+        <h4>Model Binding</h4>
+        <p class="reference-box" style="width:900px;">
+            When MVC receives an HTTP request, it routes it to a specific action method of a controller. It determines which 
+            action method to run based on what is in the route data, then it binds values from the HTTP request <span style="color:green">[including url and http request header, http request body]</span> to that action
+             method's parameters. <a href="https://docs.microsoft.com/en-us/aspnet/core/mvc/models/model-binding?view=aspnetcore-2.2#how-model-binding-works" target="_blank">Reference</a>
+             <br>
+             MVC will try to bind request data to the action parameters by name <span style="color:red">url template and action parameter should keep the same.</span>
+        </p>
+        <p>Binding sources includes: http body form, routing, url-query, header, body, services.<br>
+        http body form, routing, url-query: are the default involved and first has highest priority.<br>
+        header, body, services need explicity included.</p>
+        <div class="featureList">
+            <ol>
+                <li><h4>Get parameters from form and routing</h4>
+                <p>Form has higher priority than route</p>
+                <pre class="brush:cpp">
+                        // .UseMvcWithDefaultRoute()
+                        public class BlogController : Controller{
+                            // id from route, name from POST form
+                            public string Article(string name, int id)
+                            {
+                                return "BlogController.Article: (" + name + ", " + id + ")";
+                            }
+                        }
+                </pre>
+                </li>
+                <li><h4>Get parameters from dedicated source.</h4>
+                <pre class="brush:cpp">
+                        public string Article(string name, [FromRoute] int id, [FromServices] IConfiguration config)
+                        {
+                            return "BlogController.Article: (" + name + ", " + id + "). " + config["article"];
+                        }
+                </pre>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="razor">
+        <h3>Razor View Engine</h3>
+        <p>Razor view engine allows to evaluate C# statement with prefix @</p>
+        <div class="featureList">
+            <ol>
+                <li><h4>Basic Example</h4>
+                    <p>View method is inherited from Controller. It can has a string path to the target view. Otherwise, following a "hard" convention "/Views/[Controller]/[Action].cshtml" without requiring the path.</p>
+                    <pre class="brush:cpp">
+                            public IActionResult Index(){
+                                return View("/Views/blog.cshtml");
+                                //return View();
+                            }
+                    </pre>
+                </li>
+                <li><h4>Passing data from controller to view</h4>
+                <p>Controller class has a dictionary (hash table) "ViewData". We set data into this member. This member then will be given to Razor engine when invoking View().</p>
+                <pre class="brush:cpp">
+                        // controller
+                        public IActionResult Index(){
+                            ViewData["repeat"] = 5;
+                            ViewData["data"] = "qinnan";
+                            return View();
+                        }
+                </pre>
+                <pre class="brush:xml">
+                    &lt;!-- View -->
+                    &lt;ul>
+                        @for (int i = 0; i &lt; (int)ViewData["repeat"]; i++)
+                        {
+                            &lt;li>@ViewData["data"]&lt;/li>
+                        }
+                    &lt;/ul>
+                </pre>
+                <h4>Parallelism?</h4>
+
+                </li>
+            </ol>
+        </div>
+        <h4 style="color:red">Razor Page</h4>
+        <p>Razor page is a new design pattern that does not need a controller. View and Model directly communicate.</p>
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li><a href="https://docs.microsoft.com/en-us/aspnet/core/mvc/overview?view=aspnetcore-2.2" target="_blank">ASP.NET Core Web App</a></li>
+        <li><a href="https://docs.microsoft.com/en-us/aspnet/core/mvc/views/razor?view=aspnetcore-2.2" target="_blank">Razor Syntax</a></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>
