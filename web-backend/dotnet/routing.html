@@ -1,0 +1,160 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>ASP.NET&nbsp;Routing</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-04-02">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushPython.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>ASP.NET&nbsp;-&nbsp;Routing</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-04-02</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-04-02</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#convention">Conventional Routing</a></li>
+<li><a href="#attribute">Attribute Routing</a></li>
+<li><a href="#endpoint">Endpoint Routing (.UseMvc() 2.2)</a></li>
+<li><a href="#usemvc">.UseMvc</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+<p>Routing essentially is a middleware that maps urls to endpoints.</p>
+<p>There are two routing mechainisms existed, attribute routing (api apps) and conventional routing (web apps)</p>
+</div>
+</li>
+<li>
+<div class="conventional">
+<h3>Conventional Routing</h3>
+<div class="featureList">
+    <ol>
+        <li><h4>Simple Example</h4>
+        <pre class="brush:cpp">
+            // add routing services in Startup.ConfigureServices
+            services.AddRouting();
+            // add routes in Startup.Configure
+            IRouteBuilder routeBuilder = new RouteBuilder(app);
+            
+            routeBuilder.MapGet("hello/{name}", context =>
+            {
+                string name = (string)context.GetRouteValue("name");
+                return context.Response.WriteAsync($"Hi, {name}!");
+            });
+            IRouter routes = routeBuilder.Build();
+            app.UseRouter(routes);
+        </pre>
+        <p>A route can match a request to a delegate as the above example.
+            <pre class="brush:cpp">
+                public static IRouteBuilder MapGet (this IRouteBuilder builder, string template, RequestDelegate handler);
+                public delegate Task RequestDelegate(HttpContext context);
+            </pre>
+            It can also match a request to a specific pipeline of middlewares. The two pipelines are built when launching this application.
+            <pre class="brush:cpp">
+                // public static IRouteBuilder MapMiddlewareGet (this IRouteBuilder builder, string template, Action&lt;IApplicationBuilder> action);
+                // public delegate void Action&lt;in T>(T obj);
+
+                IRouteBuilder routeBuilder = new RouteBuilder(app);
+                Action&lt;IApplicationBuilder> pipeline1 = (IApplicationBuilder app_) => {
+                    Console.WriteLine(">>>>>. 1");
+                    app_.Run(context => context.Response.WriteAsync("pipeline-1"));
+                };
+                Action&lt;IApplicationBuilder> pipeline2 = (IApplicationBuilder app_) => {
+                    Console.WriteLine(">>>> .2");
+                    app_.Run(context => context.Response.WriteAsync("pipeline-2"));
+                };
+
+                routeBuilder.MapMiddlewareGet("hello/pipeline-1", pipeline1);
+                routeBuilder.MapMiddlewareGet("hello/pipeline-2", pipeline2);
+                IRouter routes = routeBuilder.Build();
+                app.UseRouter(routes);
+            </pre>
+            <p style="color:red">Application (a pipeline) cannot be rebuilt at runtime. Instead, you can build multiple pipelines.</p>
+        </p>
+        </li>
+        
+        <li><h4>Route template (URL matching rules)</h4>
+        <p>URL matching is the process by which routing dispatches an incoming request to an endpoint (handler).</p>
+        <p>1). "hello/{name}" => hello/nan<br>
+            2). "hello/{name=nan}" => hello, hello/, hello/nan (name's default value is nan)<br>
+            3). "hello/my-name-is-{name}." => hello/my-name-is-nan. (name = nan) (it does not match hello/my-name-is-nan without period)<br>
+            4). "hello/{filename}.{ext?}" => hello/video.mp4, hello/video (Only . can precede an optional parameter. When the optional 
+            does not exist, the period must also not exist in order to match)</p>
+        <h4>Route reserved keyword</h4>
+        <h4>Route parameter constraints</h4>
+        <h4>Regular expression</h4>
+        </li>
+        <li><h4>Route internal redirect</h4>
+            <p>*** Route internal redirect is not http redirection ***</p>
+        </li>
+        <li><h4>.UseMvc()</h4>
+        <a href="https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/routing?view=aspnetcore-2.2">https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/routing?view=aspnetcore-2.2</a>
+        </li>
+    </ol>
+</div>
+</div>
+</li>
+<li>
+    <div class="content" id="attribute">
+        <h3>Attribute Routing</h3>
+        <p></p>
+    </div>
+</li>
+<li>
+    <div class="content" id="endpoint">
+        <h3>Endpoint routing</h3>
+        <p>*** For asp.net 2.2, we can only use this feature with .UseMvc <a href="https://devblogs.microsoft.com/aspnet/asp-net-core-2-2-0-preview1-endpoint-routing/">here</a>.</p>
+        <p></p>
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li><a href="https://docs.microsoft.com/en-us/aspnet/web-api/overview/web-api-routing-and-actions/" target="_blank">Web API Routing</a></li>
+        <li><a href="https://docs.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-2.2#route-template-reference" target="_blank">Route Template Reference</a></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>

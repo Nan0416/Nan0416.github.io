@@ -37,12 +37,14 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>C#&nbsp;-&nbsp;Generics</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-03-04</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-03-26</span></p>
+<p class="date"><span class="created-date">Created:2019-03-04</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-04-04</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
 <li><a href="#example">Rules & Examples</a></li>
 <li><a href="#type-constraints">Type Constraints [todo]</a></li>
+<li><a href="#in-out">In/Out</a></li>
+<li><a href="#common">Commonly used generics in ASP.NET</a></li>
 <li><a href="#behavior">Runtime Behavior</a></li>
 <li><a href="#collection">Collections</a></li>
 <li><a href="#reference">References</a></li>
@@ -209,6 +211,29 @@ public class CGenerics&lt;T>: IGenerics&lt;T>{ // class declare T, interface ref
 
             </ol>
         </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="common">
+        <h3>Commonly used generics in ASP.NET</h3>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <p>A function has the generic type as input</p>
+                    <pre class="brush:cpp">
+                        public delegate void Action&lt;in T>(T obj);
+                        // usage: extension method of to define a middlware with IApplicationBuilder as input
+                        public static IRouteBuilder MapMiddlewareGet (this IRouteBuilder builder, string template, Action&lt;IApplicationBuilder> action);
+
+                    </pre>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="in-out">
+        <h3>In / Out</h3>
     </div>
 </li>
 <li>
