@@ -45,6 +45,7 @@ SyntaxHighlighter.all()
 <li><a href="#routing">Routing</a></li>
 <li><a href="#controller">Controller</a></li>
 <li><a href="#razor">Razor View Engine</a></li>
+<li><a href="#static-file">Static files [todo]</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -54,11 +55,15 @@ SyntaxHighlighter.all()
 <li>
 <div class="content" id="intro">
 <h3>Introduction</h3>
-<p>ASP.NET core's web app use MVC design pattern. MVC is implemented as a middleware in the ASP.NET Core framework. (We can still use asp.net core without mvc, mvc is only a middleware).</p>
+<p>ASP.NET core's web app use MVC design pattern. <span style="color:red">MVC is implemented as a middleware in the ASP.NET Core framework. (We can still use asp.net core without mvc, mvc is only a middleware).</span></p>
 <p>1). How does Mvc get controller class?<br>
 Mvc find controllers based on reflection that a class is a controller if it is derived from Controller class. Mvc specifies "soft" conventions: Controllers/ folder
 </p>
 <p>2). How does a controller find a view<br>
+    Give string path to the "View" function, or following a "hard" convention.
+</p>
+<p>3). Razor Page<br>
+Razor Page is not razor engine. Razor page is a new design pattern implementation, where models directly communicate with views and return views.
 </p>
 </div>
 </li>

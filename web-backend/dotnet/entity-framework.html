@@ -1,0 +1,183 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>ASP.NET Core&nbsp;Entity Framework</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-04-07">
+<meta name="keywords" content="asp.net core">
+<meta name="keywords" content="entity framework">
+<meta name="keywords" content="database">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushPython.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>ASP.NET Core&nbsp;-&nbsp;Entity Framework</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-04-07</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-04-07</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#standalone">Run with .NET Core</a></li>
+<li><a href="#aspnet">Run with ASP.NET Core as a service</a></li>
+<li><a href="#model">Create Models</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+<p>Entity Framework is a data access technology, mainly about accessing data from different database with C# language. 
+    (Express's Mongoose). There are two version of Entity Framework, EF 6 and EF Core. EF Core works with .NET Core 
+    and .NET Framework. So EF Core is platform and talked in this note.</p>
+<div class="featureList">
+    <h4>Terminology</h4>
+    <ol>
+        <li>Model: A class defines the mapping from C# (.NET Core) to a database entity (table schema).</li>
+        <li>Context: A class that represents a database that contains multiple tables (models). An instance of a context is also a session with the database.</li>
+        <li>Database provider: the actual .NET library (plug-in) allows .NET to communicate with a specific database engine. e.g. Npgsql.EntityFrameworkCore.PostgreSQL</li>
+    </ol>
+</div>
+<div class="featureList">
+    <h4>EF tool</h4>
+    <p>EF tool is one of the dotnet command that faciliates database tasks. Install the tools dependency
+    <pre class="brush:bash">
+        dotnet add package Microsoft.EntityFrameworkCore.Design
+        dotnet ef -h # check help
+    </pre>
+    Usage of the too including initialize database based on the defined model.
+    </p>
+</div>
+</div>
+</li>
+<li>
+    <div class="content" id="standalone">
+        <h3>Run with .NET Core</h3>
+        <p>Run EF Core + SQLite with .NET Core</p>
+        <div class="featureList">
+            <ol>
+                <li>Install dependency
+                    <pre class="brush:bash">
+                        dotnet add package Microsoft.EntityFrameworkCore.Sqlite
+                        dotnet add package Microsoft.EntityFrameworkCore.Design
+                    </pre>
+                </li>
+                <li>Define model and context
+                    <pre class="brush:bash">
+                            using Microsoft.EntityFrameworkCore;
+                            using System.Collections.Generic;
+                            using System.ComponentModel.DataAnnotations;
+                            using System.ComponentModel.DataAnnotations.Schema;
+                            public class TripContext : DbContext
+                            {
+                                public DbSet&lt;Trip> Trips { get; set; }
+                                public DbSet&lt;Location> Locations { get; set; }
+                                protected override void OnModelCreating(ModelBuilder modelBuilder)
+                                {
+                                    modelBuilder.Entity&lt;Location>()
+                                        .HasKey(c => new {c.TripId, c.Count}); // this is Fluent API used to define composite key
+                                }
+                                protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+                                {
+                                    optionsBuilder.UseSqlite("Data Source=trips.db");
+                                }
+                            }
+                            public class Trip{
+                                [Key] // using attribute to specify key. EF core only support single field key.
+                                public int TripId {get; set;}
+                                public string TripName {get; set;}
+                            }
+                            public class Location{
+                                public int TripId {get; set;}
+                                public int Count {get; set;}
+                                public int Long {get; set;}
+                                public int Lat {get; set;}
+                            }
+                    </pre>
+                    Run
+                    <pre class="brush:bash">
+                        dotnet ef migrations add InitialCreate
+                    </pre>
+                    to scaffold the models (generate code that initialize the database)
+                    <pre class="brush:bash">
+                        dotnet ef database update
+                    </pre>
+                    apply the generated code to initialize database. (In case of using SQLite, it will generate a file .db)
+                </li>
+                <li>Using the database
+                    <pre class="brush:bash">
+                            class Program
+                            {
+                                static void Main(string[] args)
+                                {
+                                    using (var db = new TripContext())
+                                    {
+                                        db.Trips.Add(new Trip { TripName = "The first trip" });
+                                        int count = db.SaveChanges();
+                                        Console.WriteLine("{0} records saved to database", count);
+                        
+                                        Console.WriteLine();
+                                        Console.WriteLine("All trip in database:");
+                                        foreach (Trip trip in db.Trips)
+                                        {
+                                            Console.WriteLine(" - {0} {1}", trip.TripId, trip.TripName);
+                                        }
+                                    }
+                                }
+                            }
+                    </pre>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="featureList" id="model">
+        <h3>Create Model</h3>
+        <p>When creating a model, just think about creating a table with SQL. Field, fields domain, primary key, foreign key, constraints</p>
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li><a href="https://docs.microsoft.com/en-us/ef/core/" target="_blank">Entity Framework Core</a></li>
+        <li><a href="https://docs.microsoft.com/en-us/ef/core/get-started/netcore/new-db-sqlite" target="_blank">Getting Started with EF Core on .NET Core Console App with a New database</a></li>
+        <li><a href="https://docs.microsoft.com/en-us/ef/core/modeling/" target="_blank">Creating and configuring a Model</a></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>

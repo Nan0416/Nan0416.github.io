@@ -115,6 +115,64 @@ SyntaxHighlighter.all()
             3). "hello/my-name-is-{name}." => hello/my-name-is-nan. (name = nan) (it does not match hello/my-name-is-nan without period)<br>
             4). "hello/{filename}.{ext?}" => hello/video.mp4, hello/video (Only . can precede an optional parameter. When the optional 
             does not exist, the period must also not exist in order to match)</p>
+        </li>
+        <li><h4>.MapRoute Example</h4>
+        <p class="reference-box" style="width:700px">MapRoute doesn't accept a route handler parameter. MapRoute only adds routes that are handled by the DefaultHandler.</p>
+        <p>All .MapRoute matched requests are handled by the default handler.</p>
+        <pre class="brush:cpp">
+            // source code of .MapRoute
+            // https://github.com/aspnet/Routing/blob/master/src/Microsoft.AspNetCore.Routing/MapRouteRouteBuilderExtensions.cs
+            public static IRouteBuilder MapRoute(
+                this IRouteBuilder routeBuilder,
+                string name,
+                string template,
+                object defaults,
+                object constraints,
+                object dataTokens)
+            {
+                if (routeBuilder.DefaultHandler == null)
+                {
+                    throw new RouteCreationException(Resources.FormatDefaultHandler_MustBeSet(nameof(IRouteBuilder)));
+                }
+    
+                routeBuilder.Routes.Add(new Route(
+                    routeBuilder.DefaultHandler,
+                    name,
+                    template,
+                    new RouteValueDictionary(defaults),
+                    new RouteValueDictionary(constraints),
+                    new RouteValueDictionary(dataTokens),
+                    CreateInlineConstraintResolver(routeBuilder.ServiceProvider)));
+    
+                return routeBuilder;
+            }
+        </pre>
+        Example of <a href="webapp.html#intro">Mvc</a> handle implementation
+        <pre class="brush:cpp">
+                public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+                {
+                    
+                    IRouteBuilder routeBuilder = new RouteBuilder(app);
+                    routeBuilder.DefaultHandler = new RouteHandler(async context => {
+                        
+                        string path = context.Request.Path;
+                        foreach(IRouter r in routeBuilder.Routes){
+                            Route r_ = (Route)r;
+                            Console.WriteLine(r_.RouteTemplate);
+                            // select controller.
+                            // .... Mvc Core
+                        }
+                        await context.Response.WriteAsync(context.Request.Path);
+                    });
+                    routeBuilder.MapRoute(
+                        name: "default",
+                        template: "{controller=Home}/{action=Index}/{id?}");
+                    IRouter routes = routeBuilder.Build();
+                    app.UseRouter(routes);
+                } 
+            }
+        </pre>
+        </li>
         <h4>Route reserved keyword</h4>
         <h4>Route parameter constraints</h4>
         <h4>Regular expression</h4>
