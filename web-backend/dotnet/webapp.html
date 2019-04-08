@@ -38,14 +38,14 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>ASP.NET Core&nbsp;-&nbsp;Web App</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-04-06</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-04-06</span></p>
+<p class="date"><span class="created-date">Created:2019-04-06</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-04-08</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
 <li><a href="#routing">Routing</a></li>
 <li><a href="#controller">Controller</a></li>
 <li><a href="#razor">Razor View Engine</a></li>
-<li><a href="#static-file">Static files [todo]</a></li>
+<li><a href="#static-file">Static files</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -70,7 +70,7 @@ Razor Page is not razor engine. Razor page is a new design pattern implementatio
 <li>
     <div class="content" id="routing">
         <h3>Routing</h3>
-        <p>Web App use conventional routing mechanism. Based on this routing, mvc mapps each request to a controller's action with optional parameter. <br>
+        <p>Web App use conventional routing mechanism by default. Based on this routing, mvc mapps each request to a controller's action with optional parameter. <br>
             A controller is class derived from <span style="color:green">Microsoft.AspNetCore.Mvc.Controller</span>; An action is a public method of this controller.</p>
         <div class="featureList">
             <ol>
@@ -110,8 +110,69 @@ Razor Page is not razor engine. Razor page is a new design pattern implementatio
                 </li>
             </ol>
         </div>
-        <h4>Attribute routing</h4>
+        <h4 id="attribute-routing">Attribute routing</h4>
         <p>Conventional routing has a few naming restriction due to the "convention". Moreover, Mvc's conventional routing matchs all Http Verbs.</p>
+        <p>In attribute-routing, route configuration is placed on the controllers and their methods (actions).</p>
+        <div class="featureList">
+            <ol>
+                <li><h4>Basic</h4>
+                <p>Route's parameter cannot start with /. Route attribute match all verbs</p>
+                <pre class="brush:cpp">
+                        public class VideoController:Controller{
+                            [Route("")]
+                            [Route("Video")]
+                            [Route("Video/Index")]
+                            public string ActionNameDoesNotMatter() // matches /, /Video, /viDeo, /video/IndEX ...
+                            {
+                                return "index";
+                            }
+                        }
+                </pre>
+                <p>A attribute append at the top of controller with controller parameter</p>
+                <pre class="brush:cpp">
+                        [Route("api/[controller]")] // matches /api/video/index
+                        public class VideoController:Controller{
+                            [Route("")]
+                            [Route("Index")]
+                            public string ActionNameDoesNotMatter()
+                            {
+                                return "index";
+                            }
+                        }
+                </pre>
+                </li>
+                <li>
+                    <h4>Route with Http Verbs</h4>
+                    <pre class="brush:cpp">
+                            using Microsoft.AspNetCore.Mvc;
+                            [Route("api/[controller]")]
+                            public class VideoController:Controller{
+                                [HttpPost("")]
+                                [HttpGet("Index")] // matches GET /api/video/index, Post /api/video
+                                public string ActionNameDoesNotMatter()
+                                {
+                                    return "index";
+                                }
+                            }
+                    </pre>
+                </li>
+                <li>
+                    <h4>Attribute route with parameters</h4>
+                    <pre class="brush:cpp">
+                            using Microsoft.AspNetCore.Mvc;
+                            [Route("api/[controller]")] // matches /api/location/12/1214
+                            public class LocationController:Controller{
+                                [HttpPost("{lon:int}/{lat:int}")]
+                                public string storeLocation(int lon, int lat)
+                                {  
+                                    return lon.ToString() + " " + lat.ToString();
+                                }
+                            }
+                    </pre>
+                </li>
+                
+            </ol>
+        </div>
     </div>
 </li>
 <li>
@@ -242,12 +303,82 @@ Razor Page is not razor engine. Razor page is a new design pattern implementatio
     </div>
 </li>
 <li>
+    <div class="content" id="static-file">
+        <h3>Static files</h3>
+        <p>ASP.NET Core has a static files middleware that can sever files from the <span style="color:red">webroot</span> directory and its subdirectories. ASP.NET 
+            Core also has middlware to support directory browsing</p>
+        
+        <div class="featureList">
+            <ol>
+                <li><h4>Add Services</h4>
+                <pre class="brush:cpp">
+                    // static file service is added by default.
+
+                    // add directory browsing service.
+                    services.AddDirectoryBrowser();
+                </pre>
+                </li>
+                <li>
+                    <h4>Content Root</h4>
+                    <p class="reference-box">The base path to any private content used by the app, such as its Razor files.</p>
+                    <p>The default value is the directory that contains the project. (the directory contains Startup.cs, Program.cs ...)</p>
+                </li>
+                <li>
+                    <h4>Web Root</h4>
+                    <p class="reference-box">The base path to public, static resources, such as CSS, JavaScript, and image files</p>
+                    <p>The default value of WebRoot is {Content Root}/wwwroot</p>
+                    <pre class="brush:cpp">
+                        // modify webroot when build the host (container)
+                        WebHost.CreateDefaultBuilder(args)
+                            .UseWebRoot("new-wwwroot") // now it becomes {Content Root}/new-wwwroot
+                            .UseStartup&lt;Startup>();
+                    </pre>
+                    <p>A url starting with "~/" e.g. ~/image/hello.png points to the webroot {Content Root}/wwwroot/image/hello.png</p>
+                </li>
+                <li><h4>Enable serving static files</h4>
+                    <pre class="brush:cpp">
+                            public void Configure(IApplicationBuilder app)
+                            {
+                                app.UseStaticFiles(); // For the wwwroot folder
+                            
+                                app.UseStaticFiles(new StaticFileOptions
+                                {
+                                    FileProvider = new PhysicalFileProvider(
+                                        Path.Combine(Directory.GetCurrentDirectory(), "MyStaticFiles")),
+                                    RequestPath = "/StaticFiles"
+                                });
+                                // ~/StaticFiles/image/hello.png -> MyStaticFiles/image/hello.png
+
+                                app.UseDirectoryBrowser(new DirectoryBrowserOptions
+                                {
+                                    FileProvider = new PhysicalFileProvider(
+                                        Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")),
+                                    RequestPath = "/MyImages"
+                                });
+                                // case insensitive
+                            }
+                    </pre>
+                </li>
+                <li>
+                    <h4>Resolving Orders</h4>
+                    <p>When a url match both a static file and a conventional route ?????</p>
+                </li>
+            </ol>
+        </div>
+        
+       
+        
+    </div>
+</li>
+<li>
 <div class="content" id="reference">
 <h3>References</h3>
 <div class="featureList">
     <ol>
         <li><a href="https://docs.microsoft.com/en-us/aspnet/core/mvc/overview?view=aspnetcore-2.2" target="_blank">ASP.NET Core Web App</a></li>
         <li><a href="https://docs.microsoft.com/en-us/aspnet/core/mvc/views/razor?view=aspnetcore-2.2" target="_blank">Razor Syntax</a></li>
+        <li><a href="https://docs.microsoft.com/en-us/aspnet/core/fundamentals/index?view=aspnetcore-2.2&tabs=windows#content-root" target="_blank">Content Root & Web Root</a></li>
+        <li><a href="https://docs.microsoft.com/en-us/aspnet/core/fundamentals/static-files?view=aspnetcore-2.2#serve-files-outside-of-web-root" target="_blank">Serve files outside of web root</a></li>
     </ol>
 </div>
 </div>

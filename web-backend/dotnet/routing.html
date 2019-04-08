@@ -38,7 +38,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>ASP.NET&nbsp;-&nbsp;Routing</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-04-02</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-04-02</span></p>
+<p class="date"><span class="created-date">Created:2019-04-02</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-04-07</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -57,6 +57,9 @@ SyntaxHighlighter.all()
 <h3>Introduction</h3>
 <p>Routing essentially is a middleware that maps urls to endpoints.</p>
 <p>There are two routing mechainisms existed, attribute routing (api apps) and conventional routing (web apps)</p>
+<pre>
+    ASP.NET Core -> [ Conventional Routing middleware ] -> Mvc Middleware -> Attribute Routing
+</pre>
 </div>
 </li>
 <li>
@@ -180,9 +183,7 @@ SyntaxHighlighter.all()
         <li><h4>Route internal redirect</h4>
             <p>*** Route internal redirect is not http redirection ***</p>
         </li>
-        <li><h4>.UseMvc()</h4>
-        <a href="https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/routing?view=aspnetcore-2.2">https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/routing?view=aspnetcore-2.2</a>
-        </li>
+       
     </ol>
 </div>
 </div>
@@ -190,7 +191,10 @@ SyntaxHighlighter.all()
 <li>
     <div class="content" id="attribute">
         <h3>Attribute Routing</h3>
-        <p></p>
+        <p>In conventional routing, the routings (url -> handler/middleware) are defined in Startup.Configure. 
+            In attribute routing, routings are defined upon Controller. Attribute routing is built on Mvc 
+            middleware, and it is only works with Mvc because attributes are specified on the top of Controller.</p>
+        <p><a href="webapp.html#attribute-routing">Go to webapp attribute routing</a></p>
     </div>
 </li>
 <li>
