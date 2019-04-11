@@ -38,7 +38,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>C#&nbsp;-&nbsp;Basic</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-09-28</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-03-28</span></p>
+<p class="date"><span class="created-date">Created:2018-09-28</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-04-11</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Types</a></li>
@@ -56,37 +56,58 @@ SyntaxHighlighter.all()
 <div class="content" id="intro">
 <h3>Types</h3>
 <p>C# has two kinds of types: value types and reference types. But all types, including int, inherit from object.</p>
-<h4>Value types</h4>
-<p>Value types: primitive types, enum, struct, and nullable.</p>
 <div class="featureList">
     <ol>
-        <li>sbyte, byte, short, ushort, int, uint, long, ulong, char, float, double, <span style="color:red">decimal (128bit high-percision decimal)</span>, bool
-            <br>(Java only has signed numbers)
+        <li>
+            <h4>Value types</h4>
+            <p>Value types: primitive types, enum, struct, and nullable.</p>
+            <p>1). sbyte, byte, short, ushort, int, uint, long, ulong, char, float, double, <span style="color:red">decimal (128bit high-percision decimal)</span>, bool. (<span style="color:red">Java only has signed numbers</span>)<br>
+            2). struct: Java does not have struct, this struct is similar to C/C++ struct<br>
+            3). <span style="color:red">Each type except null, e.g. int, string, has a nullable type e.g. int?, string?. The nullable type's value can be a normal value or null.</span>
         </li>
         <li>
-            struct: Java does not have struct, this struct is similar to C/C++ struct
+            <h4>Reference types</h4>
+            <p>reference types: Class, Interface, Array, and Delegate.</p>
+            <p>Delegate (<span style="color:red">function pointer</span>): delegate type represents references to methods with a particular parameter list and return type.</p>
+            <p><span style="color:red">Primitive types, null and array are provided by C#, developers can use them but not define them.</span><br>
+                Enum, struct, class interface and delegate are definable.<br>
+                class, struct, interface, delegate support generics.
+                </p>
         </li>
-        <li><span style="color:red">Each type except null, e.g. int, string, has a nullable type e.g. int?, string?. The nullable type's value can be a normal value or null.</span></li>
+        <li>
+            <h4>Box/Unbox</h4>
+            <pre class="brush:cpp">
+                int i = 123;
+                object o = i;    // Boxing: allocate a space from heap, copy the value type's value into the reference type's space.
+                int j = (int)o;  // Unboxing: check if the box has the related value type; then copy the data out of the box into the value variable (on stack)
+            </pre>
+        </li>
+        <li>
+            <h4>var</h4>
+            <p>var is used to define a variable <span style="color:red">only within a method scope</span>. var defined variable has implicit type that provides by compiler. And this implicit type can already be defined e.g. 
+                string, it can also be some types that are not defined yet.</p>
+            <p>Support: C# 3.0 and later</p>
+            <pre class="brush:cpp">
+                static void Main(string[] args)
+                {
+                    var message = "Hello World!";
+                    Console.WriteLine(message);
+                    Console.WriteLine(message.GetType()); // System.String
+
+                    var person =  new {  // var receive an anonymous class.
+                        name = "Nan Qin", 
+                        desc = "A nice person." };
+                    Console.WriteLine(person.GetType()); // &lt;>f__AnonymousType0`2[System.String,System.String]
+
+                    // .name and .desc properties are read-only
+                }
+            </pre>
+        </li>
     </ol>
 </div>
-<h4>Reference types</h4>
-<p>reference types: Class, Interface, Array, and Delegate.</p>
-<div class="featureList">
-    <ol>
-        <li>Delegate (<span style="color:red">function pointer</span>): delegate type represents references to methods with a particular parameter list and return type.
-        </li>
-    </ol>
-</div>
-<p><span style="color:red">Primitive types, null and array are provided by C#, developers can use them but not define them.</span><br>
-Enum, struct, class interface and delegate are definable.<br>
-class, struct, interface, delegate support generics.
-</p>
-<h4>Box/Unbox</h4>
-<pre class="brush:cpp">
-    int i = 123;
-    object o = i;    // Boxing: allocate a space from heap, copy the value type's value into the reference type's space.
-    int j = (int)o;  // Unboxing: check if the box has the related value type; then copy the data out of the box into the value variable (on stack)
-</pre>
+
+
+
 </div>
 </li>
 <li>
