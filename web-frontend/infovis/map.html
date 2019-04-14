@@ -40,7 +40,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>InfoVis&nbsp;-&nbsp;Map</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-11-24</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-11-24</span></p>
+<p class="date"><span class="created-date">Created:2018-11-24</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-04-12</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -56,7 +56,7 @@ SyntaxHighlighter.all()
 <div class="content" id="intro">
 <h3>Introduction</h3>
 <h4>How does Map work?</h4>
-<p>Map, e.g. Google Map, are just layer by layer. The basic layer is called tile layer, which is the map imagery. It is constructed by images, such as png. When we zoom or go other place on the map, it just donwload new images to render.</p>
+<p>Map, e.g. Google Map, are just layer by layer. The basic layer is called tile layer, which is the map imagery. It is constructed by images, such as png. When we zoom or go other place on the map, it just donwloads new images to render.</p>
 <p>Tile layer are provided by 3rd party.</p>
 <div>
     <img src="images/map.png" width="300" height="300">
@@ -122,8 +122,8 @@ SyntaxHighlighter.all()
             <p>Core function take translate longitude and latitude to the SVG x, y</p>
             <pre class="brush:js">
                 let position = [33.7806625, -84.4111009] // ['lat', 'lng']
-                myMap.latLngToLayerPoint().x
-                myMap.latLngToLayerPoint().y
+                myMap.latLngToLayerPoint(position).x
+                myMap.latLngToLayerPoint(position).y
             </pre>
         </li>
         <li><h4>Zoom and Move</h4>
