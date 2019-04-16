@@ -1,0 +1,202 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>Git&nbsp;Version Control</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-04-16">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushPython.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<style>
+.git{
+    border: 1px rgb(196, 195, 195) solid;
+    border-radius: 4px;
+    width: 500px;
+    padding: 15px 10px 4px 10px;
+    font-size: 11px;
+}
+</style>
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>Git&nbsp;-&nbsp;Version Control</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-04-16</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-04-16</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Branch & Commit</a></li>
+<li><a href="#add">Stage/Index & Add</a></li>
+<li><a href="#stash">Stash</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Branch & Commit</h3>
+<p>A branch is just a pointer points to a commit. A series of commit records the process/history of the code development.</p>
+
+<div class="featureList">
+    <ol>
+        <li><p>After the first commit, master branch is created. <span style="color:red">HEAD</span> is a virtual
+             pointer that always points to the newest commit in the current branch. (<span style="color:red">branch tip: the newest commit in the branch.</span>) For each commit, git assign a 40-character SHA-1 hash to it, e.g. 32af5bb80486cdc80a25e2db7753a0dd49650481</p>
+                <pre class="git">
+                            HEAD, Master
+[32af5bb] -> [2da799c] -> [389aed1]
+                </pre>
+                <pre class="brush:bash">
+                    cat .git/HEAD # ref: refs/heads/master
+                </pre>
+        </li>
+        <li><p>Create a branch is just like to create a new pointer. The new created pointer is pointed to the commit pointed by HEAD.</p>
+            <pre class="brush:bash">
+                git branch second-branch # create a new branch called second-branch
+            </pre>
+            <pre class="git">
+            HEAD, Master
+[2da799c] -> [389aed1]
+            second-branch
+            </pre>
+            <pre class="brush:bash">
+                git checkout second-branch # switch the HEAD to second-branch, and now working on the second-branch.
+            </pre>
+        </li>
+        <li><p>Show commit history in one branch. Suppose now the workflow is shown as following</p>
+            <pre class="git">
+                        HEAD, Master
+[2da799c] -> [389aed1] -> [498abe2]
+                |
+                | ------> [a2b48ce] 
+                        second-branch
+            </pre>
+            <pre class="brush:bash">
+                git log --abbrev-commit --pretty=oneline # print history commits of the current (master) branch
+                # 498abe2 (HEAD -> master) master 40-character commit
+                # 389aed1 master 3rd commit
+                # 2da799c master second commit
+
+                git log --branches=* --oneline # print all commits across all branch
+            </pre>
+        </li>
+        <li><p>Switch to an old commit (Undo)</p>
+            <pre class="brush:bash">
+                git checkout 389aed1
+            </pre>
+            <p>In this case, the HEAD is point to the old commit, which makes HEAD not be the tip of a branch. In this case, the development is in <span style="color:red">'detached HEAD' state</span> and no longer working on any branch.</p>
+            <p class="reference-box">In a detached state, any new commits you make will be orphaned when you change branches back to an established branch. Orphaned commits are up for deletion by Git's garbage 
+                collector. The garbage collector runs on a configured interval and permanently destroys orphaned commits. To prevent orphaned commits from being garbage collected, we need to ensure we are on a branch. <a href="https://www.atlassian.com/git/tutorials/undoing-changes" target="_blank">reference</a></p>
+            <pre class="git">
+               HEAD          Master
+[2da799c] -> [389aed1] -> [498abe2]
+                |
+                | ------> [a2b48ce] 
+                        second-branch
+            </pre>
+            <p>Do changes and commits based on the history (389aed1) commit and checkout a new branch for it.</p>
+            <pre class="brush:bash">
+                git checkout -b detached-created-branch
+            </pre>
+            <pre class="git">
+                                            HEAD, detached-created-branch
+                |-------> [e9103d7] -----> [d375750]
+                |         Master
+[2da799c] -> [389aed1] -> [498abe2]
+                |
+                | ------> [a2b48ce] 
+                        second-branch
+            </pre>
+        </li>
+        <li><p>git revert: Undo a commit in the same branch.<br>
+        <span style="color:red">git revert</span> HEAD will takes the pervious commit of HEAD and copy it to the top of HEAD.</p>
+        <pre class="git">
+                                         detached-created-branch
+                |-------> [e9103d7] -----> [d375750]
+                |         Master
+[2da799c] -> [389aed1] -> [498abe2]
+                |                                          HEAD, second-branch
+                | ------> [a2b48ce] -----> [34e2af3] -----> [23a23ef]
+        </pre>
+        <pre class="brush:bash">
+            git revert HEAD
+            git commit -m "revert second-branch to 34e2af3"
+        </pre>
+        <pre class="git">
+                                        detached-created-branch
+                |-------> [e9103d7] -----> [d375750]
+                |         Master
+[2da799c] -> [389aed1] -> [498abe2]
+                |                                                       HEAD, second-branch
+                | ------> [a2b48ce] -----> [34e2af3] -----> [23a23ef] -----> [981ae1f]
+        </pre>
+        <p>commit 981ae1f has the same content as 34e2af3 but the commit 23a23ef is not deleted.</p>
+        <pre class="brush:bash">
+            git revert 34e2af3 # undo a sepcific commit.
+            # For example, a file bug.cpp was created in 34e2af3 commit. Then undo this commit will delete the bug.cpp file.
+        </pre>
+        </li>
+        <li>
+            <p>Undo by deleting history commit</p>
+            <pre class="brush:bash">
+                git reset --hard 34e2af3 # reset to 34e2af3 commit, and delete all commits ahead 34e2af3 in this branch.
+            </pre>
+        <pre class="git">
+                                        detached-created-branch
+                |-------> [e9103d7] -----> [d375750]
+                |         Master
+[2da799c] -> [389aed1] -> [498abe2]
+                |                       HEAD, second-branch
+                | ------> [a2b48ce] -----> [34e2af3]
+        </pre>
+        <p class="reference-box"> This method of undoing changes has the cleanest effect on history. Doing a reset is great for local changes however
+             it adds complications when working with a shared remote repository. If we have a shared remote repository that has the 872fa7e commit pushed 
+             to it, and we try to git push a branch where we have reset the history, Git will catch this and throw an error. Git will assume that the branch 
+             being pushed is not up to date because of it's missing commits. In these scenarios, git revert should be the preferred undo method.</p>
+        </li>
+    </ol>
+</div>
+
+
+</div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li><a href="https://www.atlassian.com/git/tutorials/undoing-changes" target="_blank">How to undo a commit with git checkout.</a></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>
