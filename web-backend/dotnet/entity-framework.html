@@ -42,9 +42,9 @@ SyntaxHighlighter.all()
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
-<li><a href="#standalone">Run with .NET Core</a></li>
-<li><a href="#aspnet">Run with ASP.NET Core as a service</a></li>
-<li><a href="#model">Create Models</a></li>
+<li><a href="#standalone">Run with .NET Core & ASP.NET Core as a service</a></li>
+<li><a href="#indepth">In-depth</a></li>
+<li><a href="#ef-tool">EF Tool</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -67,13 +67,11 @@ SyntaxHighlighter.all()
 </div>
 <div class="featureList">
     <h4>EF tool</h4>
-    <p>EF tool is one of the dotnet command that faciliates database tasks. Install the tools dependency
+    <p>EF tool is one of the dotnet command that faciliates database tasks. Install the tools dependency</p>
     <pre class="brush:bash">
         dotnet add package Microsoft.EntityFrameworkCore.Design
         dotnet ef -h # check help
     </pre>
-    Usage of the too including initialize database based on the defined model.
-    </p>
 </div>
 </div>
 </li>
@@ -90,7 +88,7 @@ SyntaxHighlighter.all()
                     </pre>
                 </li>
                 <li>Define model and context
-                    <pre class="brush:bash">
+                    <pre class="brush:cpp">
                             using Microsoft.EntityFrameworkCore;
                             using System.Collections.Generic;
                             using System.ComponentModel.DataAnnotations;
@@ -132,7 +130,7 @@ SyntaxHighlighter.all()
                     apply the generated code to initialize database. (In case of using SQLite, it will generate a file .db)
                 </li>
                 <li>Using the database
-                    <pre class="brush:bash">
+                    <pre class="brush:cpp">
                             class Program
                             {
                                 static void Main(string[] args)
@@ -154,14 +152,135 @@ SyntaxHighlighter.all()
                             }
                     </pre>
                 </li>
+                <li>Inject by ASP.NET Core Injection Container
+
+                    <pre class="brush:cpp">
+                        // register service 
+                        services.AddDbContext&lt;ApplicationDbContext>(options =>
+                            options.UseSqlite(
+                                Configuration.GetConnectionString("DefaultConnection")));
+                    </pre>
+                </li>
             </ol>
         </div>
     </div>
 </li>
 <li>
-    <div class="featureList" id="model">
-        <h3>Create Model</h3>
-        <p>When creating a model, just think about creating a table with SQL. Field, fields domain, primary key, foreign key, constraints</p>
+    <div class="featureList" id="indepth">
+        <h3>In-depth</h3>
+        <h4>Entity Framework Core Model</h4>
+        <p>A EF Core Model is a C# class used to represent an entity in the database. It is in the conceptual layer.So 
+            when creating a model, just think about creating a table with SQL. Field, fields domain, primary key, foreign key, constraints</p>
+        <p>EF Core provides tools that can automatically generate and initialize the database from the developer defined Model classes.</p>
+        <div class="featureList">
+            <h4>Terms</h4>
+            <ol>
+                <li>Primary Key property: a model class's property will be set the primary key of the table.</li>
+                <li>foreign key property: a model class's property whose type is the type of another model's primary key and name is {Primary}Id.</li>
+                <li>Navigation property: a model class's property that a way to navigate an association between two entity types. (populate). <span style="color:red">
+                        a reference object (if the multiplicity is either one or zero-or-one) or a collection (if the multiplicity is many)</span>
+                    <pre class="brush:cpp">
+                        public class Course
+                        {
+                            public int CourseID { get; set; } // primary key of the Course Table.
+                            public string Title { get; set; }
+                            public int Credits { get; set; }
+                            public int DepartmentID { get; set; } // foregin key to Department's Id.
+                            public virtual Department Department { get; set; } // an (inverse) navigation property that get a reference to Department.
+                        }
+                        public class Department
+                        {
+                            public int DepartmentID { get; set; } // primary key of the Department Table
+                            public string Name { get; set; }
+                            public decimal Budget { get; set; }
+                            public DateTime StartDate { get; set; }
+                            public int? Administrator {get ; set; }
+                            public virtual ICollection&lt;Course> Courses { get; set; } // an navigation property
+                        }
+                    </pre>
+                </li>
+                <li>
+                    <p>Shadow Properties: a property may not be declared in a Model class, but it will be created by <span style="color:red">the EF Core or by developer specified OnModelCreating method</span> in the database table.</p>
+                    <p>In the above model, because department has a collection navigation field, Department is the principle entity and Course is the dependent entity. If course, the dependent entity, does not explicitly define the foreign key, 
+                        EF Core will define a shadow foreign key for it.</p>
+                </li>
+                <li>one-to-many: e.g. a department has many courses.
+                </li>
+                <li>one-to-one: <br>
+                
+                </li>
+            </ol>
+        </div>
+        <div class="featureList">
+            <h4>DbContext class</h4>
+            <p></p>
+            <ol>
+                <li>.OnModelCreating
+                    <pre class="brush:cpp">
+                        // create shadow properties.
+                    </pre>
+                </li>
+            </ol>
+        </div>
+        <div class="featureList">
+            <h4>EF Core Model Convention</h4>
+            <p>EF Core defines a few conventions for mapping Model to Database Schema</p>
+            <ol>
+                <li>Primary Key: Exactly One primary key exists in a Model. This primary key field's name is xxxId or Id (non case-sensitive).</li>
+                <li>Foreign Key: The referenced entity is called principal entity e.g. Department in the above model. By convention, a property will
+                     become a foreign key if it has same type as the referenced primary id, and its name is one of<br>
+                     1). {primary key} e.g. DepartmentID<br>
+                     2). {principal entity}{primary key} e.g. DepartmentDepartmentID<br>
+                     3). {navigation property}{primary key} e.g.<span style="color:red">?? CoursesDepartmentID or DepartmentDepartmentID    whose navigation key?? </span>
+                </li>
+            </ol>
+        </div>
+        <div class="featureList">
+            <h4>EF Core Manually configure tables</h4>
+            <p>Primary key, Foreign keys can be declared manually by using Attributes and FluentAPI</p>
+            <h4>Attributes</h4>
+            <ol>
+                <li>namespace
+                    <pre class="brush:cpp">
+                            using System.ComponentModel.DataAnnotations;
+                            using System.ComponentModel.DataAnnotations.Schema;
+                    </pre>
+                </li>
+            </ol>
+            <h4>FluentAPI</h4>
+            <ol>
+                <li></li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="eftool">
+        <h3>EF tool</h3>
+        <div class="featureList">
+            <ol>
+                <li><h4>Install the database providers</h4>
+                    <pre class="brush:bash">
+                        dotnet add package Microsoft.EntityFrameworkCore.Sqlite
+                    </pre>
+                </li>
+                <li><h4>Install the ef tool</h4>
+                    <pre class="brush:bash">
+                        dotnet add package Microsoft.EntityFrameworkCore.Design
+                    </pre>
+                </li>
+                <li><h4>Generate migration code</h4>
+                    <pre class="brush:bash">
+                        dotnet ef migrations add InitialCreate
+                    </pre>
+                </li>
+                <li><h4>Apply the migration code</h4>
+                    <pre class="brush:bash">
+                        dotnet ef database update
+                    </pre>
+                </li>
+            </ol>
+        </div>
     </div>
 </li>
 <li>
@@ -172,6 +291,7 @@ SyntaxHighlighter.all()
         <li><a href="https://docs.microsoft.com/en-us/ef/core/" target="_blank">Entity Framework Core</a></li>
         <li><a href="https://docs.microsoft.com/en-us/ef/core/get-started/netcore/new-db-sqlite" target="_blank">Getting Started with EF Core on .NET Core Console App with a New database</a></li>
         <li><a href="https://docs.microsoft.com/en-us/ef/core/modeling/" target="_blank">Creating and configuring a Model</a></li>
+        <li><a href="https://docs.microsoft.com/en-us/ef/ef6/fundamentals/relationships" target="_blank">Relationships, navigation properties and foreign keys</a></li>
     </ol>
 </div>
 </div>
