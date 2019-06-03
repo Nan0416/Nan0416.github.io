@@ -46,6 +46,34 @@
         <p>
             * Part of questions is from the job interview platforms, such as leetcode.
         </p>
+        <div class="featureList">
+            <h4>Graph Algorithm</h4>
+            <ol>
+                <li>Aglorithm for finding SCCs on a directly connected graph.</li>
+                <li>Kruskal's Algorithm: building MST. Sorting edge and add edge does not form cycle.</li>
+                <li>Prim's Algorithm: building MST. Add a vertex and select the minimum edge that crosses the visited set and unvisited set</li>
+                <li>Dijkstra's Algorithm: shortest path from a vertex to all other vertices. O(V^2)</li>
+                <li>Ford-Fulkerson Algorithm: max-flow, O(|E|*C)</li>
+                <li>Edmonds–Karp algorithm: max-flow O(|V| * |E|^2)</li>
+            </ol>
+            <h4>NP-complete</h4>
+            <ol>
+                <li>SAT -> 3SAT: satisfiability (a, b, y1) (y1_, c, y2) (y2_, d, e)</li>
+                <li>3SAT -> Independent Set with goal (a set of vertices that no edge between any pairs): (variable edges) + (clause edges) g = #clause</li>
+                <li>IS -> Clique with goal (a set of vertices): reverse edges</li>
+                <li>IS -> vertex cover with budget (a set of vertices that involve all edges): VC set "damage" at least one endpoint (vertex) of a edge.
+                     Then no remaining edge has two endpoints (vertices). In order words, the no edge between any two of rest vertices, which is a set of IS. The budget of VC is |V| - goal of IS.</li>
+                <li>3SAT -> subset-sum (the sum of a subset of num = t): use the 3SAT's variables and clauses to construct a set of numbers and a t. The t restricts 
+                    how to select numbers. For example, the constraint that variable X1 can be true or false, but can only choose one can be expressed as two number {1,1} and their sum is {1}, then only one number can be selected.</li>
+                <li>subset-sum -> Number Partition Problem (partition a set of number to two sets and make the sum of the subsets equal): constructing the input of NPP, add a number 2t - sum(set) to set.</li>
+            </ol>
+            <h4>LP</h4>
+            <ol>
+                <li>Standard form: maximize an objective function, a set of m constraint in &lt;= forms. a set of variable constraint >= 0.</li>
+                <li>Dual form: minimize an objective function, a set of m constraint in >= forms; a set of variable constraint >= 0.</li>
+            </ol>
+        </div>
+
     </div>
 </li>
 </ol>

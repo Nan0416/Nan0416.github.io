@@ -13,10 +13,10 @@
 <script type="text/javascript" src="../../script.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
-<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
-<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCss.js"></script>
 <link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
 <link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
 
@@ -38,10 +38,11 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Angular&nbsp;-&nbsp;Intro</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-08-30</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-11</span></p>
+<p class="date"><span class="created-date">Created:2018-08-30</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-04-25</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#init">Project Initialization</a></li>
+<li><a href="#create">Create New Components & Services</a></li>
 <li><a href="#angularReference">References</a></li>
 </ul>
 </div>
@@ -95,17 +96,38 @@ SyntaxHighlighter.all()
 <div class="featureList">
     <ol>
         <li>index.html: Include other .js, css. Define meta tag. Include the <span style="color:red">app-root</span> component</li>
-        <li>style.scss: Define the general style. e.g. <pre>
+        <li>style.scss: Define the general style. e.g. 
+<pre class="brush:css">
 body{
     margin: 0;
     padding: 0;
     border: 0;
     min-width: 400px;
 }
-        </pre></li>
+        </pre>
+        </li>
     </ol>
 </div>
 </div>
+</li>
+<li>
+    <div class="content" id="create">
+        <h3>Create New Components & Services</h3>
+        <div class="featureList">
+            <ol>
+                <li><h4>Component</h4>
+                <pre class="brush:bash">
+                    ng generate component {name}
+                    # it will generate 4 files {name}.component.*
+
+                    ng generate component {name} --dry-run
+                    # dry run
+                </pre>
+                <p>The command also create the "import {}" statement in app.module</p>
+                </li>
+            </ol>
+        </div>
+    </div>
 </li>
 <li>
 <div class="content" id="ajaxReference">
