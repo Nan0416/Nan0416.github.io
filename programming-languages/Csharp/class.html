@@ -37,7 +37,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>C#&nbsp;-&nbsp;Class</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-02-23</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-04-02</span></p>
+<p class="date"><span class="created-date">Created:2019-02-23</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-06-02</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -78,7 +78,8 @@ SyntaxHighlighter.all()
                 <li><h4>Static fields, properties, methods, events</h4>
                     <p>[Same rules as Java] Static members can only be accessed by class name.<br>
                         Non-static members can access static member but static members cannot access non-static members<br>
-                        A static member belongs to the class and all derived classes.
+                        A static member belongs to the class and <span style="color:red">all derived classes.</span><br>
+                        <span style="color:red">** Static classes are only allowed to derive from Object.</span>
                         <pre class="brush:c++">
     class Program
     {
@@ -117,7 +118,7 @@ SyntaxHighlighter.all()
                     1). The default inner class is private if no modifier is specified.<br>
                     2). Inner (nested) class can access all member of the outter class, including private<br>
                     3). Inner class can directly access outter class's static member, and access non-static members via an outter class instance.<br>
-                    4). <span style="color:red">Static outter class can define non-static class. The reason is that the defined class is not a class member,
+                    4). <span style="color:red">Static outter class can define non-static inner class. The reason is that the defined inner class is not a class member (is a declaration),
                          and static class only requires static members. For example, a static class can also has normal delegate declaration.</span><br>
                     5). Inner class is kind of like C++ friend class that can access all member of the outter class. 
                 </p>
@@ -310,7 +311,7 @@ SyntaxHighlighter.all()
                         </pre>
                 </li>
                 <li>
-                        Value is the designated contextual keyword to represent the caller assigned value.
+                        <span style="color:red">value</span> is the designated contextual keyword to represent the caller assigned value.
                 </li>
                 <li>
                     <h4>Avoid infinite set.</h4>
