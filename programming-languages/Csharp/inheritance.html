@@ -37,7 +37,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>C#&nbsp;-&nbsp;Inheritance</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-02-26</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-27</span></p>
+<p class="date"><span class="created-date">Created:2019-02-26</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-06-11</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -137,6 +137,30 @@ SyntaxHighlighter.all()
                         }
                     </pre></li>
             </ol>
+            <div class="featureList">
+                <h4>Object initializers</h4>
+                <ol>
+                    <li>Object initializer always invokes the parameterless contructor, and then set the public members. So the parameterless
+                         constructor must be public and the set members also must be public.
+                    <pre class="brush:cpp">
+                            StudentName student = new StudentName
+                            {
+                                FirstName = "Craig",
+                                LastName = "Playstead",
+                            };
+                            Student student = new Student{}; // invoke parameterless constructor and set nothing.
+                    </pre>
+                    </li>
+                    <li>
+                        Error when
+                        1. The parameterless constructor is not accessible.<br>
+                        2. The parameterless constructor does not exist.<br>
+                        3. The set member is not accessible.
+                    </li>
+                </ol>
+            </div>
+           
+            
         </div>
 
     </div>
@@ -290,6 +314,7 @@ class Child:Parent
         <li><a href="https://docs.microsoft.com/en-us/dotnet/csharp/tutorials/inheritance" target="_blank">Microsoft Docs C# Inheritance</a></li>
         <li><a href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/destructors" target="_blank">Destructor</a></li>
         <li><a href="https://stackoverflow.com/questions/44573392/c-sharp-my-destructor-isnt-being-called" target="_blank">Destructor invokation stackoverflow.</a></li>
+        <li><a href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/how-to-initialize-objects-by-using-an-object-initializer" target="_blank">How to: Initialize Objects by Using an Object Initializer (C# Programming Guide)</a></li>
     </ol>
 </div>
 </div>

@@ -37,11 +37,12 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Microservices&nbsp;-&nbsp;Introduction</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-02-27</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-27</span></p>
+<p class="date"><span class="created-date">Created:2019-02-27</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-06-12</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
 <li><a href="#communication">Inter-Service Communication</a></li>
+<li><a href="#configuration">Centralized Configuration Services</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -52,7 +53,7 @@ SyntaxHighlighter.all()
 <div class="content" id="intro">
 <h3>Introduction</h3>
 <p>Microservice is an architecture for designing modern server-side application. It breaks down the monolithic design into individual, loosely coupled services (components). These services can be programed in different languages, scaled independently.</p>
-<p>Each service will have its own database</p>
+<p>Each service will have its own database.</p>
 </div>
 </li>
 <li>
@@ -66,9 +67,24 @@ SyntaxHighlighter.all()
             <ol>
                 <li>RESTful API (HTTP, Synchronous):</li>
                 <li>RPC (Synchronous/Asynchronous): still kind of coupled.</li>
-                <li>Message Broker:</li>
+                <li>Message Broker: Amazon SQS, Kafka.</li>
+            </ol>
+            <h4>Restful API Proxy and authentication</h4>
+            <p>The call of our api can come from internal call, first party clients, and third party clients.</p>
+            <ol>
+                <li>Internal call authentication: grant_type=client_credential and/or proxy.<br>
+                    Proxy: an API is running at domain:8900, proxy routes traffic domain/v2/service to domain:8900. Let domain:8900 be able to invoked by local network.
+                </li>
+                <li>first party clients: grant_type=password</li>
             </ol>
         </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="communication">
+        <h3>Centralized Configuration Services</h3>
+        <p>Different microservices may need same configurations, such as token, secret, to access some 3rd party services, such as amazon sqs. We need to provide a high availiability service to provide the configuration function.</p>
+        <p>HashiCorp's Consul and Vault provide this function.</p>
     </div>
 </li>
 <li>
