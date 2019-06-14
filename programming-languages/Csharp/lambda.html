@@ -37,10 +37,11 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>C#&nbsp;-&nbsp;Lambda</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-02-27</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-27</span></p>
+<p class="date"><span class="created-date">Created:2019-02-27</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-06-12</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Delegate & Event</a></li>
+<li><a href="#common-delegate">Common Delegate</a></li>
 <li><a href="#lambda">Lambda</a></li>
 <li><a href="#closure">Closure</a></li>
 <li><a href="#java">Compare with Java</a></li>
@@ -148,6 +149,43 @@ SyntaxHighlighter.all()
     </ol>
 </div>
 </div>
+</li>
+<li>
+    <div class="content" id="common-delegate">
+        <h3>Common Delegate</h3>
+        <div class="featureList">
+            <ol>
+                <li>Converter
+                    <pre class="brush:cpp">
+                            public delegate TOutput Converter&lt;in TInput, out TOutput>(TInput input); // namespace System;
+                    </pre>
+                    <p>
+                        a function takes a input of TInput and output a TOutput<br>
+                        Used by Collection e.g. List to convert all
+                    </p>
+                </li>
+                <li>Predicate
+                    <pre class="brush:cpp">
+                            public delegate bool Predicate&lt;in T>(T obj); // namespace System;
+                    </pre>
+                    <p>
+                        a function takes a input of T and return a bool<br>
+                        Represents the method that defines a set of criteria and determines whether the specified object meets those criteria.<br>
+                        Used by Collection e.g. List to Find or Exist.
+                    </p>
+                </li>
+                <li>Action
+                    <pre class="brush:cpp">
+                            public delegate void Action&lt;in T>(T obj); // namespace System;
+                    </pre>
+                    <p>
+                        A function takes a input of T and does something on it.<br>
+                        Used by List to ForEach
+                    </p>
+                </li>
+            </ol>
+        </div>
+    </div>
 </li>
 <li>
     <div class="content" id="lambda">

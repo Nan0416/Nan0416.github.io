@@ -2,7 +2,7 @@
 <!-- NewPage -->
 <html lang="en">
 <head>
-<title>&nbsp;</title>
+<title>C#&nbsp;Keywords</title>
 <meta charset="utf-8">
 <meta name="date" content="2019-03-02">
 <meta name="keywords" content="">
@@ -35,12 +35,12 @@ SyntaxHighlighter.all()
 </script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<strong>&nbsp;-&nbsp;</strong>
+<strong>C#&nbsp;-&nbsp;Keyword</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-03-02</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-03-02</span></p>
+<p class="date"><span class="created-date">Created:2019-03-02</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-06-12</span></p>
 <div class="catalog">
 <ul class="catalogItems">
-<li><a href="#intro">Introduction</a></li>
+<li><a href="#in-out">in/out/ref</a></li>
 <li><a href="#parameter">Parameters ()</a></li>
 <li><a href="#operator">Operators ()</a></li>
 <li><a href="#field">const, readonly ()</a></li>
@@ -51,8 +51,170 @@ SyntaxHighlighter.all()
 <div class="contentContainer">
 <ol>
 <li>
-<div class="content" id="intro">
-<h3>Introduction</h3>
+<div class="content" id="in-out">
+<h3>in/out/ref</h3>
+<p>in/out/ref are parameter modifier. They make variables pass as reference type. This is pretty useful for heavy value type.</p>
+<p class="reference-box">It is like the ref or out keywords, except that in arguments cannot be modified by the called method. Whereas ref arguments may be modified, out arguments must be modified by the called method, and those modifications are observable in the calling context.</p>
+<p>in/out/ref is not part of the function signature, so fun(in int i) is same as fun(out int i). <span style="color:red">But (int i) is different from (in int j)</span></p>
+<div class="featureList">
+    <ol>
+        <li>
+            <h4>In C#7.2 and later</h4>
+            <p style="color:green;font-size:12px">
+                How to select C# version?<br>
+                In .csproj file, add 
+                <pre style="color:black;font-size:12px;border:1px solid green;">
+                    &lt;PropertyGroup>
+                        &lt;LangVersion>7.2&lt;/LangVersion>
+                    &lt;/PropertyGroup>
+                </pre>
+            </p>
+            <p>Before calling the function, the input variables must be initialized. <br>
+                During calling the function, "in" is optional. It can used to overload <span style="color:red">Immediate value is allowed.</span><br>
+                Inside the function, the variables cannot be modified. <br>
+            </p>
+            <p>Class and Struct's member can be modified.</p>
+            <pre class="brush:cpp">
+                    public class Program
+                    {
+                        static void Main(string[] args)
+                        {
+                            INREFOUT inrefout = new INREFOUT();
+                            int age;
+                            // inrefout.in_method(age); //cannot call on uninitialized value.
+                            inrefout.in_method(10); // can use immediate value.
+                            int value = 10;
+                            inrefout.in_method(value); // use the method without in.
+                            inrefout.in_method(in value); // use the method with in.
+                            SimpleClass sc = new SimpleClass();
+                            inrefout.in_method(sc);
+                            inrefout.in_method(in sc);
+                        }
+                    }
+                    public class SimpleClass{
+                        public string message = "";
+                        public int value = 0;
+                    }
+                    public class SimpleStruct{
+                        public string message = "";
+                        public int value = 0;
+                    }
+                    public class INREFOUT { 
+                        public void in_method(in int age) { 
+                            //value = 10; // cannot assign value.
+                            Console.WriteLine(age);
+                        }
+                        public void in_method(int value){
+                            Console.WriteLine(value); // overload
+                        }
+                        public void in_method(in SimpleClass sc){
+                            sc.message = "new string";
+                            sc.value = -1;
+                            // sc = null;
+                        }
+                        public void in_method(in SimpleStruct ss){
+                            ss.message = "new string";
+                            ss.value = -1;
+                            // ss = new SimpleStruct();
+                        }
+                    }
+            </pre>
+            <p class="reference-box">Variables passed as in arguments must be initialized before being passed in a method call. However, the called method may not assign a value or modify the argument.</p>
+        </li>
+        <li><h4>Out</h4>
+        <p>Before calling out function, variables can be either initialized or uninitialized.<br>
+        During calling out function, must with out keyword. Immediate value is not allowed.<br>
+        Inside the function, variables must be assigned before used.
+        </p>
+        <pre class="brush:cpp">
+                public class OutKeyword
+                {
+                    static void Main(string[] args)
+                    {
+                        INREFOUT inrefout = new INREFOUT();
+                        int value = 10;
+                        inrefout.out_method(out value);
+                        SimpleClass sc = new SimpleClass();
+                        inrefout.out_method(out sc);
+                    }
+                }
+                public class SimpleClass{
+                    public string message = "";
+                    public int value = 0;
+                }
+                public class SimpleStruct{
+                    public string message = "";
+                    public int value = 0;
+                }
+                public class INREFOUT { 
+                    public void out_method(out int value) { 
+                        value = 10; // must be assigned a value.
+                        Console.WriteLine("in " + value);
+                    }
+                    public void out_method(out SimpleClass sc){
+                        // sc.message = "new string"; // sc is null when 
+                        // Console.WriteLine($"out SimpleClass {sc}"); sc cannot be used before assign
+                        sc = null; // 
+                    }
+                    public void out_method(out SimpleStruct ss){
+                        // ss.message = "new string";
+                        // ss.value = -1;
+                        ss = new SimpleStruct();
+            
+                    }
+                }
+        </pre>
+        
+        </li>
+        <li>
+            <h4>ref</h4>
+            <p>Before calling ref function, variables can be either initialized or uninitialized.<br>
+                During calling ref function, must with ref keyword. Immediate value is not allowed.<br>
+                Inside the function, variable can be modified or not.</p>
+            <pre class="brush:cpp">
+    public class RefKeyword
+    {
+        static void Main(string[] args)
+        {
+            INREFOUT inrefout = new INREFOUT();
+            int value = 10;
+            inrefout.ref_method(ref value);
+            Console.WriteLine(value);
+            SimpleClass sc = new SimpleClass();
+            Console.WriteLine(sc);
+            inrefout.ref_method(ref sc);
+            Console.WriteLine(sc); // null
+        }
+    }
+    public class SimpleClass{
+        public string message = "";
+        public int value = 0;
+    }
+    public class SimpleStruct{
+        public string message = "";
+        public int value = 0;
+    }
+    public class INREFOUT { 
+        public void ref_method(ref int value) { 
+            Console.WriteLine("in " + value);
+            value++;
+        }
+        public void ref_method(ref SimpleClass sc){
+            // sc.message = "new string"; // sc is null when 
+            // Console.WriteLine($"out SimpleClass {sc}"); sc cannot be used before assign
+            sc = null; // 
+        }
+        public void ref_method(ref SimpleStruct ss){
+            // ss.message = "new string";
+            // ss.value = -1;
+            ss = new SimpleStruct();
+
+        }
+    }
+            </pre>
+        </li>
+    </ol>
+</div>
 </div>
 </li>
 <li>

@@ -37,7 +37,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>C#&nbsp;-&nbsp;Class</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-02-23</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-06-02</span></p>
+<p class="date"><span class="created-date">Created:2019-02-23</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-06-19</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -47,7 +47,7 @@ SyntaxHighlighter.all()
 <li><a href="#setter-getter">Setter/Getter</a></li>
 <li><a href="#default-value">Optional Argument (Default Value) & Overloading[todo]</a></li>
 <li><a href="#named-parameter">Named parameters</a></li>
-<li><a href="#operator">Override Operator</a></li>
+<li><a href="#operator">Overload Operator</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -232,41 +232,7 @@ SyntaxHighlighter.all()
                 <li>Subclass's accessibility &lt; Parent class e.g. Subclass Public and Parent class Internal is an error.</li>
             </ol>
         </div>
-        <h4>Overload operator</h4>
-        <div class="featureList">
-            <ol>
-                <li>Overload Indexer.
-                    <pre class="brush:java">
-                        // []
-                        class XXX{
-                            public int this[int index] { // get, set, value are keywords in C#
-                                get {
-                                    return 0;
-                                }
-                                set {
-                                    Console.WriteLine(value);
-                                }
-                            }
-                        }
-                    </pre>
-                </li>
-                <li>Operator Overload.<br>
-                    In C++, overloading a operator can be done as either a function member or a friend function. However, in C#, only the "friend function" like
-                    overloading is allowed. C# does not have "friend function" concept, it use public static method member.
-                    <pre class="brush:java">
-                        public class XXX{
-                            public static string operator + (XXX a, XXX b){
-
-                            }
-                        }
-                    </pre> 
-                </li>
-                <li>Casting Overload<br>
-                    <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/conversion-keywords" target="_blank">Here.</a>
-
-                </li>
-            </ol>
-        </div>
+        
         <h4>Event with Function Delegate</h4>
         <div>
             <p>C# event subscribing can be done with IDE's drag. But also can be done programmatically with Delegate.</p>
@@ -380,6 +346,45 @@ SyntaxHighlighter.all()
         }
     }
                     </pre>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="operator">
+        <h3>Overload Operator</h3>
+        <div class="featureList">
+            <ol>
+                <li>Overload Indexer.
+                    <pre class="brush:java">
+                        // []
+                        class XXX{
+                            public int this[int index] { // get, set, value are keywords in C#
+                                get {
+                                    return 0;
+                                }
+                                set {
+                                    Console.WriteLine(value);
+                                }
+                            }
+                        }
+                    </pre>
+                </li>
+                <li>Operator Overload.<br>
+                    In C++, overloading a operator can be done as either a function member or a friend function. However, in C#, only the "friend function" like
+                    overloading is allowed. C# does not have "friend function" concept, it use public static method member.
+                    <pre class="brush:java">
+                        public class XXX{
+                            public static string operator + (XXX a, XXX b){
+
+                            }
+                        }
+                    </pre> 
+                </li>
+                <li>Casting Overload<br>
+                    <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/conversion-keywords" target="_blank">Here.</a>
+
                 </li>
             </ol>
         </div>
