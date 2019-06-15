@@ -17,6 +17,7 @@
 <script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushSql.js"></script>
 <link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
 <link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
 
@@ -38,11 +39,12 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>PostgreSQL&nbsp;-&nbsp;Admin</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-03-02</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-03-02</span></p>
+<p class="date"><span class="created-date">Created:2019-03-02</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-06-14</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
-
+<li><a href="#role">Role vs User</a></li>
+<li><a href="#authentication">Login Authentication</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -60,24 +62,80 @@ SyntaxHighlighter.all()
         <li>Authentication and pg_hba.conf</li>
         <li>pgAdmin</li>
     </ol>
+    <ol>
+        <li><h4>Linux Installation</h4>
+            <p>When installing PostgreSQL, a OS user named postgres and a DB role named postgres will be created. PostgreSQL sets password for neither OS postgres nor DB postgres. The administor needs to setup them
+                <pre class="brush:bash">
+                        $sudo passwd postgres # setup password for linux user postgres
+                </pre>
+                When you login Postgre, postgre will use the role has the same name as the current OS user by default. So first switch to OS user postgres, "sudo -i -u postgres", and then login, "psql". And then set the postgres role password,
+                <pre class="brush:sql">
+                        postgres=> ALTER USER postgres WITH PASSWORD 'new_password';
+                </pre>
+            </p>
+        </li>
+        <li> <h4>Windows installation</h4>
+            <p>Windows provides a installer that automatically install postgreSQL server, client, and pgadmin. And setup the password for postgres role. (There is no postgres windows system user)</p>
+            <p>By default, the executable files are installed in C:\Program Files\PostgreSQL\10\bin, add this to filepath to environment variables path. "psql" is the client terminal program. 
+        
+                <pre class="brush:bash">
+                    psql -h localhost -U postgres -d postgres -p 5432
+                    // -h server address, -p port number, -U username, -d database 
+                </pre>
+            </p>
+        </li>
+    </ol>
+   
 </div>
 </div>
 </li>
 <li>
     <div class="content" id="role">
         <h3>Role Vs User</h3>
-        <p>PostgreSQL database uses Role to manage users. A role is like a Linux user, which has specific privileges. When installing PostgreSQL, a OS user named postgres and a DB role named postgres will be created.
-        When you login Postgre, postgre will use the role has the same name as the current OS user by default. So first switch to OS user postgres, "sudo -i -u postgres", and then login, "psql".
+        <p>PostgreSQL database uses Role to manage users. A role is like a Linux user, which has specific privileges. 
         </p>
-        <h4>Postgres Password</h4>
-        <p>PostgreSQL sets password for neither OS postgres nor DB postgres. The administor needs to setup them<br>
-        $sudo passwd postgres<br>
-        postgres=> ALTER USER postgres WITH PASSWORD 'new_password';
-        </p>
-        <h4>Create a role</h4>
-        <p>
-            CREATE ROLE name LOGIN; # create a role that can login. same as CREATE USER name;
-        </p>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>Login with default user postgres</h4>
+                    <pre class="brush:bash">
+                        psql -h localhost -U postgres -d postgres -p 5432
+                        // -h server address, -p port number, -U username, -d database 
+
+                        // prompt {db_name}=#
+                        postgres=#
+                    </pre>
+                    By default, it will connect to the postgres database.
+                </li>
+                <li>
+                    <h4>Create a new database</h4>
+                    // with prompting postgres=#
+                    <pre class="brush:sql">
+                       
+                        \list  -- show all database
+                        select current_database(); -- show the current database.
+                        create database mydb; -- create a new database named mydb.
+                        \connect mydb; -- connect to a mydb.
+                    </pre>
+                </li>
+                <li>
+                    <h4>Create a role (user)</h4>
+                    
+                    <p>
+                        Create a user and grand privileges on mydb. <span style="color:red">A role that has login right is called user</span>
+                        <pre class="brush:sql">
+                                create role qinnan with encrypted password '12345'; -- same as CREATE USER name; only difference is CREATE USER gives the login privilege.
+                                grant all privileges on database mydb to qinnan;
+                                alter role qinnan with login; -- gives this user login privilege
+                                select * from pg_roles; -- show all roles;
+                        </pre>
+                    </p>
+                </li>
+            </ol>
+        </div>
+       
+        
+      
     </div>
 </li>
 <li>
@@ -112,7 +170,7 @@ SyntaxHighlighter.all()
                 <li>authentication method<br>
                 md5: using role password to login <br>
                 peer: the OS username same as Role name. #<span style="color:red">this is why another OS user (nan) cannot login  
-                    DB role postgres. After change this field to md5, nan can login postgres. ** But only one auth method can be used for a rule ** </span>
+                    DB role postgres. After change this field to md5, nan can login postgres. ** But only one auth method can be used for a role ** </span>
                 </li>
             </ol>
         </div>
