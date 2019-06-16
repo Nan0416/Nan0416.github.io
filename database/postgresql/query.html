@@ -1,0 +1,272 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>SQL&nbsp;Query</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-06-09">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushPython.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushSql.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>SQL&nbsp;-&nbsp;Query</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-06-15</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-06-15</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#sql">SQL (DML)</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+<div class="featureList">
+    <ol>
+        <li>
+            <h4>Relational algebra</h4>
+            <p>Procedure language with operators. (more like SQL)</p>
+            <p>operators: select, project, cross-product</p>
+            <p>1). condition join: cross product with a selection condition.<br>
+                2). equijoin: cross product with a selection condition that specifies a field is same.
+                3). natural join: cross product with a selection condition that all fields with the same names should equal.
+            </p>
+            <p>Division: e.g. relation A has (x, y, z) three fields, relation B has (y, z) two fields, A/B = (x) such that for every (y,z) in B there is a (x, y, z) in A.</p>
+            <p><img src="./img/relational-algebra-12-728.jpg" width="300" height="200"></p>
+        </li>
+        <li>
+            <h4>Relational calculus</h4>
+            <p>Declarative language with specifying condition. {S | S (- Sailors ^ S.rating > 7 }</p>
+            <p>quantifiers: any and every</p>
+        </li>
+    </ol>
+</div>
+</div>
+</li>
+<li>
+    <div class="content" id="sql">
+        <h3>SQL (DML)</h3>
+        <p>select, from, where, order by, limit, like, in/not in, left join, inner join, full join, union, intersect, except, exists, any, all, group by, having, every</p>
+        <p>count, sum, avg, max, min</p>
+        <p>DML (data manipulation language): a subset of SQL that allows users to pose queries and to insert, delete, and modify rows.</p>
+        <div class="featureList">
+            <p><a href="./printable-postgresql-sample-database-diagram.pdf" target="_blank">http://www.postgresqltutorial.com/ DVD rental ER diagram.</a></p>
+            <ol>
+                <li>
+                    <h4>Select from a single table</h4>
+                    <pre class="brush:sql">
+                        -- SELECT [DISTINCT] select-list FROM from-list [WHERE qualification] [GROUP BY ... [HAVING ...]] [ORDER BY ...] [LIMIT ...[OFFSET 3]]
+                        select first_name from customer;
+                        elect * from customer where active = 0;
+                        -- give an alias
+                        select c.first_name, c.email from customer c;
+                        select c.first_name, c.email from customer c where c.active = 1;
+
+                        -- select with expression
+                        -- || is the string concatenation operation,
+                        -- CONCAT is the string concatenation function introduced since 9.0
+                        select c.first_name || ' ' || c.last_name as full_name from customer c;
+                        select CONCAT(c.first_name,' ',c.last_name) as full_name from customer c;
+                    
+                        -- select is used to evaluate expression 
+                        -- select EXPRESSION AS ...;
+                        select 9 * 8;
+                        select CONCAT(c.first_name,' ',c.last_name) as full_name, current_database() from customer c;
+
+                        -- order by
+                        select c.first_name, c.last_name from customer c where c.active = 1 order by c.first_name asc;
+                    </pre>
+                </li>
+                <li>
+                    <h4>Where</h4>
+                    <pre class="brush:sql">
+                        -- = equal, &lt;> not equal, AND, OR
+
+                        -- IN
+                        select * from customer c where c.active in (1,2,3);
+                        select * from customer c where c.active in (1,2,3);
+                        select * from customer c where c.first_name in ('Ann', 'Anne', 'Annie');
+
+                        -- LIKE 
+                        -- like creates a string pattern to match.
+                        -- % matches any length characters, _ matches a single character.
+                        select * from customer c where c.first_name LIKE '__nn%'; 
+                        -- '__nn%' matches 'Qinnan', 'Danny', ...
+
+                        -- BETWEEN
+
+                    </pre>
+                </li>
+                <li>
+                    <h4>LIMIT</h4>
+                    <pre class="brush:sql">
+                        select * from customer c where c.first_name LIKE '__nn%' limit 4;
+                        -- offset used with order by to create a predicatable anwser.
+                        select * from customer c where c.first_name LIKE '__nn%' order by c.store_id limit 4 offset 4;
+                    </pre>
+                </li>
+                <li>
+                    <h4>Cross Join (with condition)</h4>
+                    from-list has more than one table.
+                    <pre class="brush:sql">
+                        select f.title, l.name from film f, language l where f.language_id = l.language_id
+                        -- same as 
+                        select f.title, l.name from film f CROSS JOIN language l where f.language_id = l.language_id;
+                    </pre>
+
+                    <h4>Inner Join</h4>
+                    A inner join B on A.id = B.id; returns rows in table A that have the corresponding rows in table B. If B has multiple rows satisfy A's single row, then A's row will be replicated.
+                    <pre class="brush:sql">
+                            select l.name, f.title from language l inner join film f on l.language_id = f.language_id;
+                            select l.name, f.title from film f inner join language l on l.language_id = f.language_id; -- same as the above.
+                    </pre>
+                    <h4>Left Join</h4>
+                    A left join B on A.id = B.id; returns every rows in table A that may or may not have corresponding rows in table B. If B has multiple rows satisfy A's single row, then A's row will be replicated. If B does not have corresponding rows, A's row is still returned, but on the B side, it will be null.
+                    <pre class="brush:sql">
+                            select l.name, f.title from language l inner join film f on l.language_id = f.language_id; -- If a language does not have films in the database, then the f.title will be null.
+                            select l.name, f.title from film f inner join language l on l.language_id = f.language_id;
+                    </pre>
+                    <h4>Full Join</h4>
+                    left join + right join; each rows in A and B are kept.
+                    <pre class="brush:sql">
+                            select distinct on (l.name) l.name , f.title from film f full join language l on l.language_id = f.language_id order by l.name, f.title;
+                    </pre>
+                </li>
+                <li>
+                    <h4>Set operations</h4>
+                    
+                    <p>The result of each selection must be union-compatible, meaning queries must return the same number of columns and the corresponding columns in the queries must have compatible data types.</p>
+                    <h4>Union</h4>
+                    <pre class="brush:sql">
+                            select last_name from customer 
+                            union
+                            select last_name from staff; 
+                            -- union removes all duplicated rows;
+                            -- union all keeps duplicated rows;
+                    </pre>
+                    <h4>Intersect</h4>
+                    <pre class="brush:sql">
+                            select last_name from customer 
+                            intersect
+                            select last_name from staff; 
+                    </pre>
+                    <h4>except</h4>
+                    <pre class="brush:sql">
+                            select last_name from customer 
+                            except
+                            select last_name from staff; 
+                    </pre>
+                </li>
+                <li>
+                    <h4>Nested Query / Subquery</h4>
+                    <p>a nest query can appear in the clause of WHERE, FROM, HAVING.</p>
+                    
+                    <pre class="brush:sql">
+                            select * from city c 
+                                where c.country_id = (select c.country_id from country c where c.country = "China");
+                            -- the nested must return a single row, if not guaranteed, use in.
+                            select * from city c 
+                                where c.country_id in (select c.country_id from country c where c.country = "China");
+                            
+                            select * from address a where a.city_id 
+                                in (select c.city_id from city c wherec.country_id 
+                                    in (select c.country_id from country c where c.country = 'China'));
+                    </pre>
+                    <h4>exists, any, all</h4>
+                </li>
+                <li>
+                    <h4>Aggregate Operators</h4>
+                    <p>count, sum, avg, max, min</p>
+                    <pre class="brush:sql">
+                        -- show how many cities in China.
+                        -- COUNT
+                        select COUNT(*) as number_of_cities_in_China 
+                            from city c 
+                            where c.country_id 
+                            in (select c.country_id from country c where c.country = 'China');
+                    </pre>
+                </li>
+                <li>
+                    <h4>Group by and having</h4>
+                    <p>Do aggregate operations on each groups of rows in a relations, a group is defined by GROUP BY</p>
+                    <pre class="brush:sql">
+                        select count (*) as number_of_cities from city c GROUP BY c.country_id ORDER BY number_of_cities DESC;
+                        -- the select-list can only be aggregate functions and the group by field.
+                        select count(*) as number_of_cities, country.country 
+                        from city, country
+                        where city.country_id = country.country_id
+                        group by country.country
+                        order by number_of_cities desc;
+
+                        select count(*) as number_of_cities, country.country 
+                        from city inner join country
+                        on city.country_id = country.country_id
+                        group by country.country
+                        order by number_of_cities desc;
+                    </pre>
+                    <p>Having will put some restriction on a group, if the group does not satisfy the restriction, then it will be removed.</p>
+                    <pre class="brush:sql">
+                        select count(*) as number_of_cities, country.country 
+                        from city inner join country
+                        on city.country_id = country.country_id
+                        group by country.country
+                        having count(*) >= 10
+                        order by number_of_cities desc;
+
+                        -- HAVING count(*) > 1 AND EVERY ( ... ); 
+                    </pre>
+
+                    <h4>Grouping set</h4>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li><a href="http://www.postgresqltutorial.com/postgresql-select/">PostgresSQL tutorial: PostgreSQL SELECT</a></li>
+        
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>
