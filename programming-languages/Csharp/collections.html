@@ -2,12 +2,12 @@
 <!-- NewPage -->
 <html lang="en">
 <head>
-<title>&nbsp;</title>
+<title>C#&nbsp;Collections</title>
 <meta charset="utf-8">
 <meta name="date" content="2019-06-09">
-<meta name="keywords" content="">
-<meta name="keywords" content="">
-<meta name="keywords" content="">
+<meta name="keywords" content="C#">
+<meta name="keywords" content="collection">
+<meta name="keywords" content=".net">
 <link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
 <script type="text/javascript" src="../../script.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
@@ -36,11 +36,12 @@ SyntaxHighlighter.all()
 </script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<strong>&nbsp;-&nbsp;</strong>
+<strong>C#&nbsp;-&nbsp;Collections</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-06-09</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-06-09</span></p>
+<p class="date"><span class="created-date">Created:2019-06-16</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-06-16</span></p>
 <div class="catalog">
 <ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
 <li><a href="#collection">Collections</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
@@ -48,6 +49,21 @@ SyntaxHighlighter.all()
 <hr>
 <div class="contentContainer">
 <ol>
+    <li>
+        <div class="content" id="intro">
+            <h3>Introduction</h3>
+            <div class="generalTable">
+            <table>
+                <tr><th>-</th><th>Java</th><th>C#</th></tr>
+                <tr><td>List</td><td>List, LinkedList/ArrayList</td><td>List</td></tr>
+                <tr><td>Map</td><td>Map, HashMap</td><td>Dictionary</td></tr>
+            </table>
+            </div>
+            <p>
+                Using System.Collections.Generic;
+            </p>
+        </div>
+    </li>
 <li>
     <div class="content" id="collection">
         <h3>Collections</h3>
@@ -55,33 +71,84 @@ SyntaxHighlighter.all()
             <ol>
                 <li>
                     <h4>List</h4>
+                    <p>Don't use IList interface, because some methods e.g. .AddRange on List are not defined by IList</p>
                     <pre class="brush:cpp">
-                            using System;
-                            using System.Collections.Generic;
-                            namespace collection_test
+            List&lt;string> list = new List&lt;string>();
+            List&lt;string> l2 = new List&lt;string>{"Mercedes-Benz ML350"};
+
+            // insert
+            list.Add("Mercedes-Benz ML350");
+            list.AddRange(l2);
+            // foreach
+            list.ForEach( Console.WriteLine );
+            // contains
+            bool doesContainCX5 = list.Contains("Mazda CX-5");
+            Console.WriteLine("does list contain CX5? " + doesContainCX5);
+            // indexOf
+            int index = list.IndexOf("Mercedes-Benz ML350");
+            Console.WriteLine($"Index of Mercedes-Benz ML350 is {index}");
+            // remove
+            list.Remove("Mercedes-Benz ML350"); // remove the 
+            list.Remove("Mazda CX-5");
+            // iterate
+            foreach(string value in list){
+                Console.WriteLine("foreach " + value);
+            }
+            for (var i = 0; i &lt; l2.Count; i++)
+            {
+                Console.WriteLine("for " + l2[i]);
+            }
+                    </pre>
+                </li>
+                <li>
+                    <h4>Dictionary</h4>
+                    <pre class="brush:cpp">
+                            /**
+                            * Add existed key throws error, using [] = value to add and update value.
+                            * [] get not existed key throws error, TryGetValue
+                            * 
+                            * Remove("") remove not existed key does not throw errors, but return false.
+                            *
+                            * 
+                            * Dictionary&lt;string, string> [], .Add(), .Remove(), .TryGetValue() .Count
+                            * KeyValuePair&lt;string, User> .ValueCollection, KeyCollection
+                            * 
+                            */
+                            Dictionary&lt;string, User> usersMap = ;
+                            foreach (KeyValuePair&lt;string, User> kvp in usersMap)
                             {
-                                class Program
-                                {
-                                    static void Main(string[] args)
-                                    {
-                                        // string is reference type
-                                        List&lt;string> salmons = new List&lt;string>();
-                                        salmons.Add("chinook");
-                                        salmons.Add("coho");
-                                        salmons.Add("pink");
-                                        salmons.Add("sockeye");
-                                        // Iterate through the list.  
-                                        foreach (string salmon in salmons)
-                                        {
-                                            Console.WriteLine(salmon);
-                                        }
-                                        for (int index = 0; index &lt; salmons.Count; index++)
-                                        {
-                                            Console.WriteLine(salmons[index]);
-                                        }
-                                    }
-                                }
+                                Console.WriteLine("Key = {0}, Value = {1}",
+                                    kvp.Key, kvp.Value.name);
                             }
+                            Dictionary&lt;string, User>.ValueCollection valueColl = usersMap.Values;
+                            foreach (User u in valueColl) {
+                                Console.WriteLine(u.age);
+                            }
+                            /*users.ForEach(user =>
+                            {
+                                // throws error if a key is already there.
+                                usersMap.Add(user.name, user);
+                            });*/
+                            usersMap["Nan Qin"] = usersMap["Xiaofei Chen"];
+                            usersMap["Nan"] = usersMap["Nan Qin"];
+                            Console.WriteLine(usersMap.Count);
+                            Console.WriteLine(usersMap["Nan Qin"].age);
+                            // throws an error if the key is not found
+                            //Console.WriteLine(usersMap["Nan"].age);
+                            User user;// = new User();
+                            bool hasValue = usersMap.TryGetValue("Nan Qin", out user);
+                            if (hasValue) {
+                                Console.WriteLine(user.age);
+                            }
+                            // remove does not throw errors, it returns true or false.
+                            Console.WriteLine(
+                                    "{0} , {1} , {2}",
+                                usersMap.Remove("Nan Qin"), // true
+                                usersMap.Remove("Nan Qin"), // false
+                                usersMap.Remove("Nan")); // false
+                            usersMap.Clear();
+                            // Console.WriteLine(usersMap["Nan"]);
+                            Console.WriteLine(usersMap.Count);
                     </pre>
                 </li>
             </ol>
