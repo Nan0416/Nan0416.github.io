@@ -38,7 +38,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>C#&nbsp;-&nbsp;Basic</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-09-28</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-04-11</span></p>
+<p class="date"><span class="created-date">Created:2018-09-28</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-06-19</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Types</a></li>
@@ -49,6 +49,8 @@ SyntaxHighlighter.all()
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
+<hr>
+<p style="color:red;font-size: 14px;">local variables must be assigned a value before using. members does not need to have.</p>
 <hr>
 <div class="contentContainer">
 <ol>
@@ -103,6 +105,55 @@ SyntaxHighlighter.all()
                 }
             </pre>
         </li>
+        <li>
+            <h4>Nullable Type</h4>
+            <p>C# value type's variables cannot be set to null. e.g. int, enum, struct ... If we declare a variable of value type without initializing a value, it will be set to its default value.
+                <span style="color:red">However, C# provides a way to make these non-nullable value type variable nullable.</span>
+            </p>
+            <pre class="brush:cpp">
+                // int year = null;
+                // Cannot convert null to 'int' because it is a non-nullable value type.
+
+                int? year = null;    
+            </pre>
+            <p>With a question mark, now it become nullable, which means it can be set to null. <span style="color:red">Reference type is naturally "nullable", so the question 
+                mark cannot be used with reference type. However, reference type cannot be called nullable type, nuallable type are defined as value type with null.</span></p>
+            <p>The ? is acutally implemented as a System.Nullable&lt;T> generic.</p>
+            <pre class="brush:cpp">
+                System.Nullable&lt;int> year = 10; // int + null => int?
+
+                int year = 2019;
+                int? year2 = null;
+                // year = year2 ; nullable type can be assigned to a non-nullable type.
+                bool same = (year == year2); // comparison is allowed.
+
+            </pre>
+            <h4>Null conditional operator ?. (Elvis operator)</h4>
+            <p>?. can form a chain, if any value is null, the evaluation of the expression is ended and return null.<span style="color:red">?. primarily used with reference type,  nullable type does not need to have ?.</span></p>
+            <pre class="brush:cpp">
+                // nullable type does not need to have ?.
+                
+                int? year = null;
+                string month = null;
+                string str = year?.ToString();
+                str = year.ToString();
+                str = month?.ToString(); 
+                str = month.ToString(); // error.
+
+            </pre>
+            <h4>Null-coalescing operator ??</h4>
+            <p>variable = expression/variable ?? expression/variable/value. <span style="color:red">If the lefthand-side is null, then return the righthand-side. So it does not make sense if the lefthand-side is a immediate value or a non-nullable type. </span></p>
+            <p>The lefthand side of ?? can be nullable and reference type. Depending on the variable type, the righthand side may be OK to be nullable.</p>
+            <pre class="brush:cpp">
+                string text = "message";
+                int length = text?.Length ?? 0; // righthand side cannot be null since int cannot be null.
+                int? length2 = text?.Length ?? null; // righthand side be null since int? can be null.
+
+                
+            </pre>
+            <p style="color:red">a ?? b ?? c    ===  a ?? (b ?? c)</p>
+        </li>
+        
     </ol>
 </div>
 
@@ -301,6 +352,7 @@ SyntaxHighlighter.all()
     <ol>
         <li><a href="https://docs.microsoft.com/en-us/dotnet/csharp/tour-of-csharp/types-and-variables" target="_blank">Types and variables</a></li>
         <li><a href="https://docs.microsoft.com/en-us/dotnet/csharp/tour-of-csharp/expressions" target="_blank">Expression</a></li>
+        <li><a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/member-access-operators#null-conditional-operators--and-" target="_blank">Null-conditional operators ?. and ?[] (Elvis operator)</a></li>
     </ol>
 </div>
 </div>

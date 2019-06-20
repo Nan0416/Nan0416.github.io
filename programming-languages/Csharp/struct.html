@@ -2,12 +2,12 @@
 <!-- NewPage -->
 <html lang="en">
 <head>
-<title>C#&nbsp;Struct</title>
+<title>C#&nbsp;Enum, Struct</title>
 <meta charset="utf-8">
-<meta name="date" content="2019-03-05">
-<meta name="keywords" content="">
-<meta name="keywords" content="">
-<meta name="keywords" content="">
+<meta name="date" content="2019-06-19">
+<meta name="keywords" content="C#">
+<meta name="keywords" content="enum">
+<meta name="keywords" content="struct">
 <link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
 <script type="text/javascript" src="../../script.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
@@ -35,22 +35,62 @@ SyntaxHighlighter.all()
 </script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<strong>C#&nbsp;-&nbsp;struct</strong>
+<strong>C#&nbsp;-&nbsp;Enum, Struct</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-03-05</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-03-05</span></p>
+<p class="date"><span class="created-date">Created:2019-06-19 🎂</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-06-19</span></p>
 <div class="catalog">
 <ul class="catalogItems">
-<li><a href="#intro">Introduction</a></li>
-<li></li>
+<li><a href="#enum">Enum</a></li>
+<li><a href="#struct">Struct</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
 <hr>
 <div class="contentContainer">
 <ol>
+    <li>
+        <div class="content" id="enum">
+            <h3>Enum</h3>
+            <p>Enum is one of the value type, the default underlying type is int.</p>
+            <div class="featureList">
+                <ol>
+                    <li><h4>Define and use a enum</h4>
+                        <p>Be default, enum start element from 0. And enum's default value is 0; So if just declaring a enum <span style="color:red">member (local variable must be assigned a value)</span> without assigning value, its value will be the first element.</p>
+                        <pre class="brush:cpp">
+                            public enum Day{
+                                Sun,
+                                Mon,
+                                Tue,
+                                Wed,
+                                Thu,
+                                Fri,
+                                Sat,
+                            }
+                            Day day = Day.Sun;
+
+                            Day day2; // because enum is value type, it must have a default value, which is 0;
+                            Console.WriteLine(day2);
+                        </pre>
+                        <p style="color:red">Even though the underlying data type is int, you cannot directly assign a integer to it.</p>
+                    </li>
+                    <li>
+                        <h4>Check it has a valid value.</h4>
+                        <pre class="brush:cpp">
+                            public enum State{
+                                GA = 1, MN, CO
+                            }
+                            State s = default(State); // 0
+                            // but 0 is not a valid member.
+                            Console.WriteLine(Enum.IsDefined(typeof(State), s)); // false
+                        </pre>
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </li>
 <li>
-<div class="content" id="intro">
-<h3>Introduction</h3>
+<div class="content" id="struct">
+<h3>Struct</h3>
 <div class="featureList">
     <ol>
         <li>ref</li>
