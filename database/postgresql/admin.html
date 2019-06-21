@@ -39,12 +39,14 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>PostgreSQL&nbsp;-&nbsp;Admin</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-03-02</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-06-14</span></p>
+<p class="date"><span class="created-date">Created:2019-03-02</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-06-20</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
 <li><a href="#role">Role vs User</a></li>
 <li><a href="#authentication">Login Authentication</a></li>
+<li><a href="#environment_variables">Environment Variables</a></li>
+<li><a href="#cli">Command Line Tools</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -83,6 +85,9 @@ SyntaxHighlighter.all()
                     // -h server address, -p port number, -U username, -d database 
                 </pre>
             </p>
+        </li>
+        <li> <h4>Windows installation</h4>
+            <p>Same as Windowns, the default installation path is /Library/PostgreSQL/{version_number}/</p>
         </li>
     </ol>
    
@@ -185,7 +190,56 @@ SyntaxHighlighter.all()
             run everywhere, such as on the same machine of postgresql, same machine of the frontend browser, or an independent machine.</p>
         <p>Download and install through <a href="https://www.pgadmin.org/download/pgadmin-4-python-wheel/" target="_blank">Python Wheel</a><br>
             Before connecting to a PostgreSQL server, make sure the server pg_hba.conf is configured to be allowed to connect from the backend machine.</p>
-        <p>$psql -U </p>
+    </div>
+</li>
+<li>
+    <div class="content" id="environment_variables">
+        <h3>Environment Variables</h3>
+        <p>psql cli is developed with C library libpq. libpq's functions PQconnectdb, PQsetdbLogin and PQsetdb will use OS system environment variables to connect db if some arguments is not supplied.</p>
+        <p>Therefore, psql can use these environment variables to connect to db.</p>
+        <div class="featureList">
+            <ol>
+                <li>PGHOST = -h</li>
+                <li>PGPORT = -p</li>
+                <li>PGDATABASE = -d</li>
+                <li>PGUSER = -U</li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="cli">
+        <h3>Command Line Tools (under bin directory)</h3>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>postgres</h4>
+                    The server program. Using it to start the server.
+                </li>
+                <li>
+                    <h4>pg_clt</h4>
+                    Server status management. pg_ctl is a utility to initialize, start, stop, or control a PostgreSQL server.
+                    It should be run as the user who start the server. By default, it is the OS postgres user.
+                    <pre class="brush:bash">
+                        sudo -i -u postgres; # linux or Mac
+                        ./pg_clt status -D /path/to/data
+                    </pre>
+                    On Mac, the default data directory is /Library/PostgreSQL/{version_number}/data
+                </li>
+                <li>
+                    <h4>psql</h4>
+                    <p>Run query,cmd from command line or a .sql script file.</p>
+                    <pre class="brush:bash">
+                        # run a SQL query or a postgreSQL internal command, return result to console.
+                        psql -U postgres -h localhost -d dvdrental -p 5432 -c "\dt"
+                        # output as html table
+                        ./psql -U postgres -h localhost -d dvdrental -p 5432 -c "\dt" -H > ~/Desktop/table.html
+                        # run a query
+                        psql -U postgres -h localhost -d dvdrental -p 5432 -c "select * from actor limit 10;" -H > ~/Desktop/table2.html
+                    </pre>
+                </li>
+            </ol>
+        </div>
     </div>
 </li>
 <li>
@@ -194,6 +248,7 @@ SyntaxHighlighter.all()
 <div class="featureList">
     <ol>
         <li><a href="https://www.postgresql.org/docs/10/user-manag.html" target="_blank">Chapter 21. Database Roles</a></li>
+        <li><a href="https://www.postgresql.org/docs/10/libpq-envars.html" target="_blank">Environment Variables.</a></li>
     </ol>
 </div>
 </div>

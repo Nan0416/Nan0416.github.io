@@ -41,7 +41,8 @@ SyntaxHighlighter.all()
 <p class="date"><span class="created-date">Created:2019-06-19</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-06-19</span></p>
 <div class="catalog">
 <ul class="catalogItems">
-<li><a href="#intro">Introduction</a></li>
+<li><a href="#intro">Syntax</a></li>
+<li><a href="#organization">Organization</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -50,10 +51,92 @@ SyntaxHighlighter.all()
 <ol>
 <li>
 <div class="content" id="intro">
-<h3>Introduction</h3>
+<h3>Syntax</h3>
+<div class="featureList">
+    <ol>
+        <li><h4>Compared with Java</h4>
+        <p>
+            C# only has try, catch, finally, throw; but java also has throws that mark on method signature.
+        </p>
+        <li><h4>Example</h4>
+        <pre class="brush:cpp">
+            try{
+
+            }catch(Exception ex){
+
+            }finally{
+                // finally is always executed, even if catch statement also throws exception.
+            }
+        </pre>
+        </li>
+        <li>
+            <h4>Finally throws exception</h4>
+            <p>Exception is not stacked, meaning if the finally also throws exception, then it will override the catch throwed exception.</p>
+            <pre class="brush:cpp">
+                try{
+                    throw KeyNotFoundException("key not found");
+                }catch(Exception ex){
+                    throw new AggregateException("", new Exception("Resource Not found."));
+                }finally{
+                    throw new IndexOutOfRangeException("Out Of Range");
+                }
+                // the received exception by caller is IndexOutOfRangeException, AggregateException is overriden.
+            </pre>
+        </li>
+        <li>
+            <h4>Shorthand</h4>
+            <pre class="brush:cpp">
+                try{
+
+                }catch{
+
+                }
+                // same
+                try{
+
+                }catch(Exception e){
+
+                }
+
+                // re-throw the same exception;
+                catch(Exception ex){
+                    throw ex;
+                }
+                // same
+                catch{
+                    throw;
+                }
+            </pre>
+        </li>
+    </li>
+    </ol>
+</div>
 </div>
 </li>
 <li>
+    <div class="content" id="organization">
+        <h3>Organization</h3>
+        <pre style="border:1px green solid; font-size:12px; width:800px;overflow: scroll;">
+                            Exception (namespace: System);
+                                |
+                                |
+                                |
+                            SystemException (system)                        AggregateException             Developer defined ApplicationException;
+                                |
+                            ArgumentException
+                            IndexOutOfRangeException
+                            KeyNotFoundException(System.Collections.Generic)
+                            NotImplementException
+                            NullReferenceException
+                            IOException (System.IO)
+                                |
+                            FileNotFoundException 
+
+
+        </pre>
+    </div>
+</li>
+<!--<li>
 <div class="content" id="reference">
 <h3>References</h3>
 <div class="featureList">
@@ -62,7 +145,7 @@ SyntaxHighlighter.all()
     </ol>
 </div>
 </div>
-</li>
+</li>-->
 </ol>
 </div>
     
