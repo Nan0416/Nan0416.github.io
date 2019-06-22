@@ -607,3 +607,12 @@ p.reference-box, pre.reference-box{
     border: 1px solid gray;
     border-radius: 4px;
 }
+pre.pl-pgsql{
+    background-color: #f8f9fa !important;
+    padding: 15px;
+    font-weight: 500;
+    font-size: 12px;
+    font-family: monospace, monospace;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+}

@@ -4,7 +4,7 @@
 <head>
 <title>PostgreSQL&nbsp;Stored Procedures</title>
 <meta charset="utf-8">
-<meta name="date" content="2019-06-20">
+<meta name="date" content="2019-06-22">
 <meta name="keywords" content="postgresql">
 <meta name="keywords" content="stored-procedures">
 <meta name="keywords" content="database">
@@ -39,10 +39,10 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>PostgreSQL&nbsp;-&nbsp;Stored Procedures</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-06-20</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-06-20</span></p>
+<p class="date"><span class="created-date">Created:2019-06-22</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-06-22</span></p>
 <div class="catalog">
 <ul class="catalogItems">
-<li><a href="#intro">Introduction</a></li>
+<li><a href="#intro">PL/pgSQL</a></li>
 <li><a href="">Transaction</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
@@ -52,7 +52,76 @@ SyntaxHighlighter.all()
 <ol>
 <li>
 <div class="content" id="intro">
-<h3>Introduction</h3>
+<h3>PL/pgSQL</h3>
+<p>PL/pgSQL is a procedural programming language (like C) supported by PotgreSQL. PL/pgSQL aimed to allow PostgreSQL users to perform more complex operations and computations than SQL. Provide more control structures.</p>
+<p>The first implementation of providing SQL more procedural language ability is Oracle's PL/SQL language. And then ISO defined a standard called SQL/PSM (SQL/Persistent Stored Modules)</p>
+<p>T-SQL( Transcat-SQL) is the PL/SQL of Microsoft's SQL server.</p>
+<div class="featureList">
+    <ol>
+        <li><h4>How it works?</h4>
+        <p class="reference-box">
+                For a function written in a procedural language, the database server has no built-in knowledge about how to interpret the function's source text. Instead, the task is passed to a special handler that
+                 knows the details of the language. The handler could either do all the work of parsing, syntax analysis, execution, etc. itself, or it could serve as “glue” between PostgreSQL and an existing implementation 
+                 of a programming language. The handler itself is a C language function compiled into a shared object and loaded on demand, just like any other C function.
+        </p>
+        </li>
+        <li>
+            <p>Before using a PL language, it must be installed first. PL/pgSQL is installed by default. Other PL language, such as PL/Python is not installed.</p>
+            <pre class="brush:sql">
+                \dL // list installed PL.
+            </pre>
+        </li>
+    </ol>
+    <ol>
+        <li><h4>Structure</h4>
+        <p>Block structure</p>
+        <pre class="reference-box">
+[ &lt;&lt;label>> ]
+[ DECLARE
+    declarations ]
+BEGIN
+    statements/block
+END [ label ];
+        </pre>
+        <p>Function structure</p>
+        <pre class="reference-box">
+CREATE FUNCTION somefunc() RETURNS integer AS $$
+block
+$$ LANGUAGE plpgsql;
+        </pre>
+        <p>label is used as a reference, like C goto statement. Declare is used to declare variables.</p>
+        <p>Below function show variable scope.</p>
+        <pre class="pl-pgsql">
+CREATE FUNCTION somefunc() RETURNS integer AS $$
+&lt;&lt; outerblock >>
+DECLARE
+    quantity integer := 30;
+BEGIN
+    RAISE NOTICE 'Quantity here is %', quantity;  -- Prints 30
+    quantity := 50;
+    --
+    -- Create a subblock
+    --
+    DECLARE
+        quantity integer := 80;
+    BEGIN
+        RAISE NOTICE 'Quantity here is %', quantity;  -- Prints 80
+        RAISE NOTICE 'Outer quantity here is %', outerblock.quantity;  -- Prints 50
+    END;
+
+    RAISE NOTICE 'Quantity here is %', quantity;  -- Prints 50
+
+    RETURN quantity;
+END;
+$$ LANGUAGE plpgsql;
+        </pre>
+        </li>
+        <li>
+            <h4>Return a table</h4>
+            
+        </li>
+    </ol>
+</div>
 </div>
 </li>
 <li>
