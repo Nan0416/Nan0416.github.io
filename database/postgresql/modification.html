@@ -2,12 +2,12 @@
 <!-- NewPage -->
 <html lang="en">
 <head>
-<title>&nbsp;</title>
+<title>PostgreSQL&nbsp;Insertion, Deletion, Upsert, Merge</title>
 <meta charset="utf-8">
 <meta name="date" content="2019-06-09">
-<meta name="keywords" content="">
-<meta name="keywords" content="">
-<meta name="keywords" content="">
+<meta name="keywords" content="postgresql">
+<meta name="keywords" content="sql">
+<meta name="keywords" content="database">
 <link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
 <script type="text/javascript" src="../../script.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
@@ -37,12 +37,15 @@ SyntaxHighlighter.all()
 </script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<strong>&nbsp;-&nbsp;</strong>
+<strong>PostgreSQL&nbsp;Insertion, Deletion, Upsert, Merge</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-06-09</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-06-09</span></p>
+<p class="date"><span class="created-date">Created:2019-06-21</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-06-22</span></p>
 <div class="catalog">
 <ul class="catalogItems">
-<li><a href="#intro">Introduction</a></li>
+<li><a href="#insert">Insertion</a></li>
+<li><a href="#update">Update</a></li>
+<li><a href="#delete">Delete</a></li>
+<li><a href="#upsert">Upsert</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -50,16 +53,221 @@ SyntaxHighlighter.all()
 <div class="contentContainer">
 <ol>
 <li>
-<div class="content" id="intro">
-<h3>Introduction</h3>
+<div class="content" id="insert">
+<h3>Insertion</h3>
+<p class="reference-box">INSERT inserts new rows into a table. One can insert one or more rows specified by value expressions, or zero or more rows resulting from a query.</p>
+<div class="featureList">
+    <ol>
+        <li>
+            <h4>Table definition</h4>
+            <pre class="brush:sql">
+                CREATE TABLE public.actor
+                (
+                    actor_id integer NOT NULL DEFAULT nextval('actor_actor_id_seq'::regclass),
+                    first_name character varying(45) COLLATE pg_catalog."default" NOT NULL,
+                    last_name character varying(45) COLLATE pg_catalog."default" NOT NULL,
+                    last_update timestamp without time zone NOT NULL DEFAULT now(),
+                    CONSTRAINT actor_pkey PRIMARY KEY (actor_id)
+                )
+                WITH (
+                    OIDS = FALSE
+                )
+                TABLESPACE pg_default;
+            </pre>
+        </li>
+        <li>
+            <h4>Basic insertion</h4>
+            <pre class="brush:sql">
+                insert into public.actor 
+                (first_name, last_name)
+                values
+                ('Nan', 'Qin'),
+                ('Xiaofei', 'Chen');
+                -- single quota.
+            </pre>
+        </li>
+        <li>
+            <h4>[补]With clause (Common Table Expression CTE)</h4>
+            <p>A common table expression is a temporary result set which you can reference within another SQL statement including SELECT, INSERT, UPDATE or DELETE.</p>
+            <p>With clause is used before select,insertion ... to create a temporary reference table.</p>
+            <pre class="brush:sql">
+                with temp_table_name(temp_field_1, temp_field_2, ...) as 
+                (sub-query)
+                statement; -- the statement can be query, insertion ... and it can use the temp_table_name.
+
+                -- example
+                with temp_table(field_1) as
+                    (select first_name from actor)
+                    select * from temp_table;
+                -- temp_table is like a variable name;
+                -- temp_table: (field_1) = select first_name from actor;
+
+            </pre>
+        </li>
+        <li>
+            <h4>With clause and insertion</h4>
+            <pre class="brush:sql">
+                WITH temp_film(title) AS
+                    (SELECT title FROM public.film)
+                INSERT INTO public.actor(first_name, last_name)
+                    (SELECT title, title FROM temp_film);
+                -- do not use "VALUES" keyword in the insertion statement.
+            </pre>
+        </li>
+    </ol>
 </div>
+</div>
+</li>
+<li>
+    <div class="content" id="update">
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>Syntax</h4>
+                    <pre class="reference-box">
+[ WITH [ RECURSIVE ] with_query [, ...] ]
+UPDATE [ ONLY ] table_name [ * ] [ [ AS ] alias ]
+    SET { column_name = { expression | DEFAULT } |
+          ( column_name [, ...] ) = [ ROW ] ( { expression | DEFAULT } [, ...] ) |
+          ( column_name [, ...] ) = ( sub-SELECT )
+        } [, ...]
+    [ FROM from_list ]
+    [ WHERE condition | WHERE CURRENT OF cursor_name ]
+    [ RETURNING * | output_expression [ [ AS ] output_name ] [, ...] ]
+                    </pre>
+                    1). expression: an expression can be a function call .e.g count(*) or a value e.g. 'Nan'<br>
+                    2). { | | }: choosing one.<br>
+                    3). []: optional.<br>
+                    4).  ( { expression | DEFAULT } [, ...] ) example: ('Nan', 'Qin')
+                </li>
+                <li>
+                    <h4>Basic update</h4>
+                    <pre class="brush:sql">
+                        update public.actor
+                            set (first_name, last_name) = ('Nan', 'Qin')
+                            where actor_id = 1;
+                        
+                        -- update multiple rows.
+                        update public.actor
+                            set first_name = 'Nan', 
+                                last_name = 'Qin'
+                            where actor_id in (3, 4, 5);
+                    </pre>
+                </li>
+                <li>
+                    <h4>[补] conditional expression (part of <a href="./stored-procedures.html">PL/pgSQL</a>)</h4>
+                    <p>Conditional expression is also an expression, which results in a single value.</p>
+                    <pre class="reference-box">
+CASE search-expression
+    WHEN expression [, expression [ ... ]] THEN
+      statements
+  [ WHEN expression [, expression [ ... ]] THEN
+      statements
+    ... ]
+  [ ELSE
+      statements ]
+END CASE;
+                    </pre>
+                    <h4>Update multiple rows based on CASE</h4>
+                    <pre class="brush:sql">
+                        update public.actor
+                            set first_name = CASE actor_id
+                                            WHEN 3 THEN 'JI'
+                                            WHEN 4 THEN 'KQ'
+                                            ELSE 'QS'
+                                            END
+                        where actor_id in (2, 3, 4, 5, 6);
+                    </pre>
+                </li>
+                <li>
+                    <h4>Update Join: update table based on another table</h4>
+                    <p>1). cross join film_actor and actor based actor_id; 
+                        2). For every matched actor-film_actor, update actor.first_name = film_id</p>
+                    <pre class="brush:sql">
+                            update public.actor
+                                set first_name = film_id
+                                from film_actor
+                                where film_actor.actor_id = actor.actor_id
+                    </pre>
+                    <p>1). evaluate the from-list to be a new 'table'.
+                        2). cross join the new 'table' and actor based actor_id; 
+                        3). For every matched actor-film_actor, update actor.first_name = film_id</p>
+                    <pre class="brush:sql">
+                            update public.actor
+                                set first_name = title
+                                from film_actor left join film on film_actor.film_id = film.film_id
+                                where actor.actor_id = film_actor.actor_id;
+                    </pre>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="delete">
+        <h3>Delete</h3>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>Syntax</h4>
+                    <pre class="reference-box">
+[ WITH [ RECURSIVE ] with_query [, ...] ]
+DELETE FROM [ ONLY ] table_name [ * ] [ [ AS ] alias ]
+    [ USING using_list ]
+    [ WHERE condition | WHERE CURRENT OF cursor_name ]
+    [ RETURNING * | output_expression [ [ AS ] output_name ] [, ...] ]
+                    </pre>
+                    <p>USING:  allowing columns from other tables to appear in the WHERE condition<br>
+                    <span style="color:red">UPDATE FROM: allowing columns from other tables to appear in the WHERE condition and the update expressions.</span>
+                    </p>
+                </li>
+                <li><h4>Examples</h4>
+                    <pre class="brush:sql">
+                        -- delete all actors who have less than 2 films;
+                            with temp as 
+                                (select actor_id from film_actor group by actor_id having count(*) > 1)
+                                delete from actor where actor_id not in (select * from temp);
+                    </pre>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="featureList">
+        <h3>Upsert</h3>
+        <p>Upsert = insert if not existed, update if existed. In postgresql, upsert is achieved by using INSERT ON CONFLICT.</p>
+        <pre class="reference-box">
+[ WITH [ RECURSIVE ] with_query [, ...] ]
+INSERT INTO table_name [ AS alias ] [ ( column_name [, ...] ) ]
+    { DEFAULT VALUES | VALUES ( { expression | DEFAULT } [, ...] ) [, ...] | query }
+    [ ON CONFLICT [ conflict_target ] conflict_action ]
+    [ RETURNING * | output_expression [ [ AS ] output_name ] [, ...] ]
+
+where conflict_target can be one of:
+
+    ( { index_column_name | ( index_expression ) } [ COLLATE collation ] [ opclass ] [, ...] ) [ WHERE index_predicate ]
+    ON CONSTRAINT constraint_name
+
+and conflict_action is one of:
+
+    DO NOTHING
+    <span style="color:red">DO UPDATE SET { column_name = { expression | DEFAULT } |
+                    ( column_name [, ...] ) = ( { expression | DEFAULT } [, ...] ) |
+                    ( column_name [, ...] ) = ( sub-SELECT )
+                  } [, ...]
+              [ WHERE condition ]</span>
+        </pre>
+    </div>
 </li>
 <li>
 <div class="content" id="reference">
 <h3>References</h3>
 <div class="featureList">
     <ol>
-        <li></li>
+        <li><a href="https://stackoverflow.com/questions/50364904/using-with-clause-with-insert-statement-in-postgresql">Using WITH clause with insertion in PostgreSQL.</a></li>
+        <li><a href="https://www.postgresql.org/docs/10/sql-insert.html" target="_blank">Insertion PostgreSQL</a></li>
+
     </ol>
 </div>
 </div>

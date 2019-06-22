@@ -599,7 +599,7 @@ div.asm{
     width: 90%;
     margin: 0 auto 0 auto;
 }
-p.reference-box{
+p.reference-box, pre.reference-box{
     background-color: tan;
     padding: 15px;
     font-weight: 500;
