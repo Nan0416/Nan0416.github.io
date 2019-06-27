@@ -38,7 +38,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>.NET Core&nbsp;-&nbsp;LINQ</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-04-11</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-04-11</span></p>
+<p class="date"><span class="created-date">Created:2019-04-11</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-06-27</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -52,7 +52,7 @@ SyntaxHighlighter.all()
 <li>
 <div class="content" id="intro">
 <h3>Introduction</h3>
-<p>LINQ (language integrated query) is a C# language feature that supports query data collections (C# list, database). Different from other database providers e.g. Npgsql 
+<p>LINQ (language integrated query) [pronunciation: link] is a C# language feature that supports query data collections (C# list, database). Different from other database providers e.g. Npgsql 
     that implemented as a library, LINQ is a language feature built into C#. It is a first-class language construct, just like classes, methods, events.</p>
 <p>Support: C# 3.0 and later</p>
 <div class="featureList">
@@ -69,7 +69,18 @@ SyntaxHighlighter.all()
             </pre>
         </li>
         <li>
-            <h4>Standard Query Operator method</h4>
+            <h4>Query Syntax vs Method Syntax</h4>
+            <p>LINQ provide two syntax, Query syntax (like SQL) and method syntax (a chainable method call). When executing, the query syntax is first compiled into method syntax and then executed.</p>
+            <pre class="brush:cpp">
+                // Query syntax
+                IEnumerable&lt;int> numQuery1 = 
+                            from num in numbers
+                            where num % 2 == 0
+                            orderby num
+                            select num;
+                //Method syntax:
+                IEnumerable&lt;int> numQuery2 = numbers.Where(num => num % 2 == 0).OrderBy(n => n);
+            </pre>
             <p>Some query operations, such as Count or Max, have no equivalent query expression clause and must therefore be expressed as a method call.</p>
         </li>
         <li>Query Engine?</li>
