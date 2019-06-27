@@ -164,9 +164,27 @@ SyntaxHighlighter.all()
         <div class="featureList">
             <ol>
                 <li>OID (Object Identifiers)<br>
-                    1). Object identifiers (OIDs) are used internally by PostgreSQL as primary keys for various system tables.<br>
+                    1). Object identifiers (OIDs) is data type that is used internally by PostgreSQL as primary keys' type for various system tables.<br>
                     2). It is currently implemented as an unsigned four-byte integer, so it is very large and should not used as user-defined table's primary key.<br>
-                    3). It has a couple of aliases, e.g. regclass.<br>
+                    3). It has a couple of aliases, e.g. regclass.
+                    <pre class="brush:sql">
+                        CREATE TEABLE ....(
+
+                        )
+                        WITH (
+                            OIDS = TRUE
+                        )
+                        -- or 
+                        CREATE TEABLE ....(
+
+                        )
+                        WITH OIDS;
+                        -- create a system column with name oid and type OID to the table.
+                        -- the oid column is hidden column, has to be explicitly query.
+                        
+                        select oid, * from table_name;
+                    </pre>
+                    <p>The system column, oid, is automatically assigned value. It is like a shared "sequence" with OID type.</p>
                 </li>
                 <li>Integer
                 <pre style="border:1px green solid; font-size:12px; width:700px;">
@@ -174,6 +192,7 @@ SyntaxHighlighter.all()
     integer	4 bytes	typical choice for integer	-2147483648 to +2147483647
     bigint	8 bytes	large-range integer	-9223372036854775808 to +9223372036854775807
                 </pre>
+                <p style="color:red">PostgreSQL does not support tinyint (1 byte).</p>
                 </li>
                 <li>
                     String/Chars
@@ -187,8 +206,88 @@ SyntaxHighlighter.all()
                             -- If one explicitly casts a value to character varying(n) or character(n), then an over-length value will be truncated to n characters without raising an error. (This too is required by the SQL standard.)
                             select 'qinnan'::char(4); -- 'qinn'
                     </pre>
+                    <p>Charset: postgresql support multiple encoding methods.</p>
+                    <pre class="brush:sql">
+                            SHOW SERVER_ENCODING; -- the default is UTF8
+
+                            -- utf8, utf16 defined how to stored number (binary)
+                            -- unicode defined the mapping between character and number (binary)
+                            -- 秦 -> (unicode) 79E6
+                            insert into table_name (lastname) values (U&'\79E6')
+                    </pre>
+                    <p style="color:red">MS SQL Server defined nvarchar and varchar. varchar only supports ASCII, but saving space. nvarchar supports unicode.</p>
                     <h4>Collation</h4>
                     <p>char, varchar and text are <a href="https://www.postgresql.org/docs/10/collation.html">collatable data types</a>, meaning they have different sorting/comparison rules.</p>
+                </li>
+                <li>
+                    Enum
+                    <p>Postgres supports Enum. Example, CarType_Lookup_table</p>
+                    <h4>Without supporting Enum</h4>
+                    <p><span style="font-family: monospace">CarTypeId</span> in database is defined as a tinyint or smallint (depending on size). When code/program is accessing this field, it is also a number (byte/short ...), and then convert it to a Code defined Enum by developer.</p>
+                    <h4>With Enum</h4>
+                    <p>As the developer's prespective, enum is like string in database, but the underlying storage is int. In code, developers also need to define a code-side Enum. <span style="color:red">And supply a conversion from string to code-defined enum in (EF) framework</span> 
+                        But when using it in developer's code, it directly becomes a enum. (don't need to convert it in developer's code)</p>
+                    <pre class="brush:sql">
+                            -- example of SQL defined enum type.
+                            CREATE TYPE public.mpaa_rating AS ENUM
+                            ('G', 'PG', 'PG-13', 'R', 'NC-17'); 
+
+                            create table public.MovieTypeLink(
+                                link_id BIGSERIAL,
+                                movie_id int not null,
+                                movie_type mpaa_rating not null
+                            )
+
+                            insert into public.MovieTypeLink (movie_id, movie_type) values (1, 'PG')
+                            -- 22P02: invalid input value for enum mpaa_rating: "PsG"
+                            -- insert into public.MovieTypeLink (movie_id, movie_type) values (1, 'GP');
+                    </pre>
+                </li>
+                <li>
+                    Serial/Identity
+                    <p>Serial is a group of speical data types, it defines smallserial, serial, and bigserial. If a column has this type, it will have a default value as auto incremented.</p>
+                    <pre class="brush:sql">
+                            CREATE TABLE tablename (
+                                colname SERIAL 
+                            );
+                            -- ====> it actually creates a sequence with binding to this column. (delete column, also delete sequence)
+                            -- And it is marked as a default value, meaning it can be explicitly inserted with different value.
+                            -- It is not null but not marked as unique.
+                            CREATE SEQUENCE tablename_colname_seq AS integer;
+                            CREATE TABLE tablename (
+                                colname integer NOT NULL DEFAULT nextval('tablename_colname_seq')
+                            );
+                            ALTER SEQUENCE tablename_colname_seq OWNED BY tablename.colname;
+                    </pre>
+                    <p>Identity is a SQL standard, (MS SQL server also supports it), it a more configurable 'serial'. It can be set default or always, the sequence is also configurable. <span style="color:red">PostgreSQL version >= 10</span></p>
+                    <pre class="brush:sql">
+                        -- column_name type GENERATED { ALWAYS | BY DEFAULT } AS IDENTITY[ ( sequence_option ) ]
+                        -- type can be SMALLINT, INT, or BIGINT
+                        CREATE TABLE tablename (
+                            colname INT GENERATED ALWAYS AS IDENTITY (START WITH 10 INCREMENT BY 10)
+                        );
+
+                    </pre>
+                </li>
+                <li>Datetime
+                    <p>timestamp: date + time, there are two version of timestamp, with/without timezone. <br>
+                        timestamp [timestamp without time zone]<br>
+                        timestamptz [timestamp with time zone]
+                    </p>
+                    <p>the timestamptz is actually same as timestamp in terms of storage (both are 8 bytes), the different is timestamptz need to the db server's timezone, and convert time to UTC timezone and then store it. When retrieve its value, convert it back to current timezone.</p>
+                    <pre class="brush:sql">
+                        -- select current timezone.
+                        show timezone;
+                        -- current time in db server's timezone
+                        select now(); 
+                        select CURRENT_TIMESTAMP;
+
+                        -- insert value is as a string with a certain format.
+                        -- '2016-06-22 19:10:25+08 
+
+                        -- convert a UTC+8 to us eastern.
+                        select timezone('US/Eastern', '2016-06-01 19:10:25+8');
+                    </pre>
                 </li>
                 <li>Define a domain<br>
                 </li>
