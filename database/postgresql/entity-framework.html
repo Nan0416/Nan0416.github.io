@@ -40,7 +40,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Database&nbsp;-&nbsp;Entity Framework</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-04-07</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-06-16</span></p>
+<p class="date"><span class="created-date">Created:2019-04-07</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-06-28</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -173,19 +173,41 @@ SyntaxHighlighter.all()
             <ol>
                 <li>
                     <h4>Install dependencies</h4>
+                    <p> *** Keep the major version of dotnet core, ef tool, and provider same.</p>
                     <pre class="brush:bash">
                             # npgsql 2.2 supports ef 2.2
                             dotnet add package Microsoft.EntityFrameworkCore.Design --version=2.2.0 
                             dotnet ad package Npgsql.EntityFrameworkCore.PostgreSQL --version=2.2.0 # provider
                     </pre>
                 </li>
+                <li><h4>Connection string</h4>
+                <p>Each database server has its own connection string format. There also exist different proposes connection string<br>
+                    e.g.1).  standard security: connect with username + password<br>
+                        2).  trusted connection: connection is verified with domain.<br>
+                </p>
+                <p>Example (case-insensitive):<br>
+                    1).SQL Server standard: Server=localhost;Database=dvdrental;User Id=myUsername; Password=myPassword;<br>
+                    2).SQL Server trusted connection: Server=localhost;Database=dvdrental;trusted_connection=true;<br>
+                    3).PostgreSQL standard: Host=localhost;Database=dvdrental;Username=postgres;Password=password
+                </p>
+                </li>
                 <li>
                     <h4>Generate C# models</h4>
                     <pre class="brush:bash">
+                        # from a PostgreSQL database
                         dotnet ef dbcontext scaffold "Host=localhost;Database=dvdrental;Username=postgres;Password=password" Npgsql.EntityFrameworkCore.PostgreSQL -o Models
-
-                        # the imported database set primary key as integer, but foreign key as smallint. So before running the above command, using pgAdmin modifies the foreign key to integer type.
+                        # from a SQL Server database with specifying a specific schema and output json format of generated files.
+                        dotnet ef dbcontext scaffold "Server=localhost;Database=dvdrental;trusted_connection=true;" Microsoft.EntityFrameworkCore.SqlServer --output-dir Models.Configuration --schema Configuration --json
+                        # generate entity class for specified tables.
+                        dotnet ef dbcontext scaffold \
+                            "Server=devdb.kabbage.com;Database=koltpweb;trusted_connection=true;" Microsoft.EntityFrameworkCore.SqlServer
+                            --output-dir Models \
+                            --table ACH.Account \
+                            --table ACH.FedACHDirectory \
+                            --json
+                        # the entity class name is same as table name, so if two schames have tables with same name, then ... [some entities will not be generated.]
                     </pre>
+                    <p>** When generating dvdrental from postgrestutorial.com, the imported database set primary key as integer, but foreign key as smallint. So before running the above command, using pgAdmin modifies the foreign key to integer type.</p>
                 </li>
                 <li>
                     <h4>PostgreSQL enum type</h4>
@@ -275,12 +297,36 @@ SyntaxHighlighter.all()
         <h4>Entity Framework Core Model</h4>
         <p>A EF Core Model is a C# class used to represent an entity in the database. It is in the conceptual layer.So 
             when creating a model, just think about creating a table with SQL. Field, fields domain, primary key, foreign key, constraints</p>
-        <p>EF Core provides tools that can automatically generate and initialize the database from the developer defined Model classes.</p>
+        <h4>Fluent API</h4>
+        <p>In EF Core, the configuration of each entity is done in the Context class's OnConfiguring method<br>
+            In EF Framework, the each entity has a Configuration class to do configuration e.g.
+            <pre class="brush:cpp">
+                public class LU_CarType{
+                    // ...
+                }
+                public class LU_CarTypeConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration&lt;LU_CarType>{
+                    public Configuration_FinancialInstitutionConfiguration()
+                        : this("Schema_Name")
+                    {
+                    }
+
+                    public LU_CarTypeConfiguration(string schema)
+                    {
+                        //...
+                    }
+                }
+            </pre>
+            Configuration includes:<br>
+            1). set primary key,<br>
+            2). map c# properties to table column. mark constraints e.g. not not == .isRequired() and type
+            3). relationship across table.
+            <p style="color:red">This set of API is called Fluent API.</p>
+        </p>
         <div class="featureList">
-            <h4>Terms</h4>
+            <h4>Fluent API</h4>
             <ol>
                 <li>Primary Key property: a model class's property will be set the primary key of the table.</li>
-                <li>foreign key property: a model class's property whose type is the type of another model's primary key and name is {Primary}Id.</li>
+                <li>foreign key properties: a model class's property whose type is the type of another model's primary key and name is {Primary}Id.</li>
                 <li>Navigation property: a model class's property that a way to navigate an association between two entity types. (populate). <span style="color:red">
                         a reference object (if the multiplicity is either one or zero-or-one) or a collection (if the multiplicity is many)</span>
                     <pre class="brush:cpp">
@@ -312,6 +358,9 @@ SyntaxHighlighter.all()
                 </li>
                 <li>one-to-one: <br>
                 
+                </li>
+                <li>
+                    <h4>Naming convention</h4>
                 </li>
             </ol>
         </div>
