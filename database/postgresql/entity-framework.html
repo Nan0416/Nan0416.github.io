@@ -364,12 +364,8 @@ SyntaxHighlighter.all()
                                     public virtual ICollection&lt;Inventory> Inventory { get; set; } // one film: many inventory
                                 }
                     </pre>
-                    <p>Shadow Properties: a property may not be declared in a Model class, but it will be created by the EF Core or by developer specified OnModelCreating method in the database table<br>
-                    .e.g.
-                        Language<br>
-                        FilmActor<br>
-                        FilmCategory<br>
-                        Inventory
+                    <p>Shadow Properties: a property may not be declared in a Model class, but it will be created by the EF Core or by developer specified OnModelCreating method in the database table.<br>
+                    .e.g. A "LastUpdate" may add to a database but it is not defined in db entity class and never used.
                     </p>
                 </li>
                 <li>
@@ -422,7 +418,7 @@ SyntaxHighlighter.all()
                     </pre>
                 </li>
                 <li>
-                    <h4>Configurating Models/Entities</h4>
+                    <h4>Configurating Models/Entities Example</h4>
                     <p>In EF Core, the configuration of each entity is done in the Context class's OnModelCreating method
                         <pre class="brush:cpp">
                             public partial class XxxxContext: DbContext{
@@ -506,10 +502,13 @@ SyntaxHighlighter.all()
                         </pre>
                 </li>
                 <li>
-                    <h4>Naming convention</h4>
+                    <h4>Configuring a entity</h4>
                     <p>
-
+                        A entity is configured by 'naming convention' &lt; 'data annotation' &lt; 'fluent api'. Fluent API has the highest priority.
                     </p>
+                    <h4>Naming Convention</h4>
+                    <h4>Data Annotation</h4>
+                    <h4>Fluent API</h4>
                 </li>
             </ol>
         </div>

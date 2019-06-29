@@ -218,7 +218,7 @@ public class CGenerics&lt;T>: IGenerics&lt;T>{ // class declare T, interface ref
         <div class="featureList">
             <ol>
                 <li>
-                    <h4>Contravariance (reverse the potential of input, 浪费了这个function在 in 上的能力)</h4>
+                    <h4>Contravariance (reserve the potential of input, 浪费了这个function在 in 上的能力)</h4>
                     <pre class="brush:cpp">
                             public class Parent{
                                 public string name;
@@ -236,7 +236,7 @@ public class CGenerics&lt;T>: IGenerics&lt;T>{ // class declare T, interface ref
                     </pre>
                 </li>
                 <li>
-                    <h4>Covariance (reverse the potential of output, 浪费了这个function在 output 上的能力)</h4>
+                    <h4>Covariance (reserve the potential of output, 浪费了这个function在 output 上的能力)</h4>
                     <pre class="brush:cpp">
                             Converter&lt;string, Child> fun_convert_to_child = (string obj) =>{
                                     return new Child{
