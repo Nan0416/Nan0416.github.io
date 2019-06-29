@@ -37,7 +37,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>C#&nbsp;-&nbsp;Enum, Struct</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-06-19 🎂</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-06-19</span></p>
+<p class="date"><span class="created-date">Created:2019-06-19 🎂</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-06-29</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#enum">Enum</a></li>
@@ -82,6 +82,46 @@ SyntaxHighlighter.all()
                             State s = default(State); // 0
                             // but 0 is not a valid member.
                             Console.WriteLine(Enum.IsDefined(typeof(State), s)); // false
+                        </pre>
+                    </li>
+                    <li>
+                        <h4>string -- Enum</h4>
+                        <pre class="brush:cpp">
+                            public enum Rating{
+                                G, PG, PG13, R, NC17 
+                            }
+                            Console.WriteLine("Hello World!");
+
+                            Rating r = Rating.PG13;
+                            Console.WriteLine(r); // PG13;
+                            Console.WriteLine(r.ToString()); // PG13;
+                            string pg13 = "PG-13";
+                            try{
+                                r = (Rating)Enum.Parse(typeof(Rating), pg13);
+                            }catch(Exception e){
+                                Console.WriteLine(e.Message); // Requested value 'PG-13' was not found.
+                            }
+
+                            bool result = Enum.TryParse&lt;Rating>(pg13, out r);
+                            Console.WriteLine($"{result}, {r}"); // false, G      default value.
+                        </pre>
+                    </li>
+                    <li>
+                        <h4>int -- enum</h4>
+                        <pre class="brush:cpp">
+                            int number = (int)Rating.PG13;
+                            Rating r = (Rating)1;
+                            Console.WriteLine(r); // PG
+                            r = (Rating)100;
+                            Console.WriteLine(r); // 100
+                        </pre>
+                    </li>
+                    <li>
+                        <h4>int --> string</h4>
+                        <pre class="brush:cpp">
+                            // public static string GetName (Type enumType, object value);
+                            Console.WriteLine(Enum.GetName(typeof(Rating), 1)); // PG
+                            string s = Enum.GetName(typeof(Rating), 100); // return null
                         </pre>
                     </li>
                 </ol>

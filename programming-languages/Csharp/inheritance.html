@@ -148,6 +148,11 @@ SyntaxHighlighter.all()
                                 FirstName = "Craig",
                                 LastName = "Playstead",
                             };
+
+                            var s = new StudentName(){ // () is optional
+                                FirstName = "...",
+                                LastName = "...",
+                            }
                             Student student = new Student{}; // invoke parameterless constructor and set nothing.
                     </pre>
                     </li>
@@ -207,7 +212,7 @@ class Parent
 }
 class Child:Parent 
 { 
-    public new void method() // the new can be ignored, but it gives a warning.
+    public new void method() // the new can be ignored, but it will give a warning if 'new' is ignored.
     {
         Console.WriteLine("Child method");
     }
@@ -245,7 +250,7 @@ class Child:Parent
     }
 </pre>
                 </li>
-                <li>If a child class method is designated to override a parent method, then the child method cannot change the parent defined modifier.<br>
+                <li>If a child class method is designated to override a parent method, then the child method cannot change the parent specified modifier.<br>
                     However, using "new" is just like to create a new function and this function has no relationship with the parent class's method, so it have modify the modifier.
                     <pre class="brush:c++">
 class Program

@@ -47,7 +47,7 @@ SyntaxHighlighter.all()
 <li><a href="#code-first">Code-first approach with SQLite</a></li>
 <li><a href="#database-first">Database-first approach with PostgreSQL</a></li>
 <li><a href="#indepth">In-depth</a></li>
-<li><a href="#ef-tool">EF Tool</a></li>
+<!--<li><a href="#ef-tool">EF Tool</a></li>-->
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -177,7 +177,7 @@ SyntaxHighlighter.all()
                     <pre class="brush:bash">
                             # npgsql 2.2 supports ef 2.2
                             dotnet add package Microsoft.EntityFrameworkCore.Design --version=2.2.0 
-                            dotnet ad package Npgsql.EntityFrameworkCore.PostgreSQL --version=2.2.0 # provider
+                            dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL --version=2.2.0 # provider
                     </pre>
                 </li>
                 <li><h4>Connection string</h4>
@@ -200,10 +200,10 @@ SyntaxHighlighter.all()
                         dotnet ef dbcontext scaffold "Server=localhost;Database=dvdrental;trusted_connection=true;" Microsoft.EntityFrameworkCore.SqlServer --output-dir Models.Configuration --schema Configuration --json
                         # generate entity class for specified tables.
                         dotnet ef dbcontext scaffold \
-                            "Server=devdb.kabbage.com;Database=koltpweb;trusted_connection=true;" Microsoft.EntityFrameworkCore.SqlServer
+                            "Server=localhost;Database=dvdrental;trusted_connection=true;" Microsoft.EntityFrameworkCore.SqlServer
                             --output-dir Models \
-                            --table ACH.Account \
-                            --table ACH.FedACHDirectory \
+                            --table public.actor \
+                            --table public.film \
                             --json
                         # the entity class name is same as table name, so if two schames have tables with same name, then ... [some entities will not be generated.]
                     </pre>
@@ -211,7 +211,7 @@ SyntaxHighlighter.all()
                 </li>
                 <li>
                     <h4>PostgreSQL enum type</h4>
-                    <p>PostgreSQL can define enum. As the user's prespective, enum is like string, but the underlying storage is int.</p>
+                    <p>PostgreSQL supports enum (SQL server doesn't). As the user's prespective, enum is like string, but the underlying storage is int.</p>
                     <p>But in C# model, we have to manually define the enum type and add the attribute to C# model.</p>
                     <pre class="brush:sql">
                             -- example of SQL defined enum type.
@@ -298,84 +298,222 @@ SyntaxHighlighter.all()
         <p>A EF Core Model is a C# class used to represent an entity in the database. It is in the conceptual layer.So 
             when creating a model, just think about creating a table with SQL. Field, fields domain, primary key, foreign key, constraints</p>
         <h4>Fluent API</h4>
-        <p>In EF Core, the configuration of each entity is done in the Context class's OnConfiguring method<br>
-            In EF Framework, the each entity has a Configuration class to do configuration e.g.
-            <pre class="brush:cpp">
-                public class LU_CarType{
-                    // ...
-                }
-                public class LU_CarTypeConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration&lt;LU_CarType>{
-                    public Configuration_FinancialInstitutionConfiguration()
-                        : this("Schema_Name")
-                    {
-                    }
-
-                    public LU_CarTypeConfiguration(string schema)
-                    {
-                        //...
-                    }
-                }
-            </pre>
-            Configuration includes:<br>
-            1). set primary key,<br>
-            2). map c# properties to table column. mark constraints e.g. not not == .isRequired() and type
-            3). relationship across table.
-            <p style="color:red">This set of API is called Fluent API.</p>
-        </p>
+        <p>Fluent API: configure C# Model (entity) to map to database field, type and constraints. It is important when using code-first approach because they instruct EF Core to create database.</p>
         <div class="featureList">
-            <h4>Fluent API</h4>
             <ol>
-                <li>Primary Key property: a model class's property will be set the primary key of the table.</li>
-                <li>foreign key properties: a model class's property whose type is the type of another model's primary key and name is {Primary}Id.</li>
-                <li>Navigation property: a model class's property that a way to navigate an association between two entity types. (populate). <span style="color:red">
-                        a reference object (if the multiplicity is either one or zero-or-one) or a collection (if the multiplicity is many)</span>
+                <li>
+                    <h4>Model/Entity class (EF Core example)</h4>
+                    <p>film: primary key (film_id), foreign keys (language_id -> language.language_id)<br><br>
+                        film_actor: film_id -> film.film_id<br>
+                        film_category: film_id -> film.film_id<br>
+                        inventory: film_id -> film.film_id
+                    </p>
+                    <pre class="brush:sql">
+                            CREATE TABLE public.film
+                            (
+                                film_id integer NOT NULL DEFAULT nextval('film_film_id_seq'::regclass),
+                                title character varying(255) COLLATE pg_catalog."default" NOT NULL,
+                                description text COLLATE pg_catalog."default",
+                                release_year year,
+                                language_id integer NOT NULL,
+                                rental_duration smallint NOT NULL DEFAULT 3,
+                                rental_rate numeric(4,2) NOT NULL DEFAULT 4.99,
+                                length smallint,
+                                replacement_cost numeric(5,2) NOT NULL DEFAULT 19.99,
+                                rating mpaa_rating DEFAULT 'G'::mpaa_rating,
+                                last_update timestamp without time zone NOT NULL DEFAULT now(),
+                                special_features text[] COLLATE pg_catalog."default",
+                                fulltext tsvector NOT NULL,
+                                CONSTRAINT film_pkey PRIMARY KEY (film_id),
+                                CONSTRAINT film_language_id_fkey FOREIGN KEY (language_id)
+                                    REFERENCES public.language (language_id) MATCH SIMPLE
+                                    ON UPDATE CASCADE
+                                    ON DELETE RESTRICT
+                            );
+                    </pre>
                     <pre class="brush:cpp">
-                        public class Course
-                        {
-                            public int CourseID { get; set; } // primary key of the Course Table.
-                            public string Title { get; set; }
-                            public int Credits { get; set; }
-                            public int DepartmentID { get; set; } // foregin key to Department's Id.
-                            public virtual Department Department { get; set; } // an (inverse) navigation property that get a reference to Department.
-                        }
-                        public class Department
-                        {
-                            public int DepartmentID { get; set; } // primary key of the Department Table
-                            public string Name { get; set; }
-                            public decimal Budget { get; set; }
-                            public DateTime StartDate { get; set; }
-                            public int? Administrator {get ; set; }
-                            public virtual ICollection&lt;Course> Courses { get; set; } // an navigation property
-                        }
+                            public partial class Film
+                            {
+                                public Film()
+                                {
+                                    // other entities refer to film. 
+                                    // one film -- many others.
+                                    FilmActor = new HashSet&lt;FilmActor>();
+                                    FilmCategory = new HashSet&lt;FilmCategory>();
+                                    Inventory = new HashSet&lt;Inventory>();
+                                }
+
+                                    public int FilmId { get; set; }
+                                    public string Title { get; set; }
+                                    public string Description { get; set; }
+                                    public int? ReleaseYear { get; set; }
+                                    public int LanguageId { get; set; }
+                                    public short RentalDuration { get; set; }
+                                    public decimal RentalRate { get; set; }
+                                    public short? Length { get; set; }
+                                    public decimal ReplacementCost { get; set; }
+                                    public Rating Rating {get; set;}
+                                    public DateTime LastUpdate { get; set; }
+                                    public string[] SpecialFeatures { get; set; }
+                                    public NpgsqlTsVector Fulltext { get; set; }
+
+                                    public virtual Language Language { get; set; } // many film : one language
+
+                                    public virtual ICollection&lt;FilmActor> FilmActor { get; set; } // one film : many filmActor
+                                    public virtual ICollection&lt;FilmCategory> FilmCategory { get; set; } // one film: many FilmCategory
+                                    public virtual ICollection&lt;Inventory> Inventory { get; set; } // one film: many inventory
+                                }
+                    </pre>
+                    <p>Shadow Properties: a property may not be declared in a Model class, but it will be created by the EF Core or by developer specified OnModelCreating method in the database table<br>
+                    .e.g.
+                        Language<br>
+                        FilmActor<br>
+                        FilmCategory<br>
+                        Inventory
+                    </p>
+                </li>
+                <li>
+                    <h4>DbContext Configuration</h4>
+                    <p>DbContext is initialized before using a database or generating a database from code.</p>
+                    <p><span style="color:green">EF Core configuring a DbContext</span><br>
+                    A DbContext is initialized with a 'DbContextOptions' object, which includes provider info, connection string, ...<br>
+                    The 'DbContextOptions' object is usually returned by the `DbContextOptionsBuilder` object. This class has extension method. 
+                    </p>
+                    
+                    <pre class="brush:cpp">
+                            // configure inside the XxxxContext;
+                            public partial class XxxxContext : DbContext
+                            {
+                                protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+                                {
+                                    if (!optionsBuilder.IsConfigured)
+                                    {
+                                        // not practical.
+                                        optionsBuilder.UseNpgsql("Host=localhost;Database=dvdrental;Username=postgres;Password=password");
+                                    }
+                                }
+                            }
+
+
+                            // configure via constructor
+                            // public DbContext (Microsoft.EntityFrameworkCore.DbContextOptions options);
+                            public partial class XxxxContext: DbContext{
+                                public XxxxContext(DbContextOptions&lt;XxxxContext> options)
+                                        : base(options)
+                                    { }
+                            }
+                            // DbContextOptions is not designed to generate directly.
+                            var optionsBuilder = new DbContextOptionsBuilder&ltXxxxContext>();
+                            optionsBuilder.UseNpgsql("Host=localhost;Database=dvdrental;Username=postgres;Password=password");
+                            var _context = new XxxxContext(optionsBuilder.Options);
+                            
+                    </pre>
+                    <p>When downloading a provider, e.g. PostgreSQL npgsql, it will add extension method to the DbContextOptionsBuilder class but still using 'Microsoft.EntityFrameworkCore' namespace.</p>
+                    <pre class="brush:cpp">
+                        // Object -> DbContextOptionsBuilder -> DbContextOptionsBuilder&lt;TContext>
+
+                        // extension method on DbContextOptionsBuilder
+
+                        // DbContextOptionsBuilder.Options -> DbContextOptions
+
+                        // DbContextOptionsBuilder&lt;TContext>.Options -> DbContextOptions&lt;TContext>
+
+                        // Object -> DbContextOptions -> DbContextOptions&lt;TContext>
                     </pre>
                 </li>
                 <li>
-                    <p>Shadow Properties: a property may not be declared in a Model class, but it will be created by <span style="color:red">the EF Core or by developer specified OnModelCreating method</span> in the database table.</p>
-                    <p>In the above model, because department has a collection navigation field, Department is the principle entity and Course is the dependent entity. If course, the dependent entity, does not explicitly define the foreign key, 
-                        EF Core will define a shadow foreign key for it.</p>
-                </li>
-                <li>one-to-many: e.g. a department has many courses.
-                </li>
-                <li>one-to-one: <br>
-                
+                    <h4>Configurating Models/Entities</h4>
+                    <p>In EF Core, the configuration of each entity is done in the Context class's OnModelCreating method
+                        <pre class="brush:cpp">
+                            public partial class XxxxContext: DbContext{
+                                protected override void OnModelCreating(ModelBuilder modelBuilder)
+                                {
+                                    // configurating models.
+                                    modelBuilder.Entity&lt;Film>(entity =>
+                                    {
+                                        entity.ToTable("film"); // map to table.
+
+                                        // create index
+                                        entity.HasIndex(e => e.Fulltext)
+                                            .HasName("film_fulltext_idx")
+                                            .ForNpgsqlHasMethod("gist");
+                                        entity.HasIndex(e => e.LanguageId)
+                                            .HasName("idx_fk_language_id");
+                                        entity.HasIndex(e => e.Title)
+                                            .HasName("idx_title");
+
+                                        // map column, type, default value
+                                        entity.Property(e => e.FilmId).HasColumnName("film_id");
+                                        entity.Property(e => e.Description).HasColumnName("description");
+                                        entity.Property(e => e.Fulltext)
+                                            .IsRequired()
+                                            .HasColumnName("fulltext");
+                                        entity.Property(e => e.LanguageId).HasColumnName("language_id");
+                                        entity.Property(e => e.LastUpdate)
+                                            .HasColumnName("last_update")
+                                            .HasDefaultValueSql("now()");
+                                        entity.Property(e => e.Length).HasColumnName("length");
+                                        entity.Property(e => e.ReleaseYear).HasColumnName("release_year");
+                                        entity.Property(e => e.RentalDuration)
+                                            .HasColumnName("rental_duration")
+                                            .HasDefaultValueSql("3");
+                                        entity.Property(e => e.RentalRate)
+                                            .HasColumnName("rental_rate")
+                                            .HasColumnType("numeric(4,2)")
+                                            .HasDefaultValueSql("4.99");
+                                        entity.Property(e => e.ReplacementCost)
+                                            .HasColumnName("replacement_cost")
+                                            .HasColumnType("numeric(5,2)")
+                                            .HasDefaultValueSql("19.99");
+                                        entity.Property(e => e.SpecialFeatures).HasColumnName("special_features");
+                                        entity.Property(e => e.Title)
+                                            .IsRequired()
+                                            .HasColumnName("title")
+                                            .HasMaxLength(255);
+                                        entity.Property( e=> e.Rating)
+                                            .HasColumnName("rating")
+                                            .HasConversion(
+                                                r => RatingConverter.ToString(r),
+                                                s => RatingConverter.ToEnum(s)
+                                            );
+                                        // relationship
+                                        entity.HasOne(d => d.Language)
+                                            .WithMany(p => p.Film)
+                                            .HasForeignKey(d => d.LanguageId)
+                                            .OnDelete(DeleteBehavior.ClientSetNull)
+                                            .HasConstraintName("film_language_id_fkey");
+                                    });
+
+                                }
+                            }
+                        </pre>
+                        In EF Framework, each entity has a Configuration class to do configuration e.g.
+                        <pre class="brush:cpp">
+                            public class LU_CarType{
+                                // ...
+                            }
+                            public class LU_CarTypeConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration&lt;LU_CarType>{
+                                public Configuration_FinancialInstitutionConfiguration()
+                                    : this("Schema_Name")
+                                {
+                                }
+            
+                                public LU_CarTypeConfiguration(string schema)
+                                {
+                                    //...
+                                }
+                            }
+                        </pre>
                 </li>
                 <li>
                     <h4>Naming convention</h4>
+                    <p>
+
+                    </p>
                 </li>
             </ol>
         </div>
-        <div class="featureList">
-            <h4>DbContext class</h4>
-            <p></p>
-            <ol>
-                <li>.OnModelCreating
-                    <pre class="brush:cpp">
-                        // create shadow properties.
-                    </pre>
-                </li>
-            </ol>
-        </div>
-        <div class="featureList">
+        <!--<div class="featureList">
             <h4>EF Core Model Convention</h4>
             <p>EF Core defines a few conventions for mapping Model to Database Schema</p>
             <ol>
@@ -387,27 +525,10 @@ SyntaxHighlighter.all()
                      3). {navigation property}{primary key} e.g.<span style="color:red">?? CoursesDepartmentID or DepartmentDepartmentID    whose navigation key?? </span>
                 </li>
             </ol>
-        </div>
-        <div class="featureList">
-            <h4>EF Core Manually configure tables</h4>
-            <p>Primary key, Foreign keys can be declared manually by using Attributes and FluentAPI</p>
-            <h4>Attributes</h4>
-            <ol>
-                <li>namespace
-                    <pre class="brush:cpp">
-                            using System.ComponentModel.DataAnnotations;
-                            using System.ComponentModel.DataAnnotations.Schema;
-                    </pre>
-                </li>
-            </ol>
-            <h4>FluentAPI</h4>
-            <ol>
-                <li></li>
-            </ol>
-        </div>
+        </div>-->
     </div>
 </li>
-<li>
+<!--<li>
     <div class="content" id="eftool">
         <h3>EF tool</h3>
         <div class="featureList">
@@ -435,12 +556,13 @@ SyntaxHighlighter.all()
             </ol>
         </div>
     </div>
-</li>
+</li>-->
 <li>
 <div class="content" id="reference">
 <h3>References</h3>
 <div class="featureList">
     <ol>
+        <li><a href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.entityframeworkcore.dbcontextoptionsbuilder?view=efcore-2.1" target="_blank">DbContextOptionsBuilder</a></li>
         <li><a href="https://docs.microsoft.com/en-us/ef/core/" target="_blank">Entity Framework Core</a></li>
         <li><a href="https://docs.microsoft.com/en-us/ef/core/get-started/netcore/new-db-sqlite" target="_blank">Getting Started with EF Core on .NET Core Console App with a New database</a></li>
         <li><a href="https://docs.microsoft.com/en-us/ef/core/modeling/" target="_blank">Creating and configuring a Model</a></li>
