@@ -1,0 +1,208 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>ElasticSearch&nbsp;Intro</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-06-29">
+<meta name="keywords" content="elasticsearch">
+<meta name="keywords" content="database">
+<meta name="keywords" content="searchengine">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushPython.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushSql.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>ElasticSearch&nbsp;-&nbsp;Intro</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-06-29</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-06-29</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#api">APIs</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+<p>ElasticSearch is a distributed fulltext search engine based on Lucene, it provides RESTful interface based on JSON format. </p>
+<p>Lucene is the core of ElasticSearch. Lucene is just a library that provides full text indexing and searching capability. On top of Lucene, ElasticSearch is implemented as a distributed service with a RESTful API.</p>
+<p><a href="https://www.elastic.co/downloads/" target="_blank">Download and installation.</a> It requires java 1.8, run bin/elasticsearch.</p>
+<h4>Usage</h4>
+<p>
+    1). collect log and search on log.<br>
+    2). search products in a online store.
+</p>
+<h4>Elasticsearch client library</h4>
+<p><a href="https://www.elastic.co/guide/en/elasticsearch/client/index.html" target="_blank">java, python, .net, php, js, go ...</a></p>
+<h4>Inside ElasticSearch</h4>
+<div class="featureList">
+    <ol>
+        <li>inverted index data structure: a data structure that store key-value. key is each unique word in all documents, value is a list of documents that have that word.</li>
+        <li>ElasticSearch uses distributed nodes to store JSON based documents, each document is corresponding to a record in RDBMS.</li>
+        <li>A document has multiple fields, each field is associated with a type, e.g. text, numeric, geo data. Documents don't necessarily have the same fields (schema-less), but it is recommended for better performance.</li>
+        <li>Dynamic mapping: allow elasticsearch to automatically detect and add new fields to the index.</li>
+        <li>Each field will be reverse indexed with different database structure, e.g. text is using 'inverted index', numeric is using 'BKD trees'</li>
+        <li>Searching Ability
+            <p class='reference-box'>
+                The Elasticsearch REST APIs support structured queries, full text queries, and complex queries that combine the two. Structured queries are similar 
+                to the types of queries you can construct in SQL. For example, you could search the gender and age fields in your employee index and sort the matches by the 
+                hire_date field. Full-text queries find all documents that match the query string and return them sorted by relevance—how good a match they are for your search terms <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/search-analyze.html" target="_blank">Reference</a>
+            </p>
+        </li>
+        <li>
+            Scalability: An index can be broken down into multiple shards. A shard is physicall stored in one node or multiple nodes to achieve data redundancy.
+            <br>The average size of one shard is between a few GB and a few tens of GB.
+            <br>Practice: The goal of multiple nodes in one cluster is to achieve high performance (throughput and short response time). Nodes should be put in the same data center to reduce the sync and rebalance time. High availability is achieved by using mutliple clusters in different data centers with Cross-cluster replication (CCR).
+        </li>
+        <li>
+            ES Index: elastic index is a composite index of different fields of docs with different data structure.
+            <pre class="brush:bash">
+                    properties": {
+                        "account_number": {
+                            "type": "long" # with long supported index structure.
+                        },
+                        "address": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword", # with keyword supported index structure.
+                                    "ignore_above": 256
+                                }
+                            }
+                        },
+                        "age": {
+                            "type": "long"
+                        },
+                        "balance": {
+                            "type": "long"
+                        },
+                        "city": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        }
+                    }
+            </pre>
+            Mapping is the process that map document's field to elastichsearch supported field. User can specify the mapping.<br> 
+        </li>
+        <li>
+            Index alias: An index alias can be bound to multiple physical indices. Then a query on the index alias 
+            will be performed on the multiple indices, <span style="color:red">a document will also be inserted into the multiple index ????.</span>
+        </li>
+        <li>
+            <h4>Structure</h4>
+            <pre>
+index_1
+shard_1_primary, shard_1_replica, shard_1_replica, shard_2_primary, shard_2_replica, shard_2_replica
+
+node1, node2, node3
+cluster
+
+# shard_1's primary and replica cannot exist on the same node.
+# node1 and node2 can co-exist on same machine.
+            </pre>
+        </li>
+        <li><h4>Search API & Query DSL</h4>
+        ElasticSearch provides a "_search" endpoint for each index, the search can be specified by uri parameter and HTTP GET request body. And the request body's content is specified according to the "Query DSL".
+        </li>
+    </ol>
+</div>
+</div>
+</li>
+<li>
+    <div class="content" id="api">
+        <h3>APIs</h3>
+        <p>{domain}{index}{endpoint}?{param}</p>
+        <div class="featureList">
+            <ol>
+                <li>
+                        <h4><a href="https://www.elastic.co/guide/en/elasticsearch/reference/7.2/cat.html" target="_blank">cat APIs</a></h4>
+                        <p>cat APIs, by default, don't return JSON, instead, it returns texts, like running in command line.</p>
+                        <pre style="color:red">
+        _cat/{target}?[help|v|h={field, [field], ...}][&format=json]
+                        </pre>
+                </li>
+                <li>
+                    <h4>Create an index</h4>
+                    <pre class="brush:bash">
+                        # PUT {{domain}}index_name
+
+                        # list all index {{domain}}_cat/indices?v&format=json
+                        [
+                            {
+                                "health": "yellow",
+                                "status": "open",
+                                "index": "customer", # index name
+                                "uuid": "wXGbCZjnRCa1wi_8n3D2kg",
+                                "pri": "1", # one primary shard,
+                                "rep": "1", # one replic shard,
+                                "docs.count": "0",
+                                "docs.deleted": "0",
+                                "store.size": "230b",
+                                "pri.store.size": "230b"
+                            }
+                        ]
+                    </pre>
+                </li>
+                <li>
+                    <h4>Add document with _doc or _bulk endpoint.</h4>
+                </li>
+                <li>
+                    <h4>Search document with _search endpoint.</h4>
+                    <p>Http Get with body</p>
+                    <pre>
+
+                    </pre>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>
