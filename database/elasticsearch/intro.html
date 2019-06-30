@@ -44,6 +44,7 @@ SyntaxHighlighter.all()
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
 <li><a href="#api">APIs</a></li>
+<li><a href="#mapping">Mapping [ToDo]</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -135,9 +136,6 @@ cluster
 # node1 and node2 can co-exist on same machine.
             </pre>
         </li>
-        <li><h4>Search API & Query DSL</h4>
-        ElasticSearch provides a "_search" endpoint for each index, the search can be specified by uri parameter and HTTP GET request body. And the request body's content is specified according to the "Query DSL".
-        </li>
     </ol>
 </div>
 </div>
@@ -157,24 +155,11 @@ cluster
                 </li>
                 <li>
                     <h4>Create an index</h4>
+                    <p>An index can be created by a HTTP PUT along with index_name, or by adding a new document to a unknown index and then the index is created automatically.</p>
+                    <p>ElasticSearch will detect the inserted document fields, and generate mapping for this index. As new field is inserted, the mapping is also growing. It is called dynamic mapping.</p>
                     <pre class="brush:bash">
                         # PUT {{domain}}index_name
-
                         # list all index {{domain}}_cat/indices?v&format=json
-                        [
-                            {
-                                "health": "yellow",
-                                "status": "open",
-                                "index": "customer", # index name
-                                "uuid": "wXGbCZjnRCa1wi_8n3D2kg",
-                                "pri": "1", # one primary shard,
-                                "rep": "1", # one replic shard,
-                                "docs.count": "0",
-                                "docs.deleted": "0",
-                                "store.size": "230b",
-                                "pri.store.size": "230b"
-                            }
-                        ]
                     </pre>
                 </li>
                 <li>
@@ -182,11 +167,38 @@ cluster
                 </li>
                 <li>
                     <h4>Search document with _search endpoint.</h4>
-                    <p>Http Get with body</p>
-                    <pre>
-
+                    <p>Search criteria can be specified at either URI params or request body. Request body is using the Query DSL and it is more expressive.</p>
+                    <pre class="brush:bash">
+                        # HTTP GET Request Body
+                        {
+                            "query":{
+                                ... # Query DSL
+                            },
+                            "from": offset,
+                            "size": number of items returned, default is 10,
+                            "timeout":  "2s" # timeout seconds,
+                            "search_type": how to search and sort over a distributed shards.
+                            "indices_boost": [
+                                {"index_1": 1.4}, # multiply a factor for index_1 matching score. It makes index_1 more important then index_2.
+                                {"index_2": 1.2}  # Useful when doing a multi index search.
+                            ],
+                            "min_score": 0.5, # Exclude documents which have a _score less than the min_score.
+                            "sort": 
+                        }
                     </pre>
+                    <p>Seach Type<br>
+                        QUERY_AND_FETCH: ask each shard for N result, and then sorting together, then return N * #shards results to user.<br>
+                        QUERY_THEN_FETCH (default): first sorting over the all relavent shards, then ask N documents according the new sorting.<br>
+                        ...
+                    </p>
+                    <p>
+                        <h4>Multi-index search</h4>
+                       
+                    </p>
                 </li>
+                <li><h4>Search API & Query DSL</h4>
+                    ElasticSearch provides a "_search" endpoint for each index, the search can be specified by uri parameter and HTTP GET request body. And the request body's content is specified according to the "Query DSL".
+                    </li>
             </ol>
         </div>
     </div>
@@ -196,7 +208,8 @@ cluster
 <h3>References</h3>
 <div class="featureList">
     <ol>
-        <li></li>
+        <li><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/getting-started.html" target="_blank">ElasticSearch Get Started.</a></li>
+        <li><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-body.html" target="_blank">_search request body.</a></li>
     </ol>
 </div>
 </div>

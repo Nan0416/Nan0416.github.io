@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>ElasticSearch&nbsp;QueryDSL</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-06-30">
+<meta name="keywords" content="querydsl">
+<meta name="keywords" content="elasticsearch">
+<meta name="keywords" content="">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushPython.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushSql.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>Elasticsearch&nbsp;-&nbsp;QueryDSL</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-06-09</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-06-30</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#match">Match</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+<p>Query DSL (domain specific language): a language designed by Elastichsearch based on JSON to define Query.</p>
+<p></p>
+</div>
+</li>
+<li>
+    <div class="content" id="match">
+        <h3>Match</h3>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>Analysis</h4>
+                    Analysis is a process that processes text, removing stopwords, lowercase all characters, normalize word (driving -> drive).
+                    The process is done by an analyzer. Each text field value will be assigned analyzer.
+                    
+                    <h4>Index time analyzer vs. Search time analyzer (优先级)</h4>
+                    Index time analyzer: mapping properties's analyzer > index default analyzer > standard analyzer.<br>
+                    Search time analyzer: query specified analyzer > mapping's search_analyzer > mapping's analyzer > index default search_analyzer > index default analyzer > standard analyzer.
+                    <h4>Analyzer: character filters, tokenizers, and token filters</h4>
+                    <p>https://www.elastic.co/guide/en/elasticsearch/reference/current/analyzer-anatomy.html</p>
+                </li>
+                <li>
+                    <h4>match</h4>
+                    <p>match a text field, <span style="color:red">the order of words doesn't matter. e.g. "If the analyzer" and "Analyzer if the" results in the same score.</span></p>
+                    <pre class="brush:bash">
+                        {
+                            "query":{
+                                "match":{
+                                    "field_name":{
+                                        "query": "text text text ...",
+                                        "operator": "and",
+                                        "zero_terms_query": "all", #??? avoid removing stopwords in the query. e.g. query is "to be", "to be" will be removed by default, it will return nothing.
+                                    }
+                                }
+                            }
+                        }
+                    </pre>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li><a herf="https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-analyzers.html" target="_blank">Built-in Analyzer</a></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>
