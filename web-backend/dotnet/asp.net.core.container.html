@@ -1,0 +1,203 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>ASP.NET&nbsp;-&nbsp;ASP.NET Core Container</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-04-01">
+<meta name="keywords" content="asp.net">
+<meta name="keywords" content="service">
+<meta name="keywords" content="middleware">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>ASP.NET&nbsp;-&nbsp;ASP.NET Core Container</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-04-01</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-06-30</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#service">Dependency Injection & DI Container</a></li>
+<li><a href="#middleware">Middleware & Pipeline</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="service">
+<h3>Dependency Injection & DI Container</h3>
+<p>Like Node.js Express framework, ASP.NET Core also use the concept of routing and pipeline. In Node.js, dependencies on each pipeline can be injected by using "require" and declared as global const. 
+    But in ASP.NET Core, the injection is done by a DI module, "Microsoft.Extensions.DependencyInjection".</p>
+<div class="featureList">
+    <ol>
+        <li>
+            <h4>Dependency == Service</h4>
+            <p>Dependencies are just services, e.g.logger, configuration, dbcontext.<br>
+                A service is usually abstracted as an interface and one or more concrete service class. (Good at testing and reusable)<br>
+                A service can depend on other services.
+            </p>
+        </li>
+        <li>
+            <h4>DI Container</h4>
+            <p>A DI container is a container of services, developers register different services to this container, and the container will help initialize controller and services. There exist different implementation of containers (or dependency injection module). 
+                "Microsoft.Extensions.DependencyInjection" is the default DI module used by ASP.NET Core. Inside the Startup class, method</p>
+                <pre class="brush:cpp">
+                        public IServiceProvider ConfigureServices(IServiceCollection services)
+                        {
+                            return services.BuildServiceProvider();
+                        }
+                </pre>
+            <p>is used to register dependencies. The 'IServiceCollection' is provided by the 'Microsoft.Extensions.DependencyInjection'.</p>
+        </li>
+        <li>
+            <h4>Register Dependencies</h4>
+            <p>A service is registered with its interface. Then dependency injection can use the interface name to resovle a concrete service instance. But dependency injection also allows to use concrete class to register and resolve.</p>
+            <p>IServiceCollection provides a set of method to register services<br>
+                1). Let framework to create the instance of concrete implementation
+                <pre class="brush:cpp">
+                    services.AddTransient&lt;IOperationTransient, Operation>();
+                    services.AddScoped&lt;IOperationScoped, Operation>();
+                    services.AddSingleton&lt;IOperationSingleton, Operation>();
+                </pre>
+                2). Let framework to use factory to create the instance of concrete implementation<br>
+                3). Developer specifies the instance
+                <pre class="brush:cpp">
+                    services.AddSingleton&lt;IService>(new ConcreteService());
+                </pre>
+                <p class="reference-box">
+                    Hints: how to customize the initialization of a service? A developer can create the service by himself, but a service 
+                    usually depends on other services, which means developer has to resolve the dependency chain. So a better way to customize
+                    the initialization of a service is through IConfiguration. Give the IConfiguration to a service's constructor, and then customize a service inside its constructor.
+                </p>
+                4). Add a well-defined service by using extension methods, such as
+                <pre class="brush:cpp">
+                    services.AddMvc();
+                    services.AddDbContext&lt;ApplicationDbContext>(options =>
+                            options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+                </pre>
+            </p>
+        </li>
+        <li>
+            <h4>Service lifetime</h4>
+        </li>
+        <li>
+            <h4>Framework-provided services</h4>
+            <p>ASP.NET Core provides a few common services. e.g. ILogger&lt;T>, IHostEnvironment, IConfiguration. <a href="https://docs.microsoft.com/en-us/aspnet/core/fundamentals/dependency-injection?view=aspnetcore-2.2#framework-provided-services" target="_blank">Reference</a> For example, 
+                when creating the default host "CreateDefaultBuilder(args)", it includes three Logging providers, Console, Debug and EventSource.
+            </p>
+        </li>
+        <li>
+            <h4>Resovling a service</h4>
+            <p>1). interface + constructor injection<br>
+               2). interface + actively acquiring<br>
+               <span style="text-decoration: line-through">3). concrete class + constructor injection</span>: <span style="color:red">never use this, it is hard to do unittest, since we cannot inject mock dependencies.</span><br>
+               4). concrete class + actively acquiring
+            </p>
+        </li>
+        <!--<p>When initializing the default host, it creates a default service container called IServiceProvider and registers several framework-provided services.</p>-->
+    </ol>
+    </div>
+</div>
+</li>
+<li>
+    <div class="content" id="middleware">
+        <h3>Middleware & Pipeline</h3>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <p>It is same concept as Node.js Express. Pipeline is configured via 
+                        <pre class="brush:cpp">
+                            public class Startup{
+                                public void Configure(IApplicationBuilder app)
+                                {
+
+                                }
+                            }
+                        </pre>
+                        Inside the method, using app to register middleware. Middleware is 
+                        <pre class="brush:cpp">
+                            Func&lt;HttpContext, Func&lt;Task>, Task>
+                        </pre>
+                    </p>
+                </li>
+            </ol>
+        </div>
+        
+        <div class="featureList">
+            <h4>IApplicationBuilder's Extension methods</h4>
+            <ol>
+                <li>.Run(RequestDelegate handler): the terminal of the pipeline<br>
+                <pre class="brush:cpp">
+                    // public delegate Task RequestDelegate(HttpContext context);
+                    
+                    // using statement lambda supported C# 3.0 and later.
+                    app.Run(async context =>
+                    {
+                        await context.Response.WriteAsync("Hello, World!");
+                    });
+                </pre>
+                </li>
+                <li>.Map(Func&lt;HttpContext, Func&lt;Task>, Task> middleware)<br>
+                <pre class="brush:cpp">
+                    // Func&lt;HttpContext, Func&lt;Task>, Task>
+                    // The first Func generic delegate
+                    // public delegate TResult Func&lt;in T1,in T2,out TResult>(T1 arg1, T2 arg2); 
+                    // The second Func generic delegate
+                    // public delegate TResult Func&lt;out TResult>();
+
+                    // => Task delegate_type(HttpContext, inner_delegate)
+                    // => Task inner_delegate()
+
+                    app.Use(async (context, next) =>
+                    {
+                        // Do work that doesn't write to the Response.
+                        await next.Invoke();
+                        // Do logging or other work that doesn't write to the Response.
+                    });
+
+                </pre>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li><a href="https://www.strathweb.com/2017/06/resolving-asp-net-core-startup-class-from-the-di-container/" target="_blank">Resolving ASP.NET Core Startup Class from the DI container.</a></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>
