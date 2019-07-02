@@ -37,7 +37,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>ASP.NET Core&nbsp;-&nbsp;Host</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-03-06</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-06-30</span></p>
+<p class="date"><span class="created-date">Created:2019-03-06</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-07-01</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -66,7 +66,7 @@ SyntaxHighlighter.all()
         <li>
             <h4>ASP.NET Framework</h4>
             <p>ASP.NET Framework does not natively support "Startup" class and Dependency injection. Projects of ASP.NET Framework don't have a Main function, it will be compile into a library. And then it is installed into (being invoked by) IIS server to form a web app.</p>
-            <p>But latter, the OWIN (Open Web Interface for .NET) defines a standard interface between web servers and .NET web applications e.g. <span style="color:red">IAppBuilder</span>, Katana is the implementation of Owin; OwinHost, IIS Express and IIS server support 
+            <p>But latter, the OWIN (Open Web Interface for .NET) defines a standard interface between web servers and .NET web applications e.g. <span style="color:red">IAppBuilder</span>, Katana is the implementation of Owin; OwinHost (in-process server), IIS Express and IIS server support 
                 OWIN standard, so these server can be used with OwinStartup.</p>
         </li>
         <li>
@@ -231,9 +231,50 @@ SyntaxHighlighter.all()
 <li>
     <div class="content" id="startup">
         <h3>Startup</h3>
+        <h4>ASP.NET Core: Startup</h4>
         <div class="featureList">
             <ol>
-                <li>
+                <li><h4>Microsoft.AspNetCore.Hosting Startup</h4>
+                    <p>ASP.NET Core natively integrates the Kestrel in-process server and supports the Startup class.
+                        Startup class has 3 methods, constructor, ConfigureServices: inject dependencies, Configure: configuring app (add routing, controller...)
+                    </p>
+                    <pre class="brush:cpp">
+                    public class Startup{
+                        public Startup(IConfiguration configuration, ILogger<Startup> logger, IHostingEnvironment env)
+                        {
+                            Configuration = configuration;
+                            _logger = logger;
+                            _logger.LogInformation("Startup Constructor is Called");
+                            this.env = env;
+
+                        }
+
+                        public IConfiguration Configuration { get; }
+                        private readonly ILogger _logger;
+                        private readonly IHostingEnvironment env;
+
+                        // This method gets called by the runtime. Use this method to add services to the container.
+                        public IServiceProvider ConfigureServices(IServiceCollection services)
+                        {
+                            services.AddScoped&lt;IMyService, MyService>();
+                            services.AddSingleton&lt;Startup>(this);
+                            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+                            IServiceProvider sp = services.BuildServiceProvider();
+                            return sp;
+                        }
+
+                        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+                        public void Configure(IApplicationBuilder app)
+                        {
+                            app.UseMvc();
+                        }
+                     </pre>
+                     <h4>Startup Detection</h4>
+                     <p>
+                         1). using Main.<br>
+                         2). following convention<br>
+                         3). implementment IStartup
+                     </p>
                         Developer defines a Startup class that either follow's convention or implement the IStartup interface.<br>
                         1). IStartup: If asp.net detected the implementation of IStartup, it will register the (IStartup, Startup) pair to the service container.<br>
                         2). <a href="https://docs.microsoft.com/en-us/aspnet/core/fundamentals/startup?view=aspnetcore-2.2#the-startup-class" target="_blank">Convention</a>: Startup is not registered. But inside its member functions,
