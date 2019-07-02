@@ -242,11 +242,69 @@ SyntaxHighlighter.all()
             </ol>
         </div>
         <h4>ASP.NET Framework: Startup</h4>
-        <p>ASP.NET Framework does not natively support Startup class, it is achieved by using Microsoft.Owin.Host.SystemWeb. Download this package from NuGet (current version is 4.0.1)</p>
-        <p>Add the following Startup.cs manually or through Visual Studio's Add Item.</p>
-        <pre class="brush:cpp">
+        <p>ASP.NET Framework does not natively support Startup class, it is achieved by using <span style="color:red">Microsoft.Owin.Host.SystemWeb</span>. Download this package from NuGet (current version is 4.0.1)</p>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>Owin Startup</h4>
+                    <p>Add the following Startup.cs manually or through Visual Studio's Add Item.</p>
+                    <pre class="brush:cpp">
+            using System;
+            using System.Threading.Tasks;
+            using Microsoft.Owin;
+            using Owin;
             
-        </pre>
+            [assembly: OwinStartup(typeof(owin_startup_practice.Startup))]
+            
+            namespace owin_startup_practice
+            {
+                public class Startup
+                {
+                    public void Configuration(IAppBuilder app)
+                    {
+                        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=316888
+                    }
+                }
+            }
+                    </pre>
+                    <p>
+                        Compare to ASP.NET Core's startup, <br>
+                        1). OWIN startup does not have a "ConfigureServices" method, which means OWIN itself does not support Dependency Injection, has to use 3rd party modules, like Autofac or Ninject.
+                        <br>
+                        2). OWIN startup does not have "Configuration" properties, which means Configuration is also need 3rd party library or using System.Configuration library.
+                       
+                    </p>
+                    <h4>Detection of Owin Startup class</h4>
+                    <p>ToDo</p>
+                </li>
+                <li>
+                    <h4>Self-host OWIN</h4>
+                    <p>The default OWIN project is output as a .dll library and then invoked by IIS server or IIS Express. But OWIN also provides a Kestrel like in-process host (container), Owin.SelfHost</p>
+                    <p>Install <span style="color:red">Microsoft.Owin.SelfHost</span> (curren version v4.0.1)</p>
+                    <pre class="brush:cpp">
+                        using System;
+                        using System.Collections.Generic;
+                        using System.Linq;
+                        using System.Web;
+                        using Microsoft.Owin.Hosting;
+                        namespace owin_startup_practice
+                        {
+                            public class Program
+                            {
+                                public static void Main(string[] args) {
+                                    using (WebApp.Start&lt;Startup>("http://locahost:12000")) {
+                                        Console.WriteLine("Press [enter] to quit ...");
+                                        Console.ReadLine();
+                                    }
+                                }
+                            }
+                        }
+                    </pre>
+                    <p>The selfhost is configurable,like desingating a url.</p>
+                </li>
+            </ol>
+        </div>
+
     </div>
 </li>
 <li>
@@ -259,6 +317,7 @@ SyntaxHighlighter.all()
         <li><a href="https://docs.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel?view=aspnetcore-2.2#kestrel-options" target="_blank">Kestrel Options</a></li>
         <li><a href="https://www.talkingdotnet.com/launchsetting-json-in-aspnet-5/" target="_blank">What is launchsetting.json in ASP.NET Core</a></li>
         <li><a href="https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-2.2" target="_blank">Configuration in ASP.NET Core</a></li>
+        <li><a href="https://docs.microsoft.com/en-us/aspnet/aspnet/overview/owin-and-katana/getting-started-with-owin-and-katana" target="_blank">Getting Started with OWIN and Katana</a></li>
     </ol>
 </div>
 </div>
