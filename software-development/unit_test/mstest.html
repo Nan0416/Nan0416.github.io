@@ -44,6 +44,7 @@ SyntaxHighlighter.all()
 <ul class="catalogItems">
 <li><a href="#intro">MSTest & Moq</a></li>
 <li><a href="#example">Example</a></li>
+<li><a href="#api">MSTest & Moq APIs</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -82,25 +83,25 @@ SyntaxHighlighter.all()
                     <h4>Example code</h4>
                     <pre class="brush:cpp">
                             // target
-                            public class Target{
-                                private string _text;
-                                private ISimpleServices _service;
-                                public Target(ISimpleServices service, String text){
-                                    _text = text;
-                                    _service = service;
+                            public class Target
+                            {
+                                private readonly IFormatter _formatter;
+                                public Target(IFormatter formatter){
+                                    _formatter = formatter;
                                 }
-                        
-                                public string Append(int count){
-                                    for(var i = 0; i &lt; count; i++){
-                                        _text += _service.inc();
+                                public string Print(params int arrNumber){
+                                    var sb = new StringBuilder();
+                                    foreach(var number in arrNumber){
+                                        sb.Append(_formatter.Format(number));
                                     }
-                                    return _text;
+                                    return sb.ToString();
                                 }
                             }
 
                             // dependency
-                            public interface ISimpleServices{
-                                int Inc(int i);
+                            public interface IFormatter
+                            {
+                                string Format(int i);
                             }
                     </pre>
                     <p>Test Target.append method. To isolate the potential bugs in ISimpleServices's implementation, we need to create a Mock ISimpleServices. </p>
@@ -124,7 +125,8 @@ SyntaxHighlighter.all()
                             &lt;PackageReference Include="MSTest.TestAdapter" Version="1.3.2" />
                             &lt;PackageReference Include="MSTest.TestFramework" Version="1.3.2" />
                     </pre>
-                    <p>Naming convention<br>
+                    <h4>Naming convention</h4>
+                    <p>
                         1). the test file and test class name is {{target-classname}}Tests<br>
                         2). the test method is {{target-method}}_With[out]{{Input-description}}_Should{{Output-expectation}}
                     </p>
@@ -136,6 +138,13 @@ SyntaxHighlighter.all()
                                 [TestClass]
                                 public class TargetTests
                                 {
+                                    // properties...
+
+                                    [TestInitialize]
+                                    public void Init(){
+                                        // Init() is optional
+                                    }
+
                                     [TestMethod]
                                     public void Append_WithIncThree_ShouldReturnThree()
                                     {
@@ -147,9 +156,195 @@ SyntaxHighlighter.all()
                     <p>These attributes help MSTest.exe to invoke methods, also help Visual Studio to present UI.</p>
                 </li>
                 <li>
-                    <h4>Moq</h4>
+                    <h4>Moq (without Autofac)</h4>
                     <p>Install: dotnet add package Moq --version 4.12.0</p>
+                    <p>Moq helps initialize dependencies based on interface (service), it can also help inject dependencies into the target object by using 'Autofac.Extras.Moq.AutoMock'</p>
+                    <pre class="brush:cpp">
+                        [TestMethod]
+                        public void Append_WithIncThree_ShouldReturnThree()
+                        {
+                            var formatterMock = new Mock&lt;IFormatter>();
+                            // formatterMock is a wrapper of IFormatter, it has method to configure the dependence.
+                            formatterMock.Setup(x => x.Format(It.IsAny&lt;int>())).Returns("10");
+                            // setup the method with any int input, return "10"
+                            var target = new Target(formatterMock.Object);
+                            var result = target.Print(1, 2, 3);
+                            // create the target with the mock dependence, and invoke method.
+                            Assert.AreEqual("101010", result);
+                            // MSTest provided Assert.
+                            formatterMock.Verify(x => x.Format(It.IsAny&lt;int>()), Times.Exactly(3));
+                            // Moq inspect dependence.
+                        }
+                    </pre>
                 </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="api">
+        <h3>MSTest & Moq APIs</h3>
+        <div class="featureList">
+            <h4>Moq APIs</h4>
+            <ol>
+                <li>
+                    <h4>Configure Mock Objects' method</h4>
+                    <p>1). the behavior of a method is deterministic, then its result is determined by its inputs<br>
+                       2). the behavior of a method is non-deterministic, then its result is random.<br>
+                       3). the behavior of a method is stateful, meaning also related to the number of calls made on it.
+                    </p>
+                    <p>A result can be a value or an exceptions. Moreover, in C#, result can also be async.</p>
+                    <p style="color:red">** Because it is mock object, usually just need hardcode. No if-else logic required"</p>
+                    <pre style="width:800px; overflow-x:scroll; border:1px solid red">
+                        MockObject.Setup takes an input of expression of  TResult Fun(T)
+                            returns a ISetup&lt;T, TResult>
+                        ISetup has methods:
+                            1). a family of Returns: IReturnsResult
+                        ISetup has extension methods:
+                            1). a family of ReturnsAsync, ThrowsAsync, which can also have time-delay argument: IReturnsResult
+
+                        Mock&lt;T> {.Setup&lt;T, TResult>(Expression&lt;Func&lt;T, TResult>> )}
+                        |      |----------|                             |
+                        |                 |                             |
+                        Mock            IMock&lt;T> {T Object}          |
+                                                                      returns
+                                                                        |
+                                                                        \/
+                                                                    ISetup&lt;T, TResult>
+                                                                        |
+                                                                        |
+                                                                    IReturns&lt;T, TResult> { Returns(TResult ), ReturnsAsync(TResult )}
+                                                                                                        |               |
+                                                                                                        ----------------    
+                                                                                                                |
+                                                                                                            IReturnsResult&lt;T>
+
+                        MockObject.SetupSequential takes an input of expression of  TResult Fun(T)
+                            returns a ISetupSequentialResult
+                        ISetupSequentialResult has extension methods:
+                            1). ReturnsAsync, 2). ThrowsAsync, both of them also return a ISetupSequentialResult, so it's chainable.
+                        
+
+
+                        
+                    </pre>
+                    <pre class="brush:cpp">
+                        # deterministic stateless.
+                        mock.Setup(foo => foo.DoSomething(It.IsAny&lt;string>())).Returns(true);
+                        mock.Setup(foo => foo.DoSomething("hello")).Returns(true);
+                        // other input condition can be specified by a range, by a lambda.
+
+                        // non-deterministic
+                        mock.Setup(foo => foo.DoSomething("hello")).Returns((New Random()).Next(1000));
+
+                        // throws exceptions
+                        mock.Setup(foo => foo.DoSomething("hello"))
+                            .Throws&lt;InvalidOperationException>();
+                        mock.Setup(foo => foo.DoSomething("hi"))
+                            .Throws(new ArgumentException("command"));
+
+                        // stateful
+                        // 1st call returns "10", 2nd call returns "11", 3rd call throws error.
+                        formatterMock.SetupSequence(x => x.Format(It.IsAny&lt;int>()))
+                                .Returns("10")
+                                .Returns("11");
+
+                        // 1st call returns "10", 2nd call returns "11", 3rd call throws exception.
+                        formatterMock.SetupSequence(x => x.Format(It.IsAny&lt;int>()))
+                                .Returns("10")
+                                .Returns("11")
+                                .Throws(new ArgumentException("command"));
+                        
+                    </pre>
+                    <p style="color:red">sequential asycn</p>
+                </li>
+                <li>
+                    <h4>Initialize target objects with Autofac</h4>
+                    <p>The simple way is to create Mock object and initialize a target object by using its constructor. Another approach is to use Autofac Dependency Injection to inject Mock Object.</p>
+                    <p>
+                        Strict mocking: If the test method invokes that method or property and the Mock object does not set them, then it will throw exceptions.<br>
+                        Loose mocking: If the test method invokes that method or property and the Mock object does not set them, then you get the default value for that operation (which mostly will be a zero or a null). For example, calling a method "string Format(int i)" will get null.
+                    </p>
+                    <pre class="brush:cpp">
+                            using Autofac.Extras.Moq;
+                            using Moq;
+                            using Microsoft.VisualStudio.TestTools.UnitTesting;
+                            using Service;
+                            using Targets;
+                            namespace targets.tests
+                            {
+                                [TestClass]
+                                public class AnotherTargetTests
+                                {
+                                    private AutoMock _mock; // a container
+                                    private Target _target; // target object.
+                                    [TestInitialize]
+                                    public void Init()
+                                    {
+                                        _mock = AutoMock.GetLoose();
+                                        _target = _mock.Create&lt;Target>();
+                                    }
+                            
+                                    [TestMethod]
+                                    public void Print_WithNumberArray_ShouldReturnString()
+                                    {
+                                        /*
+                                         * var formatterMock = new Mock&lt;IFormatter>();
+                                         * formatterMock.Setup(x => x.Format(It.IsAny&lt;int>()))
+                                            .Returns("11");
+                                        */
+                                        // register and configure dependencies
+                                        _mock.Mock&lt;IFormatter>()
+                                            .Setup(x => x.Format(It.IsAny&lt;int>()))
+                                            .Returns("11");
+                            
+                                        // var target = new Target(formatterMock.Object);
+                            
+                                        var result = _target.Print(0, 2, 3);
+                                        Assert.AreEqual("111111", result);
+                                        _mock.Mock&lt;IFormatter>().Verify(x => x.Format(It.IsAny&lt;int>()), Times.Exactly(3));
+                                        Assert.AreEqual(0, It.IsAny&lt;int>());
+                                    }
+
+                                    [TestMethod]
+                                    public void Print_WithNumberArray_ShouldReturnString2()
+                                    {
+                                        // even though we still use the same container, but dependencies are reset!!!!
+                                        var result = _target.Print(0, 2, 3);
+                                        Assert.AreEqual("", result);
+                                        _mock.Mock&lt;IFormatter>().Verify(x => x.Format(It.IsAny&lt;int>()), Times.Exactly(3));
+                                        Assert.AreEqual(0, It.IsAny&lt;int>());
+                                    }
+
+                                }
+                            }
+                    </pre>
+                    <p>Because container is reset for each test method, it is better to use the following manner.</p>
+                    <pre class="brush:cpp">
+                            [TestMethod]
+                            public void Print_WithNumberArray_ShouldReturnString()
+                            {
+                                using (var mock = AutoMock.GetLoose())
+                                {
+                                    var formatterMock = mock.Mock&lt;IFormatter>();
+                                    formatterMock.Setup(x => x.Format(It.IsAny&lt;int>()))
+                                        .Returns("13");
+                                    var target = mock.Create&lt;Target>(new NamedParameter("formatter", formatterMock.Object)); // with a designated parameter.
+                                    var result = target.Print(0, 2, 3);
+                                    Assert.AreEqual("131313", result);
+                                    mock.Mock&lt;IFormatter>().Verify(x => x.Format(It.IsAny&lt;int>()), Times.Exactly(3));
+                                }
+                            }
+                    </pre>
+                    <p style="color:red">** Target objects can be .Create before registering dependencies. When dependencies is registered, the behavior of target will be modified. ***</p>
+                </li>
+                <li>
+                    <h4>Moq Verification</h4>
+                </li>
+            </ol>
+            <h4>MSTest APIs</h4>
+            <ol>
+                <li><h4>Assert family</h4></li>
             </ol>
         </div>
     </div>
@@ -159,7 +354,9 @@ SyntaxHighlighter.all()
 <h3>References</h3>
 <div class="featureList">
     <ol>
-        <li></li>
+        <li><a href="https://github.com/Moq/moq4/wiki/Quickstart" target="_blank">Moq4 Quickstart</a></li>
+        <li><a href="https://autofaccn.readthedocs.io/en/latest/integration/moq.html" target="_blank">Autofac Moq Integration.</a></li>
+        <li><a href="https://ikeptwalking.com/strict-mocking-vs-loose-mocking/" target="_blank">Strict vs. Loose Mocking.</a></li>
     </ol>
 </div>
 </div>
