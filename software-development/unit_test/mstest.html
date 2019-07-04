@@ -17,7 +17,7 @@
 <script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
-<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushSql.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushXml.js"></script>
 <link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
 <link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
 
@@ -39,7 +39,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Unit Test&nbsp;-&nbsp;MSTest</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-06-26</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-06-26</span></p>
+<p class="date"><span class="created-date">Created:2019-06-26</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-07-03</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">MSTest & Moq</a></li>
@@ -53,7 +53,106 @@ SyntaxHighlighter.all()
 <li>
 <div class="content" id="intro">
 <h3>Introduction</h3>
+<p>Unittest: testing a specific class and its function.<br>
+    1). create its dependencies.<br>
+    2). using its dependencies to initialize the target object.<br>
+    3). verify expections.<br>
+    <span style="color:red">Testing code does not have a main program, it is compiled into a library, and then invoked by Testing tools. e.g. MSTest.exe</span>
+</p>
+<div class="featureList">
+    <ol>
+        <li>
+            <h4>MSTest (Visual Studio Unit testing framework)</h4>
+            <p>Microsoft's test framework that supported by Visual Studio. (Inside visual studio "Test Explore", you can directly run test). MSTest provides attributes to mark test classes and test methods, it also provides a family of Assert functions to verify results.</p>
+        </li>
+        <li>
+            <h4>Moq</h4>
+            <p>Moq (pronounced "Mock-you" or just "Mock") is a .NET Framework to help create fake objects. 1). It can create objects based on interface, and designate the behavior when calling a method (with specific arguments). 2). It can also inspect the behavior of fake objects when running the target object's methods. e.g. (# of calls)</p>
+        </li>
+    </ol>
 </div>
+</div>
+</li>
+<li>
+    <div class="content" id="example">
+        <h3>Example</h3>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>Example code</h4>
+                    <pre class="brush:cpp">
+                            // target
+                            public class Target{
+                                private string _text;
+                                private ISimpleServices _service;
+                                public Target(ISimpleServices service, String text){
+                                    _text = text;
+                                    _service = service;
+                                }
+                        
+                                public string Append(int count){
+                                    for(var i = 0; i &lt; count; i++){
+                                        _text += _service.inc();
+                                    }
+                                    return _text;
+                                }
+                            }
+
+                            // dependency
+                            public interface ISimpleServices{
+                                int Inc(int i);
+                            }
+                    </pre>
+                    <p>Test Target.append method. To isolate the potential bugs in ISimpleServices's implementation, we need to create a Mock ISimpleServices. </p>
+                </li>
+                <li>
+                    <h4>Structure</h4>
+                    <p>A unittest should be created as a separate project under the same solution, and it should include the reference of the target project.</p>
+                    <pre class="brush:bash">
+                        dotnet new sln; # create a solution
+                        mkdir project_name; cd project_name;
+                        dotnet new console; # or dotnet new classlib;
+                        cd ..;
+                        mkdir project_name.tests;
+                        cd project_name.tests;
+                        dotnet new mstest; # initialize a test project;
+                        dotnet add reference ../project_name/project_name.csproj; # add reference.
+                    </pre>
+                    <p>The dotnet new mstest command includes MSTest library.</p>
+                    <pre class="brush:xml">
+                            &lt;PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
+                            &lt;PackageReference Include="MSTest.TestAdapter" Version="1.3.2" />
+                            &lt;PackageReference Include="MSTest.TestFramework" Version="1.3.2" />
+                    </pre>
+                    <p>Naming convention<br>
+                        1). the test file and test class name is {{target-classname}}Tests<br>
+                        2). the test method is {{target-method}}_With[out]{{Input-description}}_Should{{Output-expectation}}
+                    </p>
+                    <pre class="brush:cpp">
+                            using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+                            namespace Targets.Tests
+                            {
+                                [TestClass]
+                                public class TargetTests
+                                {
+                                    [TestMethod]
+                                    public void Append_WithIncThree_ShouldReturnThree()
+                                    {
+
+                                    }
+                                }
+                            }
+                    </pre>
+                    <p>These attributes help MSTest.exe to invoke methods, also help Visual Studio to present UI.</p>
+                </li>
+                <li>
+                    <h4>Moq</h4>
+                    <p>Install: dotnet add package Moq --version 4.12.0</p>
+                </li>
+            </ol>
+        </div>
+    </div>
 </li>
 <li>
 <div class="content" id="reference">
