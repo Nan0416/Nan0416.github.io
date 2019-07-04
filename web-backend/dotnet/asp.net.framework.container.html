@@ -2,7 +2,7 @@
 <!-- NewPage -->
 <html lang="en">
 <head>
-<title>ASP.NET&nbsp;ASP.NET Framework Container [Autofac]</title>
+<title>ASP.NET&nbsp;ASP.NET Framework: Owin + Autofac + Controller</title>
 <meta charset="utf-8">
 <meta name="date" content="2019-06-09">
 <meta name="keywords" content="asp.net">
@@ -37,7 +37,7 @@ SyntaxHighlighter.all()
 </script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<strong>ASP.NET&nbsp;-&nbsp;ASP.NET Framework Container [Autofac]</strong>
+<strong>ASP.NET&nbsp;-&nbsp;Owin + Autofac + Controller</strong>
 </div>
 <p class="date"><span class="created-date">Created:2019-07-04 (Independence Day)</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-07-04</span></p>
 
@@ -57,9 +57,9 @@ SyntaxHighlighter.all()
 </script>
 <div class="catalog">
 <ul class="catalogItems">
-<li><a href="#intro">Introduction</a></li>
+<li><a href="#intro">Owin + Controller</a></li>
 <li><a href="#autofac">Autofac</a></li>
-<li><a href="#integration">ASP.NET Framework Web API + Owin + Autofac</a></li>
+<li><a href="#integration">Owin + Autofac</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -68,15 +68,365 @@ SyntaxHighlighter.all()
 <ol>
 <li>
 <div class="content" id="intro">
-<h3>Introduction</h3>
+<h3>Owin + Controller</h3>
+<p>Using HttpConfiguration to configuration the behavior of webapp, using IAppBuilder to apply the configuration.</p>
+<div class="featureList">
+    <ol>
+        <li>
+            <h4>Pipeline of middleware</h4>
+            <p>A middleware is a Func&lt;IOwinContext, Func&lt;Task>, Task>, which takes a context and next middleware.</p>
+            <pre class="brush:cpp">
+                    public class Startup
+                    {
+                        public void Configuration(IAppBuilder app)
+                        {
+                            // Func&lt;IOwinContext, Func&lt;Task>, Task> handler
+                            /*
+                                handler is a delegate (IOwinContext, Func(Task):Task): Task
+                                return a Task.
+                            */
+                            app.Use((context, next) =>
+                            {
+                                context.Response.ContentType = "text/plain";
+                                return context.Response.WriteAsync("Hello, world.");
+                            });
+                        }
+                    }
+            </pre>
+            <p>Inside the OwinContext, it's the http representation. Katana is the implementation of IOwinContext.</p>
+            <pre class="brush:cpp">
+                public interface IOwinContext{
+                    IOwinRequest Request {get;}
+                    IOWinResponse Response {get;}
+                    IAuthenticationManager Authentication {get;}
+                    IDictionary&lt;string, object> Environment {get;}
+                    TextWriter TraceOutput {get; set;}
+
+                    T Get&lt;T>(string key);
+                    IOwinContext Set&lt;T>(string key, T value);
+                }
+            </pre>
+        </li>
+        <li>
+            <h4>HttpConfiguration</h4>
+            <p>A configuration set and tools set for the web app.<br>
+                1). Routes: routing to different controller.<br>
+                2). Formatters: handle different types of request/response body, e.g. JSON, XML, FormUrlEncoded, JQueryMvcFormUrl.<br>
+                3). dependencyResolver: a dependency container.<br>
+            </p>
+            <p>It also has a few extension methods e.g. Add Route Mapping</p>
+            <pre class="brush:cpp">
+                    // bind ASP.NET WebApi route to the configuration.Routes. Internally, it used AttributeRoutingMapper class.
+                    public static void MapHttpAttributeRoutes(this HttpConfiguration configuration)
+                    {
+                        if (configuration == null)
+                        {
+                            throw new ArgumentNullException("configuration");
+                        }
+            
+                        AttributeRoutingMapper.MapAttributeRoutes(configuration, new DefaultInlineConstraintResolver(), new DefaultDirectRouteProvider());
+                    }
+            </pre>
+            <pre class="brush:cpp">
+                    public void Configuration(IAppBuilder app)
+                    {
+                        var config = new HttpConfiguration();
+                        config.MapHttpAttributeRoutes();
+                        config.EnsureInitialized();
+                        app.UseWebApi(config);
+                    }
+            </pre>
+        </li>
+    </ol>
 </div>
+</div>
+</li>
+<li>
+    <div class="content" id="autofac">
+        <h3>Autofac</h3>
+        <p>Autofac is a general dependency injection framework, it can be used with asp.net, moq, ... Anywhere needs resolving dependencies.</p>
+        <div class="featureList">
+            <ol>
+                <li><h4>Terms</h4>
+                    1). service: interface<br>
+                    2). component: concrete implementation of a service.<br>
+                    3). container: the container that holds service-component pairs. It is used to register components, create scopes, resolve components, manage lifetime (creation & disposal).
+                </li>
+                <li>
+                    <h4>Dependencies registrations</h4>
+                    <p>Autofac uses Builder Patter to create containers. So before creating a container, first create a container builder. <span style="color:red">*** .Build() can only called once ***.</span></p>
+                    <p>Dependencies can be registered as <br>
+                        1). <span style="font-weight: bold">Type</span>:.RegisterType&lt;DataBaseLogger>().As&lt;ILogger>();" <span style="color:red">Pros: if this component also needs other components, autofac will automatically resolve them.</span><br>
+                        2). <span style="font-weight: bold">Instance</span>: "RegisterInstance(formatter).As&lt;IFormatter>();" <span style="color:red">Have to initialize the component instance manually, usually, the most basic services that do not depend on other services. Pros: It can have a long lifetime.</span><br>
+                        3). <span style="font-weight: bold">Expression</span>: ".Register(c => new ConfigReader("mysection")).As&lt;IConfigReader>();" <span style="color:red">Dynamic creation.</span>
+                    </p>
+                    <p>If Autofac cannot resolve an component, it will throws "Cannot resolve parameter 'xxxx'"</p>
+                    <p>
+                        * one component -> multi-services<br>
+                        * multi-components -> one service<br>
+                        * module registration
+                    </p>
+                    <pre class="brush:cpp">
+    public interface IFormatter {
+        string Format(string[] arr);
+    }
+    public interface IPersister {
+        void Persist(string data);
+    }
+    public interface IFinalizer {
+        void Finalize(string data);
+    }
+    public interface ILogger {
+        void Log(params string [] data);
+    }
+    public class WhiteSpaceFormatter : IFormatter {
+        public string Format(string[] arr) {
+            if (arr == null) {
+                return "";
+            }
+            StringBuilder sb = new StringBuilder();
+            foreach (string i in arr) {
+                sb.Append(i);
+                sb.Append(" ");
+            }
+            return sb.ToString();
+        }
+    }
+    public class DatabasePersister: IPersister {
+        public void Persist(string data) {
+            Console.WriteLine($"To Database: {data}");
+        }
+    }
+    public class DataBaseLogger : ILogger {
+        private readonly IPersister _persister;
+        private readonly IFormatter _formatter;
+        public DataBaseLogger(IPersister persister, IFormatter formatter) {
+            _persister = persister;
+            _formatter = formatter;
+        }
+        public void Log(params string[] data) {
+            _persister.Persist(_formatter.Format(data));
+        }
+
+    }
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            // Autofac uses Builder Patter. Create a container builder
+            ContainerBuilder containerBuilder = new ContainerBuilder();
+            // dependencies can be registered as Type, Instance, or expression for dynamic creation.
+            IFormatter formatter = new WhiteSpaceFormatter();
+            containerBuilder.RegisterInstance(formatter).As&lt;IFormatter>();
+            containerBuilder.RegisterType&lt;DatabasePersister>().As&lt;IPersister>();
+            containerBuilder.RegisterType&lt;DataBaseLogger>().As&lt;ILogger>(); // database logger depends on IFormatter and IPersister, Autofac resolves them.
+            
+
+            IContainer container = containerBuilder.Build();
+            using (var scope = container.BeginLifetimeScope())
+            {
+                ILogger logger = scope.Resolve&lt;ILogger>();
+                logger.Log("Error", "Unexpected behavior");
+            }
+        }
+    }
+                    </pre>
+                </li>
+                <li>
+                    <h4>Dependencies registrations: multi-As</h4>
+                    <p>A component can be registered as multiple services. <span style="color:red">A component can even be registered to a service that it did not implememnt. And it 
+                        does cause runtime error but not compile error.</span></p>
+                    <pre class="brush:cpp">
+                            containerBuilder.RegisterType&lt;DatabasePersister>()
+                                    .As&lt;IPersister>()
+                                    .AsSelf() // same as .As&lt;DatabasePersister>
+                                    .As&lt;IFinalizer>(); // no compile error.
+                    </pre>
+                </li>
+                <li>
+                    <h4>Dependencies registrations: Default registrations</h4>
+                    <p>
+                        <img src="./img/default-registration.PNG" width="500" height="340">
+                    </p>
+                </li>
+                <li>
+                    <h4>Dependencies registrations: Module reigstrations</h4>
+                    <p>Autofac registration can be organized as individual modules, and then selectable. Internall, it used reflection.</p>
+                    <pre class="brush:cpp">
+                            using Autofac;
+                            public class IPersisterModule: Module
+                            {
+                                protected override void Load(ContainerBuilder builder)
+                                {
+                                    IFormatter formatter = new WhitespaceFormatter();
+                                    builder.RegisterInstance(formatter).As&lt;IFormatter>();
+                                    builder.RegisterType&lt;DataBaseLogger>().As&lt;ILogger>();
+                                }
+                            }
+
+                            ///////////////////
+                            using System.Reflection;
+                            using Autofac;
+
+                            public class Program
+                            {
+                                public static void Main(string[] args)
+                                {
+                                    // .... 
+                                    Assembly assembly = typeof(IPersisterModule).Assembly;
+                                    containerBuilder.RegisterAssemblyModules(assembly);
+                                    IContainer container = containerBuilder.Build();
+                                }
+                            }
+                    </pre>
+                </li>
+                <li>
+                    <h4>Lifetime scope</h4>
+                    <hr>
+                    <p>Lifetime scope means the lifetime of a reoslved component. It can have a lifetime as the Aufofac container, or a short lifetime of per </p>
+                    <p>1). <span style="font-weight:bold">Instance Per Dependency (default)</span> : a new component will be return per resolving.</p>
+                    <pre class="brush:cpp">
+                            public class DataBaseLogger : ILogger {
+                                private readonly IPersister _persister;
+                                private readonly IFormatter _formatter;
+                                public DataBaseLogger(IPersister persister, IFormatter formatter, IFormatter formatter2) {
+                                    _persister = persister;
+                                    _formatter = formatter;
+                                    _formatter = formatter2;
+                                }
+                                public void Log(params string[] data) {
+                                    _persister.Persist(_formatter.Format(data));
+                                }
+                            }
+                    </pre>
+                    <p>When resolving the above component, IFormatter service will be resolved twice (constructor called twice) even though they may be the same.</p>
+                    <p>2). <span style="font-weight: bold">Instance Per Lifetime Scope</span>:
+                    Lifetime scope is a container-created scope
+                    <pre class="brush:cpp">
+                            using (var scope = container.BeginLifetimeScope())
+                            {
+                                // scope: IScope
+                                // container: IContainer: IScope
+                            }
+                    </pre> 
+                    </p>
+                    <p>The container itself has a root scope, so if directly resolving a "Per lifetime scope" component, it will have the same lifetime as the container. <span style="color:red">
+                    *** Because IContainer: IScope, it is feasible to do "container.Resolve"</span>
+                    </p>
+                    <p>Nested scope: nested scope does not affect the behavior of "InstancePerLifetimeScope".</p>
+                    <pre class="brush:cpp">
+                            public static void Main(string[] args)
+                            {
+                                ContainerBuilder containerBuilder = new ContainerBuilder();
+                    
+                                containerBuilder.RegisterType&lt;WhitespaceFormatter>().As&lt;IFormatter>().InstancePerLifetimeScope();
+                                containerBuilder.RegisterType&lt;DataBaseLogger>().As&lt;ILogger>().InstancePerLifetimeScope();
+                                containerBuilder.RegisterType&lt;DatabasePersister>().As&lt;IPersister>().InstancePerLifetimeScope();
+                    
+                                IContainer container = containerBuilder.Build();
+                    
+                                using (var outterScope = container.BeginLifetimeScope())
+                                {
+                                    using (var innerScope = outterScope.BeginLifetimeScope())
+                                    {
+                                        // nested scope: inner scope still initialize its own dependencies.
+                                        ILogger innerlogger = innerScope.Resolve&lt;ILogger>();
+                                        innerlogger.Log("Error", "Unexpected behavior");
+                                    }
+                                    ILogger logger = outterScope.Resolve&lt;ILogger>();
+                                    logger.Log("Error", "Unexpected behavior");
+                                }
+                            }
+                    </pre>
+                    <p>After using, Autofac will dispose the components created within the scope.</p>
+                    <p>3). <span style="font-weight: bold">Instance Per Matching Lifetime Scope</span>:
+                    This is same as InstancePerLifetimeScope, except <br>
+                        * It gives each service one or more groups. During resolving, only the specific lifetime scope can resolve them.<br>
+                        * <span style="color:red">Nested scope has the same tag as parent scope, moreover, it does not re-initialize these parent-scope initialized components anymore.</span>
+                    </p>
+                    <pre class="brush:cpp">
+                            containerBuilder.RegisterType&lt;WhitespaceFormatter>().As&lt;IFormatter>().InstancePerMatchingLifetimeScope("tag1, tag2");
+                            containerBuilder.RegisterType&lt;DataBaseLogger>().As&lt;ILogger>().InstancePerMatchingLifetimeScope("tag1", "tag2");
+                            containerBuilder.RegisterType&lt;DatabasePersister>().As&lt;IPersister>().InstancePerMatchingLifetimeScope("tag1");
+                            // IFormatter and ILogger belongs to "tag1" and "tag2"
+                            // DatabasePersister belongs to "tag1"
+                            using (var scope = container.BeginLifetimeScope("tag1")){
+                                // using "tag1" group,
+                                IFormatter formatter = scope.Resolve&lt;IFormatter>();
+                                using (var scope2 = scope.BeginLifetimeScope())
+                                {
+                                    // scope2 is also in "tag1"
+                                    IFormatter formatter = scope.Resolve&lt;IFormatter>(); // formatter is not re-initialized.
+                                }
+                            }
+                    </pre>
+                    <p>Low level component should belong to a large set of group. Otherwise, high level component cannot be initialized.</p>
+                    <p><span style="color:red; text-decoration: line-through">** Moreover, we can use tags to solve the Multi-component One-service issue.</span> For a service, the latest registration wins. It also override the "matching group" of pervious registerd component.</p>
+                    
+                    <pre class="brush:cpp">
+                            containerBuilder.RegisterType&lt;WhitespaceFormatter>().As&lt;IFormatter>().InstancePerMatchingLifetimeScope("tag1", "tag2");
+                            containerBuilder.RegisterType&lt;SemicolonFormatter>().As&lt;IFormatter>().InstancePerMatchingLifetimeScope("tag1"); // the last wins, and the service's component is SemicolonFormatter, tag is "tag1".
+                    </pre>
+                    
+                    <p>4). <span style="font-weight: bold">Single Instance</span>: has a lifetime as the container. Only one instance per container.</p>
+                    <p>Components registered as .RegisterInstance are single instance</p>
+                    <p>4). <span style="font-weight: bold">Derived lifetime scope: thread scope & instance per request scope.</span>
+                    <hr>
+                </li>
+                <li>
+                    <h4>Resolving dependencies</h4>
+                    <p>1). Resolving by calling .Resolve method<br>
+                        2). Constructor resolving. <span style="color:red">A component may have multiple constructors, which one to use?</span>
+                    </p>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="integration">
+        <h3>Owin + WebApi + Autofac</h3>
+        <p>Autofac is wrapped as a middleware inside the O</p>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>Autofac Lifetime Scope</h4>
+                    <p>Aufo defines a extension method on Owin.Startup IAppBuilder. .UseAutofacMiddleware. This extension method binds </p>
+                    <pre class="brush:cpp">
+                            public static IAppBuilder UseAutofacMiddleware(this IAppBuilder app, ILifetimeScope container)
+                            {
+                                /**
+                                * For each incoming request, Autofac 
+                                * 1). begin a scope with a tag = MatchingScopeLifetimeTags.RequestLifetimeScopeTag
+                                * 2). register the current request context to IOwinContext as a instance inside the newly generate scope.
+                                * 3).  
+                                * start a lifetime scope with tag = , and registerinstance of the runtime IOWinContext instance. 
+                                * 
+                                */
+                                return app
+                                    .RegisterAutofacLifetimeScopeInjector(container)
+                                    .UseAllMiddlewareRegisteredInContainer(container);
+                            }
+                            private static IAppBuilder RegisterAutofacLifetimeScopeInjector(this IAppBuilder app, ILifetimeScope container)
+                            {
+                                return app
+                                    .RegisterAutofacLifetimeScopeInjector(context =>
+                                        container.BeginLifetimeScope(MatchingScopeLifetimeTags.RequestLifetimeScopeTag, b => b.RegisterInstance(context).As<IOwinContext>()),
+                                        true);
+                            }
+                    </pre>
+                </li>
+            </ol>
+        </div>
+    </div>
 </li>
 <li>
 <div class="content" id="reference">
 <h3>References</h3>
 <div class="featureList">
     <ol>
-        <li></li>
+        <li><a href="https://stackoverflow.com/questions/38308905/what-does-iappbuilder-usewebapi-do" target="_blank">What does IAppbuilder.UseWebApi do? [stackoverflow]</a></li>
+        <li><a href="https://autofaccn.readthedocs.io/en/latest/" target="_blank">Autofac's latest documentation.</a></li>
     </ol>
 </div>
 </div>

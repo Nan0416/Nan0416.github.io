@@ -1,31 +1,4 @@
-autofac
-1. service: interface
-2. component: concrete implementation of a service.
-3. container: the container that holds service-component pairs, 
-    container is used to register components, create scopes, resolve components, manage lifetime (creation & disposal).
 
-4. registion
-Autofac using builder pattern to create container.
-```
-var builder = new ContainerBuilder();
-buidler.Register***.As<>()
-```
-the builder has a family of register methods.
-type, instance, lambda can be registered.
-
-1). one component -> multi-services
-expose a component with any number of services you like
-2). multi-components -> one service.
-If more than one component exposes the same service, Autofac will use the last registered component as the default provider of that service:
-
-module registion
-https://autofaccn.readthedocs.io/en/latest/register/scanning.html#scanning-for-modules
-
-var assembly = typeof(AComponent).Assembly;
-var builder = new ContainerBuilder();
-
-// Registers both modules
-builder.RegisterAssemblyModules(assembly);
 
 5. Faciliate the construction of component
 https://autofaccn.readthedocs.io/en/latest/register/parameters.html
