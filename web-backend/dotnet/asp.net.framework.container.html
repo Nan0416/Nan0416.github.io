@@ -113,6 +113,10 @@ SyntaxHighlighter.all()
                 1). Routes: routing to different controller.<br>
                 2). Formatters: handle different types of request/response body, e.g. JSON, XML, FormUrlEncoded, JQueryMvcFormUrl.<br>
                 3). dependencyResolver: a dependency container.<br>
+                4). MessageHandler: receive request, send response (kind of middleware)
+                <p>
+                    <img src="./img/image2.png" width="200" height="280">
+                </p>
             </p>
             <p>It also has a few extension methods e.g. Add Route Mapping</p>
             <pre class="brush:cpp">
@@ -386,35 +390,48 @@ SyntaxHighlighter.all()
 <li>
     <div class="content" id="integration">
         <h3>Owin + WebApi + Autofac</h3>
-        <p>Autofac is wrapped as a middleware inside the O</p>
+        <p>When Owin receives a request<br>
+            0). register all components to autofac container. (Is it including controller?? no, controller is still dispatched by controller-dispatcher, and dependencies is injected by autofac.)<br>
+            1). <span style="color:red">app.UseAutofacMiddleware(container)</span>: Autofac middleware creates a scope for this request and inject all container-registered components into this scope (AutofacAppBuilderExtensions)<br>
+            2). <span style="color:red">config.MapHttpAttributeRoutes()</span>: HttpConfiguration routes mapping (HttpConfigurationExtentions, provided by System.Web.Http)<br>
+            3). app.UseAutofacWebApi(config): get scope from IOwinContext object and add it to MessageHandler. Why?<br>
+            4). app.UseWebApi(config): Owin applies routes mapping.
+        </p>
         <div class="featureList">
             <ol>
                 <li>
-                    <h4>Autofac Lifetime Scope</h4>
-                    <p>Aufo defines a extension method on Owin.Startup IAppBuilder. .UseAutofacMiddleware. This extension method binds </p>
+                    <h4>Autofac Lifetime Scope (instance per request)</h4>
+                    <p>Autofac defines a extension method on Owin.Startup IAppBuilder. .UseAutofacMiddleware. This extension method binds </p>
                     <pre class="brush:cpp">
                             public static IAppBuilder UseAutofacMiddleware(this IAppBuilder app, ILifetimeScope container)
                             {
                                 /**
                                 * For each incoming request, Autofac 
-                                * 1). begin a scope with a tag = MatchingScopeLifetimeTags.RequestLifetimeScopeTag
+                                * 1). begin a scope with a tag = MatchingScopeLifetimeTags.RequestLifetimeScopeTag, which is "AutofacWebRequest"
                                 * 2). register the current request context to IOwinContext as a instance inside the newly generate scope.
-                                * 3).  
-                                * start a lifetime scope with tag = , and registerinstance of the runtime IOWinContext instance. 
-                                * 
                                 */
                                 return app
                                     .RegisterAutofacLifetimeScopeInjector(container)
                                     .UseAllMiddlewareRegisteredInContainer(container);
                             }
-                            private static IAppBuilder RegisterAutofacLifetimeScopeInjector(this IAppBuilder app, ILifetimeScope container)
-                            {
-                                return app
-                                    .RegisterAutofacLifetimeScopeInjector(context =>
-                                        container.BeginLifetimeScope(MatchingScopeLifetimeTags.RequestLifetimeScopeTag, b => b.RegisterInstance(context).As<IOwinContext>()),
-                                        true);
-                            }
                     </pre>
+                    <p>When registering services, we most likely should use .InstancePerRequest, which used .InstancePerMatchingLifetimeScope(MatchingScopeLifetimeTags.RequestLifetimeScopeTag) internally.</p>
+                    <pre class="brush:cpp">
+                        public static IRegistrationBuilder&lt;TLimit, TActivatorData, TStyle> 
+                            InstancePerRequest&lt;TLimit, TActivatorData, TStyle>
+                            (
+                                this IRegistrationBuilder&lt;TLimit, TActivatorData, TStyle> registration, 
+                                params object[] lifetimeScopeTags
+                            )
+                        {
+                                if (registration == null) throw new ArgumentNullException(nameof(registration));
+                                var tags = new[] { MatchingScopeLifetimeTags.RequestLifetimeScopeTag }.Concat(lifetimeScopeTags).ToArray();
+                                return registration.InstancePerMatchingLifetimeScope(tags);
+                        }
+                    </pre>
+                </li>
+                <li>
+                    <h4></h4>
                 </li>
             </ol>
         </div>
