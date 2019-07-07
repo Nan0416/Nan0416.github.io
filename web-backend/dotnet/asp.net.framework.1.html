@@ -1,0 +1,539 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>ASP.NET&nbsp;Handler & Routing</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-06-09">
+<meta name="keywords" content="asp.net">
+<meta name="keywords" content="asp.net Framework">
+<meta name="keywords" content="dependency injection">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushPython.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushSql.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>ASP.NET&nbsp;-&nbsp;Handler & Routing</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-07-04 (Independence Day)</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-07-06</span></p>
+
+<p id="secret-text" style="font-size:11px;padding:10px;display: none;">
+    I don't know if this page will still exist in 2076 when the U.S. is 300 years old, at time time, I will be 82 years old if I still exist.<br>
+    我不知这个页面在2076年的时候还会不会存在，到那时美国300岁，而如果我还在，也有82岁了。<br>
+    ---- 秦楠 25岁 @ Atlanta, U.S.
+    <br>
+    <br>
+    此时的我有了第一份工作 @ Kabbage, 但还一事无成。
+</p>
+<script>
+        let target_year = 2076;
+        if((new Date()).getFullYear() >= target_year){
+            document.getElementById("secret-text").style.display = "block";
+        }
+</script>
+<div class="catalog">
+<ul class="catalogItems">
+    <li><a href="#asp.net">Pure ASP.NET Framework</a></li>
+    <li><a href="#handler">MessageHandler (Delegating Handler)</a></li>
+    <li><a href="#routing">Routing & Routing Dispatcher</a></li>
+    <li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+    <li>
+        <div class="content" id="asp.net">
+            <h3>Pure ASP.NET Framework</h3>
+            <p>ASP.NET Framework is a Framework to build different kinds of web application, such as Restful API and MVC webpage app. The note is taking ASP.NET WebApi 2.0.</p>
+            <p style="color:red">** The reason of calling it as "Pure" is because ASP.NET WebApi2 can also be used with Owin and Dependency injection. This topic is talked in next note. **</p>
+            <p style="color:red">** This note talks about webapi 2, so the following webapi = webapi2.</p>
+            <div class="featureList">
+                <ol>
+                    <li>
+                        <h4>Pure ASP.NET WebApi 2</h4>
+                        <p>Processing flow of a request</p>
+                        <p>
+                            <img src="./img/image5.png" width="300" height="200">
+                        </p>
+                        <p>The processing flow is configured by an <a href="https://github.com/aspnet/AspNetWebStack/blob/master/src/System.Web.Http/HttpConfiguration.cs" target="_blank">HttpConfiguration</a>
+                             object. The HttpConfiguration object includes the 1). MessageHandlers (kind of middleware) 2). services (such as route-dispatcher, controller-dispatcher), 3). routes 4). filters 
+                             (gate of a controller or a method, also kind of middleware) ...</p>
+                        <p>A Global HttpConfiguration is configured at the begining of an ASP.NET App in the Global.asax.cs's Application_Start() method.</p>
+                    </li>
+                    <li>
+                        <h4>Example</h4>
+                        <pre class="brush:cpp">
+                            // Add Routes
+                            public class WebApiApplication : System.Web.HttpApplication
+                            {
+                                protected void Application_Start()
+                                {
+                                    // obtain the global configuration and add routes.
+                                    var config = GlobalConfiguration.Configuration;
+                                    config.MapHttpAttributeRoutes();
+                                    config.Routes.MapHttpRoute(
+                                        name: "DefaultApi",
+                                        routeTemplate: "api/{controller}/{id}",
+                                        defaults: new { id = RouteParameter.Optional }
+                                    );
+                                    config.EnsureInitialized();
+                                }
+                            }
+                            // defined controller.
+                        </pre>
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </li>
+    <li>
+        <div class="content" id="handler">
+            <h3>Delegating Hanlder</h3>
+            <div class="featureList">
+                <ol>
+                    <li>
+                        <h4>Delegating Handler vs. HttpMessageHandler</h4>
+                        <p>HttpMessageHandler is the core of a handler, it defines the SendAsyn method. Delegating Handler is a wrapper of HttpMessageHandler, it is like a node in a linked list. Its _innerHandler is like the "next" pointer so that delegating handlers can create a chain of HttpMessageHandler.</p>
+                        <p>The two classes are defined by .NET instead of ASP.NET Framework. <a href="https://github.com/microsoft/referencesource/tree/master/System/net/System/Net/Http">[Source]</a></p>
+                        <pre class="brush:cpp">
+                                public abstract class HttpMessageHandler : IDisposable{
+                                    protected internal abstract Task&lt;HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken);
+                                }
+                        </pre>
+                        <pre class="brush:cpp">
+                                public abstract class DelegatingHandler : HttpMessageHandler{
+                                    protected internal override Task&lt;HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+                                    {
+                                        if (request == null)
+                                        {
+                                            throw new ArgumentNullException("request", SR.net_http_handler_norequest);
+                                        }
+                                        SetOperationStarted();
+                                        return innerHandler.SendAsync(request, cancellationToken);
+                                    }
+                                }
+                        </pre>
+                        <p>Inside the DelegatingHandler's SendAsync, it invokes the next (delegating or httpmessage=[terminated]) handler. This is abstract class, and a concrete class's SendAsync will also invoke the base.SendAsync.</p>
+                    </li>
+                    <li>
+                        <h4>HttpServer</h4>
+                        <p>HttpServer is also a concrete DelegatingHandler. It is the <span style="color:red;font-weight:bold">first handler</span> invoked when a request comes in. By default, it has a <span style="color:red">HttpControllerDispatcher</span> <a href="https://github.com/aspnet/AspNetWebStack/blob/master/src/System.Web.Http/Dispatcher/HttpRoutingDispatcher.cs">[Source]</a>handler.
+                             Inside its SendAsync, it initialized the handler pipeline <span style="font-weight: bold">(HttpConfiguration.MessageHandlers + default route dispatch handler)</span> if this request is the first request (kind of lazy design), and then set the InnerHandler = to the head of the pipeline.</p>
+                        <pre class="brush:cpp">
+                            // HttpServer
+                            // https://github.com/aspnet/AspNetWebStack/blob/master/src/System.Web.Http/HttpServer.cs
+                            // HttpClientFactory.CreatePipeline
+                            // https://github.com/aspnet/AspNetWebStack/blob/749384689e027a2fcd29eb79a9137b94cea611a8/src/System.Net.Http.Formatting/HttpClientFactory.cs
+                            public class HttpServer : DelegatingHandler{
+                                // part of code.
+                                protected virtual void Initialize()
+                                {
+                                    _configuration.EnsureInitialized();
+                                    // InnerHandler inherited from DelegatingHandler.
+                                    InnerHandler = HttpClientFactory.CreatePipeline(_dispatcher, _configuration.MessageHandlers);
+                                }
+                                protected override async Task&lt;HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+                                {
+                                    // The first request initializes the server
+                                    EnsureInitialized();
+                                    request.SetConfiguration(_configuration);
+                                    try
+                                    {
+                                        return await base.SendAsync(request, cancellationToken);
+                                    }
+                                    //...
+                                }       
+                            }
+                        </pre>
+                    </li>
+                    <li>
+                        <h4>What happens before HttpServer?</h4>
+                        <p>Depending on how the ASP.NET app is hosted.</p>
+                        <p>In the pure asp.net app, it is compiled into a library and then invoked by another main program (e.g. IIS server).<br>
+                            1). The main program will first invoke the Application_Start to configure the Global HttpConfiguration ,e.g. add new message handlers, filters ...
+                            <pre class="brush:cpp">
+                                    // Global.asax.cs
+                                    public class WebApiApplication : System.Web.HttpApplication
+                                    {
+                                        protected void Application_Start()
+                                        {
+                                            GlobalConfiguration.Configure(WebApiConfig.Register);
+                                        }
+                                    }
+                            </pre>
+                            2). The main program askes an HttpControllerRouteHandler <a href="https://github.com/mono/aspnetwebstack/blob/master/src/System.Web.Http.WebHost/HttpControllerRouteHandler.cs"></a>object.
+                            <pre class="brush:cpp">
+                                    public class HttpControllerRouteHandler : IRouteHandler
+                                    {
+                                        private static readonly Lazy&lt;HttpControllerRouteHandler> _instance =
+                                            new Lazy&lt;HttpControllerRouteHandler>(() => new HttpControllerRouteHandler(), isThreadSafe: true);
+                                        protected HttpControllerRouteHandler()
+                                        {
+                                        }
+                                        public static HttpControllerRouteHandler Instance
+                                        {
+                                            get { return _instance.Value; }
+                                        }
+                                        // ...
+                                    }
+                            </pre>
+                            3). The main program processes the Http Request and generate a RequestContext <a href="https://github.com/microsoft/referencesource/blob/master/System.Web/Routing/RequestContext.cs">[Source]</a>object. The processing code and RequestContext are defined by .NET System.Web .dll. 
+                            <pre class="brush:cpp">
+                                    public class RequestContext {
+                                        // it has two properties.
+                                        public virtual HttpContextBase HttpContext { get;set;}
+                                        public virtual RouteData RouteData { get; set;}
+                                    }
+                            </pre>
+                            ASP.NET Framework also defined route data class, it's called HttpRouteData. The RequestContext RouteData is calculated by the main program before giving to the asp.net app.<br>
+                            4). With the RequestContext object, the main program invokes HttpControllerRouteHandler.GetHttpHandler to obtain a IHttpHandler object.
+                            <pre class="brush:cpp">
+                                public class HttpControllerRouteHandler : IRouteHandler
+                                {
+                                    // ...
+                                    IHttpHandler IRouteHandler.GetHttpHandler(RequestContext requestContext)
+                                    {
+                                        return GetHttpHandler(requestContext);
+                                    }
+                                    protected virtual IHttpHandler GetHttpHandler(RequestContext requestContext)
+                                    {
+                                        return new HttpControllerHandler(requestContext.RouteData);
+                                    }
+                                }
+                                public interface IHttpHandler{
+                                    void ProcessRequest(HttpContext context);
+                                }
+                            </pre>
+                            The HttpControllerHanlder is just a wrapper around the HttpServer. <span style="color:red">Moreover, when initializing the HttpControllerHandler object, .NET defined RouteData is converted to ASP.NET defined IHttpRouteData.</span>
+                            <pre class="brush:cpp">
+                                public HttpControllerHandler(RouteData routeData): this(routeData, GlobalConfiguration.DefaultServer)
+                                {
+                                }
+                                public static class GlobalConfiguration{
+                                    // ...
+                                    private static Lazy&lt;HttpMessageHandler> CreateDefaultHandler()
+                                    {
+                                        return new Lazy&lt;HttpMessageHandler>(() => new HttpRoutingDispatcher(_configuration.Value));
+                                    }
+
+                                    private static Lazy&lt;HttpServer> CreateDefaultServer()
+                                    {
+                                        return new Lazy&lt;HttpServer>(() => new HttpServer(_configuration.Value, _defaultHandler.Value));
+                                    }
+                                }
+                                
+                            </pre>
+                            5). With the IHttpHandler, the main program invokes it with a HttpContext object.<br>
+                            6). Now the request comes into ASP.NET app. The request is first converted from a synchronized request to a asynchronized request<span style="color:red;font-weight: bold">Where ?</span>
+                            <a href="https://github.com/microsoft/referencesource/blob/master/System.Web/HttpTaskAsyncHandler.cs">[Source]</a>handler. Next, invoke the 
+                            <pre class="brush:cpp">
+                                public class HttpControllerHandler : HttpTaskAsyncHandler{
+                                    //... 
+                                    public override Task ProcessRequestAsync(HttpContext context){
+                                        return ProcessRequestAsyncCore(new HttpContextWrapper(context));
+                                    }
+                            
+                                    internal async Task ProcessRequestAsyncCore(HttpContextBase contextBase){
+                                        HttpRequestMessage request = contextBase.GetHttpRequestMessage() ?? ConvertRequest(contextBase);
+                                        request.SetRouteData(_routeData);
+                                        CancellationToken cancellationToken = contextBase.Response.GetClientDisconnectedTokenWhenFixed();
+                                        HttpResponseMessage response = null;
+
+                                        try
+                                        {
+                                            response = await _server.SendAsync(request, cancellationToken);
+                                            await CopyResponseAsync(contextBase, request, response, _exceptionLogger.Value, _exceptionHandler.Value,
+                                                cancellationToken);
+                                        }
+                                        catch (OperationCanceledException)
+                                        {
+                                            // HttpTaskAsyncHandler treats a canceled task as an unhandled exception (logged to Application event
+                                            // log). Instead of returning a canceled task, abort the request and return a completed task.
+                                            contextBase.Request.Abort();
+                                        }
+                                        finally
+                                        {
+                                            // The other HttpTaskAsyncHandler is HttpRouteExceptionHandler; it has similar cleanup logic.
+                                            request.DisposeRequestResources();
+                                            request.Dispose();
+
+                                            if (response != null)
+                                            {
+                                                response.Dispose();
+                                            }
+                                        }
+                                    }
+                                }
+                            </pre>
+                        </p>
+                        <h4>Summary</h4>
+                        <pre class="brush:bash">
+                                1). main programin invokes application_start
+                                2). main programin asks a HttpControllerRouteHandler object
+                                2). main programin asks an IHttpHandler (defaultserver) from HttpControllerRouteHanlder object by giving RequestContext, (indirectly ask defaultserver) at this step, it already has routedata.
+                                3). main programin sends the HttpContext to the defaultserver.
+                        </pre>
+                    </li>
+                    <li>
+                        <h4>Context Classes</h4>
+                        <p>
+                            1). RequestContext: the simple one, including {HttpContextBase, RouteData}
+                        </p>
+                        <p>
+                            2). HttpContext: <a href="https://github.com/microsoft/referencesource/blob/master/System.Web/HttpContext.cs">[Source]</a>used to invoke IHttpHandler.ProcessRequest<br>
+                            Encapsulates all HTTP-specific information about an individual HTTP request.<br>
+
+                        </p>
+                        <p>
+                            3). HttpContextBase: a wrapper of HttContext, with this wrapper, we can assembly HttpRequestMessage.<br>
+                            HttpContextBase base = new HttpContextWrapper(context: HttpContext)
+                            <pre class="brush:cpp">
+        // HttpRequestMessage request = ConvertRequest(contextBase);
+        HttpRequestMessage ConvertRequest(HttpContextBase httpContextBase, IHostBufferPolicySelector policySelector)
+        {
+            HttpRequestBase requestBase = httpContextBase.Request;
+            HttpMethod method = HttpMethodHelper.GetHttpMethod(requestBase.HttpMethod);
+            Uri uri = requestBase.Url;
+            HttpRequestMessage request = new HttpRequestMessage(method, uri);
+
+            // get content depending on buffer policy
+            bool bufferInput = policySelector == null ? true : policySelector.UseBufferedInputStream(httpContextBase);
+            request.Content = GetStreamContent(requestBase, bufferInput);
+
+            // add headers.
+            foreach (string headerName in requestBase.Headers)
+            {
+                string[] values = requestBase.Headers.GetValues(headerName);
+                AddHeaderToHttpRequestMessage(request, headerName, values);
+            }
+
+            // request.Properties: a dictionary configuration ...
+            // ...
+
+            return request;
+        }
+                            </pre>
+                        </p>
+                        <p>4). HttpRequestMessage: 
+                            <pre class="brush:cpp">
+                                    public Version Version { get; set; }
+                                    public HttpContent Content { get; set; }
+                                    public HttpMethod Method { get; set; }
+                                    public Uri RequestUri { get; set; }
+                                    public HttpRequestHeaders Headers { get; }
+                                    public IDictionary&lt;string, object> Properties { get; }
+                            </pre>
+                        </p>
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </li>
+<li>
+<div class="content" id="routing">
+<h3>Routing & Routing Dispatcher</h3>
+<p>ASP.NET Framwork use different routing for WebApi and MVC. If an application support both MVC and WebApi, then it should <br>
+    1). add Mvc route to <span style="color:red">RouteTable.Routes: RouteCollection</span><a href="https://github.com/microsoft/referencesource/blob/master/System.Web/Routing/RouteCollection.cs">[Source]</a><br>
+    2). add WebApi route to <span style="color:red">HttpConfiguration.Routes: HttpRouteCollection</span><a href="https://github.com/aspnet/AspNetWebStack/blob/master/src/System.Web.Http/HttpRouteCollection.cs">[Source]</a>
+</p>
+<div class="featureList">
+    <h4 style="font-style: italic">How does routing works?</h4>
+    <ol>
+        <li>
+            <h4>Add routes</h4>
+            <p>Routes are added to HttpConfiguration's HttpRouteCollection.</p>
+            <p>1). WebApi attribute/direct routing: config.MapHttpAttributeRoutes();<br>
+                2). WebApi convention routing: config.Routes.MapHttpRoute();<br>
+                3). Mvc convention routing: 
+                <pre class="brush:cpp">
+                RouteTable.Routes.MapRoute(
+                    name: "Default",
+                    url: "{controller}/{action}/{id}",
+                    defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
+                );
+                </pre>
+            </p>
+            <h4>WebApi convention routes</h4>
+            <p>
+                A convention routing is composed of a 1). routing template, 2). default value, 3). constraint 4). an optional pre-handler.<br>
+                The HttpRouteCollection has a method "CreateRoute" takes these values to "new HttpRoute"
+                <pre class="brush:cpp">
+                        public class HttpRoute : IHttpRoute
+                        {}
+                </pre>
+                Then the route is added to the HttpRouteCollection with a name.
+            </p>
+            <h4>WebApi attribute routes</h4>
+            <p>All attributes are aggregated into one IHttpRoute, which is RouteCollectionRoute <a href="https://github.com/aspnet/AspNetWebStack/blob/master/src/System.Web.Http/Routing/RouteCollectionRoute.cs">[Source]</a>. 
+                This HttpRoute is generated inside the class AttributeRoutingMapper's MapAttributeRoutes method.
+                <pre class="brush:cpp">
+                        RouteCollectionRoute aggregateRoute = new RouteCollectionRoute();
+                        subRoutes = new SubRouteCollection();
+                        AddRouteEntries(subRoutes, configuration, constraintResolver, directRouteProvider){
+                            // reflection, pseudo-code
+                            foreach(var controllerDescriptor in controllerDescriptorList){
+                                var actions = controllerDesc.GetAllActions();
+                                IReadOnlyCollection&lt;RouteEntry> newEntries =
+                                        directRouteProvider.GetDirectRoutes(controllerDescriptor, actions, constraintResolver);
+                                subRoutes.Add(newEntries)
+                            }
+                        }
+                        aggregateRoute._subRoutes = subRoutes;
+                        configuration.Routes.Add(AttributeRouteName, aggregateRoute);
+                </pre>
+                DefaultDirectRouteProvider <a href="https://github.com/aspnet/AspNetWebStack/blob/master/src/System.Web.Http/Routing/DefaultDirectRouteProvider.cs">[Source]</a>
+            </p>
+            <h4>Mvc convention routing</h4>
+            <p>ToDo</p>
+        </li>
+        <li>
+            <h4>Resolving Routes</h4>
+            <p>Resolving process starts when the HttpRoutingDispatcher's SendAsync is invoked. It add RouteData to request, and invoke next handler, which is by default the ControllerDispatcher.</p>
+            <pre class="brush:cpp">
+                protected override Task&lt;HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+                {
+                    // For pure asp.net app, the routedata is generated by the "main program (e.g. iis server)", but for self host app, the routedata is generated by asp.net app.
+                    IHttpRouteData routeData = request.GetRouteData();
+                    if (routeData == null)
+                    {
+                        // try each IHttpRoute to get routedata. Each IhttpRoute has a HttpParsedRoute object generated based on the route template.
+                        // HttpRoute source code. https://github.com/aspnet/AspNetWebStack/blob/master/src/System.Web.Http/Routing/HttpRoute.cs
+                        routeData = _configuration.Routes.GetRouteData(request); 
+                        if (routeData != null)
+                        {
+                            request.SetRouteData(routeData);
+                        }
+                    }
+                    // if the route does not have an optional handler, then use the HttpControllerDispatcher
+                    var invoker = (routeData.Route == null || routeData.Route.Handler == null) ?
+                        new HttpMessageInvoker(new HttpControllerDispatcher(configuration))
+                        : new HttpMessageInvoker(routeData.Route.Handler, disposeHandler: false);
+                    return invoker.SendAsync(request, cancellationToken);
+                }
+            </pre>
+        </li>
+    </ol>
+</div>
+<div class="featureList">
+    <h4 style="font-style: italic">How to use routing?</h4>
+    <ol>
+        <li>
+            <h4>Convention routing</h4>
+            <pre class="brush:cpp">
+                    config.Routes.MapHttpRoute(
+                        name: "DefaultApi",
+                        routeTemplate: "api/{controller}/{action}/{id}",
+                        defaults: new { id = 10 }
+                    );
+            </pre>
+            <p>.MapHttpRoute is an extension method <a href="https://github.com/mono/aspnetwebstack/blob/master/src/System.Web.Http/HttpRouteCollectionExtensions.cs">[Source]</a>, the full parameters of the method includes 
+                1). a route's name<br>
+                2). a route template<br>
+                3). default values: if the matched url missed some field, e.g. above example, api/home -> api/home/10<br>
+                4). constraint: <br>
+                5). HttpMessageHandler: per-route handler.
+            </p>
+            <p>This template "api/{controller}/{action}/{id}", {controller}, {action} and {id} are called placeholder, {controller}, {action} are reserved placeholders for ControllerDispatcher to select controllers and methods. Others placeholders, such as id, 
+                are the parameter names of controller's methods. By default, a method can match all HttpMethod, e.g. Get, Post ..., but it can be restricted with HttpVerb attributes.</p>
+            <pre class="brush:cpp">
+                    public class CupController : ApiController{
+                        [HttpGet]
+                        public int volume() {return 10;} // matches Get /api/cup/volume & /api/cup/volume/10 if the below method is not defined.
+                        [HttpGet]
+                        public int volume(int id) {return 11;} // matches Get /api/cup/volume/10
+                    }
+            </pre>
+            <p>Controller is selected based on {controller} placeholder<br>
+                Method is selected based on<br>
+                1). HttpMethod + Action placeholder + parameter placeholder -> httpverb attribute + method name + parameter name.<br>
+                2). HttpMethod + parameter placeholder -> method name convention (start with "Get", "Post") + parameter name.<br>
+            </p>
+        </li>
+        <li>
+            <h4>Convention routing with Route Constraints</h4>
+            <pre class="brush:cpp">
+                    config.Routes.MapHttpRoute(
+                        name: "DefaultApi",
+                        routeTemplate: "api/{controller}/{action}/{id}",
+                        defaults: new { id = 10 },
+                        constraints: new { id = @"\d+" } // only match that id contains digits.
+                    );
+            </pre>
+        </li>
+        <li>
+            <h4>Attribute Routing</h4>
+            <p>Attribute Routing's attribute, like [Route("customers/{customerId}/orders")], is directly placed on controller's method.</p>
+            <p>Common prefix in a controller scope, [RoutePrefix("api/books")] applied to a controller class, then all request url must have the prefix.</p>
+            <h4>Route's placeholder constraints</h4>
+            <p>{parameter:constraint} e.g. [Route("users/{id:int}")], see supported constraints. <a href="https://docs.microsoft.com/en-us/aspnet/web-api/overview/web-api-routing-and-actions/attribute-routing-in-web-api-2#route-constraints" target="_blank">Click here</a></p>
+            <p>It's possible to have a customized constraint <a href="https://docs.microsoft.com/en-us/aspnet/web-api/overview/web-api-routing-and-actions/attribute-routing-in-web-api-2#custom-route-constraints" target="_blank">Click here</a></p>
+        </li>
+        
+        <li>
+            <h4>Add per-route handler</h4>
+            <pre class="brush:cpp">
+                    DelegatingHandler[] handlers = new DelegatingHandler[] {
+                        new MessageHandler3()
+                    };
+                    
+                    // Create a message handler chain with an end-point. 
+                    // avoid override the controller dispatcher.
+                    var routeHandlers = HttpClientFactory.CreatePipeline(
+                        new HttpControllerDispatcher(config), handlers);
+                    
+                    config.Routes.MapHttpRoute(
+                        name: "Route2",
+                        routeTemplate: "api2/{controller}/{id}",
+                        defaults: new { id = RouteParameter.Optional },
+                        constraints: null,
+                        handler: routeHandlers
+                    );
+            </pre>
+        </li>
+    </ol>
+</div>
+</div>
+</li>
+
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li><a href="https://docs.microsoft.com/en-us/aspnet/web-api/overview/web-api-routing-and-actions/routing-in-aspnet-web-api#routing-tables" target="_blank">Convention Routing</a></li>
+        <li><a href="https://docs.microsoft.com/en-us/aspnet/web-api/overview/web-api-routing-and-actions/attribute-routing-in-web-api-2" target="_blank">WebApi 2 attribute routing</a></li>
+        <li><a href="https://docs.microsoft.com/en-us/aspnet/web-api/overview/advanced/http-message-handlers#per-route-message-handlers" target="_blank">Per-route handler</a></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>

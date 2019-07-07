@@ -1,0 +1,165 @@
+asp.net mainly use HttpConfiguration to configure its behavior.
+HttpConfiguration includes the pipeline of message handlers, routedispatcher, per-route-message-handler, controller-dispatcher, controllers
+
+It also has the mounting point of a depedency container.
+
+https://docs.microsoft.com/en-us/aspnet/web-api/overview/advanced/http-message-handlers
+https://docs.microsoft.com/en-us/aspnet/web-api/overview/advanced/configuring-aspnet-web-api
+globalconfiguration
+
+There is a GlobalConfiguration class, which has a method 
+        public static HttpConfiguration Configuration { get; }
+        public static HttpMessageHandler DefaultHandler { get; }
+        //
+        // Summary:
+        //     Gets the global System.Web.Http.HttpServer.
+        public static HttpServer DefaultServer { get; }
+        // method used to configure the globalconfiguration.
+        public static void Configure(Action<HttpConfiguration> configurationCallback);
+
+When the application running, the Global.asax.cs file's application_start() will run to configure the globalconfiguration.
+e.g.
+config.MapHttpAttributeRoutes();
+
+            config.Routes.MapHttpRoute(
+                name: "DefaultApi",
+                routeTemplate: "api/{controller}/{id}",
+                defaults: new { id = RouteParameter.Optional }
+            );
+
+HttpConfiguration.Services
+The Services collection is not a general-purpose mechanism for service discovery or dependency injection. It only stores service types that are known to the Web API framework.
+
+HttpConfiguration.Filter
+filters are implemented as attributes, which did logging, exception handling, performance measurement, authentication and authorization.
+https://www.tutorialsteacher.com/webapi/web-api-filters
+
+HttpConfiguration.Routes
+1). name convention based routing
+2). attributes based routing
+https://github.com/aspnet/AspNetWebStack/blob/master/src/System.Web.Http/Routing/AttributeRoutingMapper.cs
+AttributeRoutingMapper
+Inside the mapper, it uses the config.routes to add direct route, ar route2 = new HttpRoute("api/Car");
+collection.Add(new RouteEntry("route", route1));
+
+HttpConfiguration.ParameterBindingRules
+convert HttpRequest to controller's parameters.
+default binding rule:
+"By default, if parameter type is of .NET primitive type such as int, bool, double, string, GUID, DateTime, decimal or any other type that can be converted from string type then it sets the value of a parameter from the query string. And if the parameter type is complex type then Web API tries to get the value from request body by default."
+ParameterBindingRules defines rule such that convert a string to enum.
+
+the parameter attributes on a data structure does not throw execption, it will set 'ModelState.Isvalid"
+
+
+Integrate Owin
+Owin is the at the bottom of Asp.Net
+When a request comes in, it first go through Owin's middlware, then go to asp.net HttpConfiguration.
+Moreover, cannot use the global configuration.
+
+var config = new HttpConfiguration();
+config.add routes, message handlers, filter...
+appBuilder.UseWebApi(config); // owin appbuilder.
+https://docs.microsoft.com/en-us/aspnet/web-api/overview/hosting-aspnet-web-api/use-owin-to-self-host-web-api
+
+Integrate Autofac
+
+config.DependencyResolver = Autofac-container; // global configuration
+app.UseAutofacWebApi(config);
+app.Use // configuration.MessageHandlers.Insert(0, new DependencyScopeHandler()); add scope to message handler as the first message handler.
+https://docs.microsoft.com/en-us/aspnet/web-api/overview/advanced/dependency-injection
+
+
+https://blogs.msdn.microsoft.com/roncain/2012/07/16/dependency-injection-with-asp-net-web-api-and-autofac/
+https://stackoverflow.com/questions/37918441/dependency-injection-in-asp-net-webapi-ihttpcontrolleractivator-vs-idependency
+// Returns the controller instance from the dependency resolver if there is one registered
+        // else returns the activator that calls the default ctor for the give controllerType.
+        private static IHttpController GetInstanceOrActivator(HttpRequestMessage request, Type controllerType, out Func<IHttpController> activator)
+        {
+            Contract.Assert(request != null);
+            Contract.Assert(controllerType != null);
+
+            // If dependency resolver returns controller object then use it.
+            IHttpController instance = (IHttpController)request.GetDependencyScope().GetService(controllerType);
+            if (instance != null)
+            {
+                activator = null;
+                return instance;
+            }
+
+            // Otherwise create a delegate for creating a new instance of the type
+            activator = TypeActivator.Create<IHttpController>(controllerType);
+            return null;
+        }
+
+DefaultHttpControllerActivator.cs
+https://github.com/aspnet/AspNetWebStack/blob/master/src/System.Web.Http/Dispatcher/DefaultHttpControllerActivator.cs
+
+
+
+
+
+
+
+owin + asp.net
+
+Microsoft.Owin.Host.SystemWeb: Owin main
+Microsoft.AspNet.WebApi.Owin: integrate HttpConfiguration and Owin Startup
+
+asp.net is on the top of owin.
+Owin's middleware is first executed. and then asp.net handlers.
+var config = new HttpConfiguration();        
+            config.MapHttpAttributeRoutes();
+
+            config.Routes.MapHttpRoute(
+                name: "DefaultApi",
+                routeTemplate: "api/{controller}/{id}",
+                defaults: new { id = RouteParameter.Optional }
+            );
+            RouteConfig.RegisterRoutes(RouteTable.Routes);
+            
+            config.EnsureInitialized();
+            app.UseWebApi(config);
+
+owin + asp.net + autofac.
+request -> owin middleware pipeline -> asp.net handler, controller pipeline.
+                |                                   |
+                |                                   |
+                -------------------------------------
+                                    |
+                                Autofac container.
+
+    public class Startup
+    {
+        public void Configuration(IAppBuilder app)
+        {
+
+            // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=316888
+            var builder = new ContainerBuilder();
+            builder.RegisterType<WhitespaceFormatter>().As<IFormatter>().InstancePerRequest();
+            builder.RegisterApiControllers(Assembly.GetExecutingAssembly());
+            
+            var config = new HttpConfiguration();        
+            config.MapHttpAttributeRoutes();
+            config.Routes.MapHttpRoute(
+                name: "DefaultApi",
+                routeTemplate: "api/{controller}/{id}",
+                defaults: new { id = RouteParameter.Optional }
+            );
+            RouteConfig.RegisterRoutes(RouteTable.Routes);
+            // builder.RegisterHttpRequestMessage(config);
+            var container = builder.Build();
+            GlobalConfiguration.Configuration.DependencyResolver = new AutofacWebApiDependencyResolver(container); // provider container to asp.net api controller,  start a tag lifetime scope.
+            config.EnsureInitialized();
+            app.UseAutofacMiddleware(container); // povider container to owin's middleware
+            app.UseAutofacWebApi(config); // extend owin's middleware container's scope to asp.net webapi
+            app.UseWebApi(config); // owin + asp.net
+        }
+    }
+
+
+
+
+
+routing
+HttpRouteColleciton, api routing
+RouteCollection, mvc routing
