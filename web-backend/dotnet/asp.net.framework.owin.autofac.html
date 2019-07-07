@@ -294,83 +294,177 @@ SyntaxHighlighter.all()
         </div>
     </div>
 </li>
-
-<!--<li>
-        <h4>Pipeline of middleware</h4>
-        <p>A middleware is a Func&lt;IOwinContext, Func&lt;Task>, Task>, which takes a context and next middleware.</p>
-        <pre class="brush:cpp">
-                public class Startup
-                {
-                    public void Configuration(IAppBuilder app)
-                    {
-                        // Func&lt;IOwinContext, Func&lt;Task>, Task> handler
-                        /*
-                            handler is a delegate (IOwinContext, Func(Task):Task): Task
-                            return a Task.
-                        */
-                        app.Use((context, next) =>
-                        {
-                            context.Response.ContentType = "text/plain";
-                            return context.Response.WriteAsync("Hello, world.");
-                        });
-                    }
-                }
-        </pre>
-        <p>Inside the OwinContext, it's the http representation. Katana is the implementation of IOwinContext.</p>
-        <pre class="brush:cpp">
-            public interface IOwinContext{
-                IOwinRequest Request {get;}
-                IOWinResponse Response {get;}
-                IAuthenticationManager Authentication {get;}
-                IDictionary&lt;string, object> Environment {get;}
-                TextWriter TraceOutput {get; set;}
-
-                T Get&lt;T>(string key);
-                IOwinContext Set&lt;T>(string key, T value);
-            }
-        </pre>
-    </li>
-    <li>
-        <h4>HttpConfiguration</h4>
-        <p>A configuration set and tools set for the web app.<br>
-            1). Routes: routing to different controller.<br>
-            2). Formatters: handle different types of request/response body, e.g. JSON, XML, FormUrlEncoded, JQueryMvcFormUrl.<br>
-            3). dependencyResolver: a dependency container.<br>
-            4). MessageHandler: receive request, send response (kind of middleware)
-            <p>
-                <img src="./img/image2.png" width="200" height="280">
-            </p>
-        </p>
-        <p>It also has a few extension methods e.g. Add Route Mapping</p>
-        <pre class="brush:cpp">
-                // bind ASP.NET WebApi route to the configuration.Routes. Internally, it used AttributeRoutingMapper class.
-                public static void MapHttpAttributeRoutes(this HttpConfiguration configuration)
-                {
-                    if (configuration == null)
-                    {
-                        throw new ArgumentNullException("configuration");
-                    }
-        
-                    AttributeRoutingMapper.MapAttributeRoutes(configuration, new DefaultInlineConstraintResolver(), new DefaultDirectRouteProvider());
-                }
-        </pre>
-        <pre class="brush:cpp">
-                public void Configuration(IAppBuilder app)
-                {
-                    var config = new HttpConfiguration();
-                    config.MapHttpAttributeRoutes();
-                    config.EnsureInitialized();
-                    app.UseWebApi(config);
-                }
-        </pre>
-    </li>
-</ol>
-</div>
-</div>
-</li>-->
 <li>
-    <div class="content" id="integration">
-        <h3>Owin + WebApi + Autofac</h3>
+    <div class="content" id="webapi-autofac">
+        <h3>ASP.NET WebApi + Autofac</h3>
+        <p>1). Autofac will add it as a dependency resolver to HttpConfiguration, and then ControllerDispatcher will use Autofac to initialize controllers<br>
+        2). Autofac will create a BeginLifetimeScope(tag) for each incoming request.</p>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>Mount dependency resolver</h4>
+                    <pre class="brush:cpp">
+                        public class WebApiApplication : System.Web.HttpApplication
+                        {
+                            protected void Application_Start()
+                            {
+                                var builder = new ContainerBuilder();
+                                // register components (as InstancePerRequest)
+                                // ...
+                                // register controllers as components
+                                builder.RegisterApiControllers(Assembly.GetExecutingAssembly());
+                                var container = builder.Build();
+                                var config = GlobalConfiguration.Configuration;
+                                // configure httpconfiguration
+                                // mount dependency resolver.
+                                GlobalConfiguration.Configuration.DependencyResolver = new AutofacWebApiDependencyResolver(container); // start a tag lifetime scope.
+                            }
+                        }
+                    </pre>
+                    <p>IDependencyResolver interface defines a wrapper for different IoC controller.</p>
+                    <pre class="brush:cpp">
+                            public interface IDependencyResolver : IDependencyScope, IDisposable
+                            {
+                                IDependencyScope BeginScope();
+                            }
+                            public interface IDependencyScope : IDisposable
+                            {
+                                object GetService(Type serviceType);
+                                IEnumerable&lt;object> GetServices(Type serviceType);
+                            }
+                    </pre>
+                </li>
+                <li>
+                    <h4>Beigin Scope & Resolving Dependencies & Initialize controller</h4>
+                    <p>
+                        In Asp.Net, the resolver is bound to httpconfiguration config, and config is bound to request. ControllerDispatcher used DefaultHttpControllerActivator to create controller.
+                    </p>
+                    <pre class="brush:cpp">
+        private static IHttpController GetInstanceOrActivator(HttpRequestMessage request, Type controllerType, out Func<IHttpController> activator)
+        {
+            Contract.Assert(request != null);
+            Contract.Assert(controllerType != null);
+
+            // If dependency resolver returns controller object then use it.
+            IHttpController instance = (IHttpController)request.GetDependencyScope().GetService(controllerType);
+            if (instance != null)
+            {
+                activator = null;
+                return instance;
+            }
+
+            // Otherwise create a delegate for creating a new instance of the type
+            activator = TypeActivator.Create&lt;IHttpController>(controllerType);
+            return null;
+        }
+                    </pre>
+                    <pre class="brush:cpp">
+        public static IDependencyScope GetDependencyScope(this HttpRequestMessage request)
+        {
+            if (request == null)
+            {
+                throw Error.ArgumentNull("request");
+            }
+
+            IDependencyScope result;
+            if (!request.Properties.TryGetValue&lt;IDependencyScope>(HttpPropertyKeys.DependencyScope, out result))
+            {
+                IDependencyResolver dependencyResolver = request.GetConfiguration().DependencyResolver;
+                result = dependencyResolver.BeginScope();
+                if (result == null)
+                {
+                    throw Error.InvalidOperation(SRResources.DependencyResolver_BeginScopeReturnsNull, dependencyResolver.GetType().Name);
+                }
+                request.Properties[HttpPropertyKeys.DependencyScope] = result;
+                request.RegisterForDispose(result);
+            }
+
+            return result;
+        }
+                    </pre>
+                    <p>So for each request, it will begin a scope just before initializing a controller. And for Autofac, the beginscope should have .BeginLifetimeScope(tag).</p>
+                </li>
+                <li>
+                    <h4>Customized HttpMessage</h4>
+                    <p>A customized message handler can get scope before the DefaultHttpControllerActivator.</p>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="webapi-owin">
+        <h3>ASP.NET WebApi + Owin</h3>
+        <p>Owin provides a startup (now the "main program" will invoke the startup instead of Application_Start), a pipeline of middleware.</p>
+        <p>The pipeline of middleware is implemented before ASP.NET's pipeline of DelegatingHandler. So asp.net app is on the top of Owin.</p>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>Integrating</h4>
+                    <pre class="brush:cpp">
+                            public class Startup
+                            {
+                                public void Configuration(IAppBuilder app)
+                                {
+                        
+                                    // don't use the GlobalConfiguration
+                                    var config = new HttpConfiguration();   
+                                    // asp.net configuring ...     
+                                    config.MapHttpAttributeRoutes();
+                                    // owin pipeline configuring ...
+                                    app.Usexxx();
+                                    // integration: the last middleware of Owin will create a HttpServer based on configuration and invoke the it as the first delegating handler of asp.net. 
+                                    // default httpserver is still the routing dispatcher.
+                                    app.UseWebApi(config);
+                                }
+                            }
+                    </pre>
+                    <p>.UseWebApi</p>
+                    <pre class="brush:cpp">
+                        public static IAppBuilder UseWebApi(this IAppBuilder builder, HttpConfiguration configuration){
+                            HttpServer server = new HttpServer(configuration); // default server, first hanlder is routedispatcher.
+                            ServicesContainer services = configuration.Services;
+                            IHostBufferPolicySelector bufferPolicySelector = services.GetHostBufferPolicySelector()
+                                ?? _defaultBufferPolicySelector;
+                                IExceptionLogger exceptionLogger = ExceptionServices.GetLogger(services);
+                                IExceptionHandler exceptionHandler = ExceptionServices.GetHandler(services);
+
+                                HttpMessageHandlerOptions options =  new HttpMessageHandlerOptions
+                                {
+                                    MessageHandler = server,
+                                    BufferPolicySelector = bufferPolicySelector,
+                                    ExceptionLogger = exceptionLogger,
+                                    ExceptionHandler = exceptionHandler,
+                                    AppDisposing = builder.GetOnAppDisposingProperty()
+                                };
+                                builder.Use(typeof(HttpMessageHandlerAdapter), options);
+                        }
+
+                        public class HttpMessageHandlerAdapter: OwinMiddleware{
+                            private async Task InvokeCore(IOwinContext context, IOwinRequest owinRequest, IOwinResponse owinResponse)
+                            {
+                                // convert OwinContext to HttpRequestMessage and invoke httpserver.
+                                // no RouteData is set.
+                                // https://github.com/aspnet/AspNetWebStack/blob/master/src/System.Web.Http.Owin/HttpMessageHandlerAdapter.cs
+                            }      
+                        }
+                    </pre>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="webapi-autofac-owin">
+        <h3>ASP.NET WebApi + Autofac + Owin</h3>
+        <pre style="color:red;font-size:12px">
+request -> owin middleware pipeline -> asp.net handler, controller pipeline.
+                |                                   |
+                |                                   |
+                -------------------------------------
+                                    |
+                                Autofac container.
+        </pre>
         <p>When Owin receives a request<br>
             0). register all components to autofac container. (Is it including controller?? no, controller is still dispatched by controller-dispatcher, and dependencies is injected by autofac.)<br>
             1). <span style="color:red">app.UseAutofacMiddleware(container)</span>: Autofac middleware creates a scope for this request and inject all container-registered components into this scope (AutofacAppBuilderExtensions)<br>

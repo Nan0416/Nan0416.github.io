@@ -43,8 +43,9 @@ SyntaxHighlighter.all()
 <div class="catalog">
 <ul class="catalogItems">
     <li><a href="#controller">Controller & Controller Dispatcher</a></li>
-    <li><a href="#service">Services</a></li>
     <li><a href="#filter">Filter</a></li>
+    <li><a href="#service">Services</a></li>  
+    <li><a href="exception">Exception handling</a></li> 
     <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -68,9 +69,28 @@ SyntaxHighlighter.all()
     </div>
 </li>
 <li>
+    <div class="content" id="filter">
+        <h3>Filter</h3>
+        <p>Web API includes filters to add extra logic before or after action method executes. (a middleware after controllerdispatcher & before action)</p>
+        <p>Filters can be applied per-controller, per-action, or globally to all Web API controllers.</p>
+        <p>Filter are used in Attribute form, placing a filter attribute before a controller or a controller's action will add it to the controller-wide pipeline.</p>
+    </div>
+</li>
+<li>
     <div class="content" id="service">
         <h3>Services</h3>
+        <p>HttpConfiguration has a ServicesContainer property. ServicesContainer is <br>
+            1). a simplied dependency container that only supports registering as instance (singleton). No lifetime scope.<br>
+            2). support multiple components -> one service & one component -> one service.
+        </p>
+        <p>When initalizing a HttpConfiguration, a few default services are registered. DefaultServices <a href="https://github.com/mono/aspnetwebstack/blob/master/src/System.Web.Http/Services/DefaultServices.cs">[Source]</a></p>
+        <pre class="brush:cpp">
+            // Services = new DefaultServices(this);
+            public DefaultServices(HttpConfiguration configuration){
 
+            }
+        </pre>
+        <p>The service property can be used in anywhere you can access the "config". For example,</p>
     </div>
 </li>
 <li>
@@ -78,7 +98,7 @@ SyntaxHighlighter.all()
 <h3>References</h3>
 <div class="featureList">
     <ol>
-        
+        <li><a href="https://www.tutorialsteacher.com/webapi/web-api-filters">Web API Filters</a></li>
     </ol>
 </div>
 </div>
