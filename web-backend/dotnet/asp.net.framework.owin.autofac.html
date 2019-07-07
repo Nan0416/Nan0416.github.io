@@ -2,7 +2,7 @@
 <!-- NewPage -->
 <html lang="en">
 <head>
-<title>ASP.NET&nbsp;ASP.NET + Owin + Autofac</title>
+<title>ASP.NET&nbsp;Owin + Aufofac</title>
 <meta charset="utf-8">
 <meta name="date" content="2019-07-04">
 <meta name="keywords" content="asp.net">
@@ -37,9 +37,9 @@ SyntaxHighlighter.all()
 </script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<strong>ASP.NET&nbsp;-&nbsp;Owin + Autofac + Controller</strong>
+<strong>ASP.NET&nbsp;-&nbsp;Owin + Aufofac</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-07-04 (Independence Day)</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-07-06</span></p>
+<p class="date"><span class="created-date">Created:2019-07-04 (Independence Day)</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-07-07</span></p>
 <div class="catalog">
 <ul class="catalogItems">
     <li><a href="#autofac">Autofac Introduction</a></li>
@@ -281,7 +281,21 @@ SyntaxHighlighter.all()
                     
                     <p>4). <span style="font-weight: bold">Single Instance</span>: has a lifetime as the container. Only one instance per container.</p>
                     <p>Components registered as .RegisterInstance are single instance</p>
-                    <p>4). <span style="font-weight: bold">Derived lifetime scope: thread scope & instance per request scope.</span>
+                    <p>5). <span style="font-weight: bold">Derived lifetime scope: thread scope & instance per request scope.</span></p>
+                    <p>When integrating with Asp.Net webapi or Owin, we most likely should use .InstancePerRequest. It internally used .InstancePerMatchingLifetimeScope(MatchingScopeLifetimeTags.RequestLifetimeScopeTag).</p>
+                    <pre class="brush:cpp">
+                        public static IRegistrationBuilder&lt;TLimit, TActivatorData, TStyle> 
+                            InstancePerRequest&lt;TLimit, TActivatorData, TStyle>
+                            (
+                                this IRegistrationBuilder&lt;TLimit, TActivatorData, TStyle> registration, 
+                                params object[] lifetimeScopeTags
+                            )
+                        {
+                                if (registration == null) throw new ArgumentNullException(nameof(registration));
+                                var tags = new[] { MatchingScopeLifetimeTags.RequestLifetimeScopeTag }.Concat(lifetimeScopeTags).ToArray();
+                                return registration.InstancePerMatchingLifetimeScope(tags);
+                        }
+                    </pre>
                     <hr>
                 </li>
                 <li>
@@ -419,7 +433,9 @@ SyntaxHighlighter.all()
                                 }
                             }
                     </pre>
-                    <p>.UseWebApi</p>
+                    <p>.UseWebApi <a href="https://github.com/aspnet/AspNetWebStack/blob/master/src/System.Web.Http.Owin/WebApiAppBuilderExtensions.cs">[Source]</a>
+                    create a default httpserver, convert IOwinContext to HttpRequestMessage, invoke the httpserver.
+                    </p>
                     <pre class="brush:cpp">
                         public static IAppBuilder UseWebApi(this IAppBuilder builder, HttpConfiguration configuration){
                             HttpServer server = new HttpServer(configuration); // default server, first hanlder is routedispatcher.
@@ -465,48 +481,107 @@ request -> owin middleware pipeline -> asp.net handler, controller pipeline.
                                     |
                                 Autofac container.
         </pre>
-        <p>When Owin receives a request<br>
-            0). register all components to autofac container. (Is it including controller?? no, controller is still dispatched by controller-dispatcher, and dependencies is injected by autofac.)<br>
-            1). <span style="color:red">app.UseAutofacMiddleware(container)</span>: Autofac middleware creates a scope for this request and inject all container-registered components into this scope (AutofacAppBuilderExtensions)<br>
-            2). <span style="color:red">config.MapHttpAttributeRoutes()</span>: HttpConfiguration routes mapping (HttpConfigurationExtentions, provided by System.Web.Http)<br>
-            3). app.UseAutofacWebApi(config): get scope from IOwinContext object and add it to MessageHandler. Why?<br>
-            4). app.UseWebApi(config): Owin applies routes mapping.
-        </p>
         <div class="featureList">
             <ol>
                 <li>
-                    <h4>Autofac Lifetime Scope (instance per request)</h4>
-                    <p>Autofac defines a extension method on Owin.Startup IAppBuilder. .UseAutofacMiddleware. This extension method binds </p>
+                    <h4>Example</h4>
                     <pre class="brush:cpp">
-                            public static IAppBuilder UseAutofacMiddleware(this IAppBuilder app, ILifetimeScope container)
+                            public class Startup
                             {
-                                /**
-                                * For each incoming request, Autofac 
-                                * 1). begin a scope with a tag = MatchingScopeLifetimeTags.RequestLifetimeScopeTag, which is "AutofacWebRequest"
-                                * 2). register the current request context to IOwinContext as a instance inside the newly generate scope.
-                                */
-                                return app
-                                    .RegisterAutofacLifetimeScopeInjector(container)
-                                    .UseAllMiddlewareRegisteredInContainer(container);
+                                public void Configuration(IAppBuilder app)
+                                {
+                                    var builder = new ContainerBuilder();
+                                    // register components.
+                                    // ...
+
+                                    // register controllers.
+                                    builder.RegisterApiControllers(Assembly.GetExecutingAssembly());
+                                    
+                                    // create an empty http configuration
+                                    var config = new HttpConfiguration();        
+                                    // configure asp.net configuration
+                                    // ...
+
+                                    var container = builder.Build();
+
+                                    // this is not necessary, since the scope will obtain from IOwinContext.
+                                    // config.DependencyResolver = new AutofacWebApiDependencyResolver(container);
+                                    
+                                    app.UseAutofacMiddleware(container); // povider container to owin's middleware
+                                    app.UseAutofacWebApi(config); // extend owin's middleware container's scope to asp.net webapi
+                                    app.UseWebApi(config); // owin + asp.net
+                                }
                             }
-                    </pre>
-                    <p>When registering services, we most likely should use .InstancePerRequest, which used .InstancePerMatchingLifetimeScope(MatchingScopeLifetimeTags.RequestLifetimeScopeTag) internally.</p>
-                    <pre class="brush:cpp">
-                        public static IRegistrationBuilder&lt;TLimit, TActivatorData, TStyle> 
-                            InstancePerRequest&lt;TLimit, TActivatorData, TStyle>
-                            (
-                                this IRegistrationBuilder&lt;TLimit, TActivatorData, TStyle> registration, 
-                                params object[] lifetimeScopeTags
-                            )
-                        {
-                                if (registration == null) throw new ArgumentNullException(nameof(registration));
-                                var tags = new[] { MatchingScopeLifetimeTags.RequestLifetimeScopeTag }.Concat(lifetimeScopeTags).ToArray();
-                                return registration.InstancePerMatchingLifetimeScope(tags);
-                        }
                     </pre>
                 </li>
                 <li>
-                    <h4></h4>
+                    <h4>Explanation</h4>
+                    <p>1). <span style="color:red">app.UseAutofacMiddleware(container)</span>:<a href="https://github.com/autofac/Autofac.Owin/blob/develop/src/Autofac.Integration.Owin/AutofacAppBuilderExtensions.cs">[Source]</a> This middleware creates a scope for this request and also inject .RegisterInstance(context).As&lt;IOwinContext>()</p>
+                    <pre class="brush:cpp">
+                            public static IAppBuilder UseAutofacMiddleware(this IAppBuilder app, ILifetimeScope container){
+                                app.Use(async (context, next) =>{
+                                    using (var lifetimeScope = container.BeginLifetimeScope(MatchingScopeLifetimeTags.RequestLifetimeScopeTag,
+                                        b => b.RegisterInstance(context).As&lt;IOwinContext>()))
+                                    {
+                                        context.Set(Constants.OwinLifetimeScopeKey, lifetimeScope);
+                                        await next();
+                                    }
+                                });
+                                // get middleware that registered with autofac and apply them.
+                                var typedServices = GenerateAllAutofacMiddleware(container);
+                                if (!typedServices.Any()) return app;
+                                foreach (var typedService in typedServices){
+                                    app.Use(typedService);
+                                }
+                                return app;
+                            }
+                    </pre>
+                    <p>2). <span style="color:red">app.UseAutofacWebApi(config):</span> <a href="https://github.com/autofac/Autofac.WebApi.Owin/blob/develop/src/Autofac.Integration.WebApi.Owin/AutofacWebApiAppBuilderExtensions.cs">[Source]</a> This is not a middleware, it is a configuration of the Asp.Net delegating handler. 
+                        It inject a DependencyScopeHandler as the first delegating handler. So eventually <span style="color:red">this handler is invoked after the httpserver's dipatcher (routing dispatcher) and before all other handler.</span></p>
+                    <pre class="brush:cpp">
+                            public static IAppBuilder UseAutofacWebApi(this IAppBuilder app, HttpConfiguration configuration){
+                                if (!configuration.MessageHandlers.OfType&lt;DependencyScopeHandler>().Any()){
+                                    configuration.MessageHandlers.Insert(0, new DependencyScopeHandler());
+                                }
+                                return app;
+                            }
+                    </pre>
+                    <p>This delegating handler will try to obtain the dependency scope from request's OwinContext and set it as one of request.Properties[HttpPropertyKeys.DependencyScope], then later, asp.net hanlder's can use the same scope to resolve dependencies.</p>
+                    <pre class="brush:cpp">
+        protected override Task&lt;HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken){
+            var owinContext = request.GetOwinContext();
+            var lifetimeScope = owinContext.GetAutofacLifetimeScope();
+            var dependencyScope = new AutofacWebApiDependencyScope(lifetimeScope);
+            request.Properties[HttpPropertyKeys.DependencyScope] = dependencyScope;
+            return base.SendAsync(request, cancellationToken);
+        }
+                    </pre>
+                    <p>In the above asp.net + autofac, DefaultHttpControllerActivator get dependency resolver by doing <br><span style="color:green;font-family: monospace">request.Properties.TryGetValue&lt;IDependencyScope>(HttpPropertyKeys.DependencyScope, out result)</span></p>
+                    <p>3). <span style="color:red"> app.UseWebApi(config)</span>: the final Owin middleware starts Asp.Net pipeline of delegating handlers.</p>
+                </li>
+                <li>
+                    <h4>Other Integration aspects</h4>
+                    <p> builder.RegisterHttpRequestMessage(config); <a href="https://github.com/stevenmiles/autofac/blob/master/Core/Source/Autofac.Integration.WebApi/RegistrationExtensions.cs">[Source]</a> Makes the current HttpRequestMessage resolvable through the dependency scope.</p>
+                    <pre class="brush:cpp">
+                        public static void RegisterHttpRequestMessage(this ContainerBuilder builder, HttpConfiguration config){
+                            if (!config.MessageHandlers.OfType&lt;CurrentRequestHandler>().Any()){
+                                config.MessageHandlers.Add(new CurrentRequestHandler());
+                            }
+                        }
+                        class CurrentRequestHandler : DelegatingHandler
+                        {
+                            protected override Task&lt;HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+                            {
+                                var scope = request.GetDependencyScope();
+                                var requestScope = scope.GetRequestLifetimeScope();
+                                var registry = requestScope.ComponentRegistry;
+                                var builder = new ContainerBuilder();
+                                builder.Register(c => request).InstancePerApiRequest();
+                                builder.Update(registry);
+                                return base.SendAsync(request, cancellationToken);
+                            }
+                        }
+                    </pre>
                 </li>
             </ol>
         </div>
