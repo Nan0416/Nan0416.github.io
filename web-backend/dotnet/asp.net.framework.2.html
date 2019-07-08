@@ -42,9 +42,10 @@ SyntaxHighlighter.all()
 <p class="date"><span class="created-date">Created:2019-07-06</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-07-06</span></p>
 <div class="catalog">
 <ul class="catalogItems">
+    <li><a href="#service">Services</a></li>  
     <li><a href="#controller">Controller & Controller Dispatcher</a></li>
     <li><a href="#filter">Filter</a></li>
-    <li><a href="#service">Services</a></li>  
+    
     <li><a href="exception">Exception handling</a></li> 
     <li><a href="#reference">References</a></li>
 </ul>
@@ -53,11 +54,129 @@ SyntaxHighlighter.all()
 <div class="contentContainer">
 <ol>
 <li>
+    <div class="content" id="service">
+        <h3>Services</h3>
+        <p>HttpConfiguration has a ServicesContainer property. ServicesContainer is <br>
+            1). a simplied dependency container that only supports registering as instance (singleton). No lifetime scope.<br>
+            2). support multiple components -> one service & one component -> one service.<br>
+            3). It also has two lazy properties of <span class="inline-code">ExceptionServicesLogger</span> and <span class="inline-code">ExceptionServicesHandler</span> that eventually matchs to 
+            <span class="inline-code">services.GetServices&lt;IExceptionLogger>();</span> and <span class="inline-code">services.GetService&lt;IExceptionHandler>() ??  new EmptyExceptionHandler();</span>
+        </p>
+        <div class="featureList">
+            <ol>
+                <li>
+
+                        <p>When initalizing a HttpConfiguration, a few default services are registered (the default services are not only created for GlobalConfiguration, it is under the constructor of HttpConfiguration).
+                             DefaultServices <a href="https://github.com/mono/aspnetwebstack/blob/master/src/System.Web.Http/Services/DefaultServices.cs">[Source]</a></p>
+                        <pre class="brush:cpp">
+                            // Services = new DefaultServices(this);
+                            public DefaultServices(HttpConfiguration configuration){
+                                SetSingle&lt;IHttpControllerActivator>(new DefaultHttpControllerActivator());       
+                                SetSingle&lt;IHttpControllerTypeResolver>(new DefaultHttpControllerTypeResolver());
+                                SetSingle&lt;IHttpControllerSelector>(new DefaultHttpControllerSelector(configuration));
+                                SetSingle&lt;IHttpActionInvoker>(new ApiControllerActionInvoker());
+                                SetSingle&lt;IHttpActionSelector>(new ApiControllerActionSelector());
+                                       
+                                SetSingle&lt;IExceptionHandler>(new DefaultExceptionHandler());
+                                SetMultiple&lt;IExceptionLogger>();
+                            }
+                        </pre>
+                </li>
+                <li>
+                    <p>The service property can be used in anywhere you can access the "config". For example,<br>
+                        1). HttpControllerDispatcher has a IHttpControllerSelector ControllerSelector, which is gotten from config.services.
+                        <pre class="brush:cpp">
+                            private IHttpControllerSelector ControllerSelector{
+                                get{
+                                    if (_controllerSelector == null){
+                                        _controllerSelector = _configuration.Services.GetServiceOrThrow&lt;IHttpControllerSelector>();
+                                    }
+                                    return _controllerSelector;
+                                }
+                            }
+                        </pre>
+                    </p>
+                </li>
+            </ol>
+        </div>
+        
+        
+    </div>
+</li>
+<li>
     <div class="content" id="controller">
         <h3>Controller & Controller Dispatcher</h3>
         // parameter binding https://blogs.msdn.com/b/jmstall/archive/2012/05/11/webapi-parameter-binding-under-the-hood.aspx
         <div class="featureList">
             <ol>
+                <li>
+                    <h4>ControllerDispatcher</h4>
+                    <p>ControllerDispatcher is just a HttpMessageHandler on the asp.net pipeline of delegating handler.</p>
+                    <p>1). <span style="font-weight: bold">ControllerDescriptor</span>: use <span class="inline-code">services.GetServiceOrThrow&lt;IHttpControllerSelector>();</span> to select a controller's descriptor according to 
+                        <span style="color:red">IHttpRouteDate</span> that comes from route dispatcher. It first try attribute/direct routing and then name convention routing. 
+                        <a href="https://github.com/aspnet/AspNetWebStack/blob/master/src/System.Web.Http/Dispatcher/DefaultHttpControllerSelector.cs">[Source]</a><br>
+                       2). <span style="font-weight: bold">ControllerInstance</span>: On success, it returns a HttpControllerDescriptor, which can create an instance of the target Controller. Inside, it used IHttpControllerActivator. <span class="inline-code">services.GetServiceOrThrow&lt;IHttpControllerActivator>();</span><br>
+                       3). <span style="font-weight: bold">ControllerActionInvocation</span>: Once having the IHttpController, it invokes parent class ApiController.ExecuteAsync. Inside, it uses <span class="inline-code">services.GetServiceOrThrow&lt;IHttpActionSelector>();</span> 
+                       to select action/method will execute the corresponding method/action. <span style="color:red"></p>
+                    </p>
+                    <pre class="brush:cpp">
+        protected override async Task&lt;HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            ExceptionDispatchInfo exceptionInfo;
+            HttpControllerContext controllerContext = null;
+            try
+            {
+                HttpControllerDescriptor controllerDescriptor = ControllerSelector.SelectController(request);
+                if (controllerDescriptor == null)
+                {
+                    // response error.
+                }
+                IHttpController controller = controllerDescriptor.CreateController(request);
+                controllerContext = CreateControllerContext(request, controllerDescriptor, controller);
+                return await controller.ExecuteAsync(controllerContext, cancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                // Propogate the canceled task without calling exception loggers or handlers.
+                throw;
+            }
+            catch (HttpResponseException httpResponseException)
+            {
+                return httpResponseException.Response;
+            }
+            catch (Exception exception)
+            {
+                exceptionInfo = ExceptionDispatchInfo.Capture(exception);
+            }
+
+            Debug.Assert(exceptionInfo.SourceException != null);
+
+            ExceptionContext exceptionContext = new ExceptionContext(
+                exceptionInfo.SourceException,
+                ExceptionCatchBlocks.HttpControllerDispatcher,
+                request)
+                {
+                    ControllerContext = controllerContext,
+                };
+
+            await ExceptionLogger.LogAsync(exceptionContext, cancellationToken);
+            HttpResponseMessage response = await ExceptionHandler.HandleAsync(exceptionContext, cancellationToken);
+
+            if (response == null)
+            {
+                exceptionInfo.Throw();
+            }
+
+            return response;
+        }
+                    </pre>
+                </li>
+                <li>
+                    <h4>IHttpControllerSelector</h4>
+                </li>
+                <li>
+
+                </li>
                 <li>How does controller is discovered?</li>
                 <li>How does controller dispatcher works?<br>
                     1). first initialized (without dependency injection)
@@ -76,23 +195,7 @@ SyntaxHighlighter.all()
         <p>Filter are used in Attribute form, placing a filter attribute before a controller or a controller's action will add it to the controller-wide pipeline.</p>
     </div>
 </li>
-<li>
-    <div class="content" id="service">
-        <h3>Services</h3>
-        <p>HttpConfiguration has a ServicesContainer property. ServicesContainer is <br>
-            1). a simplied dependency container that only supports registering as instance (singleton). No lifetime scope.<br>
-            2). support multiple components -> one service & one component -> one service.
-        </p>
-        <p>When initalizing a HttpConfiguration, a few default services are registered. DefaultServices <a href="https://github.com/mono/aspnetwebstack/blob/master/src/System.Web.Http/Services/DefaultServices.cs">[Source]</a></p>
-        <pre class="brush:cpp">
-            // Services = new DefaultServices(this);
-            public DefaultServices(HttpConfiguration configuration){
 
-            }
-        </pre>
-        <p>The service property can be used in anywhere you can access the "config". For example,</p>
-    </div>
-</li>
 <li>
 <div class="content" id="reference">
 <h3>References</h3>
