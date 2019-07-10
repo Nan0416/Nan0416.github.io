@@ -38,11 +38,12 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>C#&nbsp;-&nbsp;Collections</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-06-16</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-06-16</span></p>
+<p class="date"><span class="created-date">Created:2019-06-16</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-07-10</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
 <li><a href="#collection">Collections</a></li>
+<li><a href="#linq">Linq</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -67,11 +68,94 @@ SyntaxHighlighter.all()
 <li>
     <div class="content" id="collection">
         <h3>Collections</h3>
+        
         <div class="featureList">
             <ol>
+                <li><h4>IEnumerable & ICollection</h4>
+                    <p>Internal structure of basic Enumerable and Collection. <span style="color:red">Linq operation is supported on IEnumberable&lt;T> objects.</span></p>
+                    <p>IEnumberable and IEnumberable&lt;T> are only used primarly for iterating a collection, it enables foreach. It can read data by indirectly using the Enumerator.<br>
+                        ICollection and ICollection&lt;T> defines how to access, add, remove, and update data. (CRUD).
+                    </p>
+                    <pre class="brush:cpp">
+    public interface IEnumerator
+    {
+        object Current { get; }
+        bool MoveNext();
+        void Reset();
+    }
+    public interface IEnumerable
+    {
+        IEnumerator GetEnumerator();
+    }
+    public interface IEnumerable&lt;out T> : IEnumerable
+        IEnumerator&lt;T> GetEnumerator();
+    }
+    public interface ICollection : IEnumerable
+    {
+        int Count { get; }
+        object SyncRoot { get; } // Gets an object that can be used to synchronize access to the System.Collections.ICollection.
+        bool IsSynchronized { get; } // whether access to the System.Collections.ICollection is synchronized (thread safe).
+        void CopyTo(Array array, int index);
+    }
+    public interface IReadOnlyCollection&lt;out T> : IEnumerable&lt;T>, IEnumerable
+    {
+        int Count { get; }
+    }
+    public interface ICollection&lt;T> : IEnumerable&lt;T>, IEnumerable
+    {
+        int Count { get; }
+        bool IsReadOnly { get; }
+
+        void Add(T item);
+        void Clear();
+        bool Contains(T item);
+        void CopyTo(T[] array, int arrayIndex);
+        bool Remove(T item);
+    }
+                    </pre>
+                </li>
                 <li>
                     <h4>List</h4>
-                    <p>Don't use IList interface, because some methods e.g. .AddRange on List are not defined by IList</p>
+                    <pre class="brush:cpp">
+            public interface IReadOnlyList&lt;out T> : IReadOnlyCollection&lt;T>, IEnumerable&lt;T>, IEnumerable
+            {
+                T this[int index] { get; } // get only since readonly.
+            }
+            public interface IList : ICollection, IEnumerable
+            {
+                object this[int index] { get; set; }
+                bool IsReadOnly { get; }
+                bool IsFixedSize { get; }
+                int Add(object value);
+                void Clear();
+                bool Contains(object value);
+                int IndexOf(object value);
+                void Insert(int index, object value);
+                void Remove(object value);
+                void RemoveAt(int index);
+            }
+            public interface IList&lt;T> : ICollection&lt;T>, IEnumerable&lt;T>, IEnumerable
+            {
+                T this[int index] { get; set; }
+                int IndexOf(T item); // The index of item if found in the list; otherwise, -1.
+                void Insert(int index, T item);
+                void RemoveAt(int index);
+            }
+
+            public class List&lt;T>: IList&lt;T>, IList, IReadOnlyList&lt;T>, ICollection&lt;T>, ICollection, IReadOnlyCollection, IEnumerable&lt;T>, IEnumerable{
+                // supprise
+                public int BinarySearch(int index, int count, T item, IComparer&lt;T> comparer);
+                public int BinarySearch(T item);
+                public int BinarySearch(T item, IComparer&lt;T> comparer);
+
+                public void ForEach(Action&lt;T> action);
+            }
+                    </pre>
+                </li>
+                
+                <li>
+                    <h4>Usage of List</h4>
+                    <p style="color:red">Don't use IList interface since it is designed to be a non-generic list. It also only defined limited methods. e.g. .AddRange on List are not defined by IList, and it is not designed to support generics.</p>
                     <pre class="brush:cpp">
             List&lt;string> list = new List&lt;string>();
             List&lt;string> l2 = new List&lt;string>{"Mercedes-Benz ML350"};
@@ -90,7 +174,7 @@ SyntaxHighlighter.all()
             // remove
             list.Remove("Mercedes-Benz ML350"); // remove the 
             list.Remove("Mazda CX-5");
-            // iterate
+            // iterate by IEnumerable&lt;T>
             foreach(string value in list){
                 Console.WriteLine("foreach " + value);
             }
@@ -101,34 +185,91 @@ SyntaxHighlighter.all()
                     </pre>
                 </li>
                 <li>
-                    <h4>Dictionary</h4>
+                    <h4>Dictionary (hashmap in java)</h4>
+                    <p>Dictionary's behavior includes 1). a list of key-value pair, 2). a hashmap that value is accessed by key, 3). a list of key and a list of value.</p>
+                    <pre class="brush:cpp">
+    public struct KeyValuePair&lt;TKey, TValue>
+    {
+        public KeyValuePair(TKey key, TValue value);
+        public TValue Value { get; }
+        public void Deconstruct(out TKey key, out TValue value);
+        public override string ToString();
+    }
+
+    public struct DictionaryEntry
+    {
+        public DictionaryEntry(object key, object value);
+        public object Value { get; set; }
+        public void Deconstruct(out object key, out object value);
+    }
+
+    public interface IDictionaryEnumerator : IEnumerator
+    {
+        DictionaryEntry Entry { get; }
+        object Key { get; }
+        object Value { get; }
+    }
+
+    // designed as a non generic dictionary
+    public interface IDictionary : ICollection, IEnumerable
+    {
+        object this[object key] { get; set; }
+        bool IsFixedSize { get; }
+        bool IsReadOnly { get; }
+        ICollection Keys { get; }
+        ICollection Values { get; }
+
+        //   T:System.ArgumentException:
+        //     An element with the same key already exists in the System.Collections.IDictionary
+        //     object.
+        void Add(object key, object value);
+        void Clear();
+        bool Contains(object key);
+        IDictionaryEnumerator GetEnumerator();
+        void Remove(object key);
+    }
+    public interface IDictionary&lt;TKey, TValue> : ICollection&lt;KeyValuePair&lt;TKey, TValue>>, IEnumerable&lt;KeyValuePair&lt;TKey, TValue>>, IEnumerable
+    {
+        TValue this[TKey key] { get; set; }
+        ICollection&lt;TValue> Values { get; }
+        void Add(TKey key, TValue value);
+        bool ContainsKey(TKey key);
+        bool Remove(TKey key);
+        bool TryGetValue(TKey key, out TValue value);
+    }
+    public class Dictionary&lt;TKey, TValue> : IDictionary&lt;TKey, TValue>, IReadOnlyDictionary&lt;TKey, TValue>, IDictionary, 
+                                                ICollection&lt;KeyValuePair&lt;TKey, TValue>>, IReadOnlyCollection&lt;KeyValuePair&lt;TKey, TValue>>, ICollection,
+                                                IEnumerable&lt;KeyValuePair&lt;TKey, TValue>>, IEnumerable,
+                                                IDeserializationCallback, ISerializable
+    {
+        public sealed class KeyCollection : ICollection&lt;TKey>, IEnumerable&lt;TKey>, IEnumerable, IReadOnlyCollection&lt;TKey>, ICollection
+        {
+            public KeyCollection(Dictionary&lt;TKey, TValue> dictionary);
+            public int Count { get; }
+            public void CopyTo(TKey[] array, int index);
+            public Enumerator GetEnumerator();
+            public struct Enumerator : IEnumerator&lt;TKey>, IEnumerator, IDisposable
+            {
+                public TKey Current { get; }
+                public void Dispose();
+                public bool MoveNext();
+            }
+        }
+    }
+                    </pre>
+                </li>
+                <li>
+                    <h4>Usage of dictionary</h4>
+                    <p>Used as a java hashmap by [] operator</p>
                     <pre class="brush:cpp">
                             /**
-                            * Add existed key throws error, using [] = value to add and update value.
-                            * [] get not existed key throws error, TryGetValue
-                            * 
-                            * Remove("") remove not existed key does not throw errors, but return false.
-                            *
-                            * 
-                            * Dictionary&lt;string, string> [], .Add(), .Remove(), .TryGetValue() .Count
-                            * KeyValuePair&lt;string, User> .ValueCollection, KeyCollection
-                            * 
+                            * [] = value; add and update value.
+                            * .Add: add existed key throws error. 
+                            * value = dic["key"];  get not existed key throws error 
+                            * .TryGetValue; 
+                            * bool isSuccess = Remove("");  remove not existed key does not throw errors, but return false.
                             */
                             Dictionary&lt;string, User> usersMap = ;
-                            foreach (KeyValuePair&lt;string, User> kvp in usersMap)
-                            {
-                                Console.WriteLine("Key = {0}, Value = {1}",
-                                    kvp.Key, kvp.Value.name);
-                            }
-                            Dictionary&lt;string, User>.ValueCollection valueColl = usersMap.Values;
-                            foreach (User u in valueColl) {
-                                Console.WriteLine(u.age);
-                            }
-                            /*users.ForEach(user =>
-                            {
-                                // throws error if a key is already there.
-                                usersMap.Add(user.name, user);
-                            });*/
                             usersMap["Nan Qin"] = usersMap["Xiaofei Chen"];
                             usersMap["Nan"] = usersMap["Nan Qin"];
                             Console.WriteLine(usersMap.Count);
@@ -150,9 +291,113 @@ SyntaxHighlighter.all()
                             // Console.WriteLine(usersMap["Nan"]);
                             Console.WriteLine(usersMap.Count);
                     </pre>
+                    <p>Behavior of a List of key-value pair. <span style="color:red">It is possible to do this, but C# does not want people to do that so it marks some interface methods as hidden.</span></p>
+                    <pre class="brush:cpp">
+                        Dictionary&lt;string, string> dic = new Dictionary&lt;string, string>();
+                        ICollection&lt;KeyValuePair&lt;string, string>> temp = dic; // the following method is hidden.
+                        KeyValuePair&lt;string, string> keyValue = new KeyValuePair&lt;string, string>("Name", "Nan Qin");
+                        temp.Add(keyValue);
+
+                         Dictionary&lt;string, string> dic = new Dictionary&lt;string, string>();
+                        dic["age"] = "25";
+                        dic["gender"] = "male";
+                        dic["name"] = "Nan Qin";
+                        foreach (KeyValuePair&lt;string, string> pair in dic) {
+                            // order is not guaranteed.
+                            Console.WriteLine(pair.Key + " " + pair.Value);
+                        }
+                    </pre>
+                    <p>Behavior of a list of key and a list of value.<br>
+                    IDictionary&lt;TKey, TValue> defines two properties Keys & Values of ICollection&lt;T> type. But in Dictionary&lt;TKey, TValue>, the Keys & Values' types are changed to <span class="inline-code">KeyCollection</span> and <span class="inline-code">ValueCollection</span></p>
+                    <pre class="brush:cpp">
+            Dictionary&lt;string, string>.ValueCollection values = dic.Values;
+            foreach (string v in values) {
+                Console.WriteLine(v);
+            }
+                    </pre>
                 </li>
             </ol>
         </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="linq">
+        <h3>Linq</h3>
+        <p>LINQ (language integrated query) [pronunciation: link] is a C# language feature that supports query data collections (C# list, database). The data source includes C# collection objects and data from database that is represented as a IQueryable object.</p>
+        <p style="color:red">Different from database providers e.g. Npgsql that implemented as a library, LINQ is a language feature built into C#. It is a first-class language construct, just like classes, methods, events.</p>
+            <p>Support: C# 3.0 and later</p>
+            <div class="featureList">
+                <ol>
+                    <li>
+                        <h4>LINQ-enabled data source</h4>
+                        <p>A linq-enable data source means the data type can be queried with LINQ. A data type that implements IEnumerable&lt;T> or IQueryable&lt;T> is LINQ-enabled. All C# generic collection types implement IEnumerable&lt;T> interface, so they are Linq enabled.</p>
+                        <p>Data comes from database will use Entity Framework. Inside EF, a table is represented by <span class="inline-code">IDbSet</span> or <span class="inline-code">DbSet</span>, which inherit or implement IQueryable Interface.</p>
+                        <pre class="brush:cpp">
+    public interface IQueryable : IEnumerable
+    {
+        // Gets the expression tree that is associated with the instance of System.Linq.IQueryable.
+        Expression Expression { get; }
+        // Gets the type of the element(s) that are returned when the expression tree associated
+        // with this instance of System.Linq.IQueryable is executed.
+        Type ElementType { get; }
+        // Gets the query provider that is associated with this data source.
+        IQueryProvider Provider { get; }
+    }
+    public interface IQueryable&lt;out T> : IEnumerable&lt;T>, IEnumerable, IQueryable
+    {
+        // it is empty
+    }
+    public interface IDbSet&lt;TEntity> : IQueryable&lt;TEntity>, IEnumerable&lt;TEntity>, IQueryable, IEnumerable where TEntity : class
+    {
+        ObservableCollection&lt;TEntity> Local { get; }
+        TEntity Add(TEntity entity);
+        TEntity Attach(TEntity entity);
+        TEntity Create();
+        TDerivedEntity Create&lt;TDerivedEntity>() where TDerivedEntity : class, TEntity;
+        TEntity Find(params object[] keyValues);
+        TEntity Remove(TEntity entity);
+    }
+                        </pre>
+
+                    </li>
+                    <li>
+                        <h4>LINQ provider</h4>
+                        <p>For data sources that are not in the C# object, a linq provider is needed to map the data source into the C# LINQ-enabled data source.</p>
+                        <pre class="brush:cpp">
+                                XElement contacts = XElement.Load(@"c:\myContactList.xml"); // load xml
+                        </pre>
+                    </li>
+                    <li>
+                        <h4>Query Syntax vs Method Syntax</h4>
+                        <p>LINQ provide two syntax, Query syntax (like SQL) and method syntax (a chainable method call). When executing, the query syntax is first compiled into method syntax and then executed.</p>
+                        <pre class="brush:cpp">
+                            // Query syntax
+                            IEnumerable&lt;int> numQuery1 = 
+                                        from num in numbers
+                                        where num % 2 == 0
+                                        orderby num
+                                        select num;
+                            //Method syntax:
+                            IEnumerable&lt;int> numQuery2 = numbers.Where(num => num % 2 == 0).OrderBy(n => n);
+                        </pre>
+                        <p>Some query operations, such as Count or Max, have no equivalent query expression clause and must therefore be expressed as a method call.</p>
+                    </li>
+                    <li>
+                        <h4>Extension method on IEnumberable</h4>
+                        <p>
+                            ToList
+                            namespace System.Linq
+                            {
+                                //
+                                // Summary:
+                                //     Provides a set of static (Shared in Visual Basic) methods for querying objects
+                                //     that implement System.Collections.Generic.IEnumerable`1.
+                                public static class Enumerable
+                        </p>
+                    </li>
+                    <li>Query Engine?</li>
+                </ol>
+            </div>
     </div>
 </li>
 <li>
