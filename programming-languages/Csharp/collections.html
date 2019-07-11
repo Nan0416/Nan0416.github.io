@@ -38,7 +38,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>C#&nbsp;-&nbsp;Collections</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-06-16</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-07-10</span></p>
+<p class="date"><span class="created-date">Created:2019-06-16</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-07-11</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -330,8 +330,14 @@ SyntaxHighlighter.all()
                 <ol>
                     <li>
                         <h4>LINQ-enabled data source</h4>
-                        <p>A linq-enable data source means the data type can be queried with LINQ. A data type that implements IEnumerable&lt;T> or IQueryable&lt;T> is LINQ-enabled. All C# generic collection types implement IEnumerable&lt;T> interface, so they are Linq enabled.</p>
-                        <p>Data comes from database will use Entity Framework. Inside EF, a table is represented by <span class="inline-code">IDbSet</span> or <span class="inline-code">DbSet</span>, which inherit or implement IQueryable Interface.</p>
+                        <p>A linq-enable data source means the data type can be queried with LINQ. A data type that implements IEnumerable&lt;T> is LINQ-enabled. <br>
+                            1). Collection: All C# generic collection types implement IEnumerable&lt;T> interface, so they are Linq enabled.<br>
+                            2). Database: Data coming from database use Entity Framework. Inside EF, a table is represented by <span class="inline-code">IDbSet</span> or <span class="inline-code">DbSet</span>, which also inherit or implement IQueryable Interface.<br>
+                            3). Other sources: e.g. a XML file will need a Linq provider to load data.
+                            <pre class="brush:cpp">
+                                XElement contacts = XElement.Load(@"c:\myContactList.xml"); // load xml
+                            </pre>
+                        </p>
                         <pre class="brush:cpp">
     public interface IQueryable : IEnumerable
     {
@@ -358,14 +364,6 @@ SyntaxHighlighter.all()
         TEntity Remove(TEntity entity);
     }
                         </pre>
-
-                    </li>
-                    <li>
-                        <h4>LINQ provider</h4>
-                        <p>For data sources that are not in the C# object, a linq provider is needed to map the data source into the C# LINQ-enabled data source.</p>
-                        <pre class="brush:cpp">
-                                XElement contacts = XElement.Load(@"c:\myContactList.xml"); // load xml
-                        </pre>
                     </li>
                     <li>
                         <h4>Query Syntax vs Method Syntax</h4>
@@ -383,17 +381,61 @@ SyntaxHighlighter.all()
                         <p>Some query operations, such as Count or Max, have no equivalent query expression clause and must therefore be expressed as a method call.</p>
                     </li>
                     <li>
-                        <h4>Extension method on IEnumberable</h4>
-                        <p>
-                            ToList
-                            namespace System.Linq
-                            {
-                                //
-                                // Summary:
-                                //     Provides a set of static (Shared in Visual Basic) methods for querying objects
-                                //     that implement System.Collections.Generic.IEnumerable`1.
-                                public static class Enumerable
-                        </p>
+                        <h4>Linq methods exist in the form of extension methods on IEnumberable</h4>
+                        <p>ToList, Where, Select (Map), Take, Skip, First, Single, OrderBy, SequentialEqual, Contains, Reverse, Join, Union, Sum, Max, Min, Average, Cast, Any, All, Aggregate (Reduce)</p>
+                        <p>Static method (not extension):  Repeat, Range</p>
+                        <pre class="brush:cpp">
+                            namespace System.Linq{
+                                public static List&lt;TSource> ToList&lt;TSource>(this IEnumerable&lt;TSource> source);
+
+                                public static IEnumerable&lt;TSource> Where&lt;TSource>(this IEnumerable&lt;TSource> source, Func&lt;TSource, bool> predicate);
+                                public static IEnumerable&lt;TSource> Where&lt;TSource>(this IEnumerable&lt;TSource> source, Func&lt;TSource, int, bool> predicate);
+
+                                public static IEnumerable&lt;TResult> Select&lt;TSource, TResult>(this IEnumerable&lt;TSource> source, Func&lt;TSource, TResult> selector);
+                                // Each element return a collection of TResult, and then flattens the resulting sequences into one sequence.
+                                public static IEnumerable&lt;TResult> SelectMany&lt;TSource, TResult>(this IEnumerable&lt;TSource> source, Func&lt;TSource, IEnumerable&lt;TResult>> selector);
+                                
+                                // Returns a specified number of contiguous elements from the start of a sequence.
+                                public static IEnumerable&lt;TSource> Take&lt;TSource>(this IEnumerable&lt;TSource> source, int count);
+                                // Bypasses a specified number of elements in a sequence and then returns the remaining elements.
+                                public static IEnumerable&lt;TSource> Skip&lt;TSource>(this IEnumerable&lt;TSource> source, int count);
+
+                                // Returns the first element in a sequence that satisfies a specified condition.
+                                // System.InvalidOperationException: if no such element
+                                public static TSource First&lt;TSource>(this IEnumerable&lt;TSource> source, Func&lt;TSource, bool> predicate);
+                                public static TSource First&lt;TSource>(this IEnumerable&lt;TSource> source);
+                                // Returns the first element of the sequence that satisfies a condition or a default(TSource) value if no such element is found.
+                                public static TSource FirstOrDefault&lt;TSource>(this IEnumerable&lt;TSource> source, Func&lt;TSource, bool> predicate);
+                                
+                                // Returns the only element of a sequence that satisfies a specified condition,
+                                // System.InvalidOperationException: if no element or more than one such element exists.
+                                public static TSource Single&lt;TSource>(this IEnumerable&lt;TSource> source, Func&lt;TSource, bool> predicate);
+
+                                public static IOrderedEnumerable&lt;TSource> OrderBy&lt;TSource, TKey>(this IEnumerable&lt;TSource> source, Func&lt;TSource, TKey> keySelector, IComparer&lt;TKey> comparer);
+
+                                public static bool SequenceEqual&lt;TSource>(this IEnumerable&lt;TSource> first, IEnumerable&lt;TSource> second, IEqualityComparer&lt;TSource> comparer);
+                                public static bool SequenceEqual&lt;TSource>(this IEnumerable&lt;TSource> first, IEnumerable&lt;TSource> second); // use .Equals
+
+                                // join two collection, get keys:TKey from two collections, match the keys to form a new collection: TOuter,TInner, then select: TResult based on the new collection
+                                public static IEnumerable&lt;TResult> Join&lt;TOuter, TInner, TKey, TResult>(this IEnumerable&lt;TOuter> outer, IEnumerable&lt;TInner> inner, Func&lt;TOuter, TKey> outerKeySelector, Func&lt;TInner, TKey> innerKeySelector, Func&lt;TOuter, TInner, TResult> resultSelector);
+                            }
+                        </pre>
+                        <p>Class structure</p>
+                        <pre class="brush:cpp">
+    public interface IOrderedEnumerable&lt;TElement> : IEnumerable&lt;TElement>, IEnumerable{
+        IOrderedEnumerable&lt;TElement> CreateOrderedEnumerable&lt;TKey>(Func&lt;TElement, TKey> keySelector, IComparer&lt;TKey> comparer, bool descending);
+    }
+
+    public interface IEqualityComparer&lt;in T>
+    {
+        bool Equals(T x, T y);
+        int GetHashCode(T obj);
+    }
+                        </pre>
+                    </li>
+                    <li>
+                        <h4>IQueryable</h4>
+                        <p>An enumerable object represented a list of elements, but we don't if the list of elements is in memory already. For example, a database IQueryable object is an enumerable. But this enumberable object is not loaded into memory until it's used (e.g. .ToList() or foreach)</p>
                     </li>
                     <li>Query Engine?</li>
                 </ol>
