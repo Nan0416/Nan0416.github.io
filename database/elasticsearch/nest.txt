@@ -1,0 +1,2 @@
+https://www.elastic.co/guide/en/elasticsearch/client/net-api/current/introduction.html
+https://stackoverflow.com/questions/35747862/what-does-doc-represents-in-elasticsearch

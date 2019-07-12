@@ -37,7 +37,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>C#&nbsp;-&nbsp;Interface/Abstract/Extension</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-03-03</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-03-03</span></p>
+<p class="date"><span class="created-date">Created:2019-03-03</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-07-12</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -108,6 +108,45 @@ SyntaxHighlighter.all()
                     class T: DellMonitor, IMonitor, IProduct { 
                     }</pre></li>
                 <li>C# does not support to use anonymous types/class to implement interface.</li>
+                <li>
+                    <h4>Implementation hides interface method</h4>
+                    <p>A class that implements an interface can hide some method/properties ... defined in the interface.</p>
+                    <p>Hiddem implemement does not need modifier, use method fullname to implemement. {Interface-Name}.{Method-Name}</p>
+                    <pre class="brush:cpp">
+                            public interface IFormatter {
+                                string Format(string[] args);
+                                string AnotherFormat(string[] args);
+                            }
+                        
+                            public class WhitespaceFormatter : IFormatter {
+                                public string Format(string[] args) {
+                                    var sb = new StringBuilder();
+                                    foreach (var i in args) {
+                                        sb.Append(i);
+                                    }
+                                    return sb.ToString();
+                                }
+                                // implement as hidden method.
+                                string IFormatter.AnotherFormat(string[] args) {
+                                    return Format(args);
+                                }
+                            }
+                            public class Program
+                            {
+                                static void Main(string[] args)
+                                {
+                                    WhitespaceFormatter formatter = new WhitespaceFormatter();
+                                    Console.WriteLine(formatter.Format(new string[] { "Qin", "Nan" }));
+                                    // Cannot use the hidden method.
+                                    // Console.WriteLine(formatter.AnotherFormat(new string[] { "Qin", "Nan" }));
+                                    IFormatter iformatter = (IFormatter)formatter;
+                                    Console.WriteLine(iformatter.Format(new string[] { "Qin", "Nan" }));
+                                }
+                            }
+                    </pre>
+                    <p>But after casting to <span class="inline-code">IFormatter</span>, it is able to access the hidden methods.</p>
+                    <p>This hidden method style is used in c# collection. e.g. Dictionary implement <span class="inline-code">ICollection&lt;KeyValuePair&lt;TKey, TValue>></span>, but does not give the access to .Add a keyvalue pair.</p>
+                </li>
             </ol>
         </div>
     </div>
@@ -122,7 +161,7 @@ SyntaxHighlighter.all()
             <ol>
                 <li>Extension method is a runtime feature. Extension methods have the low priority. For example, when an extension method has the same signature as one of the type's method, extension method is never called.</li>
                 <li>A class cannot have duplicated same signature extension methods, caused ambiguity.</li>
-                <li>Extension methods are brought into scope at the namespace level.</li>
+                <li>Extension methods are brought into scope at the namespace level. <span style="color:red">Practice: Most extension methods use the same namespace as the original class.</span></li>
                 <li>Extension methods on an interface will be effective for all classes that implement this interface</li>
                 <li>When an extension method on a interface has the same signature as one of the methods of a concrete class or a subclass of the concrete class, then<br>
                     <span style="color:red">Extension method wins when the declaring type is the interface;<br>
@@ -202,6 +241,31 @@ public static class ExtensionITest{
 }
                     </pre>
                 </li>
+                <li>
+                    <h4>Practice</h4>
+                    <p>The first thing inside an extension method is to check if the target is null. <span style="color:red">null is allowed in C# language aspect, but most case, we don't want it to be null in design aspect.</span></p>
+                    <pre class="brush:cpp">
+                            public class Program
+                            {
+                                static void Main(string[] args)
+                                {
+                                    var sentence = "Hello, World";
+                                    Console.WriteLine(sentence.AddSurfix("!"));
+                                    sentence = null;
+                                    Console.WriteLine(sentence.AddSurfix("!"));
+                                }
+                            }
+                            public static class StringExtension
+                            {
+                                public static string AddSurfix(this string target, string surfix) {
+                                    if (target == null) {
+                                        throw new NullReferenceException("Object reference not set to an instance of an object.");
+                                    }
+                                    return target + surfix;
+                                }
+                            }
+                    </pre>
+                </li>
             </ol>
         </div>
         <p>Extension method is heavily used in ASP.NET Core.</p>
@@ -212,7 +276,7 @@ public static class ExtensionITest{
 <h3>References</h3>
 <div class="featureList">
     <ol>
-        <li></li>
+        <li><a href="https://stackoverflow.com/questions/5284750/how-to-hide-some-members-of-an-interface" target="_blank">StackOverflow: How to hide some members of an interface</a></li>
     </ol>
 </div>
 </div>
