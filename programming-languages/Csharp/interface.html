@@ -250,21 +250,25 @@ public static class ExtensionITest{
                                 static void Main(string[] args)
                                 {
                                     var sentence = "Hello, World";
-                                    Console.WriteLine(sentence.AddSurfix("!"));
+                                    Console.WriteLine(sentence.AddSuffix("!"));
                                     sentence = null;
-                                    Console.WriteLine(sentence.AddSurfix("!"));
+                                    Console.WriteLine(sentence.AddSuffix("!"));
                                 }
                             }
                             public static class StringExtension
                             {
-                                public static string AddSurfix(this string target, string surfix) {
+                                public static string AddSuffix(this string target, string suffix) {
                                     if (target == null) {
                                         throw new NullReferenceException("Object reference not set to an instance of an object.");
                                     }
-                                    return target + surfix;
+                                    return target + suffix;
                                 }
                             }
                     </pre>
+                </li>
+                <li>
+                    <h4>Attribute initialization</h4>
+                    <p>parameter types</p>
                 </li>
             </ol>
         </div>
