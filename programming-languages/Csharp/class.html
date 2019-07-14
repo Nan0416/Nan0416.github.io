@@ -37,7 +37,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>C#&nbsp;-&nbsp;Class</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-02-23</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-06-19</span></p>
+<p class="date"><span class="created-date">Created:2019-02-23</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-07-13</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -175,11 +175,15 @@ SyntaxHighlighter.all()
 <li>
     <div class="content" id="modifier">
         <h3>Modifier</h3>
+        <p>Considering scope: self (including inner class), derived classes, assembly <span style="color:red">(derived classes are not necessary inside the same assembly as base class)</span></p>
         <div class="featureList">
             <ol>
                 <li>public: all</li>
                 <li>protected: self and drived class</li>
-                <li>internal (default to class/struct if no modifier is specified): access limited to the current assembly (assembly is a .dll library or a .exe, it is not a namespace. (different from java's package))</li>
+                <li>internal (default to class/struct if no modifier is specified): access limited to the current assembly (assembly is a .dll library or a .exe, it is not a namespace. (different from java's package))
+                    <br>
+                    <span style="color:red">When using Visual studio to create new class, it does not have a modifier. So it is the "internal" modifier. If the class is a unittest class, it will cause the VS Test framework cannot detect the class.</span>
+                </li>
                 <li>protected internal: protected internal has a more border accessibility than internal. It is like protected || internal.
                     <br>
                     <pre class="brush:java">

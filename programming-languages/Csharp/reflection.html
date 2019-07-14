@@ -44,6 +44,7 @@ SyntaxHighlighter.all()
 <ul class="catalogItems">
 <li><a href="#attribute">Attribute</a></li>
 <li><a href="#reflection">Reflection</a></li>
+<li><a href="#reflection_attrbute">Reflection with Attributes</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -62,7 +63,7 @@ Programmers can then attach attributes to various program entities (class, metho
     <ol>
         <li>C# Attribute (Java Annotation, Python decorator) is a way that enables us use declarative way to "mark" code and provide metadata about code. <span style="color:red">Most likely, the attribute does not contain any complex logic. 
             The processing framework will use reflection to parse these attribute and initialize/modify the marked targets (e.g. class, method, parameter ...)</span><br>
-            <span style="color:red">Not sure C# attribute has lifecycle like Java's compile time annotation and runtime annotation.</span> In this note, C# attribute is only the runtime attribute.
+            <span style="color:red">Not sure C# attribute has lifecycle like Java's compile time annotation and runtime annotation.</span> In this note, an C# attribute is involved in both complie time and runtime.
         </li>
         <li>
             <h4>Attribute Class</h4>
@@ -129,6 +130,7 @@ namepace System{
     }
             </pre>
             <p>Attribute's Attribute</p>
+    <pre class="brush:cpp">
     [AttributeUsage(AttributeTargets.Class, Inherited = true)]
     [ComVisible(true)]
     public sealed class AttributeUsageAttribute : Attribute
@@ -140,6 +142,7 @@ namepace System{
         // Whether the indicated attribute is inherited by derived classes and overriding members.
         public bool Inherited { get; set; }
     }
+    </pre>
         </li>
         <li>
             <h4>Initialization of attribute</h4>
@@ -147,12 +150,57 @@ namepace System{
                 An attribute is placed on a target place, and initialized with positional and named parameters.
             </p>
             <pre class="brush:cpp">
-                
+                public class NanClassAttribute :Attribute{
+                    private string _data;
+                    public NanClassAttribute(string data) {
+                        _data = data;
+                    }
+                    public int Number { get; set; }
+                }
+            
+                [NanClass("Testing", Number = 1)]
+                public class Target{
+                    private string _name;
+                    public Target(string name) {
+                        _name = name;
+                    }
+                }
             </pre>
+            <p>Positional argument are constructor parameter of the attribute, Named parameters are attribute's public properties with public get and public set</p>
+            <h4>Type restriction on positional & named argument</h4>
+            <p>They must be primitive types (int, short ...), string, object, System.Type, Enum, single-dimensional array with these types. <span style="color:red">An attribute can have objects of complex class, but they cannot be used as positional or named parameter.</span></p>
+            <p>Passing System.Type & Object, and then casting...</p>
         </li>
     </ol>
 </div>
 </div>
+</li>
+<li>
+    <div class="content" id="reflection">
+        <h3>Reflection</h3>
+        <p class="reference-box">Use reflection to 1). dynamically create an instance of a type, 2). bind the type to an existing object, or 3). get the type from an existing object and 4). invoke its methods or access its fields and properties. 5). retrieve information stored in attribute. 6). building new type at runtime.</p>
+        
+        <div class="featureList">
+            <ol>
+                <li>
+        <h4>Modules vs. Assembly</h4>
+        <p>Any .NET supported language e.g. C#, F#. VB, can be compiled into a modules .netmodule. These modules can be understood by the .NET CLR (common language runtime). But modules cannot not be run directly, they must be linked to a library .dll or a application .exe file.</p>
+        <p>A module can involve multiple namespace, a namespace can span over multiple modules, or assembly.</p>
+        <p>Library Assembly has an internal manifest file that a module doesn't have. An assembly can have one or more modules, and the manifest includes the metadata about these modules.</p>
+        <p>Application Assembly has a static Main function that Library Assembly doesn't have.</p>
+        <pre class="brush:bash">
+            csc /t:module Formatter.cs # compile a code into a module.
+            csc /out:Formatter.dll /t:library Formatter.cs # compile a code into an library assembly.
+            csc /out:MultiFileLibrary.dll /t:library /addmodule:Formatter.netmodule Logger.cs # compile a code along with a module into an assembly. This assembly has two modules.
+            csc /out:App.exe /t:exe /addmodule:Formatter.netmodule Main.cs # compile code into application assembly.
+         </pre>
+                </li>
+                <li>
+                     
+                </li>
+            </ol>
+        </div>
+    </div>
 </li>
 <li>
 <div class="content" id="reference">
@@ -161,6 +209,7 @@ namepace System{
     <ol>
         <li><a href="https://docs.microsoft.com/en-us/dotnet/csharp/tutorials/attributes" target="_blank">C# Attribute</a></li>
         <li><a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/language-specification/attributes#positional-and-named-parameters" target="_blank">Positional and named parameters</a></li>
+        <li><a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/language-specification/attributes#compilation-of-an-attribute" target="_blank">Compilation of an attribute.</a></li>
     </ol>
 </div>
 </div>
