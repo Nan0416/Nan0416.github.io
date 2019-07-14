@@ -12,7 +12,7 @@
 <script type="text/javascript" src="../../script.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
-<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushPython.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushXml.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
@@ -39,12 +39,11 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>C#&nbsp;-&nbsp;Attribute & Reflection</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-07-12</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-07-12</span></p>
+<p class="date"><span class="created-date">Created:2019-07-12</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-07-14</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#attribute">Attribute</a></li>
 <li><a href="#reflection">Reflection</a></li>
-<li><a href="#reflection_attrbute">Reflection with Attributes</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -186,7 +185,7 @@ namepace System{
         <h4>Modules vs. Assembly</h4>
         <p>Any .NET supported language e.g. C#, F#. VB, can be compiled into a modules .netmodule. These modules can be understood by the .NET CLR (common language runtime). But modules cannot not be run directly, they must be linked to a library .dll or a application .exe file.</p>
         <p>A module can involve multiple namespace, a namespace can span over multiple modules, or assembly.</p>
-        <p>Library Assembly has an internal manifest file that a module doesn't have. An assembly can have one or more modules, and the manifest includes the metadata about these modules.</p>
+        <p>Library Assembly has an internal manifest file that a module doesn't have. An assembly can have one or more modules, and the manifest includes the metadata about these modules. An assembly can also depend on other assemblies.</p>
         <p>Application Assembly has a static Main function that Library Assembly doesn't have.</p>
         <pre class="brush:bash">
             csc /t:module Formatter.cs # compile a code into a module.
@@ -194,9 +193,248 @@ namepace System{
             csc /out:MultiFileLibrary.dll /t:library /addmodule:Formatter.netmodule Logger.cs # compile a code along with a module into an assembly. This assembly has two modules.
             csc /out:App.exe /t:exe /addmodule:Formatter.netmodule Main.cs # compile code into application assembly.
          </pre>
+         <p>Assemblies in the Common Language Runtime <a href="Assemblies in the Common Language Runtime" target="_blank">Read here.</a></p>
+         <h4>Purposes of assomblies</h4>
+         <p>1). a reference scope boundary; 2). a version boundary; 3). a security boundary; 4). deployment (running) unit. </p>
+         <h4>Inside an assembly</h4>
+         <p>An assembly contains 1). a manifest, 2) type metadata, 3) MSIL code of these types 4). resource .e.g picture, xml files. These 4 elements can be placed in a single .dll file or they can be spilted to form a multifile assembly. 
+             <a href="https://docs.microsoft.com/en-us/dotnet/framework/app-domains/assembly-contents" target="_blank">Read here.</a></p>
+        <p>
+            <img src="img/single-file-assembly.gif"><img src="img/multifile-assembly-diagram.gif">
+        </p>
+        </li>
+                <li>
+                    <h4>Loaded assembly vs. not loaded assembly</h4>
+                    <p>A C# application can reference external assemblies or projects. When this application is running, these referenced assemblies are automatically loaded into CLR (common language runtime). These kind assemblies are loaded assemblies.</p>
+                    <p>For example, the mscorlib.dll (Microsoft Common Object Runtime Library) assembly are always loaded (like Java's java.lang)</p>
+                    <p class="brush:cpp">
+                        mscorlib.dll is an assembly which contains the most basic types needed by any .NET application. It includes the built-in types (Int32, Double, Boolean, Char, String etc), the basic collection types (Array, ArrayList, Hashtable, List<T>, Dictionary<K, V> etc) and the types used for file/ stream processing, serialization, threading, reflection and interop with native code.
+                    </p>
+                    <p>C# project assembly references and project references are included in the .csproj file. Each reference item is an assembly, and the mscorlib.dll is implictly loaded.</p>
+                    <h4>Assembly references</h4>
+                    <pre class="brush:xml">
+&lt;ItemGroup>
+    &lt;Reference Include="System" />
+    &lt;Reference Include="System.Core" />
+    &lt;Reference Include="System.Xml.Linq" />
+    &lt;Reference Include="System.Data.DataSetExtensions" />
+    &lt;Reference Include="Microsoft.CSharp" />
+    &lt;Reference Include="System.Data" />
+    &lt;Reference Include="System.Net.Http" />
+    &lt;Reference Include="System.Xml" />
+&lt;/ItemGroup>
+                    </pre>
+                    <h4>Project References</h4>
+                <pre class="brush:xml">
+                        &lt;ItemGroup>
+                            &lt;ProjectReference Include="..\Formatter\Formatter.csproj">
+                                &lt;Project>{8f8a782e-a2a0-48fd-bed8-4b6278858818}&lt;/Project>
+                                &lt;Name>Formatter&lt;/Name>
+                            &lt;/ProjectReference>
+                        &lt;/ItemGroup>
+                </pre>
+                    <p>C# runtime is smart. If an assembly or a project is included but unused, C# runtime will not load it to CLR.</p>
+                    <p>To check which assembly is currently loaded, use</p>
+                    <pre class="brush:cpp">
+                            Assembly[] asms = AppDomain.CurrentDomain.GetAssemblies();
+                            foreach (Assembly asm in asms)
+                            {
+                                Console.WriteLine(asm);
+                            }
+                    </pre>
+                    <p><span style="color:red">AppDomain (kind of sandbox)</span>: when running a .NET application by Powershell or other hosts, the host will first start a process, load CLR into that process, and create an application domain in that proces, and then load and execute user code.</p>
+                    <h4>How does the CLR find these referenced assemblies?</h4>
+                    <p>ToDo</p>
+                    <h4>Loading assemblies at runtime</h4>
+                    <p>CLR allows to use reflection to load assemblies at runtime and then resolve the assembly to create instances dynamically.</p>
+                    <p>ToDo</p>
                 </li>
                 <li>
-                     
+                    <h4>Get metadata from an assembly .dll</h4>
+                    <p>Assembly has a C# class called <span class="inline-code">Assembly</span>. An assembly object has an arrary of Module objects.</p>
+                    <p>Assembly is defined under namespace <span class="inline-code">System.Reflection</span>, Type is defined under namespace <span class="inline-code">System</span></p>
+                    <pre class="brush:cpp">
+    public abstract class Assembly : _Assembly, IEvidenceFactory, ICustomAttributeProvider, ISerializable{
+        protected Assembly();
+
+        public virtual string FullName { get; }
+        public virtual IEnumerable&lt;Type> ExportedTypes { get; } // all public types, including inner type.
+        public virtual IEnumerable&lt;TypeInfo> DefinedTypes { get; } // all types, including private, private inner types
+        public virtual IEnumerable&lt;Module> Modules { get; }
+    }
+                    </pre>
+                    <p>An assembly object can be obtained from a Type that stored in this assembly, or load from a file system.</p>
+                    <pre class="brush:cpp">
+    public class Program{
+        static void Main(string[] args){
+            int i = 0;
+            Type type = i.GetType(); // Get type from an instance
+            Assembly info = type.Assembly;
+            Console.WriteLine(info); // mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+            Assembly formatterAssembly = typeof(Nan.Formatter.WhitespaceFormatter).Assembly; // get type directly from class.
+            foreach (var _type in formatterAssembly.ExportedTypes)
+            {
+                Console.WriteLine(_type); // print fullname of public type, type include class, interface, struct ...
+            }
+        }
+    }
+                    </pre>
+                </li>
+                <li>
+                    <h4>Get metadata, Create instances, Invoke methods</h4>
+                    <p class="reference-box">
+                        The System.Type class is central to reflection. The common language runtime creates the Type for a loaded type when reflection requests it. You can use a Type object's methods, fields, properties, and nested classes to find out everything about that type.
+                    </p>
+                    <p>A type's metadata includes 1). implemented or inherited interfaces, 2). constructor, 3). methods 4). properties 5). nested types 6). attributes</p>
+                    <pre class="brush:bash">
+                        ICustomAttributeProvider (interface) {GetCustomAttributes}                                          _MemberInfo (interface) {member type, name}
+                                    |                                                                                                       |
+                                    |                                                                                                       |
+                                    ---------------------------------------------------------------------------------------------------------
+                                                                                    |                                          |
+                                                            MemberInfo (abstract) {get attributes from member}          ParameterInfo {name, type, position, default value ...}
+                                                                                    |
+                                                        ----------------------------------------------------------------------------------------------------
+                                                        |                       |                           |                           |                  |
+                _MethodBase(interface)                  |                       |                           |                           |                  |
+            {isPublic, is{Modifier}, Invoke}            |                   FieldInfo                   PropertyInfo                EventInfo             Type
+                            |                           |
+                            ----------------------------
+                                            |
+                                        MethodBase (abstract)
+                                            |
+                            -------------------------------
+                            |                              |
+                        ConstructorInfo                 MethodInfo
+
+                    </pre>
+                    <p>The type object can also help invoke a method on a target object.</p>
+                    <h4>Get type implemented interfaces</h4>
+                    <pre class="brush:cpp">
+    public abstract class Type : MemberInfo, _Type, IReflect{
+        // get all the interfaces implemented or inherited by this type
+        public abstract Type[] GetInterfaces();
+        // check if the type can be assigned to another type (check if the type is derived or implemented that type)
+        public virtual bool IsAssignableFrom(Type c)
+    }
+                    </pre>
+                    <p>Find types that implemented IFormatter within an assmebly</p>
+                    <pre class="brush:cpp">
+                            Assembly formatterAssembly = ...;
+                            List&lt;Type> concreteFormatters = new List&lt;Type>();
+                            foreach (var type in formatterAssembly.ExportedTypes) {
+                                if (type.GetInterfaces().Contains(typeof(IFormatter))) {
+                                    Console.WriteLine(type);
+                                }
+                            }
+                            Type concreteFormatter = concreteFormatters[0];
+                            IFormatter formatter = Activator.CreateInstance(concreteFormatter) as IFormatter;
+                            formatter.Format(new string[] { "Qin", "Nan" });
+                    </pre>
+                    <h4>Get type's constructors and invocation</h4>
+                    <p>
+                        Constructors are easily to obtain. How to select a constructor based on the <span class="inline-code">BindingFlags</span> and its parameters.
+                    </p>
+                    <p><span class="inline-code">BindingFlags</span> can select the modifier and type (static/instance) of a constructor</p>
+                    <pre class="brush:cpp">
+                        public abstract class Type : MemberInfo, _Type, IReflect{
+                            // get all public instance constructor
+                            public ConstructorInfo[] GetConstructors(); 
+                            // BindingFlags specify if the constructor is public vs. non-public, instance vs static member.
+                            public abstract ConstructorInfo[] GetConstructors(BindingFlags bindingAttr);
+                            // get a constructor whose parameters are specified by the Type array, they must have the same order.
+                            public ConstructorInfo GetConstructor(Type[] types);
+                            // with binder ...
+                        }
+                    </pre>
+                    <p>ConstructorInfo</p>
+                    <pre class="brush:cpp">
+                            public abstract class MethodBase : MemberInfo, _MethodBase{
+                                public bool IsPublic { get; }
+                                public bool IsPrivate { get; }
+                                // In reflection terminology, protected = family, internal = assembly
+                                public bool IsFamily { get; }scribed by
+                                public bool IsAssembly { get; }
+                                public bool IsFamilyAndAssembly { get; }
+                                public bool IsFamilyOrAssembly { get; }
+                                public bool IsStatic { get; }
+                                public bool IsFinal { get; }
+                                public bool IsVirtual { get; }
+                                // Gets a value indicating whether only a member of the same kind with exactly the same signature is hidden in the derived class. ???
+                                public bool IsHideBySig { get; }
+                                public bool IsAbstract { get; }
+                                public virtual bool IsGenericMethod { get; }
+                                // Gets a value indicating whether the generic method contains unassigned generic type parameters.
+                                public virtual bool ContainsGenericParameters { get; }
+                                public bool IsConstructor { get; }
+                                public abstract ParameterInfo[] GetParameters();
+                                public object Invoke(object obj, object[] parameters);
+                                public object Invoke(object obj, object[] parameters);
+                                public abstract object Invoke(object obj, BindingFlags invokeAttr, Binder binder, object[] parameters, CultureInfo culture);
+                            }
+                            public abstract class ConstructorInfo : MethodBase, _ConstructorInfo
+                            {
+                                public static readonly string ConstructorName;
+                                public static readonly string TypeConstructorName;
+                                protected ConstructorInfo();
+                                public override MemberTypes MemberType { get; } // is constructor, event, field, method, property, nested type, or type
+                                public abstract object Invoke(BindingFlags invokeAttr, Binder binder, object[] parameters, CultureInfo culture);
+                                public object Invoke(object[] parameters);
+                            }
+                    </pre>
+                    <p>To create an instance of a type, we can invoke its constructor or using the <span class="inline-code">Activator.CreateInstance</span></p>
+                    <pre class="brush:cpp">
+                            Type concreteFormatter = typeof(WhitespaceFormatter);
+                            ConstructorInfo formatterConstructor = concreteFormatter.GetConstructor(new Type[] { typeof(string) });
+                            object formatter = formatterConstructor.Invoke(new object[] { "Instantiate Formatter" });
+                            (formatter as WhitespaceFormatter).Format(new string[] { "Nan", "Qin" });
+                    </pre>
+                    <h4>Invoke type's methods</h4>
+                    <p>ToDo</p>
+                </li>
+                <li>
+                    <h4>Get attributes</h4>
+                    <p>Attribute is compiled together with other code, but attribute instances are initialized until they are request by reflection.</p>
+                    <p>All member of a type derived from <span class="inline-code">MemberInfo</span>, which implemented <span class="inline-code">ICustomAttributeProvider</span></p>
+                    <pre class="brush:cpp">
+    public interface ICustomAttributeProvider{
+        //  inherit: When true, look up the hierarchy chain for the inherited custom attribute
+        object[] GetCustomAttributes(Type attributeType, bool inherit);
+        object[] GetCustomAttributes(bool inherit);
+        bool IsDefined(Type attributeType, bool inherit);
+    }
+                    </pre>
+                    <p>Get type's attribute</p>
+                    <pre class="brush:cpp">
+                            public class NanClassAttribute :Attribute{
+                                public string Data {get; set;}
+                                public NanClassAttribute(string data) {
+                                    Console.WriteLine($"Attribute is initialized with data {data}");
+                                    Data = data;
+                                }
+                                public int Number { get; set; }
+                            }
+                            [NanClass("Testing", Number = 1)]
+                            public class Target
+                            {
+                                private string _name;
+                                public Target(string name) {
+                                    _name = name;
+                                }
+                            }
+                            class Program
+                            {
+                                static void Main(string[] args)
+                                {
+                                    Type ta = typeof(Target);
+                                    Console.WriteLine("Accquire attributes");
+                                    object[] attributes = ta.GetCustomAttributes(typeof(NanClassAttribute), false);  // the NanClassAttribute is initialized when accquring it.
+                                    NanClassAttribute nanClassAttribute = attributes[0] as NanClassAttribute;
+                                    Console.WriteLine(nanClassAttribute.Number);
+                                }
+                            }
+                    </pre>
+                    <p>The <span class="inline-code">.GetCustomAttributes</span> only get the attribute on the same scope. In other words, it only gets the attribute on the type, but not attributes defined inside the type's members.</p>
                 </li>
             </ol>
         </div>
@@ -210,6 +448,8 @@ namepace System{
         <li><a href="https://docs.microsoft.com/en-us/dotnet/csharp/tutorials/attributes" target="_blank">C# Attribute</a></li>
         <li><a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/language-specification/attributes#positional-and-named-parameters" target="_blank">Positional and named parameters</a></li>
         <li><a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/language-specification/attributes#compilation-of-an-attribute" target="_blank">Compilation of an attribute.</a></li>
+        <li><a href="https://docs.microsoft.com/en-us/dotnet/framework/app-domains/" target="_blank">.NET Application Domain</a></li>
+        <li><a href="https://docs.microsoft.com/en-us/dotnet/framework/reflection-and-codedom/viewing-type-information" target="_blank">Viewing Type Information</a></li>
     </ol>
 </div>
 </div>
