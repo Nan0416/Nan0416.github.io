@@ -163,3 +163,68 @@ request -> owin middleware pipeline -> asp.net handler, controller pipeline.
 routing
 HttpRouteColleciton, api routing
 RouteCollection, mvc routing
+
+1. select corresponding rule for each action parameter ==============================================================
+
+ApiControllerActionSelector has a cache that stores <action, parameter binding> pair. Because it cached, the parameter binding only resolved once for each action.
+
+how does parameter binding is determined?
+1. HttpActionDescriptor has a properties called ActionBinding, which use the DefaultActionValueBinder service to acquire a HttpActionBinding object that by calling GetBinding(HttpActionDescriptor)
+*** HttpActionBinding is a wrapper class of parameter bindings.
+HttpActionBinding{
+    private HttpActionDescriptor _actionDescriptor;
+    private HttpParameterBinding[] _parameterBindings;
+    HttpParameterBinding{
+        private readonly HttpParameterDescriptor _descriptor;
+        public override Task ExecuteBindingAsync(ModelMetadataProvider metadataProvider, HttpActionContext actionContext, CancellationToken cancellationToken){
+            // metadataProvider from services
+        }
+    }
+    private ModelMetadataProvider _metadataProvider;
+}
+
+GetBinding: iterates each parameter of the HttpActionDescriptor, using the GetParameterBinding method to select a
+parameter binding rule (HttpParameterBinding) for each parameter. [
+    first try to get a custom binding, 
+    then try to bind parameter from url, 
+    then try to bind parameter from body (FormatterParameterBinding)]
+
+
+
+2. binding data =====================================
+When a request comes, it goes to IHttpController.ExecuteAsync
+This method first initialize a chain of filters, and then executed IHttpActionResult.ExecuteAsync()
+
+Inside the ActionFilterResult's ExecuteAsync,  the HttpActionBinding object has a method called ExecuteBindingAsync is executed. This method will iterate each parameter bind rule to bind parameter.
+
+================================================
+
+Only the data comes from request body has a change to use formatter. So when doing parameter binding, it should have FormatterParameterBinding rule.
+FormatterParameterBinding{
+    private readonly HttpParameterDescriptor _descriptor;
+    public override Task ExecuteBindingAsync(ModelMetadataProvider metadataProvider, HttpActionContext actionContext, CancellationToken cancellationToken){
+        Type parameterType = _descriptor.ParameterType;
+        HttpRequestMessage request = actionContext.ControllerContext.Request;
+        HttpContent content = request.Content;
+        object model = await content.ReadAsAsync(type, formatters);
+        actionContext.ActionArguments[_descriptor.ParameterName] = model;
+    }
+}
+
+how to select a formatter
+A formatter is selected based on its supported types (controller action's parameter type) and http media type e.g. application/json
+1. The underlying selection logic is inside 
+    MediaTypeFormatterCollection.FindReader(Type type, MediaTypeHeaderValue mediaType)
+2. the above function is invoked by HttpContent's extension method ReadAsAsync
+    1). get media type from http request MediaTypeHeaderValue mediaType = content.Headers.ContentType ?? MediaTypeConstants.ApplicationOctetStreamMediaType;
+    2). get a type from function signature. 
+    3). get a fomatter with the above function.
+    doing 
+    <T>{
+        cancellationToken.ThrowIfCancellationRequested();
+        Stream stream = await content.ReadAsStreamAsync();
+        object result = await formatter.ReadFromStreamAsync(type, stream, content, formatterLogger, cancellationToken);
+        return (T)result;
+    }
+
+===============================================

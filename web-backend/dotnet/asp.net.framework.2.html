@@ -39,14 +39,14 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>ASP.NET&nbsp;-&nbsp;Controller, Serivce, Filter</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-07-06</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-07-06</span></p>
+<p class="date"><span class="created-date">Created:2019-07-06</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-07-14</span></p>
 <div class="catalog">
 <ul class="catalogItems">
-    <li><a href="#service">Services</a></li>  
+    <li><a href="#service">Services</a></li> 
     <li><a href="#controller">Controller & Controller Dispatcher</a></li>
+    <li><a href="#parameter_formatter">Parameter Binding & Formatter</a></li>
     <li><a href="#filter">Filter</a></li>
-    
-    <li><a href="exception">Exception handling</a></li> 
+    <li><a href="#exception">Exception handling</a></li> 
     <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -71,6 +71,9 @@ SyntaxHighlighter.all()
                         <pre class="brush:cpp">
                             // Services = new DefaultServices(this);
                             public DefaultServices(HttpConfiguration configuration){
+                                SetSingle&lt;IActionValueBinder>(new DefaultActionValueBinder()); // used in HttpActionDescriptor class.
+                                SetSingle<IHttpActionInvoker>(new ApiControllerActionInvoker()); // used to invoke action after model binding.
+                                SetSingle&lt;ModelMetadataProvider>(new DataAnnotationsModelMetadataProvider()); // 
                                 SetSingle&lt;IHttpControllerActivator>(new DefaultHttpControllerActivator());       
                                 SetSingle&lt;IHttpControllerTypeResolver>(new DefaultHttpControllerTypeResolver());
                                 SetSingle&lt;IHttpControllerSelector>(new DefaultHttpControllerSelector(configuration));
@@ -106,7 +109,6 @@ SyntaxHighlighter.all()
 <li>
     <div class="content" id="controller">
         <h3>Controller & Controller Dispatcher</h3>
-        // parameter binding https://blogs.msdn.com/b/jmstall/archive/2012/05/11/webapi-parameter-binding-under-the-hood.aspx
         <div class="featureList">
             <ol>
                 <li>
@@ -172,15 +174,253 @@ SyntaxHighlighter.all()
                     </pre>
                 </li>
                 <li>
+                    <h4>Action selection: Filter Chain + Parameter Binding</h4>
+                    <p>Inside the controller's ExecuteAsync method, <span class="inline-code">ApiControllerActionSelector</span> service is used to select the action descriptor and then acquire filter attributes that are bound to this action descriptor to build a
+                    chain of filters. Finally execute the filter chain, <span class="inline-code">ActionFilterResult(:IHttpActionResult).ExecuteAsync</span></p>
+                    <pre class="brush:cpp">
+                        public abstract class ApiController : IHttpController, IDisposable{
+                            public virtual Task&lt;HttpResponseMessage> ExecuteAsync(HttpControllerContext controllerContext, CancellationToken cancellationToken){
+                                HttpActionDescriptor actionDescriptor = controllerServices.GetActionSelector().SelectAction(controllerContext);
+                                ActionContext.ActionDescriptor = actionDescriptor;
+                                FilterGrouping filterGrouping = actionDescriptor.GetFilterGrouping();
+                                IActionFilter[] actionFilters = filterGrouping.ActionFilters;
+                                IAuthenticationFilter[] authenticationFilters = filterGrouping.AuthenticationFilters;
+                                IAuthorizationFilter[] authorizationFilters = filterGrouping.AuthorizationFilters;
+                                IExceptionFilter[] exceptionFilters = filterGrouping.ExceptionFilters;
+                                IHttpActionResult result = new ActionFilterResult(actionDescriptor.ActionBinding, ActionContext, controllerServices, actionFilters);
+                                if (authorizationFilters.Length > 0){
+                                    result = new AuthorizationFilterResult(ActionContext, authorizationFilters, result);
+                                }
+                                if (authenticationFilters.Length > 0){
+                                    result = new AuthenticationFilterResult(ActionContext, this, authenticationFilters, result);
+                                }
+                                if (exceptionFilters.Length > 0){
+                                    IExceptionLogger exceptionLogger = ExceptionServices.GetLogger(controllerServices);
+                                    IExceptionHandler exceptionHandler = ExceptionServices.GetHandler(controllerServices);
+                                    result = new ExceptionFilterResult(ActionContext, exceptionFilters, exceptionLogger, exceptionHandler,
+                                        result);
+                                }
+                                return result.ExecuteAsync(cancellationToken);
+                            }
+                        }
+                    </pre>
+                    <p>The <span class="inline-code">IHttpActionResult</span> has different implementation for each filter. Inside <span class="inline-code">ActionFilterResult</span> ExecuteAsync, it first binding parameter for each parameter of the controller's method (action), 
+                        and then invoking action filter, finally invoking action by using <span class="inline-code">ActionInvoker</span></p>
+                    <pre class="brush:cpp">
+        public async Task&lt;HttpResponseMessage> ExecuteAsync(CancellationToken cancellationToken){
+            // parameter binding
+            await _binding.ExecuteBindingAsync(_context, cancellationToken);
+            ActionInvoker actionInvoker = new ActionInvoker(_context, cancellationToken, _services);
+            if (_filters.Length == 0){
+                return await actionInvoker.InvokeActionAsync();
+            }
+            Func&lt;ActionInvoker, Task&lt;HttpResponseMessage>> invokeCallback = (innerInvoker) => innerInvoker.InvokeActionAsync();
+            return await InvokeActionWithActionFilters(_context, cancellationToken, _filters, invokeCallback, actionInvoker)();
+        }
+                    </pre>
+                </li>
+                <li>
                     <h4>IHttpControllerSelector</h4>
                     <p>ToDo inside</p>
                 </li>
-                <li>How does controller is discovered?</li>
-                <li>How does controller dispatcher works?<br>
-                    1). first initialized (without dependency injection)
-                    2). call method.
+                
+            </ol>
+        </div>
+    </div>
+    </li>
+    <li>
+
+    <div class="content" id="parameter_formatter">
+        <h3>Parameter Binding & Formatter</h3>
+        <p>Parameter binding rules define how to binding between http request and controller action's parameters. For example,
+            <br>
+            1). <span class="inline-code">FormatterParameterBinding</span> defines how to bind request body to a complex class object.<br>
+            2). You can define a customized binding rule that bind a parameter to one or more request headers.
+        </p>
+       
+        <div class="featureList">
+            <h4>Parameter Binding</h4>
+            <ol>
+                <li>
+                    <h4>Default Parameter Binding</h4>
+                    <pre class="brush:cpp">
+                            public class HttpConfiguration : IDisposable{
+                                public HttpConfiguration(HttpRouteCollection routes){
+                                    ParameterBindingRules = DefaultActionValueBinder.GetDefaultParameterBinders();
+                                }
+                            }
+                            public class DefaultActionValueBinder : IActionValueBinder{
+                                internal static ParameterBindingRulesCollection GetDefaultParameterBinders(){
+                                    ParameterBindingRulesCollection pb = new ParameterBindingRulesCollection();
+                                    pb.Add(typeof(CancellationToken), parameter => new CancellationTokenParameterBinding(parameter));
+                                    pb.Add(typeof(HttpRequestMessage), parameter => new HttpRequestParameterBinding(parameter));
+                                    // Warning binder for HttpContent.
+                                    pb.Add(parameter => typeof(HttpContent).IsAssignableFrom(parameter.ParameterType) ?
+                                                            parameter.BindAsError(Error.Format(SRResources.ParameterBindingIllegalType, parameter.ParameterType.Name, parameter.ParameterName))
+                                                            : null);
+                                    return pb;
+                                }
+                            }
+                    </pre>
+                    <p>ParameterBindingRulesCollection is a collection of <span style="color:red">func(HttpParameterDescriptor):HttpParameterBinding</span></p>
                 </li>
-                <li><h4>Parameter binding</h4></li>
+                <li>
+                    <h4>Function that determine to use which parameter binding</h4>
+                    <p>Parameter binding happens at the beginning of <span class="inline-code">IHttpActionResult.ExecuteAsync</span> by calling <span class="inline-code">HttpActionBinding.ExecuteBindingAsync</span>. But before executing the binding, a parameter binding rule (an instance of <span class="inline-code">HttpParameterBinding </span>) must be selected for each parameter.</p>
+                    <p>The rule is selected by the DefaultActionValueBinder. DefaultActionValueBinder is a service that implement IActionValueBinder, which only define a single method that acquires an action binding from an action descriptor. Inside the DefaultActionValueBinder, it iterate action descriptor's parameter descriptors and generate 
+                        corresponding parameter bindings by calling the core method <span class="inline-code">.GetParameterBinding</span>.
+                    </p>
+                    
+                    <pre class="brush:cpp">
+                            protected virtual HttpParameterBinding GetParameterBinding(HttpParameterDescriptor parameter)
+                            {
+                                // Attribute has the highest precedence
+                                // Presence of a model binder attribute overrides.
+                                ParameterBindingAttribute attr = parameter.ParameterBinderAttribute;
+                                if (attr != null){
+                                    return attr.GetBinding(parameter);
+                                }
+                                // No attribute, so lookup in global map.
+                                ParameterBindingRulesCollection pb = parameter.Configuration.ParameterBindingRules;
+                                if (pb != null){
+                                    HttpParameterBinding binding = pb.LookupBinding(parameter);
+                                    if (binding != null){
+                                        return binding;
+                                    }
+                                }
+                                // Not explicitly specified in global map or attribute.
+                                // Use a default policy to determine it. These are catch-all policies.
+                                Type type = parameter.ParameterType;
+                                if (TypeHelper.CanConvertFromString(type))
+                                {
+                                    // For simple types, the default is to look in URI. Exactly as if the parameter had a [FromUri] attribute.
+                                    return parameter.BindWithAttribute(new FromUriAttribute()); // ModelBinderParameterBinding
+                                }
+                    
+                                // Fallback. Must be a complex type. Default is to look in body. Exactly as if this type had a [FromBody] attribute.
+                                attr = new FromBodyAttribute();
+                                return attr.GetBinding(parameter); // return FormatterParameterBinding
+                            }
+                    </pre>
+                    <p>Inside the above method, it first try attribute > customized binding > url > body</p>
+                </li>
+                <li>
+                    <h4>Body binding <span class="inline-code">FormatterParameterBinding</span></h4>
+                    <p>Get http request body content, using content's extension method to select a formatter, and use the formatter to convert the body to a C# object.</p>
+                    <pre class="brush:cpp">
+                        public override Task ExecuteBindingAsync(ModelMetadataProvider metadataProvider, HttpActionContext actionContext, CancellationToken cancellationToken){
+                            // pseudo-code
+                            Type type = parameterDescriptor.ParameterType;
+                            HttpContent content = actionContext.ControllerContext.Request.Content;
+                            MediaTypeHeaderValue mediaType = content.Headers.ContentType ?? MediaTypeConstants.ApplicationOctetStreamMediaType;
+                            formatter = new MediaTypeFormatterCollection(formatters).FindReader(type, mediaType); // see below formatter.
+                            Stream stream = await content.ReadAsStreamAsync();
+                            object result = await formatter.ReadFromStreamAsync(type, stream, content, formatterLogger, cancellationToken);
+                            actionContext.ActionArguments[parameterDescriptor.ParameterName] = result;
+                        }
+                    </pre>
+                </li>
+                <li>
+                    <h4>Url binding <span class="inline-code">ModelBinderParameterBinding</span></h4>
+                    <p>ModelBinderParameterBinding's constructor</p>
+                    <pre class="brush:cpp">
+            public ModelBinderParameterBinding(HttpParameterDescriptor descriptor, IModelBinder modelBinder, IEnumerable&lt;ValueProviderFactory> valueProviderFactories)
+                    </pre>
+                    <p>IModelBinder is important, which defines method BindModel to convert http request to C# object.</p>
+                    <pre class="brush:cpp">
+    public interface IModelBinder{
+        bool BindModel(HttpActionContext actionContext, ModelBindingContext bindingContext);
+    }
+                    </pre>
+                    <p>
+                        ASP.NET has multiple implementations of this interface, the selection logic is inside the <span class="inline-code">ModelBinderAttribute</span></p>
+        <pre class="brush:cpp">
+                public class ModelBinderAttribute : ParameterBindingAttribute{
+                    public ModelBinderAttribute():this(null){}
+                    public ModelBinderAttribute(Type binderType){
+                        BinderType = binderType;
+                    }
+                    public IModelBinder GetModelBinder(HttpConfiguration configuration, Type modelType){
+                        if (BinderType == null){
+                            IEnumerable&lt;ModelBinderProvider> providers = configuration.Services.GetModelBinderProviders();
+                            ModelBinderProvider provider = CompositeModelBinderProvider(providers);
+                            return provider.GetBinder(configuration, modelType);
+                        }else{
+                            IModelBinder result = null;
+                            IDependencyResolver dr = configuration.DependencyResolver;
+                            result = dr.GetService(type) as IModelBinder;
+                            if (result == null){
+                                result = Activator.CreateInstance(type) as IModelBinder;
+                            }
+                            if (result != null){
+                                return result;
+                            }
+                            ModelBinderProvider provider = dr.GetService(type) as ModelBinderProvider;
+                            if (provider == null){
+                                provider = Activator.CreateInstance(type) as ModelBinderProvider;
+                            }
+                            return provider.GetBinder(configuration, modelType);
+                        }
+                    }
+        </pre>
+        <p>Developers can use the ModelBinderAttribute to designate a model binder or a model binder provider, or iterate all providers. If multiple providers existed, a CompositeModelBinderProvider that wraps all providers will be returned, 
+            if multiple binder existed, a CompositeModelBinder is returned</p>                    
+                </li>
+                <li>
+                    <h4>Customized binding (find binding rule accorinding to parameter type)</h4>
+                    <p><a href="https://docs.microsoft.com/en-us/aspnet/web-api/overview/formats-and-model-binding/parameter-binding-in-aspnet-web-api#httpparameterbinding" target="_blank">Example</a></p>
+                </li>
+            </ol>
+        </div>
+        <h4>Formatters</h4>
+         <p>
+            Formatters are two way formatting, from request body to C# object, from C# object to response body.<br>
+            They are helper classes for the <span class="inline-code">FormatterParameterBinding</span> to convert http request body to C# object.
+        </p>
+        <p> ASP.NET HttpConfiguration has default formatters: 
+            <br>
+            1). Json, 2). XML, 3). FormUrlEncoded + 4). JQueryMvcFormUrlEncoded
+        </p>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>HttpConfiguration default formatter</h4>
+                    <pre class="brush:cpp">
+                        public class HttpConfiguration : IDisposable{
+                            private readonly MediaTypeFormatterCollection _formatters;
+                            public HttpConfiguration(HttpRouteCollection routes){
+                                // ...
+                                _formatters = DefaultFormatters(this);
+                            }
+                            private static MediaTypeFormatterCollection DefaultFormatters(HttpConfiguration config)
+                            {
+                                var formatters = new MediaTypeFormatterCollection();
+                    
+                                // Basic FormUrlFormatter does not support binding to a T. 
+                                // Use our JQuery formatter instead.
+                                formatters.Add(new JQueryMvcFormUrlEncodedFormatter(config));
+                    
+                                return formatters;
+                            }
+                        }
+                        public class MediaTypeFormatterCollection : Collection&lt;MediaTypeFormatter>{
+                            public MediaTypeFormatterCollection(): this(CreateDefaultFormatters()){}
+                            public static IEnumerable&lt;MediaTypeFormatter> CreateDefaultFormatters(){
+                                return new MediaTypeFormatter[]{
+                                    new JsonMediaTypeFormatter(),
+                                    new XmlMediaTypeFormatter(),
+                                    new FormUrlEncodedMediaTypeFormatter()
+                                };
+                            }
+                        }
+                    </pre>
+                </li>
+                <li>
+                    <h4>Formatter is used inside the Controller's ExecuteAsync</h4>
+                    <p>After a controller dispatcher initialized a <span class="inline-code">IHttpController</span> object, it invokes the <span class="inline-code">.ExecuteAsync</span> method. Inside this method, the <span class="inline-code">SetSingle&lt;IHttpActionSelector>(new ApiControllerActionSelector());</span> is used to select 
+                    an action, which is represented by a <span class="inline-code">HttpActionDescriptor</span> object. The object also include lists of different kinds filters, these filters will be applied here. And an <span class="inline-code">ActionFilterResult (IHttpActionResult)</span> object will be returned after applying these filters.</p>
+                    <p>The <span class="inline-code">ActionFilterResult: IHttpActionResult</span>'s ExecuteAsync</p>
+                </li>
             </ol>
         </div>
     </div>
