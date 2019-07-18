@@ -2,12 +2,12 @@
 <!-- NewPage -->
 <html lang="en">
 <head>
-<title>&nbsp;</title>
+<title>JSON&nbsp;C# Newtonsoft.Json</title>
 <meta charset="utf-8">
-<meta name="date" content="2019-03-02">
-<meta name="keywords" content="">
-<meta name="keywords" content="">
-<meta name="keywords" content="">
+<meta name="date" content="2019-07-17">
+<meta name="keywords" content="json">
+<meta name="keywords" content="csharp">
+<meta name="keywords" content="newtonsoft.json">
 <link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
 <script type="text/javascript" src="../../script.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
@@ -34,14 +34,28 @@ SyntaxHighlighter.defaults['pad-line-numbers'] = false;
 SyntaxHighlighter.defaults['toolbar'] = false;
 SyntaxHighlighter.all()
 </script>
+<style>
+table {
+        border-collapse: collapse;
+      }
+      
+      table, th, td {
+        border: 1px solid black;
+      }
+      th,td{
+        padding:10px;
+      }
+</style>
+
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<strong>&nbsp;-&nbsp;</strong>
+<strong>C#&nbsp;-&nbsp;Newtonsoft.Json</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-03-02</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-03-02</span></p>
+<p class="date"><span class="created-date">Created:2019-07-17</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-07-17</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
+<li><a href="#example">Examples</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -51,7 +65,151 @@ SyntaxHighlighter.all()
 <li>
 <div class="content" id="intro">
 <h3>Introduction</h3>
+<p>Attribute & inheritance, missing fields. two way conversion</p>
+<p>Newtonsoft.Json is C# JSON serializer and deserializer library for .NET platform (including .NET Framework and .NET Core). Inside the implementation, it provides two layers of json handling class.
+    <br>At the top: <span class="inline-code">JsonCovert</span> is a simple wrapper that allows to convert JSON from object and string
+    <br>At the bottom: <span class="inline-code">JsonSerializer</span> allows to read/write json from/to stream, setup formatter converters, e.g. JavaScriptDateTimeConverter()
+</p>
+<p style="color:red">Serialization: from an object to a string, Deserialization: from a string to an object</p>
+<div class="featureList">
+    <ol>
+        <li>
+            <h4>Handler</h4>
+            <p>Handlers are used when encountering different conditions, e.g. 1). a field that is not defined in object but is given in json string, 2). how to handle date string.</p>
+            <p></p>
+        </li>
+        <li>
+            <h4>Default converting</h4>
+            <table>
+                <tr><th>C#</th><th>JSON</th></tr>
+                <tr><td>string, Type, Guid</td><td>string</td></tr>
+                <tr><td>Byte[]</td><td>string (base64 encoded)</td></tr>
+                <tr><td>DateTime</td><td>string</td></tr>
+                <tr><td>byte, int, float...</td><td>number</td></tr>
+                <tr><td>Enum</td><td>number</td></tr>
+                <tr><td>bool</td><td>boolean</td></tr>
+                <tr><td>IEnumerable (list, collection, array)</td><td>array</td></tr>
+                <tr><td>Dictionary, object</td><td>object</td></tr>
+            </table>
+        </li>
+        <li>
+            <h4>Serialization (from object to json)</h4>
+            <p>
+                1). Which field/Property should be serialized? Controlled by <span class="inline-code">JsonObjectAttribute</span>
+                <pre class="brush:cpp">
+    public enum MemberSerialization{
+        // All public fields/properties are serialized. Members can be excluded using JsonIgnoreAttribute
+        OptOut = 0, // default
+        // All public fields/properties marked with JsonPropertyAttribute are serialized
+        OptIn = 1,
+        // all public, private fields are serialized. Properties are also serialized with weired names.
+        Fields = 2
+    }
+    [JsonObject(MemberSerialization.OptOut)]
+    public class Person{ /*...*/}
+                </pre>
+            </p>
+            <p>
+                2). How to control the name of each field/property on json? The name is first controlled by <span class="inline-code">JsonProperty</span>, and then by the field/property name itself.
+            </p>
+            <p>JsonProperty indicates<br>
+                1). this field/properties should be include in JSON even if it isn't public, <br>
+                2). with assigning an optional name, <br>
+                3). with a customized JsonConverter, <br>
+                4). order in json <br>
+            </p>
+            <pre class="brush:cpp">
+                public class Person{
+                    public string LastName {get; set;}
+                    [JsonProperty("firstname", Order = 1)]
+                    public string FirstName;
+                }
+            </pre>
+            <pre class="brush:javascript">
+                {
+                    "LastName":"Qin",
+                    "firstname": "Nan"
+                }
+            </pre>
+            <p>3). Default value handling: when serializing, an object's field/property can be/not be ignored if it's value is the type's default value (e.g. null, 0). When deserializing set members to their default value if they don't exist in json.</p>
+            <pre class="brush:cpp">
+                public class Person{
+                    [JsonProperty("age", DefaultValueHandling = DefaultValueHandling.Ignore)] // ignore this field in json if it is 0.
+                    private int age = 0;
+                }
+            </pre>
+            <p>4). For complex inner field/property, we can define a customized json converter to handle it.</p>
+            <pre class="brush:cpp">
+                public class Person{
+                    [JsonConverter("job", typeof(JobJsonConverter))]
+                    public Job Job { get; set; }
+                }
+                public class Job{
+                    public string Location;
+                    public string Description;
+                }
+            </pre>
+        </li>
+        <li>
+            <h4>Deserialization (from json to object of a specific type)</h4>
+        
+        </li>
+        <li>
+            <h4>Customized JsonConverter</h4>
+            <p>Even though Newtonsoft.json can also be used to handle complex class, but sometime customized converter is still desired. A convert is a 2-way converting, and it needs to override <span class="inline-code">CanRead</span>
+            & <span class="inline-code">CanWrite</span> to indicate which direction it supports. A convert will inherit <span class="inline-code">JsonConverter</span></p>
+            <pre class="brush:cpp">
+    // json --- object
+    public abstract class JsonConverter{
+        protected JsonConverter();
+        public virtual bool CanRead { get; } // from json to object
+        public virtual bool CanWrite { get; } // from object to json
+        public abstract bool CanConvert(Type objectType);
+        public abstract object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer);
+        public abstract void WriteJson(JsonWriter writer, object value, JsonSerializer serializer);
+    }
+    // json --- object of a specific type
+    public abstract class JsonConverter&lt;T> : JsonConverter{
+        // read data from reader, and convert and return a T object 
+        public abstract T ReadJson(JsonReader reader, Type objectType, T existingValue, bool hasExistingValue, JsonSerializer serializer);
+        // convert value to json and write into writer.
+        public abstract void WriteJson(JsonWriter writer, T value, JsonSerializer serializer);
+    }
+
+            </pre>
+            <p>JsonReader and JsonWriter are abstract classes that handling json I/O. For example, <span class="inline-code">JObject.Load(reader)</span> read the data out and return a JObject object. <span class="inline-code">writer.WriteValue("1")</span> write data.</p>
+            <h4>Convert HttpRequest to a JObject</h4>
+            <pre class="brush:cpp">
+            // HttpResponseMessage response = 
+            var content = response.Content;
+            using (var contentStream = await content.ReadAsStreamAsync())
+            using (var streamReader = new StreamReader(contentStream))
+            using (var jsonReader = new JsonTextReader(streamReader))
+            {
+                return JObject.Load(jsonReader);
+            }
+            </pre>
+        </li>
+        <li>
+            <h4>JObject</h4>
+            <p>JObject </p>
+        </li>
+    </ol>
 </div>
+</div>
+</li>
+<li>
+    <div class="content" id="example">
+        <h3>Examples</h3>
+        <div class="featureList">
+            <ol>
+                <li><h4>Serialize C# Object to JSON string</h4></li>
+                <p>
+
+                </p>
+            </ol>
+        </div>
+    </div>
 </li>
 <li>
 <div class="content" id="reference">
