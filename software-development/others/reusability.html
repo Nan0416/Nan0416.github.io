@@ -1,0 +1,193 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>Others&nbsp;Code Reusability</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-07-19">
+<meta name="keywords" content="Code Reusability">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushPython.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushSql.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>Others&nbsp;-&nbsp;Code Reusability</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-07-19</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-07-20</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<!--<li><a href="#reference">References</a></li>-->
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+<p>Object Oriented Programming language provides features, e.g. inheritance, abstract class, private method, generic, to achieve code reusability.</p>
+<div class="featureList">
+    <ol>
+        <li>
+            <h4>Interface vs. Abstract class</h4>
+            <p>An interface defines a standard that separate the definition and implementation. Interface helps make unittest easier<br>
+                An abstract can extract the common tasks of a set of relevant class (e.g. different types of formatters).</p>
+            <p>Because an abstract class cannot be directly instantiated, it must have child classes. Therefore, difference from inheritance, abstract class provides a way <span style="color:red">(override)</span>that allows parent class to invoke child class defined methods.</p>
+
+            <pre class="brush:cpp">
+                    // C# example
+                    public class Program
+                    {
+                        static void Main(string[] args)
+                        {
+                            IFormatter formatter = new CommaCapitalFormatter();
+                            var value = formatter.Format(new string[] { "Nan", "Qin" });
+                            Console.WriteLine(value); // NAN,QIN,
+                        }
+                    }
+                    public interface IFormatter
+                    {
+                        string Format(string[] args);
+                    }
+                    public abstract class Formatter:IFormatter
+                    {
+                        public virtual string Convert(string text)
+                        {
+                            return text;
+                        }
+                        public abstract string Separator { get; }
+                        public string Format(string[] args)
+                        {
+                            var sb = new StringBuilder();
+                            foreach (var i in args)
+                            {
+                                sb.Append(Convert(i));
+                                sb.Append(Separator);
+                            }
+                            return sb.ToString();
+                        }
+                    }
+                    public class CommaCapitalFormatter: Formatter
+                    {
+                        public override string Convert(string text)
+                        {
+                            return text.ToUpper();
+                        }
+                        public override string Separator => ",";
+                    }
+            </pre>
+        </li>
+        <li>
+            <h4>Private method vs. Abstract class, vs. Individual helper (service) class</h4>
+            <p>If a functionality is only used inside a class, then it can be extracted as a private method.</p>
+            <p>If a functionality is used in a set of related classes that implements the same interface, then creating an abstract class.</p>
+            <p>If a functionality is used across different place, e.g. a database accessor, a logging tool, then they should be implemented as a separate class.</p>
+        </li>
+        <li>
+            <h4>When and how to use abstract classes</h4>
+            <p>Abstract shoulde be used when an interface (standard) has multiple implementations and these implementations have some common tasks. Then these common tasks should be extracted into the abstract class.</p>
+            <p>Moreover, abstract class may be used with <span style="color:red">Factory</span> design pattern.</p>
+            <pre class="brush:cpp">
+                    public enum FormatterType
+                    {
+                        Abstract,
+                        Comma,
+                        CommaCapital,
+                        Whitespace,
+                    }
+                    public interface IFactory&lt;TValue, TType>
+                    {
+                        TValue Get(TType type);
+                    }
+                    public class FormatterFactory: IFactory&lt;IFormatter, FormatterType>
+                    {
+                        // the collector can be replaced by dependency injection module.
+                        private Dictionary&lt;FormatterType, IFormatter> _collector;
+                        public FormatterFactory(): this(new Dictionary&lt;FormatterType, IFormatter>()) 
+                        { }
+                        public FormatterFactory(Dictionary&lt;FormatterType, IFormatter> collector)
+                        {
+                            _collector = collector;
+                        }
+                        public void Register(FormatterType type, IFormatter value)
+                        {
+                            _collector[type] = value;
+                        }
+                        public IFormatter Get(FormatterType type)
+                        {
+                            return _collector[type];
+                        }
+                    }
+                    public class Program
+                    {
+                        static void Main(string[] args)
+                        {
+                            var factory = new FormatterFactory();
+                            factory.Register(FormatterType.CommaCapital, new CommaCapitalFormatter());
+                            factory.Register(FormatterType.Whitespace, new WhitespaceFormatter());
+                            var value = factory.Get(FormatterType.Whitespace).Format(new string[] { "Nan", "Qin" });
+                            Console.WriteLine(value); // Nan Qin
+                            value = factory.Get(FormatterType.CommaCapital).Format(new string[] { "Nan", "Qin" });
+                            Console.WriteLine(value); // NAN,QIN,
+                        }
+                    }
+            </pre>
+        </li>
+        <li>
+            <h4>Generic</h4>
+            <p>Generic can be applied at any level, interface, abstract class, class, and method.</p>
+        </li>
+        <li>
+            <h4>Subclass of a concrete class</h4>
+            <p></p>
+        </li>
+        <li>
+            <h4>Extension methods (C# only)</h4>
+            <p>C# provides an extension method mechanism, which is an alternate subclass. It makes the methods look like defined by the original class.</p>
+        </li>
+    </ol>
+</div>
+</div>
+</li>
+<!--<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li></li>
+    </ol>
+</div>
+</div>
+</li>-->
+</ol>
+</div>
+    
+</body>
+</html>
