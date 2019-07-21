@@ -1,0 +1,34 @@
+consul
+When using consul as a service discovery tool, the node that runs the service also needs to run consul client,
+consul client is used to do health check, forward data to consul server.
+
+a service can be registered as a file (ask consul to load a file), or by using rest api
+a service then can be queried by consul's rest api or by querying its dns server.
+by rest api
+(rest api is on 8500)
+curl http://localhost:8500/v1/catalog/service/web
+
+by dns (consul's dns server is running at 8600 port locally)
+dig @127.0.0.1 -p 8600 web.service.consul
+
+consul also provide a web ui for easily configuring.
+(same as the rest api port)
+http://localhost:8500/ui
+
+# start an agent with 
+    ui (-ui), 
+    loading config from consul.d directory (-config-dir=./consul.d)
+    and a name (-node=node1, by default it use hostname, and the nodename is used in dns query. if hostname contains period, then it can cause failure.)
+
+consul agent -dev -ui -config-dir=./consul.d/ -node=node1
+
+consul also 
+SRV (DNS service record):
+
+
+
+
+consul
+1. multi data centers & multi nodes
+2. each node can have multiple services, and a service can have an optional health check
+3. the cluster can have key/value store for configuration, leader election.

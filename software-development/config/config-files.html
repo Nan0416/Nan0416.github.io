@@ -45,7 +45,7 @@ SyntaxHighlighter.all()
 <li><a href="#intro">Introduction</a></li>
 <li><a href="#environment">Environment Variables</a></li>
 <li><a href="#config-file">Config files</a></li>
-<li><a href="#reference">References</a></li>
+<!--<li><a href="#reference">References</a></li>-->
 </ul>
 </div>
 <hr>
@@ -194,6 +194,7 @@ SyntaxHighlighter.all()
                             &lt;/configSection> 
                         &lt;/configuration>
                     </pre>
+                    <p><span style="color:red">.NET Framework use sort of convention in configuration. For example, the machine.config is selected based on convention.</span></p>
                     <h4>app.config/web.config</h4>
                     <pre class="brush:xml">
 
@@ -319,15 +320,22 @@ SyntaxHighlighter.all()
         }
     }
                     </pre>
+                    <h4>App.Debug.Config</h4>
                 </li>
                 <li>
                     <h4>.NET Core</h4>
+                    <p>.NET Core provides a configuration tool <span class="inline-code">ConfigurationSource,Provider,Builder</span> to build configuration. The configuration builder itself does not use any convention. A console app by default 
+                        does not have configuration initialized, this tool has to be included manualy. In contrast, ASP.NET Core app by default has a <span style="color:red">appsettings.json</span>, and it has convention defined inside the <span class="inline-code">.CreateDefaultBuilder</span>
+                        <a href="https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-2.2#default-configuration" target="_blank">Check it here.</a>
+                    </p>
+
+                    <p>Configuration can come from a variety of sources, json, cmd arg, environment, xml file.</p>
                 </li>
             </ol>
         </div>
     </div>
 </li>
-<li>
+<!--<li>
 <div class="content" id="reference">
 <h3>References</h3>
 <div class="featureList">
@@ -336,7 +344,7 @@ SyntaxHighlighter.all()
     </ol>
 </div>
 </div>
-</li>
+</li>-->
 </ol>
 </div>
     
