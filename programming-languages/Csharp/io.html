@@ -43,6 +43,7 @@ SyntaxHighlighter.all()
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
+<li><a href="#memory">Memory</a></li>
 <li><a href="#file">File</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
@@ -57,11 +58,63 @@ SyntaxHighlighter.all()
 <div class="featureList">
     <ol>
         <li>File: In C#, file objects used to creating, deleting, get metadata about a file that stored in file systems. It is not designed to read/write data, instead, it can help create a <span class="inline-code">FileStream</span> object to read/write data.</li>
-        <li>Stream:</li>
+        <li>Stream: a stream is used to handle IO in <span style="color:red">byte[]</span>. The abstract class <span class="inline-code">Stream</span> does not define the underlying physical data source, but it defines common operations, such as read/write/seek/close/flush
+            <br>Concrete implemenation includes:<br>
+            <br>1).FileStream,
+            <br>2).MemeoryStream // Creates a stream whose backing store is memory.
+            <br>3).BufferedStream // Adds a buffering layer to read and write operations on another stream.
+            <br>4).NetworkStream // Provides the underlying stream of data for network access.
+            <br>5).PipeStream // supports both anonymous and named pipes.
+        </li>
+        <li>Reader/Writer: A stream is a stream of bytes (binary), a reader/writer is converter that decode/encode data. C# provides different kind of reader/writer, including
+            <br>1). StreamReader/StreamWriter: reading and writing characters by using an encoding value to convert the characters to and from bytes.
+            <br>2). StringReader/StringWriter: reading and writing characters to and from strings. <span style="color:red">StringReader directly read from a string, StringWriter can write string into an optional StringBuilder.</span>
+            <br>3). TextReader/TextWriter: serve as the abstract base classes for other readers and writers that read and write characters and strings, but not binary data. <span style="color:red">e.g. Json</span>
+        </li>
     </ol>
 </div>
 </div>
 </li>
+<li>
+    <div class="content" id="file">
+        <h3>File and File IO</h3>
+        <!--<div class="featureList">
+            <ol>
+                <li>
+                    <h4>File</h4>
+                </li>
+            </ol>
+        </div>
+        <br>-->
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>File Stream</h4>
+                    <pre class="brush:cpp">
+                        public class FileStream : System.IO.Stream{
+                            public FileStream (string path, System.IO.FileMode mode, System.IO.FileAccess access);
+                        }
+                    </pre>
+                </li>
+                <li>
+                    <h4>StreamWriter</h4>
+                    <pre class="brush:cpp">
+                        public class StreamWriter : System.IO.TextWriter{
+                            public StreamWriter (System.IO.Stream stream); // can be file stream, or other streams.
+                            public StreamWriter (string path); // opening a file stream with the path.
+                            public StreamWriter (System.IO.Stream stream, System.Text.Encoding encoding); // specify a encoding
+                        }
+                    </pre>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<!--<li>
+    <div class="content" id="memory">
+        <h3>Memory IO</h3>
+    </div>
+</li>-->
 <li>
 <div class="content" id="reference">
 <h3>References</h3>

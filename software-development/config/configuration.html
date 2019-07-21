@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>Configuration&nbsp;Configuration</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-07-01">
+<meta name="keywords" content="configuration">
+<meta name="keywords" content="software">
+<meta name="keywords" content="design">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushPython.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushSql.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>Configuration&nbsp;-&nbsp;Configuration</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-07-20</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-07-20</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<!--<li><a href="#reference">References</a></li>-->
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+<div class="featureList">
+    <ol>
+        <li>
+            <h4>Don't hardcode configuration inside code</h4>
+            <p>Configuration of an application includes the database's connection string, cloud service secret, service's address and so on. It is definitively a bad idea to hardcode these configuration inside code. Because <br>
+                <br>1). Differernt environments, development, qa, production, are using different configurations, e.g. database, service endpoints. So the code has to be modified before deploying.
+                <br>2). Even developing inside a single environment, modification of configuration will cause to rebuild the project. 
+            </p>
+        </li>
+        <li>
+            <h4>Store configuration inside configuration file.</h4>
+            <p>Create separate configuration file for each environment, e.g. app.prod.config, app.dev.config, and use <span style="color:red">environment variables</span> to select configuration files.</p>
+            <p>
+                + separate configuration and code.<br>
+                + make it easier for differnt projects to keep configuration consistent.<br>
+                - still a problem if two projects running at different systems (e.g. two linux machine) to have the same configuration. (modifying a configuration at one machine, have to also modify the another one.)<br>
+                - the configuration may be also pushed into remote git repo.
+            </p>
+        </li>
+        <li>
+            <h4>Use configuration as a separate service.</h4>
+            <p>Store the metadata (e.g. service's url, service's selection) in environment variable, and then ask configuration from the remote service.</p>
+            <p>+ solving the above local configuration file's problem.<br>
+                - more expensive in terms of code implementation and operating cost.<br>
+                - If the configuration service is dead, then the application is down.
+            </p>
+        </li>
+    </ol>
+</div>
+
+</div>
+</li>
+<!--<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li></li>
+    </ol>
+</div>
+</div>
+</li>-->
+</ol>
+</div>
+    
+</body>
+</html>

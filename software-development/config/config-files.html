@@ -1,0 +1,235 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>Configuration&nbsp;Local Config Files</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-07-20">
+<meta name="keywords" content="configuration">
+<meta name="keywords" content="config files">
+<meta name="keywords" content="local config">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushXml.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushSql.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>Configuration&nbsp;-&nbsp;Local Config Files</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-07-20</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-07-20</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#environment">Environment Variables</a></li>
+<li><a href="#config-file">Config files</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+<p></p>
+</div>
+</li>
+<li>
+    <div class="content" id="environment">
+        <h3>Environment Variables</h3>
+        <p>There are two kinds of environment variables in MacOS, Linux, and Windows, they are system-wide env and user env. These env are stored in a file. When starting a shell, the shell will read in these env. The filename for different shells are different.</p>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>MacOS bash shell (terminal)</h4>
+                    <p>
+                        System-wide env: /etc/profile<br>
+                        User env: ~/.bash_profile
+                    </p>
+                    <pre class="brush:bash">
+                        # print all env for the current user.
+                        printenv
+                        # print a specific variable name
+                        echo $ENV_NAME
+                        # set temporary env
+                        export ENV_NAME=Value
+                        # setup permanent variable
+                        # modify the bash_profile file.
+                    </pre>
+                </li>
+                <li>
+                    <h4>Windows Powershell</h4>
+                    <p>Windows environment can be permanently set by a GUI, search "environment variables" in Windows. There are two native Windows shell, cmd and Powershell. It seems like they are sharing the environment source.</p>
+                    <pre class="brush:bash">
+                        # powershell
+                        # print a variable
+                        $env:ENV_NAME
+                        # print all environment variables
+                        Get-ChildItem env:
+                        # set a temporary environment variable
+                        $env:ENV_NAME="value"
+                    </pre>
+                    <pre class="brush:bash">
+                        # cmd
+                        # print a variable
+                        echo %ENV_NAME%
+                        # print all environment variables
+                        set
+                        # set a temporary environment variable
+                        set ENV_NAME=Value
+                    </pre>
+                </li>
+                <li>
+                    <h4>Linux (Ubuntu)</h4>
+                    <p></p>
+                </li>
+            </ol>
+            <p>When a program is running, its process will inherit all the environment from its parent process, which is the shell that starts the program. Programming language's runtimes provide functions to access these environment variables.</p>
+            <div class="featureList">
+                <ol>
+                    <li>
+                        <h4>.NET Framework & .NET Core</h4>
+                        <pre class="brush:cpp">
+                                // run at macOS Mojave version 10.14.5
+                                class Program
+                                {
+                                    static void Main(string[] args)
+                                    {
+                                        Console.WriteLine(Environment.OSVersion.Platform); // Unix
+                                        Console.WriteLine(Environment.OSVersion.Version); // 18.6.0.0
+                                        Console.WriteLine(Environment.OSVersion.VersionString); // Unix 18.6.0.0
+                                        // return null if the environment is not found, does not throw exceptions.
+                                        Console.WriteLine(Environment.GetEnvironmentVariable("SHELL")); // /bin/bash
+                                    }
+                                }
+                                // run at Windows 10 Pro 1803 build
+                                class Program
+                                {
+                                    static void Main(string[] args)
+                                    {
+                                        Console.WriteLine(Environment.OSVersion.Platform); // Win32NT
+                                        Console.WriteLine(Environment.OSVersion.Version); // 6.2.9200.0
+                                        Console.WriteLine(Environment.OSVersion.VersionString); // Microsoft Windows NT 6.2.9200.0
+                                        // return null if the environment is not found, does not throw exceptions.
+                                        Console.WriteLine(Environment.GetEnvironmentVariable("SHELL")); // /bin/bash
+                                    }
+                                }
+                        </pre>
+                        <p>On Windows platform, .NET Framework also provides function to get environment from <span style="color:red">Windows operating system registry</span> except from the current process.</p>
+                        <pre class="brush:cpp">
+                                public static string GetEnvironmentVariable (string variable, EnvironmentVariableTarget target);
+                                public enum EnvironmentVariableTarget{
+                                    Process,
+                                    User, // windows only
+                                    Machine, // windows only
+                                }
+                        </pre>
+                    </li>
+                    <li>
+                        <h4>Java</h4>
+                        <pre class="brush:java">
+                            String value = System.getenv("JAVA_HOME");
+                            Map&lt;String, String> map = System.getenv();
+                        </pre>
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="config-file">
+        <h3>Config Files</h3>
+        <p>The feature of configuration file may be supported natively by framework or by 3rd party library.</p>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>.NET Framework</h4>
+                    <p>.NET Framework (Windows only) natively supports config file, it provides 2 layer of configurations, machine level machine.config and application level app.config or web.config.<br>
+                        app.config: used by console app, windows service, windows form, and WPF applications.<br>
+                        web.config: used by asp.net framework application.<br>
+                    </p>
+                    <p>.NET config file is in XML format. Configuration in this file is grouped in section, e.g. appSettings, startup, connectionStrings, runtime, and so on, each section has a handler class to anaylze them. The metadata about each section is defined in the 
+                        <span style="color:red">configSection</span> section. Machine level config file provides some metadata about these common used sections e.g. appSettings, but developers can still add more metadata in application level config file. 
+                    </p>
+                    <p class="reference-box">
+                        The configuration system completely parses configuration files to collect configuration information and throws exceptions when it encounters configuration sections that do not have a corresponding entry in the configSections section.
+                    </p>
+                    <h4>machine.config</h4>
+                    <pre class="brush:xml">
+                        &lt;?xml version="1.0" encoding="UTF-8"?>
+                        &lt;configuration>
+                            &lt;configSection>
+                                &lt;!--This section define metadata (name, how to resolve) about other sections, machine.config defines lots here.-->
+                                &lt;section name="appSettings" type="System.Configuration.AppSettingsSection, System.Cofiguration, Version=4.0.0.0, Culture=netural, PublicKeyToken=...." restartOnExternalChanges="false" requirePermission="false"/>
+                                &lt;!--For appSetttings section, we should use SystemConfiguration.AppSettingsSection class to resolve, the assembly is System.Cofiguration, Version=4.0.0.0, Culture=netural, PublicKeyToken=....-->
+                                &lt;section name="connectionStrings" type="System.Configuration.ConnectionStringsSection, System.Cofiguration, Version=4.0.0.0, Culture=netural, PublicKeyToken=...." requirePermission="false"/>
+                                &lt;!--IgnoreSection indicate this section is not handled by the configuration system.-->
+                                &lt;section name="mscorlib" type="System.Configuration.IgnoreSection, System.Cofiguration, Version=4.0.0.0, Culture=netural, PublicKeyToken=...." allowLocation="false" />
+                                ...
+                            &lt;/configSection> 
+                        &lt;/configuration>
+                    </pre>
+                    <h4>app.config/web.config</h4>
+                    <pre class="brush:xml">
+
+                        &lt;configuration>
+                            &lt;startup>
+                                &lt;supportedRuntime version="4.0" sku=".NETFramework,Version=v4.6.1"/>
+                            &lt;/startup>
+                            &lt;appSettings>
+                                &lt;add key="MaxQueueSize" value="2"/>
+                            &lt;/appSettings>
+                            &lt;connectionStrings>
+                                &lt;add name="MonitorDB" connectionStrings="...."/>
+                            &lt;/connectionStrings>
+                        &lt;/configuration>
+                    </pre>
+                    <p>The application level config have application data and CLR (runtime) data, e.g. startup, assembly binding.</p>
+                    
+                </li>
+                <li>
+                    <h4>.NET Core</h4>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>
