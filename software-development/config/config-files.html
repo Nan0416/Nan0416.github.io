@@ -172,6 +172,7 @@ SyntaxHighlighter.all()
                         app.config: used by console app, windows service, windows form, and WPF applications.<br>
                         web.config: used by asp.net framework application.<br>
                     </p>
+                    <p>When the application is built, the application level config is also copied to the /bin. And runtime will use the copied config.</p>
                     <p>.NET config file is in XML format. Configuration in this file is grouped in section, e.g. appSettings, startup, connectionStrings, runtime, and so on, each section has a handler class to anaylze them. The metadata about each section is defined in the 
                         <span style="color:red">configSection</span> section. Machine level config file provides some metadata about these common used sections e.g. appSettings, but developers can still add more metadata in application level config file. 
                     </p>
@@ -209,7 +210,115 @@ SyntaxHighlighter.all()
                         &lt;/configuration>
                     </pre>
                     <p>The application level config have application data and CLR (runtime) data, e.g. startup, assembly binding.</p>
-                    
+                    <pre class="brush:cpp">
+    // System.Configuration namespace is not included by default, so add its reference before using.
+    public static class ConfigurationManager
+    {
+        public static NameValueCollection AppSettings { get; }
+        public static ConnectionStringSettingsCollection ConnectionStrings { get; }
+
+        public static object GetSection(string sectionName);
+        // userLevel: The System.Configuration.ConfigurationUserLevel for which you are opening the configuration.
+        public static Configuration OpenExeConfiguration(ConfigurationUserLevel userLevel);
+        // Opens the specified client configuration file as a System.Configuration.Configuration object.
+        public static Configuration OpenExeConfiguration(string exePath);
+        public static Configuration OpenMachineConfiguration();
+        public static Configuration OpenMappedExeConfiguration(ExeConfigurationFileMap fileMap, ConfigurationUserLevel userLevel);
+        public static Configuration OpenMappedExeConfiguration(ExeConfigurationFileMap fileMap, ConfigurationUserLevel userLevel, bool preLoad);
+        public static Configuration OpenMappedMachineConfiguration(ConfigurationFileMap fileMap);
+        
+        // Refreshes the named section so the next time that it is retrieved it will be re-read from disk.
+        public static void RefreshSection(string sectionName);
+    }
+
+    public sealed class Configuration
+    {
+        public string FilePath { get; }
+        // Specifies a function delegate that is used to transform type strings in configuration files.
+        public Func&lt;string, string> TypeStringTransformer { get; set; }
+        // Gets or sets a value indicating whether the configuration file has an XML namespace.
+        public bool NamespaceDeclared { get; set; }
+        // Gets a collection of the section groups defined by this configuration.
+        public ConfigurationSectionGroupCollection SectionGroups { get; }
+        // Gets a collection of the sections defined by this System.Configuration.Configuration object.
+        public ConfigurationSectionCollection Sections { get; }
+        public ConfigurationSectionGroup RootSectionGroup { get; }
+        public ContextInformation EvaluationContext { get; }
+        public ConfigurationLocationCollection Locations { get; }
+
+        public bool HasFile { get; }
+        public Func&lt;string, string> AssemblyStringTransformer { get; set; }
+        public FrameworkName TargetFramework { get; set; }
+        //     Gets the System.Configuration.AppSettingsSection object configuration section
+        //     that applies to this System.Configuration.Configuration object.
+        public AppSettingsSection AppSettings { get; }
+        //     Gets a System.Configuration.ConnectionStringsSection configuration-section object
+        //     that applies to this System.Configuration.Configuration object.
+        public ConnectionStringsSection ConnectionStrings { get; }
+        public ConfigurationSection GetSection(string sectionName);
+        public ConfigurationSectionGroup GetSectionGroup(string sectionGroupName);
+        //     Writes the configuration settings contained within this System.Configuration.Configuration
+        //     object to the current XML configuration file.
+        public void Save(ConfigurationSaveMode saveMode, bool forceSaveAll);
+        public void Save(ConfigurationSaveMode saveMode);
+        public void Save();
+        //     Writes the configuration settings contained within this System.Configuration.Configuration
+        //     object to the specified XML configuration file.
+        public void SaveAs(string filename, ConfigurationSaveMode saveMode, bool forceSaveAll);
+        public void SaveAs(string filename, ConfigurationSaveMode saveMode);
+        public void SaveAs(string filename);
+    }
+
+    public sealed class AppSettingsSection : ConfigurationSection
+    {
+        public AppSettingsSection();
+        public KeyValueConfigurationCollection Settings { get; }
+        // Gets or sets a configuration file that provides additional settings or overrides the settings specified in the appSettings element.
+        public string File { get; set; }
+        protected internal override ConfigurationPropertyCollection Properties { get; }
+
+        protected internal override void DeserializeElement(XmlReader reader, bool serializeCollectionKey);
+        protected internal override object GetRuntimeObject();
+        protected internal override bool IsModified();
+        protected internal override void Reset(ConfigurationElement parentSection);
+        protected internal override string SerializeSection(ConfigurationElement parentElement, string name, ConfigurationSaveMode saveMode);
+    }
+                    </pre>
+                    <h4>AppSettings allow to add new setting at runtime.</h4>
+                    <p><span style="color:red">*** you may need to copy the new .config files to the debug bin directory.***</span></p>
+                    <pre class="brush:cpp">
+    public class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine(Environment.CurrentDirectory); // makes sure the new .config files are copied to this directory
+            Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            Console.WriteLine(config.FilePath);
+            AppSettingsSection appSettings = config.AppSettings;
+            Console.WriteLine("{0}, {1}", appSettings.Settings["Name"].Key, appSettings.Settings["Name"].Value); // get from the default App.config file.
+            // add two new appSettings
+
+            /*
+                &lt;appSettings>
+                    &lt;add key="Phone" value="iPhone"/>
+                &lt;/appSettings>
+            */
+            appSettings.File = "MyApp.config";
+            config.Save(ConfigurationSaveMode.Modified);
+            appSettings.File = "MyAppSecret.config";
+            config.Save(ConfigurationSaveMode.Modified);
+            ConfigurationManager.RefreshSection("appSettings");
+
+            config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            appSettings = (AppSettingsSection)config.GetSection("appSettings");
+
+            Console.WriteLine(appSettings.Settings.Count);
+            var phone = ConfigurationManager.AppSettings["Phone"];
+            var secret = ConfigurationManager.AppSettings["Secret"];
+            Console.WriteLine("{0} {1}", phone, secret);
+        }
+    }
+                    </pre>
                 </li>
                 <li>
                     <h4>.NET Core</h4>
