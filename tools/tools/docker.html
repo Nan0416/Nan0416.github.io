@@ -44,7 +44,7 @@ SyntaxHighlighter.all()
 <li><a href="#container">Container</a></li>
 <li><a href="#network">Network</a></li>
 <li><a href="#gui">GUI</a></li>
-<li><a href="#image">Image</a></li>
+<li><a href="#dockerfile">Dockerfile</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -75,12 +75,13 @@ SyntaxHighlighter.all()
 <p>There are three versions of docker today (2018.10.10), Docker CE (Community Edition), EE (Enterprise Edition) and Customized Edition.
     <br>Install Docker CE on Ubuntu, go <a href="https://docs.docker.com/install/linux/docker-ce/ubuntu/#uninstall-old-versions" target="_blank">here</a>.</p>
 <h4>Docker workflow</h4>
-        <pre>
-                |
-            (docker pull)
-                | 
-                v
-    ============================= images [.iso] =============================== --> docker image rm 
+    <pre>
+            dockerfile      remote repo
+                |             |
+        (docker build)   (docker pull)
+                |             |
+                v             v
+    =============================local  images [.iso] =============================== --> docker image rm 
                 |                                       ^
 (docker create --name CONTAINER_NAME IMAGE)             |
                 |                          (docker commit CONTAINER_NAME IMAGE)
@@ -107,7 +108,7 @@ SyntaxHighlighter.all()
                     <br>
                     --env environment_variable      # JAVA_HOME=/usr/bin/java
                     <br>
-                    -p container_port:host_port # network port mapping (NAT)
+                    -p host_port:container_port # network port mapping (NAT)
                     <br>IMAGE: image name is contrusted by REPO:TAG
                 </li>
                 <li><span style="font-weight: bold">docker container ls -a</span>: list all containers. Without -a, only list the running container</li>
@@ -156,6 +157,11 @@ SyntaxHighlighter.all()
                     $docker network rm my-bridge
                 </pre>
                 </li>
+                <li>
+                    <h4>Facts & Practices</h4>
+                    <p>1). Practice: If the host want access docker's resource via network, then we should configure it by using port mapping and then use "localhost" to access the docker container's resource. We cannot directly use container's ip to access its resource.</p>
+                    <p>2). Fact: the communication between containers is not restricted by the above rule, and container can access host's resources.</p>
+                </li>
             </ol>
         </div>
     </div>
@@ -178,12 +184,77 @@ SyntaxHighlighter.all()
     </div>
 </li>
 <li>
+    <div class="content" id="dockerfile">
+        <h3>Dockerfile</h3>
+        <p>A docker file is a set of instructions that instructs docker to create the docker container. Inside the docker file, it have a base docker image (e.g. a ubuntu), it can set environment variables, run command to add new users, create directory, expose ports, and setup default cmd when starting a container.</p>
+        <p>Exampe of a dockerfile: consul dockerfile <a href="https://github.com/hashicorp/docker-consul/blob/c4d239035589dc12fe82fc8550766faf7ec4961d/0.X/Dockerfile">Here</a></p>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <P>COPY: copy files from host file system to container file system.</P>
+                </li>
+                <li>
+                    <p>ENTRYPOINT ["executable", "param1", "param2"], the executable will run when starting the container via <span style="color:red">docker run</span> or <span style="color:red">docker start</span>. To override the default behavior, do</p>
+                    <pre class="brush:bash">
+                        # start a bin/myscript.sh when running the the image.
+                        docker run --entrypoint="/bin/myscript.sh" IMAGE
+                        docker creat --entrypoint="/bin/myscript.sh" IMAGE
+                    </p>
+                </li>
+                <li>
+                    <p>CMD: when the dockerfile has a ENTRYPOINT definition, then the CMD's value is used as ENTRYPOINT's argument, otherwise, CMD's value will be treated as a command to executed.</p>
+                    <p>The CMD can be overriden by providing cmd in <span style="color:red">docker run</span> or <span style="color:red">docker start</span>.</p>
+                    <pre class="brush:bash">
+                            # docker create [OPTIONS] IMAGE [COMMAND] [ARG...]
+                            # docker run [OPTIONS] IMAGE [COMMAND] [ARG...]
+                    </pre>
+                </li>
+                <li>
+                    <p>
+                        WORKDIR: sets the working directory for any RUN, CMD, ENTRYPOINT, COPY and ADD instructions that follow it in the Dockerfile
+                    </p>
+                </li>
+                <li>
+                    <p>RUN: run a linux cmd with /bin/sh in the current directory.</p>
+                    <pre class="brush:bash">
+                        RUN adduser -u 1000 -D -g app app app
+                        # create a user called app with uid=1000, group = app
+                    </p>
+                </li>
+                <li>
+                    <p>USER: sets the user name (or UID) and optionally the user group (or GID) to use when running the image and for any RUN, CMD and ENTRYPOINT instructions that follow it in the Dockerfil</p>
+                </li>
+            </ol>
+        </div>
+        <p>After having a dockerfile, docker build can be used to build the dockerfile and generate a docker image in local docker repo.</p>
+        <div class="featureList">
+            <ol>
+                <li>When build a dockerfile, docker cli will start a docker deamon to do this job.</li>
+                <li>Practice: putting the dockerfile and all necessary files (e.g. by COPY instruction) in an empty directory. Because all the file in the working directory will be copied to docker deamon.</li>
+                <li>Add .dockerignore to ignore some files that should not be copied into the docker deamon.</li>
+                <li>
+                    docker build .
+                    <pre class="brush:bash">
+                        # docker build [options] PATH | URL | -
+                        # a docker file can comes from local fs, a remote url, or stdin
+                        docker build --tag 'myimage:2.2' --file ./dockerfile
+                        # default --file = PATH/dockerfile
+                        docker build .
+                    </pre>
+                </li>
+            </ol>
+        </div>
+
+    </div>
+</li>
+<li>
 <div class="content" id="reference">
 <h3>References</h3>
 <div class="featureList">
     <ol>
         <li><a href="https://stackoverflow.com/questions/31237663/os-containers-isolation-vs-process-isolation" target="_blank">Container vs. Process</a></li>
         <li><a href="https://developer.ibm.com/recipes/tutorials/networking-your-docker-containers-using-docker0-bridge/" target="_blank">Networking your docker containers using docker0 bridge</a></li>
+        <li><a href="https://docs.docker.com/engine/reference/builder/" target="_blank">Dockerfile reference</a></li>
     </ol>
 </div>
 </div>

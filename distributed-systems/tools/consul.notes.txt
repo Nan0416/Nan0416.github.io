@@ -32,3 +32,44 @@ consul
 1. multi data centers & multi nodes
 2. each node can have multiple services, and a service can have an optional health check
 3. the cluster can have key/value store for configuration, leader election.
+
+
+using docker
+1. pull image
+docker pull consul
+2. create container with port mapping
+ docker create --name consul-1 -p 8500:8501 consul
+3. start container
+docker start consul-1
+4. exec cmd
+docker exec consul-1 
+or enter the bash # consul docker is based on alpine linux, it does not comes with bash, instead, it has sh.
+docker exec -it consul-1 sh
+# if you are using windows with git bash, you may need add 'winpty'
+winpty docker exec -it consul-1 sh
+
+https://www.consul.io/docs/install/bootstrapping.html
+docker run -d --name=consul-1 -p 8501:8500 consul agent -dev -client=0.0.0.0 -bind=0.0.0.0 -ui -node=node1  # consul-1's ip is 172.17.0.2
+docker run -d --name=consul-2 -p 8502:8500 consul agent -dev -client=0.0.0.0 -bind=0.0.0.0 -join=172.17.0.2 -ui -node=node2
+docker run -d --name=consul-3 -p 8503:8500 consul agent -dev -client=0.0.0.0 -bind=0.0.0.0 -join=172.17.0.2 -ui -node=node3
+
+manually join
+
+#client mode
+docker create --name=consul-client-3 -p 8603:8500 consul agent -dev -server=false -client=0.0.0.0 -bind=0.0.0.0 -join=172.17.0.2 -ui -node=client3
+
+consul agent -dev -ui -node=node4 -join=172.17.0.2 -bind=0.0.0.0 -client=0.0.0.0
+
+consul
+-client is used for client access (e.g. restful api)
+-bind is used for inter-agent (client and server) communication. 
+
+So if the bind is set 127.0.0.1, other server will cannot reach it, but this server can reach other server.
+
+Both server and client provide rest api, dns to outside and do health check, but server also stores data, client only forward query to server.
+
+
+
+
+Consul is a distributed system that provides services of service discovery and key/value store.
+It support cross data center deployment.

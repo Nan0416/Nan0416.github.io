@@ -354,7 +354,7 @@ SyntaxHighlighter.all()
                         In Asp.Net, the resolver is bound to httpconfiguration config, and config is bound to request. ControllerDispatcher used DefaultHttpControllerActivator to create controller.
                     </p>
                     <pre class="brush:cpp">
-        private static IHttpController GetInstanceOrActivator(HttpRequestMessage request, Type controllerType, out Func<IHttpController> activator)
+        private static IHttpController GetInstanceOrActivator(HttpRequestMessage request, Type controllerType, out Func&lt;IHttpController> activator)
         {
             Contract.Assert(request != null);
             Contract.Assert(controllerType != null);

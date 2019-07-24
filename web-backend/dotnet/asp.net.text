@@ -228,3 +228,29 @@ A formatter is selected based on its supported types (controller action's parame
     }
 
 ===============================================
+
+asp.net core
+dependency injection
+middleware
+special middleware: routing + controllers
+
+
+asp.net core dependency injection
+framework-provided service https://docs.microsoft.com/en-us/aspnet/core/fundamentals/dependency-injection?view=aspnetcore-2.2#framework-provided-services
+asp.net core provides a built-in dependency injection
+// Microsoft.Extensions.DependencyInjection.Abstractions.dll
+namespace Microsoft.Extensions.DependencyInjection{
+    public interface IServiceCollection : IList<ServiceDescriptor>, ICollection<ServiceDescriptor>, IEnumerable<ServiceDescriptor>, IEnumerable{}
+    Extension on IServiceCollection{
+        AddScoped<IMyDependency, MyDependency>(); // pre request
+        AddTransient<IOperationTransient, Operation>(); // pre access
+        AddSingleton(IServiceCollection, Type)
+        AddSingleton(IServiceCollection, Type, Object)
+    }
+    public class ServiceCollection{
+        Insert(Int32, ServiceDescriptor)
+    }
+}
+public interface IServiceProvider{
+    GetService(Type)
+}

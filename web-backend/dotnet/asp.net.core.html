@@ -1,0 +1,273 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>ASP.NET&nbsp;ASP.NET Core</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-07-23">
+<meta name="keywords" content="asp.net">
+<meta name="keywords" content="asp.net core">
+<meta name="keywords" content="backend">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushPython.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushSql.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>ASP.NET&nbsp;-&nbsp;ASP.NET Core</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-07-23</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-07-23</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#config">Configuration</a></li>
+<li><a href="#service">Service</a></li>
+<li><a href="#controller">Controller</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+<p>Asp.Net Core</p>
+</div>
+</li>
+<li>
+    <div class="content" id="config">
+        <h3>Configuration</h3>
+        <p>ASP.NET Core has two configuration instances, host configuration and app configuration. When creating a host with <span class="inline-code">.CreateDefaultBuilder</span>, it add default config sources to the two instances.</p>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <p>App configuration is through "IConfigurationBuilder" and "IConfiguration". *** ASP.NET used a lot of builder pattern based on C# extension.*** 
+                        IConfigurationBuilder can take a variety of sources, such as .json files, .xml files, environment variables, and command-line arguments. Moreover, it can even listen the change on configuration files.
+                        <a href="http://localhost:8000/software-development/config/config-files.html#dotnet-core">Check .net core configuration builder</a></p>
+                </li>
+                <li>
+                    <h4>Host configuration</h4>
+                    <p>Host configuration instance is a type of <span class="inline-code">WebHostBuilderContext</span>, the default behavior is to <br>
+                        1). add environment variables with prefix <span style="color:red">ASPNETCORE_</span> and cmd line args to <span style="color:red">Configuration</span>
+                        <br>2). add <span style="color:red">ASPNETCORE_ENVIRONMENT</span> or <span style="color:red">environment</span>'s value to the IHostingEnvironment.
+                    </p>
+                    <pre class="brush:cpp">
+        public class WebHostBuilderContext{
+            public WebHostBuilderContext();
+            public IHostingEnvironment HostingEnvironment { get; set; }
+            public IConfiguration Configuration { get; set; }
+        }
+
+        public interface IHostingEnvironment{
+            // The host automatically sets this property to the value of the "ASPNETCORE_ENVIRONMENT" environment variable, or "environment"
+            // as specified in any other configuration source.
+            string EnvironmentName { get; set; }
+            
+            // Gets or sets the name of the application. This property is automatically set by the host to the assembly containing the application entry point.
+            string ApplicationName { get; set; }
+            
+            // Gets or sets the absolute path to the directory that contains the web-servable application content files.
+            string WebRootPath { get; set; }
+
+            IFileProvider WebRootFileProvider { get; set; }
+            // Gets or sets the absolute path to the directory that contains the application content files.
+            string ContentRootPath { get; set; }
+            IFileProvider ContentRootFileProvider { get; set; }
+        }
+                    </pre>
+                    <p>The instance of <span class="inline-code">IHostingEnvironment</span> can be acquried in <span style="color:red">Startup</span> class's constructor.</p>
+                </li>
+                <li>
+                    <h4>App Configuration</h4>
+                    <p>App configuration's <span style="color:red">IConfiguration</span> instance can be accessed in <span style="color:red">Startup</span>'s constructor. By default, it has values from</p>
+                    <pre class="brush:bash">
+                         appsettings.json, 
+                         appsettings.{environment}.json, 
+                         cmd line, 
+                         secret manager, 
+                         environment variables.
+                    </pre>
+                    <p><a href="http://localhost:8000/web-backend/dotnet/host.html#appconfig">Reference.</a></p>
+                </li>
+                <li>
+                    <h4>Customized configuration</h4>
+                    <p>Other configuration source can be added in the <span style="color:red">Program's main</span> when building the host.</p>
+                    <pre class="brush:cpp">
+                            WebHost.CreateDefaultBuilder(args)
+                            .ConfigureAppConfiguration(configBuilder => configBuilder.AddJsonFile("config/secretsss.json", optional: true, reloadOnChange: true))
+                            .ConfigureAppConfiguration((hostingContext, configBuilder) =>
+                            {
+                                configBuilder.SetBasePath(Directory.GetCurrentDirectory());
+                                configBuilder.AddEnvironmentVariables(prefix:"qinnan_");
+                                configBuilder.AddInMemoryCollection(arrayDict);
+                                configBuilder.AddJsonFile("json_array.json", optional: false, reloadOnChange: false);
+                                configBuilder.AddJsonFile("starship.json", optional: false, reloadOnChange: false);
+                                configBuilder.AddXmlFile("tvshow.xml", optional: false, reloadOnChange: false);
+                                configBuilder.AddEFConfiguration(options => options.UseInMemoryDatabase("InMemoryDb"));
+                            })
+                            .UseStartup&lt;Startup>();
+                    </pre>
+                    <p style="color:red">*** ASP.NET Core provides a easy to setup environment variable by using the launchSetting.json file.****</p>
+                </li>
+                <li>
+                    <h4>Where is configuration configured?</h4>
+                    <p>configuration can be added via IWebHostBuilder's extension method.</p>
+                    <pre class="brush:cpp">
+                        public static class WebHostBuilderExtensions{
+                            public static IWebHostBuilder ConfigureAppConfiguration(this IWebHostBuilder hostBuilder, Action&lt;IConfigurationBuilder> configureDelegate){
+                                return hostBuilder.ConfigureAppConfiguration((context, builder) => configureDelegate(builder));
+                            }
+                        }
+                    </pre>
+                    <p>It internally invokes IWebHostBuilder's ConfigureAppConfiguration method, in WebHostBuilder implementation, it appends the delegate to a list, which is a class member.</p>
+                    <pre class="brush:cpp">
+                        public class WebHostBuilder : IWebHostBuilder{
+                            public IWebHostBuilder ConfigureAppConfiguration(Action&lt;WebHostBuilderContext, IConfigurationBuilder> configureDelegate){
+                                _configureAppConfigurationBuilderDelegates.Add(configureDelegate);
+                                return this;
+                            }
+                        }
+                    </pre>
+                    <p>When building the IWebHostBuilder, these appended delegate will be called and all configuration will be applied to a configuration builder. Finally, the configuration builder is built, and register to the service collection.</p>
+                    <pre class="brush:cpp">
+                        public class WebHostBuilder : IWebHostBuilder{
+                            public IWebHost Build(){
+                                var hostingServices = BuildCommonServices(out var hostingStartupErrors);
+                                // ...
+                            }
+                            private IServiceCollection BuildCommonServices(out AggregateException hostingStartupErrors){
+                                var builder = new ConfigurationBuilder()
+                                    .SetBasePath(_hostingEnvironment.ContentRootPath)
+                                    .AddConfiguration(_config);
+                                foreach (var configureAppConfiguration in _configureAppConfigurationBuilderDelegates){
+                                    configureAppConfiguration(_context, builder);
+                                }
+                                var configuration = builder.Build();
+                                services.AddSingleton&lt;IConfiguration>(configuration);
+                            }
+                        }
+                    </pre>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="service">
+        <h3>Service</h3>
+        <p>Different from asp.net framework that uses 3rd party dependency injection framework, asp.net core natively support dependency injection. <span style="color:red">Microsoft.Extensions.DependencyInjection</span></p>
+        <p>The container of service is <span class='inline-code'>IServiceCollection</span>, it provides three scopes: <br>
+        1). Transient<br>
+        2). Scoped (same as pre request)<br>
+        3). Singleton 
+        </p>
+        <div class="featureList">
+            <ol>
+                <li>
+                    
+                    https://github.com/aspnet/AspNetCore/blob/v2.2.2/src/Hosting/Hosting/src/WebHostBuilder.cs#L224
+                </li>
+                <li>
+                    <h4>User defined services are inside the <span style="color:red">Startup.ConfigureServices</span></h4>
+                    <h4>Host defined services</h4>
+                    <p>When calling CreateDefaultBuilder, a WebHostBuilder() is created with host and initial configuration source setup</p>
+                    <pre class="brush:cpp">
+                            public static IWebHostBuilder CreateDefaultBuilder(string[] args)
+                            {
+                                var builder = new WebHostBuilder()
+                                .UseKestrel()
+                                .ConfigureAppConfiguration((hostingContext, config) =>{
+                                    // ...
+                                }
+                                ...
+                                return builder;
+                            }
+                    </pre>
+                    <p>The builder has </p>
+                    <p>The builder has an extension method <span style="color:red">.UseStartup&lt;T></span><a href="https://github.com/aspnet/AspNetCore/blob/v2.2.2/src/Hosting/Hosting/src/WebHostBuilderExtensions.cs#L50">[Source]</a>, which append this startup as a 
+                        service to <span style="color:red">host</span>service collections.</p>
+                    <pre class="brush:cpp">
+                            // add startup class as a singleton to service collections.
+                            public static IWebHostBuilder UseStartup&lt;TStartup>(this IWebHostBuilder hostBuilder) where TStartup : class{
+                                return hostBuilder.UseStartup(typeof(TStartup));
+                            }
+                            public static IWebHostBuilder UseStartup(this IWebHostBuilder hostBuilder, Type startupType)
+                            {
+                                var startupAssemblyName = startupType.GetTypeInfo().Assembly.GetName().Name;
+                    
+                                return hostBuilder
+                                    .UseSetting(WebHostDefaults.ApplicationKey, startupAssemblyName)
+                                    .ConfigureServices(services =>
+                                    {
+                                        if (typeof(IStartup).GetTypeInfo().IsAssignableFrom(startupType.GetTypeInfo()))
+                                        {
+                                            services.AddSingleton(typeof(IStartup), startupType);
+                                        }
+                                        else
+                                        {
+                                            services.AddSingleton(typeof(IStartup), sp =>
+                                            {
+                                                var hostingEnvironment = sp.GetRequiredService&lt;IHostingEnvironment>();
+                                                return new ConventionBasedStartup(StartupLoader.LoadMethods(sp, startupType, hostingEnvironment.EnvironmentName));
+                                            });
+                                        }
+                                    });
+                            }
+
+                            public IWebHostBuilder ConfigureServices(Action&lt;WebHostBuilderContext, IServiceCollection> configureServices){
+                                _configureServices += configureServices;
+                                return this;
+                            }
+                    </pre>
+                    <p>When calling <span style="color:red">WebHostBuilder.build</span>, it will add some default services and the "startup" to a service collection.</p>
+                    <pre class="brush:cpp">
+                        public IWebHost Build(){
+                            var hostingServices = BuildCommonServices(out var hostingStartupErrors);
+                        }
+                    </pre>
+
+                </li>
+            </ol>
+        </div>
+        <p></p>
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li><a href="https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-2.2#default-configuration" target="_blank">Default configuration</a></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>

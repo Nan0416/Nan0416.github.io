@@ -37,7 +37,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>ASP.NET Core&nbsp;-&nbsp;Host</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-03-06</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-07-01</span></p>
+<p class="date"><span class="created-date">Created:2019-03-06</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-07-23</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -117,7 +117,11 @@ SyntaxHighlighter.all()
                 <p>If using Visual Studio, the profile will show at</p>
                 <p><img src="./img/profile.png" width="400" height="200"></p>
                 <p>"commandName":"Project" indicates that the project is executed with the .NET CLI directly on the command line. <a href="https://stackoverflow.com/questions/44645775/launchsettings-json-commandname-usage" target="_blank">here</a></p>
-                <p>"dotnet run --launch-profile kestrel" instruct dotnet launch browser at the specified url and set environment variables.</p>
+                <p>
+                    <pre class="brush:bash">
+                            dotnet run --launch-profile kestrel
+                    </pre>
+                    instruct dotnet launch browser at the specified url and set environment variables.</p>
                 
             </li>
             <li>
@@ -138,63 +142,88 @@ SyntaxHighlighter.all()
                             }
                         }
                 </pre>
-                <p>Inside .CreateDefaultBuilder(args), it can configure the container's (kestrel) behavior</p>
+                <p id="appconfig">Inside .CreateDefaultBuilder(args), it can configure the container's (kestrel) behavior <a href="https://github.com/aspnet/AspNetCore/blob/v2.2.2/src/DefaultBuilder/src/WebHost.cs#L148">[Source]</a> and the 
+                the default app configuration.</p>
                 <pre class="brush:cpp">
-                    .UseKestrel()
-                    ConfigureKestrel((context, options) =>
-                    {
-                        options.Limits.MaxRequestBodySize = 20000000; // Set properties and call methods on options
-                    })
-                    .UseContentRoot(Directory.GetCurrentDirectory()); // content root is the directory that contains the application content files, .GetCurrentDirectory() is the current working directory.
+                        public static IWebHostBuilder CreateDefaultBuilder(string[] args)
+                        {
+                            var builder = new WebHostBuilder();
+                
+                            if (string.IsNullOrEmpty(builder.GetSetting(WebHostDefaults.ContentRootKey)))
+                            {
+                                builder.UseContentRoot(Directory.GetCurrentDirectory());
+                            }
+                            if (args != null)
+                            {
+                                builder.UseConfiguration(new ConfigurationBuilder().AddCommandLine(args).Build());
+                            }
+                
+                            builder.UseKestrel((builderContext, options) =>
+                                {
+                                    options.Configure(builderContext.Configuration.GetSection("Kestrel"));
+                                })
+                                .ConfigureAppConfiguration((hostingContext, config) =>
+                                {
+                                    var env = hostingContext.HostingEnvironment;
+                
+                                    config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                                          .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
+                
+                                    if (env.IsDevelopment())
+                                    {
+                                        var appAssembly = Assembly.Load(new AssemblyName(env.ApplicationName));
+                                        if (appAssembly != null)
+                                        {
+                                            config.AddUserSecrets(appAssembly, optional: true);
+                                        }
+                                    }
+                
+                                    config.AddEnvironmentVariables();
+                
+                                    if (args != null)
+                                    {
+                                        config.AddCommandLine(args);
+                                    }
+                                })
+                                .ConfigureLogging((hostingContext, logging) =>
+                                {
+                                    logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
+                                    logging.AddConsole();
+                                    logging.AddDebug();
+                                    logging.AddEventSourceLogger();
+                                })
+                                .ConfigureServices((hostingContext, services) =>
+                                {
+                                    // Fallback
+                                    services.PostConfigure&lt;HostFilteringOptions>(options =>
+                                    {
+                                        if (options.AllowedHosts == null || options.AllowedHosts.Count == 0)
+                                        {
+                                            // "AllowedHosts": "localhost;127.0.0.1;[::1]"
+                                            var hosts = hostingContext.Configuration["AllowedHosts"]?.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+                                            // Fall back to "*" to disable.
+                                            options.AllowedHosts = (hosts?.Length > 0 ? hosts : new[] { "*" });
+                                        }
+                                    });
+                                    // Change notification
+                                    services.AddSingleton&lt;IOptionsChangeTokenSource&lt;HostFilteringOptions>>(
+                                        new ConfigurationChangeTokenSource&lt;HostFilteringOptions>(hostingContext.Configuration));
+                
+                                    services.AddTransient&lt;IStartupFilter, HostFilteringStartupFilter>();
+                                })
+                                .UseIIS()
+                                .UseIISIntegration()
+                                .UseDefaultServiceProvider((context, options) =>
+                                {
+                                    options.ValidateScopes = context.HostingEnvironment.IsDevelopment();
+                                });
+                
+                            return builder;
+                        }
                 </pre>
             </li>
-            <li>
-                    <h4>ASP.NET Core: App Configuration</h4>
-                    <p>
-                        App configuration is through "IConfigurationBuilder" and "IConfiguration". <span style="color:red"> *** ASP.NET used a lot of builder pattern based on C# extension.***</span>
-                        IConfigurationBuilder can take a variety of sources, such as .json files, .xml files, environment variables, and command-line arguments. Moreover, it can even listen the change on 
-                        configuration files.
-                    </p>
-                    <p>1). In the Main function
-                        <pre class="brush:cpp">
-                                public static void Main(string[] args)
-                                {
-                                    CreateWebHostBuilder(args).Build().Run();
-                                }
-                        
-                                public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-                                    WebHost.CreateDefaultBuilder(args)
-                                        .ConfigureAppConfiguration((context, configBuilder)=>{
-                                            # context
-
-                                            # config is a IConfigurationBuilder object, it have a lot of extension methods to include a variety of config sources.
-                                            configBuilder.AddEnvironmentVariables(prefix:"qinnan_");
-                                            configBuilder.AddCommandLine(args);
-                                        })
-                                        .UseStartup&lt;Startup>();
-
-                            </pre>
-                            After that, the webhost calls
-                            <pre class="brush:cpp">
-                                IConfiguration config = configBuilder.Build();
-                            </pre>
-                            to obtain the IConfiguration object, and gives it to "Startup" class.
-                        </p>
-                        <p>
-                            2). WebHost's default builder behavior: loading configuration from 
-                            <pre class="brush:bash">
-                                appsettings.json,
-                                environment variables, 
-                                command line arguments,
-                            </pre>
-                        </p>
-                </li>
-                <li><h4>Environment variables</h4>
-                    It is usually specified as an environment variable in the launch profile.
-                    Host use this value to configure its logging behavior.
-                </li>
-
                 <li><h4>IConfiguration</h4>
+                    <p>Access values from configuration</p>
                     <pre class="brush:cpp">
         public Startup(IConfiguration configuration)
         {
@@ -207,21 +236,6 @@ SyntaxHighlighter.all()
                     <p>.json configuration's hierachary is kept with ":"</p>
                     <p>command-line configuration is given by "dotnet run --cmd command-value"</p>
                     <p>environment variables are set by launchSettings.json</p>
-                    <h4>Add customized configuration</h4>
-                    <pre class="brush:cpp">
-                        WebHost.CreateDefaultBuilder(args)
-                        .ConfigureAppConfiguration((hostingContext, config) =>
-                        {
-                            config.SetBasePath(Directory.GetCurrentDirectory());
-                            config.AddInMemoryCollection(arrayDict);
-                            config.AddJsonFile("json_array.json", optional: false, reloadOnChange: false);
-                            config.AddJsonFile("starship.json", optional: false, reloadOnChange: false);
-                            config.AddXmlFile("tvshow.xml", optional: false, reloadOnChange: false);
-                            config.AddEFConfiguration(options => options.UseInMemoryDatabase("InMemoryDb"));
-                            config.AddCommandLine(args);
-                        })
-                        .UseStartup&lt;Startup>();
-                    </pre>
                 </li>
                 
             </ol>
@@ -240,7 +254,7 @@ SyntaxHighlighter.all()
                     </p>
                     <pre class="brush:cpp">
                     public class Startup{
-                        public Startup(IConfiguration configuration, ILogger<Startup> logger, IHostingEnvironment env)
+                        public Startup(IConfiguration configuration, ILogger&lt;Startup> logger, IHostingEnvironment env)
                         {
                             Configuration = configuration;
                             _logger = logger;
