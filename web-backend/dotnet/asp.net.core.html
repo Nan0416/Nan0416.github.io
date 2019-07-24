@@ -39,13 +39,13 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>ASP.NET&nbsp;-&nbsp;ASP.NET Core</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-07-23</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-07-23</span></p>
+<p class="date"><span class="created-date">Created:2019-07-23</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-07-24</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
 <li><a href="#config">Configuration</a></li>
 <li><a href="#service">Service</a></li>
-<li><a href="#controller">Controller</a></li>
+<li><a href="#middlware">Middleware</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -55,7 +55,12 @@ SyntaxHighlighter.all()
 <li>
 <div class="content" id="intro">
 <h3>Introduction</h3>
-<p>Asp.Net Core</p>
+<p>Asp.Net Core is web development framework based on .NET Core. Since it is based on .NET Core, asp.net core is cross-platform.</p>
+<p>The current stable version of asp.net core is 2.2, asp.net core 3.0 is in preview.</p>
+<p>
+    ASP.NET Core core components' repo is https://github.com/aspnet/AspNetCore<br>
+    Other auxiliary components, such as configuration builder, dependency injection are inside the extension repo. https://github.com/aspnet/Extensions
+</p>
 </div>
 </li>
 <li>
@@ -178,23 +183,159 @@ SyntaxHighlighter.all()
 </li>
 <li>
     <div class="content" id="service">
-        <h3>Service</h3>
+        <h3>Service</h3>        
         <p>Different from asp.net framework that uses 3rd party dependency injection framework, asp.net core natively support dependency injection. <span style="color:red">Microsoft.Extensions.DependencyInjection</span></p>
-        <p>The container of service is <span class='inline-code'>IServiceCollection</span>, it provides three scopes: <br>
-        1). Transient<br>
-        2). Scoped (same as pre request)<br>
-        3). Singleton 
-        </p>
+        <h4>Implementation of Dependency injection</h4>
         <div class="featureList">
             <ol>
                 <li>
-                    
-                    https://github.com/aspnet/AspNetCore/blob/v2.2.2/src/Hosting/Hosting/src/WebHostBuilder.cs#L224
+                    <p>The container of service is <span class='inline-code'>IServiceCollection</span>, it provides three scopes: <br>
+                    1). Transient<br>
+                    2). Scoped (same as pre request)<br>
+                    3). Singleton 
+                    </p>
+                    <p>
+                        Register services with <span class='inline-code'>ServiceCollection</span>, Get scopes from <span class="inline-code">ServiceProvider</span>, Get services from the root provider <span class="inline-code">ServiceProvider</span> or a scope <span class="inline-code">IServiceScope</span>. Inside IServiceScope,
+                        it actually also has a IServiceProvider, and use this sub provider to resolve services.
+                    </p>
                 </li>
                 <li>
-                    <h4>User defined services are inside the <span style="color:red">Startup.ConfigureServices</span></h4>
+                    <h4>ServiceCollection</h4>
+                    <p>Service collection basically is a list of service descriptor, a service descriptor has metadata about a registered service, e.g. service type, scope, and implementation (type, delegate, instance)</p>
+                    <pre class="brush:cpp">
+                        public enum ServiceLifetime{
+                            Singleton = 0,
+                            Scoped = 1,
+                            Transient = 2
+                        }
+                        public class ServiceDescriptor{
+                            public Type ImplementationType { get; }
+                            public Type ServiceType { get; }
+                            public ServiceLifetime Lifetime { get; }
+                            ...
+                        }
+                        public interface IServiceCollection : IList&lt;ServiceDescriptor>, ICollection&lt;ServiceDescriptor>, IEnumerable&lt;ServiceDescriptor>, IEnumerable{
+                        }
+                        public class ServiceCollection : IServiceCollection{
+                            // ServiceCollection only implement the basic of IServiceCollection, most useful methods are in the form of extension methods.
+                        }
+                    </pre>
+                    <p>register service with ServiceCollectionServiceExtensions. From the implementation, we can find that a service can be registered as a type or a delegate. And singleton service can also be registered from an instance.</p>
+                    <pre class="brush:cpp">
+                        public static class ServiceCollectionServiceExtensions{
+                            private static IServiceCollection Add(IServiceCollection collection, Type serviceType, Type implementationType, ServiceLifetime lifetime){
+                                var descriptor = new ServiceDescriptor(serviceType, implementationType, lifetime);
+                                collection.Add(descriptor);
+                                return collection;
+                            }
+
+                            private static IServiceCollection Add(IServiceCollection collection,Type serviceType,Func&lt;IServiceProvider, object> implementationFactory,ServiceLifetime lifetime){
+                                var descriptor = new ServiceDescriptor(serviceType, implementationFactory, lifetime);
+                                collection.Add(descriptor);
+                                return collection;
+                            }
+                            public static IServiceCollection AddSingleton(this IServiceCollection services, Type serviceType, object implementationInstance){
+                                var serviceDescriptor = new ServiceDescriptor(serviceType, implementationInstance);
+                                services.Add(serviceDescriptor);
+                                return services;
+                            }
+                        }
+                    </pre>
+                    <p>Convert ServiceCollection to ServiceProvider with <span class='inline-code'>ServiceCollectionContainerBuilderExtensions</span></p>
+                    <pre class="brush:cpp">
+                        public static class ServiceCollectionContainerBuilderExtensions{
+                            public static ServiceProvider BuildServiceProvider(this IServiceCollection services, ServiceProviderOptions options){
+                                return new ServiceProvider(services, options);
+                            }
+                        }
+                    </pre>
+                </li>
+                <li>
+                    <h4>ServiceProvider</h4>  
+                    <p>ServiceProvider internally use 4 different engines to resolve typs.</p>
+                    
+                    <pre class="brush:cpp">
+                            internal enum ServiceProviderMode // used to select an resolving engine.
+                            {
+                                Dynamic,
+                                Runtime,
+                                Expressions,
+                                ILEmit
+                            }
+                            public interface IServiceProvider{
+                                // return null if no such service. does not throw error.
+                                object GetService(Type serviceType);
+                            }
+                            internal interface IServiceProviderEngine : IDisposable, IServiceProvider{
+                                IServiceScope RootScope { get; }
+                            }
+                            public interface IServiceScopeFactory{
+                                // controlling the lifetime of the scope. Once this is disposed, any scoped services that have been resolved from the scope will also be disposed.
+                                IServiceScope CreateScope();
+                            }
+
+                            internal abstract class ServiceProviderEngine : IServiceProviderEngine, IServiceScopeFactory{
+                                // GetService, RootScope, CreateScope
+
+                            }
+                            internal abstract class CompiledServiceProviderEngine : ServiceProviderEngine{
+
+                            }
+                            internal class DynamicServiceProviderEngine : CompiledServiceProviderEngine{
+                                
+                            }
+
+                            internal interface IServiceProviderEngineCallback{
+                                void OnCreate(IServiceCallSite callSite);
+                                void OnResolve(Type serviceType, IServiceScope scope);
+                            }
+                            public class ServiceProviderOptions{
+                                // if true, then check if a scoped service is resolved from root provider.
+                                public bool ValidateScopes { get; set; } = false;
+                                internal ServiceProviderMode Mode { get; set; } = ServiceProviderMode.Dynamic;
+                            }
+                            public sealed class ServiceProvider : IServiceProvider, IDisposable, IServiceProviderEngineCallback{
+                                internal ServiceProvider(IEnumerable&lt;ServiceDescriptor> serviceDescriptors, ServiceProviderOptions options){
+                                    // serviceDescriptors is just service collection
+                                    // bassed on options, validate scope is setup and an resolver engine is selected 
+                                    // https://github.com/aspnet/Extensions/blob/v2.2.2/src/DependencyInjection/DI/src/ServiceProvider.cs
+                                }
+                                public object GetService(Type serviceType) => _engine.GetService(serviceType);
+                            }
+                    </pre>
+                    <p>Extension methods on <span class="inline-code">ServiceProvider</span> can get service instance and get new scope.</p>
+                    <pre class="brush:cpp">
+                        public static T GetService&lt;T>(this IServiceProvider provider){
+                            return (T)provider.GetService(typeof(T));
+                        }
+                        public static IServiceScope CreateScope(this IServiceProvider provider){
+                            return provider.GetRequiredService&lt;IServiceScopeFactory>().CreateScope();
+                        }
+                    </pre>
+                </li>
+                <li>
+                    <h4>IServiceScope</h4>
+                    <pre class="brush:cpp">
+                        public interface IServiceScope : IDisposable{
+                            IServiceProvider ServiceProvider { get; }
+                        }
+                    </pre>
+                </li>
+            </ol>
+        </div>
+        
+
+     
+
+        <hr>
+
+        <h4>Service in ASP.NET Core</h4>
+        <div class="featureList">
+            <ol>
+                <li>
                     <h4>Host defined services</h4>
-                    <p>When calling CreateDefaultBuilder, a WebHostBuilder() is created with host and initial configuration source setup</p>
+                    <p>When calling CreateDefaultBuilder, a WebHostBuilder() is created. With the builder, initial default services and configuration are setup.</p>
+                    <p>Use defined configuration</p>
                     <pre class="brush:cpp">
                             public static IWebHostBuilder CreateDefaultBuilder(string[] args)
                             {
@@ -207,7 +348,23 @@ SyntaxHighlighter.all()
                                 return builder;
                             }
                     </pre>
-                    <p>The builder has </p>
+                    <p>And then we mount (register) a startup to the host builder and invoke build.</p>
+                    <p>The <span class="inline-code">ConfigureServices</span> has a core method, ConfigureServices, which append a config service delegate to the host builder.</p>
+                    <pre class="brush:cpp">
+                        public class WebHostBuilder : IWebHostBuilder
+                        {
+                            private readonly List&lt;Action&lt;WebHostBuilderContext, IServiceCollection>> _configureServicesDelegates;
+                            public IWebHostBuilder ConfigureServices(Action&lt;WebHostBuilderContext, IServiceCollection> configureServices){
+                                _configureServicesDelegates.Add(configureServices);
+                                return this;
+                            }
+                            public IWebHostBuilder ConfigureServices(Action&lt;IServiceCollection> configureServices){
+                                return ConfigureServices((_, services) => configureServices(services));
+                            }
+                        }
+                    </pre>
+                    <p>When calling <span class="inline-code">.Build()</span>, the host builder create a service collection, add a few default services to the service collection and invoke these delegates and apply their result to the service collections.</p>
+                    <h4>.UseStartup</h4>
                     <p>The builder has an extension method <span style="color:red">.UseStartup&lt;T></span><a href="https://github.com/aspnet/AspNetCore/blob/v2.2.2/src/Hosting/Hosting/src/WebHostBuilderExtensions.cs#L50">[Source]</a>, which append this startup as a 
                         service to <span style="color:red">host</span>service collections.</p>
                     <pre class="brush:cpp">
@@ -243,16 +400,104 @@ SyntaxHighlighter.all()
                                 return this;
                             }
                     </pre>
-                    <p>When calling <span style="color:red">WebHostBuilder.build</span>, it will add some default services and the "startup" to a service collection.</p>
+                    <h4>.Build()</h4>
+                    <p>The .Build() method invokes <span class="inline-code">WebHostBuilder.BuildCommonServices</span>, which build configuration and service.</p>
+                    <p></p>
                     <pre class="brush:cpp">
-                        public IWebHost Build(){
-                            var hostingServices = BuildCommonServices(out var hostingStartupErrors);
+                        public class WebHostBuilder : IWebHostBuilder
+                            public IWebHost Build(){
+                                ...
+                                var hostingServices = BuildCommonServices(out var hostingStartupErrors);
+                                ...
+                            }
+                            private IServiceCollection BuildCommonServices(out AggregateException hostingStartupErrors){
+                                var services = new ServiceCollection();
+                                services.AddSingleton(_options);
+                                services.AddSingleton&lt;IHostingEnvironment>(_hostingEnvironment);
+                                services.AddSingleton&lt;Extensions.Hosting.IHostingEnvironment>(_hostingEnvironment);
+                                services.AddSingleton(_context);
+
+                                // build configuration
+                                var builder = new ConfigurationBuilder().SetBasePath(_hostingEnvironment.ContentRootPath).AddConfiguration(_config);
+                                foreach (var configureAppConfiguration in _configureAppConfigurationBuilderDelegates){
+                                    configureAppConfiguration(_context, builder);
+                                }
+                                var configuration = builder.Build();
+                                services.AddSingleton&lt;IConfiguration>(configuration);
+                                _context.Configuration = configuration;
+                                var listener = new DiagnosticListener("Microsoft.AspNetCore");
+                                services.AddSingleton&lt;DiagnosticListener>(listener);
+                                services.AddSingleton&lt;DiagnosticSource>(listener);
+
+                                services.AddTransient&lt;IApplicationBuilderFactory, ApplicationBuilderFactory>();
+                                services.AddTransient&lt;IHttpContextFactory, HttpContextFactory>();
+                                services.AddScoped&lt;IMiddlewareFactory, MiddlewareFactory>();
+                                services.AddOptions();
+                                services.AddLogging();
+
+                                // Conjure up a RequestServices
+                                services.AddTransient&lt;IStartupFilter, AutoRequestServicesStartupFilter>();
+                                services.AddTransient&lt;IServiceProviderFactory&lt;IServiceCollection>, DefaultServiceProviderFactory>();
+
+                                // Ensure object pooling is available everywhere.
+                                services.AddSingleton&lt;ObjectPoolProvider, DefaultObjectPoolProvider>();
+
+                            }
                         }
                     </pre>
-
                 </li>
+                <li>
+                    <h4>Developer defined services</h4></h4>
+                    <p>Developer defined services are inside the <span style="color:red">Startup.ConfigureServices</span></p>
+                    <pre class="brush:cpp">
+                        public class Startup{
+                            public void ConfigureServices(IServiceCollection services)
+                            {
+                                services.AddDbContext&lt;MyDbContext>(o => o.UseNpgsql("Host=localhost;Username=postgres;Password=postgres;Database=dvdrental"));
+                                ...
+                            }
+                        }
+                    </pre>
+                    <p>The above function will be invoke when initializing the host during building the builder. And the services </p>
+                    <pre class="brush:cpp">
+                        public class WebHostBuilder : IWebHostBuilder{
+                            public IWebHost Build(){
+                                ...
+                                var hostingServices = BuildCommonServices(out var hostingStartupErrors);
+                                var applicationServices = hostingServices.Clone();
+                                var hostingServiceProvider = GetProviderFromFactory(hostingServices);
+                                var host = new WebHost( applicationServices, hostingServiceProvider, _options, _config, hostingStartupErrors);
+                                host.Initialize();
+                                return host;
+                            }
+                        }
+                    </pre>
+                    <p>The <span class='inline-code'>WebHost.Initialize</span> <a href="https://github.com/aspnet/AspNetCore/blob/v2.2.2/src/Hosting/Hosting/src/Internal/WebHost.cs">[Source]</a> will get the startup instance from service provider, and then invokes its <span style="color:red">ConfigureServices</span></p>
+                    <pre class="brush:cpp">
+                        internal class WebHost : IWebHost{
+                            // pseudo
+                            public void Initialize(){
+                                _startup = _hostingServiceProvider.GetService&lt;IStartup>();
+                                _applicationServices = _startup.ConfigureServices(_applicationServiceCollection);
+                            }
+                            // You can also get the application services provider from the host. Defined by IWebHost interface.
+                            public IServiceProvider Services{
+                                get{
+                                    return _applicationServices;
+                                }
+                            }
+                        }
+                    </pre>
+                </li>
+                <li>Resolve services</li>
+                <p>The service provider is mount at webhost, so a developer can resolve service by accessing the service provider from webhost. Besides, asp.net core framework also use the service provider to create controller, filters internally.</p>
             </ol>
         </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="middleware">
+        <h3>Middleware</h3>
         <p></p>
     </div>
 </li>
