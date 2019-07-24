@@ -37,7 +37,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>C#&nbsp;-&nbsp;Generics</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-03-04</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-06-12</span></p>
+<p class="date"><span class="created-date">Created:2019-03-04</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-07-23</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -215,10 +215,22 @@ public class CGenerics&lt;T>: IGenerics&lt;T>{ // class declare T, interface ref
 <li>
     <div class="content" id="covariance-contravariance">
         <h3>Covariance and Contravariance</h3>
+        <p>Example: <span style="color:red">Manager is a subclass of Employee, but List&lt;Manager> is not a subclass of List&lt;Employee>.</span> This makes sense since List&lt;Manager> does not inherit anything from List&lt;Employee>.</p>
+        <p>But for a delegate, which takes inputs and return an output, if the <br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;delegate A takes an instance of <span style="color:red">Manager as input</span> and return an instance of <span style="color:red">Employee as output</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;delegate B takes an instance of <span style="color:red">Employee as input</span> and return an instance of <span style="color:red">Manager as output</span><br>
+            then a value of delegate A can be assigned to delegate B in theory.
+        </p>
+        <p>
+            we can do <span class="inline-code">Employee e = A(new Manager());</span> and <span class="inline-code">Manager m = B(new Employee());</span>. But for delegate B, we also can do <span class="inline-code">Employee e = B(new Manager());</span> because
+            we can <span style="color:red">assign Manager to Employee</span>. So we can assign A to B in theory. And the theory is implemented in C# by the feature of covariance and contravariance.
+        </p>
+        <p>** The feature is only applied to generic delegate and interface. **</p>
         <div class="featureList">
             <ol>
                 <li>
                     <h4>Contravariance (reserve the potential of input, 浪费了这个function在 in 上的能力)</h4>
+                    <p>If a superclass can be an input, then its subclasses can also be the input.</p>
                     <pre class="brush:cpp">
                             public class Parent{
                                 public string name;
@@ -237,6 +249,7 @@ public class CGenerics&lt;T>: IGenerics&lt;T>{ // class declare T, interface ref
                 </li>
                 <li>
                     <h4>Covariance (reserve the potential of output, 浪费了这个function在 output 上的能力)</h4>
+                    <p>If a superclass can be an output, then its subclasses can also be the output.</p>
                     <pre class="brush:cpp">
                             Converter&lt;string, Child> fun_convert_to_child = (string obj) =>{
                                     return new Child{
@@ -244,13 +257,32 @@ public class CGenerics&lt;T>: IGenerics&lt;T>{ // class declare T, interface ref
                                         value = obj
                                     };
                                 };
+                            public delegate TOutput Converter&lt;in TInput,out TOutput>(TInput input);
                             Converter&lt;string, Parent> fun_convert_to_parent = fun_convert_to_child;
                             Parent p = fun_convert_to_parent("nothing");
                             Console.WriteLine(p.name);
                     </pre>
                 </li>
+                <li>
+                    <h4>Interface</h4>
+                    <p>Same principle applied to interface</p>
+                    <pre class="brush:cpp">
+    public interface GenericInterface&lt;in TInput, out TResult>
+    {
+        TResult GetResult();
+        void SetInput(TInput);
+    }
+    public class Program{
+        public static void Main(String [] args){
+            GenericInterface&lt;SuperClass, SubClass> temp = new Parent&lt;SuperClass, SubClass>();
+            GenericInterface&lt;SubClass, SuperClass> temp2 = temp;
+        }
+    }
+                    </pre>
+                </li>
             </ol>
         </div>
+        
     </div>
 </li>
 <li>
@@ -261,7 +293,17 @@ public class CGenerics&lt;T>: IGenerics&lt;T>{ // class declare T, interface ref
                 <li>
                     <p>A function has the generic type as input</p>
                     <pre class="brush:cpp">
+                        // do something on the input object.
                         public delegate void Action&lt;in T>(T obj);
+                        // convert input to output
+                        public delegate TOutput Converter&lt;in TInput,out TOutput>(TInput input);
+                        // according to the input, generate a result.
+                        public delegate TResult Func&lt;in T,out TResult>(T arg);
+                        // according to the two inputs, generate a result
+                        public delegate TResult Func&lt;in T1,in T2,out TResult>(T1 arg1, T2 arg2);
+                        // ... there is a seris of func that takes a varity of inputs. 
+
+
                         // usage: extension method of to define a middlware with IApplicationBuilder as input
                         public static IRouteBuilder MapMiddlewareGet (this IRouteBuilder builder, string template, Action&lt;IApplicationBuilder> action);
 

@@ -227,7 +227,7 @@ SyntaxHighlighter.all()
             <p>Java's member scope is inside class, inside class family (inheritance), inside package, and rest. *** there is not concept of inside jar ***</p>
             <p>public: accessible anywhere.<br>
                (default): in same package.<br>
-               protected: in subclasses that are in same package.<br>
+               protected: in subclasses that are in same or different packages.<br>
                private: inside class.
             </p>
         </li>
@@ -242,7 +242,97 @@ SyntaxHighlighter.all()
 <li>
     <div class="content" id="inheritance">
         <h3>Inheritance</h3>
+        <p>
+            1). Java supports single inheritance.<br>
+            2). The subclass will inherit all super class's private, default, protected and public members except constructors.<br>
+            3). Even thought subclass inherits super class private members, but it cannot directly access them.<br>
+            4). Even thought subclass does not have super class's constructors, but it can use <span style="color:red">super</span> keyword to access public and protected parent's constructors.<br>
+            5). Subclass's constructors must explicitly or implicitly invokes parent's constructor at the first statement. (Because the invocation must be the first statement, it can only invoke parent's constructor once. * If invoking twice, then the second invocation will not be the first statement* )<br>
+            6). Different from C# & C++ supports both virtual/override and new function, java's subclass only/always override parent's method if they have the same signature.<br>
+            7). After overriding a parent's method, subclass can still use <span style="color:red">super</span> to access that method.<br>
+            8). Subclass can override super class variable members' values inside constructor and other methods.</p>
+        <div class="featureList">
+            <ol>
+                <li><h4>Basic example</h4>
+                    <pre class="brush:java">
+                            public class DefaultFormatter {
+                                public String separator;
+                                private StringBuilder _sb;
+                            
+                                public DefaultFormatter(){
+                                    this("");
+                                }
+                                public DefaultFormatter(String separator){
+                                    this.separator = separator;
+                                    this._sb = new StringBuilder();
+                                }
+                                public String format(String [] args){
+                                    for(String str: args){
+                                        _sb.append(str);
+                                        _sb.append(separator);
+                                    }
+                                    return _sb.toString();
+                                }
+                            }
+
+                            public class WhitespaceFormatter extends DefaultFormatter{
+                                public WhitespaceFormatter(){
+                                    super(" ");
+                                }
+                            }
+
+                            public class CommaFormatter extends DefaultFormatter {
+                                public CommaFormatter(){
+                                    super(); // can be ignored.
+                                    separator = ","; // inherit from super class.
+                                }
+                            }
+                    </pre>
+                </li>
+            </ol>
+        </div>
     </div>
+</li>
+<li>
+    <div class="content" id="abstract">
+        <h3>Abstract</h3>
+        <p>In contrast to inheritance, abstract class provides a mechanism that allows super abstract class to invoke subclass method implementation.</p>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>Super abstract class invokes subclass implementation</h4>
+                    <pre class="brush:java">
+                            public abstract class AsbtractFormatter {
+                                public abstract String getSeparator();
+                                public String format(String text){
+                                    return text;
+                                }
+                                public String format(String [] texts){
+                                    StringBuilder sb = new StringBuilder();
+                                    for(String str : texts){
+                                        sb.append(format(str));
+                                        sb.append(getSeparator());
+                                    }
+                                    return sb.toString();
+                                }
+                            }
+                            
+                            public class HashCapitalFormatter extends AsbtractFormatter {
+                                // override default behavior
+                                public String format(String text){
+                                    return text.toUpperCase();
+                                }
+                                // implement abstract
+                                public String getSeparator(){
+                                    return "#";
+                                }
+                            }
+                            
+                    </pre>
+                </li>
+            </ol>
+        </div>
+    </div>  
 </li>
 <li>
 <div class="content" id="reference">

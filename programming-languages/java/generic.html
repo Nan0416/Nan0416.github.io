@@ -6,9 +6,9 @@
 <title>Java&nbsp;Generic</title>
 <meta charset="utf-8">
 <meta name="date" content="2018-03-15">
-<meta name="keywords" content="power">
-<meta name="keywords" content="atmega328p">
-<meta name="keywords" content="microcontroller">
+<meta name="keywords" content="java">
+<meta name="keywords" content="generic">
+<meta name="keywords" content="programming">
 <link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
 <script type="text/javascript" src="../../script.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
@@ -34,9 +34,9 @@ SyntaxHighlighter.all()
 </script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<center><strong>Java&nbsp;-&nbsp;Generic</strong></center>
+<strong>Java&nbsp;-&nbsp;Generic</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-03-15</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-03-15</span></p>
+<p class="date"><span class="created-date">Created:2018-03-15</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-07-23</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#genericIntro">Introduction</a></li>
@@ -54,9 +54,14 @@ SyntaxHighlighter.all()
 <li>
 <div class="content" id="genericIntro">
 <h3>Introduction</h3>
-<p>Generic: class as variable (Type variable)</p>
-<p>A generic class can have several type variable (the type can be class, interface)</p>
-<p>Compared to use Object class as a "generic" class, we don't need <span style="color:red">cast</span> by using type variables.</p>
+<p>Generic: type (class, interface, enum) as variable.</p>
+<p>A generic class/interface can have several type variables.</p>
+<p>Compared to use Object class as a "generic" class, we don't need to <span style="color:red">cast</span>.</p>
+<h4>Java Generics vs. C# Generics</h4>
+<p>
+    Both of Java and C# support generics, and they have similar syntax. But their implementations are quite different. Java's generics is much like a compile time behavior, 
+    it replaces Generics by Object and casting at compile time. In contrast, C# compiles generics into MSIL bytecode, it's a runtime behavior.
+</p>
 </div>
 </li>
 <li>
@@ -212,8 +217,9 @@ public class GenericBound&lt;T extends Numeric&lt;T>>
 <p>The generic feature is achieved by the compiler replacing generic type with Object, and insert type parameter for casting.</p>
 <div class="featureList">
 <ol>
-<li>Cannot instantiate type variable: because the <i>T t = new T()</i> is translated to <i>(T) t = (T) new Object()</i><br>
-Same as this, new T[10] and T.class are also forbidden. <br>
+<li>
+    <p>Cannot instantiate a type variable: because the <span class="inline-code">T t = new T()</span> is translated to <span class="inline-code">(T) t = (T) new Object()</span>. In contrast, C# allows to do that only if we guarantee the type parameter has a parameterless constructor.</p>
+
 <strong>Create type parameter's object</strong>: give a type's Class from outside, and call newInstance.
 <pre class="brush:java">
 public static &lt;T> Pair&lt;T> makePair(Class&lt;T> cl)
@@ -222,6 +228,7 @@ public static &lt;T> Pair&lt;T> makePair(Class&lt;T> cl)
    catch (Exception ex) { return null; }
 }
 </pre>
+Same as this, new T[10] and T.class are also forbidden. <br>
 </li>
 <li></li>
 </ol>
@@ -230,7 +237,7 @@ public static &lt;T> Pair&lt;T> makePair(Class&lt;T> cl)
 </li>
 <li>
 <div class="content" id="genericInheritance">
-<h3>Generic Inheritance</h3>
+<h3>Generic Inheritance (Covariance and Contravariance)</h3>
 <p>Employee is a super class of Manager, but Generic&lt;Employee> is not a super class of Generic&lt;Manager></p>
 <h4>Wildcard</h4>
 <p>Suppose a relation Employee -> Manager -> CEO</p>
