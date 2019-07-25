@@ -248,9 +248,11 @@ SyntaxHighlighter.all()
             3). Even thought subclass inherits super class private members, but it cannot directly access them.<br>
             4). Even thought subclass does not have super class's constructors, but it can use <span style="color:red">super</span> keyword to access public and protected parent's constructors.<br>
             5). Subclass's constructors must explicitly or implicitly invokes parent's constructor at the first statement. (Because the invocation must be the first statement, it can only invoke parent's constructor once. * If invoking twice, then the second invocation will not be the first statement* )<br>
-            6). Different from C# & C++ supports both virtual/override and new function, java's subclass only/always override parent's method if they have the same signature.<br>
-            7). After overriding a parent's method, subclass can still use <span style="color:red">super</span> to access that method.<br>
-            8). Subclass can override super class variable members' values inside constructor and other methods.</p>
+            6.1). <span style="color:red">[method ovrride]</span>Different from C# & C++ supports both virtual/override and new function, java's subclass only/always override parent's method if they have the same signature.<br>
+            6.2). <span style="color:red">[variable ovrride]</span>Subclass can define a variable that already existed in parent. Variable's signature is just its name.<br>
+            6.3). <span style="color:red">[inner class ovrride]</span>Subclass also inherit inner class, and can override them. <br> 
+            8). After overriding a parent's method, subclass can still use <span style="color:red">super</span> to access that method.<br>
+            9). Subclass can override super class variable members' values inside constructor and other methods.</p>
         <div class="featureList">
             <ol>
                 <li><h4>Basic example</h4>
@@ -285,6 +287,29 @@ SyntaxHighlighter.all()
                                 public CommaFormatter(){
                                     super(); // can be ignored.
                                     separator = ","; // inherit from super class.
+                                }
+                            }
+                    </pre>
+                </li>
+                <li>
+                    <h4>Override variable and inner class</h4>
+                    <pre class="brush:java">
+                            class Parent{
+                                public String public_data = "message";
+                                private String secret_data = "hello";
+                                protected class InnerClass{
+                                    public String getSecret(){
+                                        return secret_data;
+                                    }
+                                }
+                            }
+                            class Child extends Parent{
+                                public Integer public_data = 10;
+                                public class InnerClass{}
+                                public void Test(){
+                                    System.out.println(super.public_data);
+                                    System.out.println(public_data);
+                                    System.out.println(new Parent.InnerClass().getSecret());
                                 }
                             }
                     </pre>
