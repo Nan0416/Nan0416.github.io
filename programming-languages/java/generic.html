@@ -36,15 +36,15 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Java&nbsp;-&nbsp;Generic</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-03-15</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-07-23</span></p>
+<p class="date"><span class="created-date">Created:2018-03-15</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-07-24</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#genericIntro">Introduction</a></li>
 <li><a href="#genericClass">Generic Class</a></li>
 <li><a href="#genericMethod">Generic Method</a></li>
 <li><a href="#genericRestriction">Restriction on Type parameters (extends interface)</a></li>
+<li><a href="#wildcard">Wildcard Generic</a></li>
 <li><a href="#genericLimitation">Limitation</a></li>
-<li><a href="#genericInheritance">Generic Inheritance</a></li>
 <li><a href="#genericReference">References</a></li>
 </ul>
 </div>
@@ -62,68 +62,71 @@ SyntaxHighlighter.all()
     Both of Java and C# support generics, and they have similar syntax. But their implementations are quite different. Java's generics is much like a compile time behavior, 
     it replaces Generics by Object and casting at compile time. In contrast, C# compiles generics into MSIL bytecode, it's a runtime behavior.
 </p>
+<p><span style="color:red">Generic provides a way to easily define new class.</span> Now we have two ways to define new class, the first is <span class="inline-code">public class X [extends] [implements]{}</span>, the second approach is directly doing <span class="inline-code">Generic&lt;String></span></p>
 </div>
 </li>
 <li>
 <div class="content" id="genericClass">
 <h3>Generic Class</h3>
-<h4>Example</h4>
-<pre class="brush:java">
-public class Generic1 &lt;T, V> {
-    private T key;
-    private V value;
-
-    public void print(){
-        System.out.println("Key: " + key + ",Value: " + value);
-    }
-
-    public Generic1(T t, V v){
-        key = t;
-        value = v;
-    }
-    public V getValue(){
-        return value;
-    }
-    public static void main(String [] args){
-        Generic1&lt;String, String> g = new Generic1&lt;>("one","yi");
-        g.print();
-        String v = g.getValue();
-        System.out.println("value : " + v);
-    }
-}
-</pre>
-<p>After creating an instance with type variables setting to String, then we actually get a new class's object.</p>
-<p>The class is</p>
-<pre class="brush:java">
-public class Generic1 {
-    private String key;
-    private String value;
-
-    public void print(){
-        System.out.println("Key: " + key + ",Value: " + value);
-    }
-
-    public Generic1(String t, String v){
-        key = t;
-        value = v;
-    }
-    public String getValue(){
-        return value;
-    }
-    public static void main(String [] args){
-        Generic1 g = new Generic1("one","yi");
-        g.print();
-        String v = g.getValue();
-        System.out.println("value : " + v);
-    }
-}
-</pre>
 <div class="featureList">
-<ol>
-<li>One generic class can have multiple type variables, they are declared at the first line.</li>
-<li>In the constructor, no type variable is needed. Use them as a regular type.</li>
-<li><strong>Cannot directly instantiate type parameter. e.g. Cannot T t = new T();</strong></li>
-</ol>
+    <ol>
+        <li>
+                <h4>Example</h4>
+                <pre class="brush:java">
+                public class Generic1 &lt;T, V> {
+                    private T key;
+                    private V value;
+                
+                    public void print(){
+                        System.out.println("Key: " + key + ",Value: " + value);
+                    }
+                
+                    public Generic1(T t, V v){
+                        key = t;
+                        value = v;
+                    }
+                    public V getValue(){
+                        return value;
+                    }
+                    public static void main(String [] args){
+                        Generic1&lt;String, String> g = new Generic1&lt;>("one","yi");
+                        g.print();
+                        String v = g.getValue();
+                        System.out.println("value : " + v);
+                    }
+                }
+                </pre>
+                <p>After creating an instance with type variables setting to String, then we actually get a new class's object.</p>
+                <p>The class is</p>
+                <pre class="brush:java">
+                public class Generic1 {
+                    private String key;
+                    private String value;
+                
+                    public void print(){
+                        System.out.println("Key: " + key + ",Value: " + value);
+                    }
+                
+                    public Generic1(String t, String v){
+                        key = t;
+                        value = v;
+                    }
+                    public String getValue(){
+                        return value;
+                    }
+                    public static void main(String [] args){
+                        Generic1 g = new Generic1("one","yi");
+                        g.print();
+                        String v = g.getValue();
+                        System.out.println("value : " + v);
+                    }
+                }
+                </pre>
+        </li>
+        <li>One generic class can have multiple type variables, they are declared at the first line.</li>
+        <li>In the constructor, no type variable is needed. Use them as a regular type.</li>
+        <li><strong>Cannot directly instantiate type parameter. e.g. Cannot T t = new T();</strong></li>
+    </ol>
 </div>
 </div>
 </li>
@@ -210,143 +213,83 @@ public class GenericBound&lt;T extends Numeric&lt;T>>
 </pre>
 </div>
 </li>
-
+<li>
+<div class="content" id="wildcard">
+<h3>Wildcard Generic</h3>
+<p style="color:red">Employee is a super class of Manager, but Generic&lt;Employee> is not a super class of Generic&lt;Manager> becuase Generic&lt;Employee> does not have Generic&lt;Manager>'s members.</p>
+<div class="featureList">
+    <ol>
+        <li>
+            <h4>Wildcard</h4>
+            <p>With wildcard generic, a generic class can be assigned to another generic class according to the inheritance of the type parameters.</p>
+            <pre class="brush:java">
+                GenericClass&lt;? super Manager> gm = new GenericClass&lt;Employee>();
+                GenericClass&lt;? extends Manager> gm2 = new GenericClass&lt;CEO>();
+            </pre>
+        </li>
+        <li>
+            <h4>Compared with C# covariance & contraviance</h4>
+            <p>C# covariance & contraviance is defined on interface & delegate. It allows an implementations of a "specific generic interface or delegate" to be assigned to another "sepcific generic interface or delegate"</p>
+            <pre class="brush:java">
+                # what is a specific generic interface.
+                interface IGreeting&lt;T>{
+                    T Greet();
+                }
+                IGreeting&lt;Employee> // is a specific generic interface.
+                IGreeting&lt;Manager> // is another specific generic interface.
+            </pre>
+            <p>Java's wildcard is similar but different from C# covariance and contraviance. Java's wildcard allows a generic class be assigned to a wildcard generic class.</p>
+        </li>
+        <li>
+            <h4>How to use?</h4>
+            <p>Wildcard generic is usually used as parameters of a function.</p>
+            <pre class="brush:java">
+                public class Operation{
+                    #  this method only works with GenericClass&lt;Employee>
+                    public void Operate(GenericClass&lt;Employee> value){}
+                    #  this method works with GenericClass&lt;Employee> GenericClass&lt;Manager> GenericClass&lt;CEO>
+                    public void Operate(GenericClass&lt;? extends Employee> value){}
+                }
+            </pre>
+            <p>Wildcard generic cannot be assigned to generic class.</p>
+        </li>
+        <li>
+            <h4>unbound wildcard</h4>
+            <p>GenericClass&lt;?> is same as GenericClass&lt;? extends Object></p>
+        </li>
+    </ol>
+</div>
+</div>
+</li>
 <li>
 <div class="content" id="genericLimitation">
 <h3>Limitation</h3>
-<p>The generic feature is achieved by the compiler replacing generic type with Object, and insert type parameter for casting.</p>
+<p>The generic feature is achieved by the compiler replacing generic type with Object, and insert type parameter for casting. Because of it's not runtime, this can cause following limitations:</p>
 <div class="featureList">
 <ol>
 <li>
     <p>Cannot instantiate a type variable: because the <span class="inline-code">T t = new T()</span> is translated to <span class="inline-code">(T) t = (T) new Object()</span>. In contrast, C# allows to do that only if we guarantee the type parameter has a parameterless constructor.</p>
-
-<strong>Create type parameter's object</strong>: give a type's Class from outside, and call newInstance.
-<pre class="brush:java">
-public static &lt;T> Pair&lt;T> makePair(Class&lt;T> cl)
-{
-   try { return new Pair&lt;>(cl.newInstance(), cl.newInstance()) }
-   catch (Exception ex) { return null; }
-}
-</pre>
-Same as this, new T[10] and T.class are also forbidden. <br>
-</li>
-<li></li>
-</ol>
-</div>
-</div>
+    <span style="color:red">Create type parameter's object</span>: give a type's Class from outside, and call newInstance.
+    
+    <pre class="brush:java">
+        public static &lt;T> Pair&lt;T> makePair(Class&lt;T> cl)
+        {
+            try { return new Pair&lt;>(cl.newInstance(), cl.newInstance()) }
+            catch (Exception ex) { return null; }
+        }
+    </pre>
 </li>
 <li>
-<div class="content" id="genericInheritance">
-<h3>Generic Inheritance (Covariance and Contravariance)</h3>
-<p>Employee is a super class of Manager, but Generic&lt;Employee> is not a super class of Generic&lt;Manager></p>
-<h4>Wildcard</h4>
-<p>Suppose a relation Employee -> Manager -> CEO</p>
-<p>? extends Manager can match Manager and CEO; ? super Manager can match Employee and Manager</p>
-<div class="featureList">
-<ol>
-<li>Wildcard 不是用着declaration.e.g. 不是public class G&lt;? extends Employee> </li>
-<li>Wildcard 是用于define generic class type. 相当于Set&lt;String>里的String那个位置</li>
-<li>Generic&lt;? extends Manager> is a super class of Generic&lt;Manager> and Generic&lt;CEO><br>
-It can match the two classes.<br>
-<strong>Generic&lt;? extends Manager> can only be used as a return type.</strong>
-<p>Reason</p>
-<pre>
-Suppose Generic&lt;T> provide a method called "void set(T x)" and "T get()"
-Generic&lt;Manager> => "void set(Manager x)" and "Manager get()"
-Generic&lt;CEO> => "void set(CEO x)" and "CEO get()"
-Generic&lt;? extends Manager> is either a Generic&lt;Manager> and Generic&lt;CEO>
-=> "void set(? extends Manager x)" and "? extends Manager get()"
-For safety => it can only set a high detailed class "void set(CEO x)" and return a low detailed "Manager get()".
-But because there is no language guarantee that set will set the  high detailed class, so the set is forbidden, only get is allowed 
-// 不管返回什么样的type，一定是extends Manager.
-set的argument不一定满足标准，但是get的return value一定可以
-</pre>
-<strong>Generic&lt;? super Manager> can only be used as an argument type.</strong>
-<p>Reason</p>
-<pre>
-Suppose Generic&lt;T> provide a method called "void set(T x)" and "T get()"
-Generic&lt;Manager> => "void set(Manager x)" and "Manager get()"
-Generic&lt;Employee> => "void set(Employee x)" and "Employee get()"
-Generic&lt;? super Manager> is either a Generic&lt;Manager> and Generic&lt;Employee>
-=> "void set(? super Manager x)" and "? super Manager get()"
-For safety => it can only set a high detailed class "void set(CEO x)" and return a low detailed "Manager get()".
-But because there is no language guarantee that set will set the  high detailed class, so the set is forbidden, only get is allowed 
-// 不管返回什么样的type，一定是extends Manager.
-set的argument不一定满足标准，但是get的return value一定可以
-</pre>
-
-
-<h4>Example</h4>
-<pre class="brush:java">
-public class Wildcard{
-
-    public void show2(OperatePeople&lt;? super Manager> p){
-        // 这里能把　? super manager　传进来是因为 p　可能会调用一些他自己的方法，
-        // 对于不同的　matched OperationPeople, e.g. OperatePeople&lt;Manager> 和　OperatePeople&lt;Employee>
-        // p　所拥用的　methods 是一样的，只是他们的argument type可能不一样，有的是Manager,　有的是Employee, 总而言之，都是Manager本身或者是他的父类。
-        // e.g. print(Manager ), print(Employee ),　只要是Manager本身或者是他的父类的object都可以被传进去。
-        // 而又因为这个用了wildcard，
-        // 也就是说，一个OperatePeople&lt;Employee>的print(Employee)　可能要去处理一个Manager的object。还好这个是允许的。
-        // 但是　假设这里给的是　OperatePeople&lt;? extend Manager> p, 这就意味着一个OperatePeople&lt;CEO>的print(CEO)要去处理一个Manager，这就是不允许的了。
-        Manager e = new Manager("Manager");
-        p.print(e);
-    }
-    public OperatePeople&lt;? extends Manager> show3(){
-        // return a subclass, more detailed class
-        OperatePeople&lt;Manager> x = new OperatePeople&lt;>();
-        return x;
-    }
-    public static void main(String [] args){
-        Wildcard w = new Wildcard();
-        OperatePeople&lt;Employee> eo = new OperatePeople&lt;>();
-        OperatePeople&lt;Manager> mo = new OperatePeople&lt;>();
-        OperatePeople&lt;CEO> co = new OperatePeople&lt;>();
-        OperatePeople&lt;? super Manager> cm = eo;
-
-
-        w.show2(cm, new Manager("Manager"));
-        // cm is eo, eo's T is Employee, set an Manager object to an Employee is OK
-        // Suppose cm is co, co's T is CEO, set an Manager object to an CEO is not allowed.
-    }
-}
-
-class OperatePeople&lt;T>{
-    private T x; 
-    public void print(T p){
-        x = p; 
-        System.out.println(p);
-    }
-}
-
-class Employee{
-    public String name;
-
-    @Override
-    public String toString() {
-        return name;
-    }
-
-    public Employee(String name){
-        this.name = name;
-    }
-}
-class Manager extends Employee{
-    public Manager(String name){
-        super(name);
-    }
-}
-class CEO extends Manager{
-    public CEO(String name){
-        super(name);
-    }
-}
-</pre>
+    <p>Cannot access T.class. Same reason as above.</p>
+</li>
+<li>
+    <p>Cannot do new T[10]</p>
 </li>
 </ol>
 </div>
-<p>? without bound: is ? extends Object. can only get not set</p>
 </div>
 </li>
+
 <li>
 <div class="content" id="genericReference">
 <h3>References</h3>
