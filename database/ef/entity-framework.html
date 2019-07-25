@@ -40,13 +40,13 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Database&nbsp;-&nbsp;Entity Framework</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-04-07</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-06-28</span></p>
+<p class="date"><span class="created-date">Created:2019-04-07</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-07-25</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
-<li><a href="#code-first">Code-first approach with SQLite</a></li>
+<li><a href="#code-first">Code-first approach with PostgreSQL & SQLite</a></li>
 <li><a href="#database-first">Database-first approach with PostgreSQL</a></li>
-<li><a href="#indepth">In-depth</a></li>
+<li><a href="#in-depth">In-depth</a></li>
 <!--<li><a href="#ef-tool">EF Tool</a></li>-->
 <li><a href="#reference">References</a></li>
 </ul>
@@ -57,9 +57,10 @@ SyntaxHighlighter.all()
 <li>
 <div class="content" id="intro">
 <h3>Introduction</h3>
-<p>Entity Framework is a data access technology, mainly about accessing data from different database with C# language. 
-    (Express's Mongoose). There are two version of Entity Framework, EF 6 and EF Core. EF Core is the EF of .NET Core version; 
+<p>Entity Framework is a data access technology, mainly about accessing data from different database with C# language. (Express's Mongoose). There are two version of Entity Framework, EF 6 and EF Core. EF Core is the EF of .NET Core version; 
     EF 6 is the EF of .NET Framework. This note used EF Core as an example.</p>
+<p>Besides data accessing, EF also provides design-time tools. For example, migration (code-first appraoch) helps generate tables in database from well-defined code. Vice versa, dbcontext (database-first approach) 
+    helps generate C# entity class from database.</p>
 <div class="featureList">
     <h4>Terminology</h4>
     <ol>
@@ -83,14 +84,229 @@ SyntaxHighlighter.all()
     <div class="content" id="code-first">
         <h3>Code-first approach with SQLite</h3>
         <div class="featureList">
+            <p>PostgreSQL code-first approach example.</p>
             <ol>
-                <li>Install dependency
+                <li>
+                    <h4>Define Models/Entities</h4>
+                    <p>** common columns/properties (e.g. Id, CreatedDate) can be extracted as a super class. ***</p>
+                    <p>In the model class, defining table columns as public properties, <span style="color:red">property type can be enum</span>, also define navigation links.</p>
+                    <p>For a foreign key, create a foregin key property and also an auxiliary navigation property.</p>
+                    <pre class="brush:cpp">
+                            public enum Gender{
+                                Unknown = 0,
+                                Male,
+                                Female
+                            }
+                            public enum SchoolType{
+                                Unknown = 0,
+                                Elementary,
+                                HighSchool,
+                                College,
+                                University
+                            }
+                            public class Student{
+                                public long Id { get; set; }
+                                public string Name { get; set; }
+                                public DateTime DateOfBirth { get; set; }
+                                public Gender Gender { get; set; }
+                                public long CurrentSchoolId { get; set; }
+                                // navigation property
+                                public School CurrentSchool { get; set; }
+                            }
+                            public class School{
+                                public long Id { get; set; }
+                                public string Name { get; set; }
+                                public SchoolType SchoolType { get; set; }
+                            }
+                    </pre>
+                </li>
+                <li>
+                    <h4>Setup DbContext</h4>
+                    <p>A dbcontext is class that represents a set of tables. ** One table can be involved in multiple dbcontext **. The biggest dbcontext would represent an entire database.</p>
+                    <p>The <span style="color:red">Microsoft.EntityFrameworkCore</span> nuget package should be included, also always select the version that is same as the .NET Core version.</p>
+                    <pre class="brush:cpp">
+                            public class StudentDbContext: DbContext
+                            {
+                                DbSet&lt;Student> Students { get; set; }
+                                DbSet&lt;School> Schools { get; set; }
+                                public StudentDbContext() { }
+                                public StudentDbContext(DbContextOptions&lt;StudentDbContext> options): base(options) { }
+                                protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) { }
+                                protected override void OnModelCreating(ModelBuilder modelBuilder){}
+                            }
+                    </pre>
+                    <p>A db context will includes:
+                        <br>1). all the needs tables/models, include them as properties with DbSet as type. <span style="color:red">DbSet implements IQueryable and IEnumerable, so they are LINQ enabled.</span> Naming practice: table name + "s";
+                        <br>2). Parameterless constructor, DbContextOptions contructor. The <span class="inline-code">DbContextOptions</span> is used to configure the connection of the DbContext to the underlying database. e.g. what is the connect string, what is the database provider.;
+                        <br>3). OnConfiguring is optional. It's used to configuring the dbcontext. It allows us to configure the dbcontext inside the dbcontext.;
+                        <br>4). <span style="color:red">OnModelCreating</span>: this method will be called to generate database table when migrating.
+                    </p>
+                    <p>In real, don't provide the parameterless constructor & OnConfiguring function since we only want the dbcontext is configured by whom is using it.</p>
+                </li>
+                <li>
+                    <h4>OnModelCreating</h4>
+                    <p>Mapping C# entities to database tables can be done conventions, attributes, and Fluent API.</p>
+                    <p>Moreover, for a simple project, we can write configuartion as statements inside the OnModelCreating method. For a large project, configuration of each entity class can be written as individual configuration class.</p>
+                    <h4>Problems should be considered when creating a table from an entity/model</h4>
+                    <p>
+                        1). column names for each properties<br>
+                        2). column types for each properties. For example, c# string can be mapped to varchar(n), char(n)<br>
+                        2.1). varchar and array column have max length<br>
+                        3). column allow to be null? <br>
+                        4). column default value<br>
+                        5). column value converter, e.g. database storing string but c# entity is using Enum. <span style="color:red">Even thought postgres also support Enum, but c# enum by default is mapped to postgres text</span><br>
+                        6). table index, index name, unique<br>
+                        7). table keys, key name<br>
+                        8). table name.<br>
+                        9). navigation <a href="#in-depth">Check in-depth</a>
+
+                    </p>
+                    <h4>Using Fluent API & Individual configuration class</h4>
+                    <p>Fluent api use builder pattern to configure each property and each table. <span style="color:red">Install Microsoft.EntityFrameworkCore.Relational nuget package.</span></p>
+
+                    <pre class="brush:cpp">
+                            using Microsoft.EntityFrameworkCore;
+                            using Microsoft.EntityFrameworkCore.Metadata.Builders;
+                            using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+                            public class SchoolConfiguration: IEntityTypeConfiguration&lt;School>
+                            {
+                                public void Configure(EntityTypeBuilder&lt;School> builder)
+                                {
+                                    // setup school name.
+                                    builder.ToTable("schools");
+
+                                    // .Property method returns a PropertyBuilder
+                                    builder.Property(p => p.Id)
+                                        .HasColumnName("school_id")
+                                        // data type targeting a relational database. This should be the complete type name, including precision, scale, length, etc.
+                                        .HasColumnType("bigserial") // database vendor specific type, .e.g postgres bigserial.
+                                        .IsRequired();
+
+                                    builder.Property(p => p.Name)
+                                        .HasColumnName("school_name")
+                                        .HasColumnType("varchar(50)")
+                                        .IsRequired();
+
+                                    builder.Property(p => p.SchoolType)
+                                        .HasColumnName("school_type")
+                                        .HasColumnType("varchar(30)") // may cause error if enum name is longer than 30, by default, postgres use "text" type. 
+                                        .HasConversion(new EnumToStringConverter&lt;SchoolType>())
+                                        .IsRequired();
+
+                                    // hasindex return a index builder
+                                    builder.HasIndex(p => p.Name)
+                                        .HasName("unique_school_name_index")
+                                        .IsUnique();
+
+                                    // haskey return a keybuilder
+                                    builder.HasKey(p => p.Id)
+                                        .HasName("school_pkey");
+                                }
+                            }
+                            public class StudentConfiguration : IEntityTypeConfiguration&lt;Student>
+                            {
+                                public void Configure(EntityTypeBuilder&lt;Student> builder)
+                                {
+                                    builder.ToTable("students");
+                                    builder.Property(p => p.Id)
+                                        .HasColumnName("student_id")
+                                        .HasColumnType("bigserial")
+                                        .IsRequired();
+
+                                    builder.Property(p => p.DateOfBirth)
+                                        .HasColumnName("dateofbirth")
+                                        .HasColumnType("timestamp");
+
+                                    builder.Property(p => p.Name)
+                                        .HasColumnName("name")
+                                        .HasColumnType("varchar(30)")
+                                        .IsRequired();
+
+                                    builder.Property(p => p.Gender)
+                                        .HasColumnName("gender")
+                                        .HasConversion(new EnumToStringConverter&lt;SchoolType>())
+                                        .IsRequired();
+
+                                    builder.Property(p => p.CurrentSchoolId)
+                                        .HasColumnName("school_id")
+                                        .HasColumnType("bigint")
+                                        .HasDefaultValue(-1)
+                                        .IsRequired();
+
+                                    builder.HasKey(p => p.Id)
+                                        .HasName("student_pkey");
+                                    
+                                }
+                            }
+                    </pre>
+                    <p>apply these configuration to OnModelCreating</p>
+                    <pre class="brush:cpp">
+                        protected override void OnModelCreating(ModelBuilder modelBuilder){
+                            modelBuilder.ApplyConfiguration(new SchoolConfiguration());
+                            modelBuilder.ApplyConfiguration(new StudentConfiguration());
+                        }
+                    </pre>
+                </li>
+                <li>
+                    <h4>Generate migration code</h4>
+                    <p>Install dotnet ef tool</p>
                     <pre class="brush:bash">
+                        dotnet tool install --global dotnet-ef --version 2.2.0
+                    </pre>
+                    <p>When generating migration code, the tool will run against a dbcontext class, and it must know the database provider and connection string. So adding </p>
+                    <pre class="brush:cpp">
+                        public class StudentDbContext: DbContext{
+                            protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) { 
+                                optionsBuilder.UseNpgsql("Host=localhost;Username=postgres;Password=postgres;Database=student_db");
+                            }
+                        }
+                    </pre>
+                    <p>Another approach is add the optionsbuilder into dependency injection (service provider)</p>
+                    <p class="reference-box">
+                        A provider can be configured by overriding the DbContext.OnConfiguring method or by using AddDbContext on the application service provider. If AddDbContext is used, then also ensure that your DbContext type accepts a DbContextOptions&lt;TContext> 
+                    </p>
+                    <p>Migration code can be generate by running </p>
+                    <pre class="brush:bash">
+                        # generating migration code for the specific context. {context} is the context class name.
+                        dotnet ef migrations add migration_20190725 -o Migrations --context StudentDbContext
+                    </pre>
+                    <p>It will generate 3 files.</p>
+                </li>
+                <li>
+                    <h4>Apply migration</h4>
+                    <p>Migration can be applied via programming or cmd.</p>
+                    <p>1. CMD, running</p>
+                    <pre class="brush:bash">
+                            dotnet ef database update --context StudentDbContext
+                    </pre>
+                    <p>It runs against the context class, so provide configuration in the context.</p>
+                    <p>2. Programming, when an application is start, acquiring dbcontext object, and invoke <span class='inline-code'>.Migrate()</span></p>
+                    <pre class="brush:bash">
+                        var optionsBuilder = new DbContextOptionsBuilder&lt;StudentDbContext>();
+                        optionsBuilder.UseNpgsql("Host=localhost;Username=postgres;Password=postgres;Database=student_db");
+                        var dbContext = new StudentDbContext(optionsBuilder.Options);
+                        dbContext.Database.Migrate();
+                    </pre>
+                </li>
+            </ol>
+        </div>
+        <h4>Summary</h4>
+        <p>Model configuration and DbContext configuration are using builder pattern.<br>
+        Microsoft.EntityFrameworkCore itself defines all the method to build/configure model.<br>
+        DbContext configuration/option is primarly built by 3rd party extension methods.
+        </p>
+        <p>SQLite Example</p>
+        <div class="featureList">
+            <ol>
+                <li><h4>Install dependency</h4>
+                    <pre class="brush:bash">
+                        dotnet add package Microsoft.EntityFrameworkCore
                         dotnet add package Microsoft.EntityFrameworkCore.Sqlite # sqlite provider
                         dotnet add package Microsoft.EntityFrameworkCore.Design 
                     </pre>
                 </li>
-                <li>Define model and context
+                <li><h4>Define model and context</h4>
+                    <p>Add configuration inside the context, write fluent statement inside the onmodelcreating.</p>
                     <pre class="brush:cpp">
                             using Microsoft.EntityFrameworkCore;
                             using System.Collections.Generic;
@@ -130,7 +346,7 @@ SyntaxHighlighter.all()
                         dotnet ef database update      
                     </pre>
                 </li>
-                <li>Using the database
+                <li><h4>Using the database</h4>
                     <pre class="brush:cpp">
                             class Program
                             {
@@ -292,7 +508,7 @@ SyntaxHighlighter.all()
     </div>
 </li>
 <li>
-    <div class="content" id="indepth">
+    <div class="content" id="in-depth">
         <h3>In-depth</h3>
         <h4>Entity Framework Core Model</h4>
         <p>A EF Core Model is a C# class used to represent an entity in the database. It is in the conceptual layer.So 
@@ -389,8 +605,6 @@ SyntaxHighlighter.all()
                                     }
                                 }
                             }
-
-
                             // configure via constructor
                             // public DbContext (Microsoft.EntityFrameworkCore.DbContextOptions options);
                             public partial class XxxxContext: DbContext{
@@ -405,128 +619,77 @@ SyntaxHighlighter.all()
                             
                     </pre>
                     <p>When downloading a provider, e.g. PostgreSQL npgsql, it will add extension method to the DbContextOptionsBuilder class but still using 'Microsoft.EntityFrameworkCore' namespace.</p>
-                    <pre class="brush:cpp">
-                        // Object -> DbContextOptionsBuilder -> DbContextOptionsBuilder&lt;TContext>
-
-                        // extension method on DbContextOptionsBuilder
-
-                        // DbContextOptionsBuilder.Options -> DbContextOptions
-
-                        // DbContextOptionsBuilder&lt;TContext>.Options -> DbContextOptions&lt;TContext>
-
-                        // Object -> DbContextOptions -> DbContextOptions&lt;TContext>
+                    <pre class="brush:bash">
+                        Object -> DbContextOptionsBuilder -> DbContextOptionsBuilder&lt;TContext>
+                        extension method on DbContextOptionsBuilder
+                        DbContextOptionsBuilder.Options -> DbContextOptions
+                        DbContextOptionsBuilder&lt;TContext>.Options -> DbContextOptions&lt;TContext>
+                        Object -> DbContextOptions -> DbContextOptions&lt;TContext>
                     </pre>
                 </li>
                 <li>
-                    <h4>Configurating Models/Entities Example</h4>
-                    <p>In EF Core, the configuration of each entity is done in the Context class's OnModelCreating method
-                        <pre class="brush:cpp">
-                            public partial class XxxxContext: DbContext{
-                                protected override void OnModelCreating(ModelBuilder modelBuilder)
-                                {
-                                    // configurating models.
-                                    modelBuilder.Entity&lt;Film>(entity =>
-                                    {
-                                        entity.ToTable("film"); // map to table.
-
-                                        // create index
-                                        entity.HasIndex(e => e.Fulltext)
-                                            .HasName("film_fulltext_idx")
-                                            .ForNpgsqlHasMethod("gist");
-                                        entity.HasIndex(e => e.LanguageId)
-                                            .HasName("idx_fk_language_id");
-                                        entity.HasIndex(e => e.Title)
-                                            .HasName("idx_title");
-
-                                        // map column, type, default value
-                                        entity.Property(e => e.FilmId).HasColumnName("film_id");
-                                        entity.Property(e => e.Description).HasColumnName("description");
-                                        entity.Property(e => e.Fulltext)
-                                            .IsRequired()
-                                            .HasColumnName("fulltext");
-                                        entity.Property(e => e.LanguageId).HasColumnName("language_id");
-                                        entity.Property(e => e.LastUpdate)
-                                            .HasColumnName("last_update")
-                                            .HasDefaultValueSql("now()");
-                                        entity.Property(e => e.Length).HasColumnName("length");
-                                        entity.Property(e => e.ReleaseYear).HasColumnName("release_year");
-                                        entity.Property(e => e.RentalDuration)
-                                            .HasColumnName("rental_duration")
-                                            .HasDefaultValueSql("3");
-                                        entity.Property(e => e.RentalRate)
-                                            .HasColumnName("rental_rate")
-                                            .HasColumnType("numeric(4,2)")
-                                            .HasDefaultValueSql("4.99");
-                                        entity.Property(e => e.ReplacementCost)
-                                            .HasColumnName("replacement_cost")
-                                            .HasColumnType("numeric(5,2)")
-                                            .HasDefaultValueSql("19.99");
-                                        entity.Property(e => e.SpecialFeatures).HasColumnName("special_features");
-                                        entity.Property(e => e.Title)
-                                            .IsRequired()
-                                            .HasColumnName("title")
-                                            .HasMaxLength(255);
-                                        entity.Property( e=> e.Rating)
-                                            .HasColumnName("rating")
-                                            .HasConversion(
-                                                r => RatingConverter.ToString(r),
-                                                s => RatingConverter.ToEnum(s)
-                                            );
-                                        // relationship
-                                        entity.HasOne(d => d.Language)
-                                            .WithMany(p => p.Film)
-                                            .HasForeignKey(d => d.LanguageId)
-                                            .OnDelete(DeleteBehavior.ClientSetNull)
-                                            .HasConstraintName("film_language_id_fkey");
-                                    });
-
-                                }
-                            }
-                        </pre>
-                        In EF Framework, each entity has a Configuration class to do configuration e.g.
-                        <pre class="brush:cpp">
-                            public class LU_CarType{
-                                // ...
-                            }
-                            public class LU_CarTypeConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration&lt;LU_CarType>{
-                                public Configuration_FinancialInstitutionConfiguration()
-                                    : this("Schema_Name")
-                                {
-                                }
-            
-                                public LU_CarTypeConfiguration(string schema)
-                                {
-                                    //...
-                                }
-                            }
-                        </pre>
+                    <h4>Convention based relationship (foreign key + navigation property)</h4>
+                    <p>When a property's type is a complex class, then it will be considered as a nagviation properties.</p>
+                    <p class="reference-box">
+                        Collection navigation property: A navigation property that contains references to many related entities.<br>
+                        Reference navigation property: A navigation property that holds a reference to a single related entity.<br>
+                        Inverse navigation property: When discussing a particular navigation property, this term refers to the navigation property on the other end of the relationship.
+                    </p>
+                    <p>If it is a refernce navigation property, then ef will create a foreign key in this table. If the C# model class defined a property has name same as<br>
+                        1). primary key of the referenced entity<br>
+                        2). navigation property + primary key of the referenced entity<br>
+                        3). referenced entity name + primary key of the referenced entity.<br>
+                        then this property will be used as the foreign key. Otherwise, ef will create a shadow property to be the foreign key.
+                    </p>
+                    <pre class="brush:cpp">
+                        public class School{
+                            // schools table with school_id as PK.
+                            public long SchoolId;
+                        }
+                        public class Student{
+                            public School SchoolRef; // navigation property.
+                            // the following properties can be used as foregin key by convention.
+                            public long SchoolId; // third priority
+                            public long SchoolRefSchoolId; // first priority
+                            public long SchoolSchoolId; // second priority
+                        }
+                    </pre>
+                    <p>If the C# model does not define the foreign key property, ef will create a shadow property named {Navigation Property}{Primary Key}</p>
+                    <h4>Reference back</h4>
+                    <p>After an entity A references to another entity B, then B can reference back to a single entity A (inverse navigation property: one-to-one) or a list of entity A (collection navigation property: many-to-one)</p>
+                    <h4>Inverse navigation property</h4>
+                    <p>One-to-One, one and only one entity needs to define the foreign key explicitly, and it doesn't affect the underlying database. It's EF provided feature. One-to-One is not commonly used, since if they are one, then they basically can be stored as one entity.</p>
+                    <p>** With reference navigation property, inverse navigation property will be the reference navigation property.</p>
+                    <h4>Collection navigation property</h4>
+                    <p>Collection navigation propery is commonly used, and it doesn't affect the underlying database. It's EF provided feature.</p>
+                    <p>Without reference navigation property, EF will still add a shadow foreign key into the "Student" entity.</p>
+                    <p span style="color:red">On restricted when school is deleted</p>
                 </li>
                 <li>
-                    <h4>Configuring a entity</h4>
-                    <p>
-                        A entity is configured by 'naming convention' &lt; 'data annotation' &lt; 'fluent api'. Fluent API has the highest priority.
-                    </p>
-                    <h4>Naming Convention</h4>
-                    <h4>Data Annotation</h4>
-                    <h4>Fluent API</h4>
+                    <h4>Fluent API based relationship</h4>
+                    <p>In EF Core, the configuration of each entity is done in the Context class's OnModelCreating method</p>
+                    <pre class="brush:cpp">
+                        public class StudentDbContext: DbContext{
+                            protected override void OnModelCreating(ModelBuilder modelBuilder){
+                                // configurating models.
+                                modelBuilder.Entity&lt;Student>(entity =>{
+                                    // relationship
+                                    entity.HasOne(std => std.CurrentSchool) // ReferenceNavigationBuilder
+                                        .WithMany(scl => scl.Students) // ReferenceCollectionBuilder
+                                        .HasForeignKey(std => std.CurrentSchoolId) // ReferenceCollectionBuilder
+                                        .OnDelete(DeleteBehavior.Cascade) // ReferenceCollectionBuilder
+                                        .HasConstraintName("refernce_constraint");
+                                }
+                            }
+                    </pre>
+                    <p>The on delete behavior can be set as restrict, set null and cascade. But since the foreign key is required not null, and ef migration tool is smart, it will ignored setnull and use restrict.</p>
                 </li>
             </ol>
         </div>
-        <!--<div class="featureList">
-            <h4>EF Core Model Convention</h4>
-            <p>EF Core defines a few conventions for mapping Model to Database Schema</p>
-            <ol>
-                <li>Primary Key: Exactly One primary key exists in a Model. This primary key field's name is xxxId or Id (non case-sensitive).</li>
-                <li>Foreign Key: The referenced entity is called principal entity e.g. Department in the above model. By convention, a property will
-                     become a foreign key if it has same type as the referenced primary id, and its name is one of<br>
-                     1). {primary key} e.g. DepartmentID<br>
-                     2). {principal entity}{primary key} e.g. DepartmentDepartmentID<br>
-                     3). {navigation property}{primary key} e.g.<span style="color:red">?? CoursesDepartmentID or DepartmentDepartmentID    whose navigation key?? </span>
-                </li>
-            </ol>
-        </div>-->
+        
     </div>
 </li>
+
 <!--<li>
     <div class="content" id="eftool">
         <h3>EF tool</h3>
