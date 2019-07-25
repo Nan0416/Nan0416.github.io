@@ -39,12 +39,13 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Configuration&nbsp;-&nbsp;Local Config Files</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-07-20</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-07-20</span></p>
+<p class="date"><span class="created-date">Created:2019-07-20</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-07-25</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
 <li><a href="#environment">Environment Variables</a></li>
-<li><a href="#config-file">Config files</a></li>
+<li><a href="#dotnet-framework">.NET Framework ConfigurationManager</a></li>
+<li><a href="#dotnet-core">ASP.NET Core ConfigurationBuilder</a></li>
 <!--<li><a href="#reference">References</a></li>-->
 </ul>
 </div>
@@ -161,13 +162,13 @@ SyntaxHighlighter.all()
     </div>
 </li>
 <li>
-    <div class="content" id="config-file">
-        <h3>Config Files</h3>
+    <div class="content" id="dotnet-framework">
+        <h3>.NET Framework ConfigurationManager</h3>
         <p>The feature of configuration file may be supported natively by framework or by 3rd party library.</p>
         <div class="featureList">
             <ol>
                 <li>
-                    <h4>.NET Framework</h4>
+                    
                     <p>.NET Framework (Windows only) natively supports config file, it provides 2 layer of configurations, machine level machine.config and application level app.config or web.config.<br>
                         app.config: used by console app, windows service, windows form, and WPF applications.<br>
                         web.config: used by asp.net framework application.<br>
@@ -322,16 +323,185 @@ SyntaxHighlighter.all()
                     </pre>
                     <h4>App.Debug.Config</h4>
                 </li>
-                <li id="dotnet-core">
-                    <h4>.NET Core</h4>
-                    <p>.NET Core provides a configuration tool <span class="inline-code">ConfigurationSource,Provider,Builder</span> to build configuration. The configuration builder itself does not use any convention. A console app by default 
-                        does not have configuration initialized, this tool has to be included manualy. In contrast, ASP.NET Core app by default has a <span style="color:red">appsettings.json</span>, and it has convention defined inside the <span class="inline-code">.CreateDefaultBuilder</span>
-                        <a href="https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-2.2#default-configuration" target="_blank">Check it here.</a>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="dotnet-core">
+        <h3>ASP.NET Core ConfigurationBuilder</h3>
+        <p>ASP.NET Core provides a configuration tool <span class="inline-code">ConfigurationSource,Provider,Builder</span>. But this tool can also be directly used with without .net core. The configuration builder itself does not use any convention.</p>
+        <p>
+            *** A console app by default does not have configuration initialized, this tool has to be included manualy. In contrast, ASP.NET Core app by default has a <span style="color:red">appsettings.json</span>, and it has convention defined inside the <span class="inline-code">.CreateDefaultBuilder</span>
+            <a href="https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-2.2#default-configuration" target="_blank">Check it here.</a> ***
+        </p>
+        <p>The project is defined under asp.net core extension https://github.com/aspnet/Extensions/tree/master/src/Configuration</p>
+        <h4>Structure</h4>
+        <p>Build each configuration source to configuration provider, and ask values from each provider.</p>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>Basic Example</h4>
+                    <p>The configuration builder flatten configuration source (e.g. json) structure with : concated string.</p>
+                    <pre class="brush:javascript">
+{
+  "person": {
+    "name": "Nan Qin",
+    "age": 25,
+    "gender": "Male"
+  }
+}
+                    </pre>
+                    <pre class="brush:cpp">
+                            var builder = new ConfigurationBuilder();
+                            builder.AddJsonFile("./myapp.json");
+                            var config = builder.Build();
+                            Console.WriteLine(config["person:name"]);
+                    </pre>
+                </li>
+                <li>
+                    <h4>Class introduction</h4>
+                    <p>1). <span class="inline-code">ConfigurationBuilder</span>: "a global source container" it has a list of configuration source, and a <span style="color:red">Build()</span> function that builds each source to a provider, and then instantiate and return a <span class="inline-code">ConfigurationRoot</span> instance with holding the list of providers.
+                        <br>2). <span class="inline-code">IConfigurationSource</span>: an interface that defines a method <span style="color:red">IConfigurationProvider Build(IConfigurationBuilder builder);</span>, which builds each source based on the above builder and return a configuration provider. <span style="color:red">In most case, we don't
+                        actually need to build each source with the "global source container", but since it may have some global knowledge, so we pass it to each Build()</span>
+                        <br>3). <span class="inline-code">IConfigurationProvider</span>: an interface that defines a method <span style="color:red">Load</span> to load data from source. Also method <span style="color:red">TryGet</span> & <span style="color:red">Set</span> to provide data access and modification. <span style="color:red">In the .Load method, provider will flatten configuration hierachy</span>
+                        <br>4). <span class="inline-code">ConfigurationRoot</span>: a collection of configuration providers. When acquiring a value, it try the latest append provider first. When setting a value, it set the value to every provider.
                     </p>
+                    <p>A ConfigurationSource usually does not have complicate logic, it just set basic information about the source. e.g. a json source will set the filepath, reloadonchange, a fileprovider... The read/write logic is inside configuration provider.</p>
+                </li>
+                <li>
+                    <h4>In-depth</h4>
+                    <pre class="brush:cpp">
+                        public class ConfigurationBuilder : IConfigurationBuilder{
+                            public IList&lt;IConfigurationSource> Sources { get; } = new List&lt;IConfigurationSource>();
+                            // Gets a key/value collection that can be used to share data between the IConfigurationBuilder and the registered IConfigurationProvider.
+                            public IDictionary&lt;string, object> Properties { get; } = new Dictionary&lt;string, object>();
+                            public IConfigurationBuilder Add(IConfigurationSource source){
+                                Sources.Add(source);
+                                return this;
+                            }
+                            public IConfigurationRoot Build(){
+                                var providers = new List&lt;IConfigurationProvider>();
+                                foreach (var source in Sources){
+                                    /* Build each source */
+                                    var provider = source.Build(this);
+                                    providers.Add(provider);
+                                }
+                                return new ConfigurationRoot(providers);
+                            }
+                        }
+                        public class ConfigurationRoot : IConfigurationRoot{
+                            public ConfigurationRoot(IList&lt;IConfigurationProvider> providers){
+                                _providers = providers;
+                                foreach (var p in providers){
+                                    // load each provider
+                                    p.Load();
+                                    ChangeToken.OnChange(() => p.GetReloadToken(), () => RaiseChanged());
+                                }
+                            }
+                            public string this[string key]{
+                                get{
+                                    // last come, first use
+                                    foreach (var provider in _providers.Reverse()){
+                                        string value;
+                                        if (provider.TryGet(key, out value)){
+                                            return value;
+                                        }
+                                    }
+                                    return null;
+                                }
+                                set{
+                                    if (!_providers.Any()){
+                                        throw new InvalidOperationException(Resources.Error_NoSources);
+                                    }
+                                    // set value to each provider.
+                                    foreach (var provider in _providers){
+                                        provider.Set(key, value);
+                                    }
+                                }
+                            }
+                            // get subsection
+                            internal IEnumerable&lt;IConfigurationSection> GetChildrenImplementation(string path){
+                                return _providers
+                                    .Aggregate(Enumerable.Empty&lt;string>(),
+                                        (seed, source) => source.GetChildKeys(seed, path))
+                                    .Distinct()
+                                    .Select(key => GetSection(path == null ? key : ConfigurationPath.Combine(path, key)));
+                            }
+                        }
+                    </pre>
+                    <p>Json configuration source and configuration provider are derived from an abstract FileConfigurationSource/Provider.</p>
+                    <pre class="brush:cpp">
+                            public abstract class FileConfigurationSource : IConfigurationSource
+                            {
+                                public IFileProvider FileProvider { get; set; }
+                                public string Path { get; set; }
+                                public int ReloadDelay { get; set; } = 250;
+                                ....
 
-                    <p>Configuration can come from a variety of sources, json, cmd arg, environment, xml file.</p>
+                                // it has a auxiliary function to make source the FileProvider is not null, it ask a file provider from the global configuration builder.
+                                public void EnsureDefaults(IConfigurationBuilder builder)
+                                {
+                                    FileProvider = FileProvider ?? builder.GetFileProvider();
+                                    OnLoadException = OnLoadException ?? builder.GetFileLoadExceptionHandler();
+                                }
+
+                            }
+                            // implement abstract method.
+                            public class JsonConfigurationSource : FileConfigurationSource{
+                                public override IConfigurationProvider Build(IConfigurationBuilder builder){
+                                    EnsureDefaults(builder);
+                                    return new JsonConfigurationProvider(this);
+                                }
+                            }
+
+                            public abstract class ConfigurationProvider : IConfigurationProvider{
+                                // implement basic data access 
+                                protected IDictionary&lt;string, string> Data { get; set; }
+                                protected ConfigurationProvider(){
+                                    Data = new Dictionary&lt;string, string>(StringComparer.OrdinalIgnoreCase);
+                                }
+                            }
+                            public abstract class FileConfigurationProvider : ConfigurationProvider{
+                                public abstract void Load(Stream stream);
+                                public FileConfigurationSource Source { get; }
+                                private void Load(bool reload){
+                                    /* open file, create stream, call subclass's implementation.*/
+                                    Load(stream)
+                                } 
+                            }
+                            public class JsonConfigurationProvider : FileConfigurationProvider{
+                                public override void Load(Stream stream){
+                                    // using a helper class to load json file and flatten it.
+                                    Data = JsonConfigurationFileParser.Parse(stream);
+                                }
+                            }
+                    </pre>
+                </li>
+                <li>
+                    <h4>Reload on change</h4>
+                    <p>File based data provided a reload on change feature. The <span class="inline-code">IFileProvider</span> has a watch function that monitor a directory/file, and return a <span class="inline-code">IChangeToken</span> that include the change state, e.g. deleted, updated.</p>
+                    <p>The watch return an event on change, and the event is bound to file reload in the <span class="inline-code">FileConfigurationProvider</span></p>
+                    <pre class="brush:cpp">
+                        public static class ChangeToken{
+                            public static IDisposable OnChange(Func&lt;IChangeToken> changeTokenProducer, Action changeTokenConsumer);
+                        }
+                        public abstract class FileConfigurationProvider : ConfigurationProvider{
+                            public FileConfigurationProvider(FileConfigurationSource source){
+                                if (Source.ReloadOnChange && Source.FileProvider != null){
+                                    ChangeToken.OnChange(
+                                        () => Source.FileProvider.Watch(Source.Path),
+                                        () => {
+                                            Thread.Sleep(Source.ReloadDelay);
+                                            Load(reload: true);
+                                        });
+                                }
+                            }
+                        }
+                    </pre>
                 </li>
             </ol>
+            <!--                    <p>Configuration can come from a variety of sources, json, cmd arg, environment, xml file.</p>-->
         </div>
     </div>
 </li>
