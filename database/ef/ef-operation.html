@@ -39,11 +39,11 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>EF&nbsp;-&nbsp;LINQ</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-06-29</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-06-29</span></p>
+<p class="date"><span class="created-date">Created:2019-06-29</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-07-26</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
-<li><a href="example">Examples</a></li>
+<li><a href="#crud">Modification & Query (Create, Read, Update, Delete)</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -63,75 +63,202 @@ SyntaxHighlighter.all()
             Tracking behavior will setup a change tracker, so it is slower then no-tracking.</p>
         </li>
         <li>
+            <h4>Saving Data</h4>
+            <p class="reference-box">
+                Each context instance has a ChangeTracker that is responsible for keeping track of changes that need to be written to the database. As you make changes to 
+                instances of your entity classes, these changes are recorded in the ChangeTracker and then written to the database when you call SaveChanges. The database 
+                provider is responsible for translating the changes into database-specific operations (for example, INSERT, UPDATE, and DELETE commands for a relational database).
+                <a href="https://docs.microsoft.com/en-us/ef/core/saving/" target="_blank">Reference</a>
+            </p>
+        </li>
+        <li>
             A query is executed when invoking .ToList, .ToArray, Single, Count.
+        </li>
+        <li>
+            <h4>Parameterless constructor inside select</h4>
+            <p>Using LINQ to query database, the query will eventually be translated into SQL statement by database provider. So there exists limitation on this LINQ since some operation cannot be translated. One limitation is that the type being returned by .Select must use parameterless constructor.</p>
+            <pre class="brush:cpp">
+
+            </pre>
+        </li>
+        <li>
+            <h4>Dispose after using dbcontext</h4>
+            <p>The underlying database is an unmanaged resource, so it should be disposed after using.</p>
+            <pre class="brush:cpp">
+                using (var dbContext = new StudentDbContext(optionsBuilder.Options)){
+                    ...
+                }
+            </pre>
+        </li>
+        <li>
+            <h4>Class organization</h4>
+            <pre class="brush:bash">
+                IEnumerable, IEnumerable&lt;T> // Linq enabled.
+                    |
+                IQueryable
+                    |
+                IQueryable&lt;T> // has methods e.g. .Where, .Select, these method also return .Where
+                    |
+                DbSet&lt;TEntity>
+
+                IQueryable&lt;TEntity>
+                    |
+                IIncludableQueryable&lt;out TEntity, out TProperty>
+            </pre>
         </li>
     </ol>
 </div>
 </div>
 </li>
 <li>
-    <div class="content" id="example">
-        <h3>Examples</h3>
-        <div class="featureList">
-            <ol>
-                <li>
-                    <h4>Class organization</h4>
-                    <pre class="brush:bash">
-                        IEnumerable, IEnumerable&lt;T> // Linq enabled.
-                            |
-                        IQueryable
-                            |
-                        IQueryable&lt;T> // has methods e.g. .Where, .Select, these method also return .Where
-                            |
-                        DbSet&lt;TEntity>
-
-                        IQueryable&lt;TEntity>
-                            |
-                        IIncludableQueryable&lt;out TEntity, out TProperty>
-                    </pre>
-                </li>
-                <li><h4>Basic</h4>
+<div class="content" id="crud">
+    <h3>CRUD</h3>
+    <div class="featureList">
+        <ol>
+            <li>
+                <h4>Check change tracking behavior</h4>
+                <p>By default, change tracking behavior is enabled. And it can be disabled at entire context scope or individual query scope.</p>
                 <pre class="brush:cpp">
-                    var films = _context.Film.Where(f=>f.Rating == Rating.PG13);
-                    var films = _context.Film.Where(f=>f.Rating == Rating.PG13).Where(f=>(f.Length ?? 0) > 184);
+                    public enum QueryTrackingBehavior{
+                        TrackAll = 0,
+                        NoTracking = 1
+                    }
+                    // access 
+                    dbContext.ChangeTracker.QueryTrackingBehavior;
+                    // disable tracking;
+                    dbContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+                    // disable tracking at individual query scope
+                    var blogs = context.Blogs
+                        .AsNoTracking()
+                        .ToList();           
                 </pre>
-                </li>
-                <li>
-                    <h4>Include & ThenInclude: Loading Related Data</h4>
-                    <p>By default, the navigation properties is not set. To populate them, using .Include and .ThenInclude</p>
-                    <p>Eager loading: the Included data is loaded when the query is executed.</p>
-                    <pre class="brush:cpp">
-                        // one -> one
-                        var actors = _context.FilmActor.Where(fa =>fa.FilmId == 141).Include(fa=>fa.Actor);
-                        foreach (var actor in actors){
-                            Console.WriteLine(actor.Actor.FirstName);
-                        }
-                        // one -> many
-                        var citiesInChina = _context.Country.Where(c =>c.Country1.ToLower() == "china").Include(c => c.City); // .ThenInclude(cities=> ...)
-            
-                        foreach( var china in citiesInChina){
-                            var cities = china.City.ToList();
-                            foreach(var city in cities){
-                                Console.WriteLine(city.City1);
-                            }
-                        }
 
-                        // Include/ThenInclude does not support many -> 
-                        // e.g. Cannot then include on the City field, because it is a collection.
-                    </pre>
-                </li>
-                <li>
-                    <h4>Reference</h4>
+            </li>
+            <li>
+                <h4>Insert data</h4>
+                <p>
+                    EF can help insert data into an individual table, it can also help <span style="color:red">insert data into multiple relevant tables.</span>
+                </p>
+                <pre class="brush:cpp">
+                        // insert data into school.
+                        using (var dbContext = new StudentDbContext(optionsBuilder.Options)) { 
+                            dbContext.Schools.Add(new School{
+                                Name = "4z",
+                                SchoolType = SchoolType.HighSchool
+                            });
+                        }
+                </pre>
+                <p>Insert a school with some students by using School's<span style="color:red">Collection Navigation Property</span></p>
+                <pre class="brush:cpp">
+                using (var dbContext = new StudentDbContext(optionsBuilder.Options)) { 
+                Console.WriteLine(dbContext.ChangeTracker.QueryTrackingBehavior); // TrackAll
+                dbContext.Schools.Add(new School
+                {
+                    Name = "4z",
+                    SchoolType = SchoolType.HighSchool,
+                    Students = new List&lt;Student>
+                    {
+                        new Student{
+                            Name = "Nan",
+                            DateOfBirth = DateTime.Now,
+                            Gender = Gender.Male
+                        },
+                        new Student
+                        {
+                            Name = "James",
+                            DateOfBirth = new DateTime(1932, 11, 21)
+                        },
+                        new Student
+                        {
+                            Name = "Amy",
+                            DateOfBirth = new DateTime(1992, 2, 3),
+                            Gender = Gender.Female
+                        }
+                    }
+                });
+                dbContext.SaveChanges();
+            }
+                </pre>
+                <p id="insert-to-multitable"><span style="color:red">Attention</span>: Student Model cannot explicitly define the foreign key property. Otherwise, it will give error that violate the foreign key constraint. (EF Core can help the shadow foreign key with the School's being created Id).</p>
+            </li>
+            <li>
+                <h4>Query</h4>
+                <p>Query is the frist step before update data.</p>
+                <p style="color:red">Navigation property is included only if it's used inside the query statement (e.g. by .Select), it will not be included when using the query result out of the query.</p>
+                <pre class="brush:cpp">
+            // using .Include , .ThenInclude to explicitly include navigatioon properties.
+            using (var dbContext = new StudentDbContext(optionsBuilder.Options))
+            {
+                School school = await dbContext.Schools.Where(schl => schl.Name == "3z").Include(schl=>schl.Students).FirstOrDefaultAsync();
+                Console.WriteLine(school?.Students?.Count());
+            }
+            using (var dbContext = new StudentDbContext(optionsBuilder.Options))
+            {
+                Student student = await dbContext.Students.Where(std => std.Name == "Amy").Include(schl => schl.CurrentSchool).FirstOrDefaultAsync();
+                Console.WriteLine(student?.CurrentSchool?.Name);
+            }
+            //public static IIncludableQueryable&lt;TEntity, TProperty> Include&lt;TEntity, TProperty>([NotNullAttribute] this IQueryable&lt;TEntity> source, [NotNullAttribute] Expression&lt;Func<TEntity, TProperty>> navigationPropertyPath) where TEntity : class;
+            var data = await dbContext.Students.Where(std => std.Name == "Amy").Select(std => new StdSchl
+            {
+                StdName = std.Name,
+                Gender = std.Gender,
+                SchlName = std.CurrentSchool.Name // using navigation property inside the query.
+            }).FirstOrDefaultAsync();
+                </pre>
+                <p>Selected new type must have parameterless constructor because a provider cannot translate parameter constructor to SQL statement.</p>
+                <p>If using a parameter constructor, it does not cause compile time error, but will result in a runtime error.</p>
+                <p style="color:red">??? it depends on the underlying providers. postgres provider can support, but sql server provider doesn't.</p>
+                <pre class="brush:cpp">
+            /*
+            public class NameWrapper{
+                private string _name;
+                public NameWrapper(string name){_name = name;}
+            }
+            */
+            using (var dbContext = new StudentDbContext(optionsBuilder.Options))
+            {
+                var data = await dbContext.Students.Where(std => std.Name == "Amy")
+                    .Select(std => new NameWrapper(std.Name)) // this may cause error depends on the db provider.
+                    .FirstOrDefaultAsync();
+            }
+                </pre>
+                <h4>Reference</h4>
                     <pre class="brush:cpp">
                         public static IQueryable&lt;TSource> Where&lt;TSource>(this IQueryable&lt;TSource> source, Expression&lt;Func&lt;TSource, bool>> predicate);
                         public static TSource FirstOrDefault&lt;TSource>(this IQueryable&lt;TSource> source);
                         public static IIncludableQueryable&lt;TEntity, TProperty> Include&lt;TEntity, TProperty>([NotNullAttribute] this IQueryable&lt;TEntity> source, [NotNullAttribute] Expression&lt;Func&lt;TEntity, TProperty>> navigationPropertyPath) where TEntity : class;
                         public static IIncludableQueryable&lt;TEntity, TProperty> ThenInclude&lt;TEntity, TPreviousProperty, TProperty>([NotNullAttribute] this IIncludableQueryable&lt;TEntity, TPreviousProperty> source, [NotNullAttribute] Expression&lt;Func&lt;TPreviousProperty, TProperty>> navigationPropertyPath) where TEntity : class;
                     </pre>
-                </li>
-            </ol>
-        </div>
+            </li>
+            <li>
+                <h4>Update data</h4>
+                <p>First get the data need to be modified, and update it then save.</p>
+                <pre class="brush:cpp">
+            using (var dbContext = new StudentDbContext(optionsBuilder.Options))
+            {
+                IQueryable&lt;Student> students = dbContext.Students.Where(stds => stds.Name == "Amy").Where(stds => stds.CurrentSchool.Name == "3z");
+                Student std = await students.FirstOrDefaultAsync();
+                std.Gender = Gender.Unknown;
+                dbContext.SaveChanges();
+            }
+                </pre>
+                <p>Disable/Enable tracking at individual query scope</p>
+                <pre class='brush:cpp'>
+                    // public static IQueryable&lt;TEntity> AsNoTracking&lt;TEntity>([NotNullAttribute] this IQueryable&lt;TEntity> source) where TEntity : class;
+                    // public static IQueryable&lt;TEntity> AsTracking&lt;TEntity>([NotNullAttribute] this IQueryable&lt;TEntity> source) where TEntity : class;
+                    var students = dbContext.Students.AsNoTracking().Where(stds => stds.Name == "Amy").Where(stds => stds.CurrentSchool.Name == "3z");
+                </pre>
+            </li>
+            <li>
+                <h4>Delete data</h4>
+                <p>Delete data is not a common practice, usually, we add a "isDeleted/isActive" field to a table and mark a data item as deleted.</p>
+                <p>
+                    
+                </p>
+            </li>
+        </ol>
     </div>
+</div>
 </li>
 <li>
 <div class="content" id="reference">

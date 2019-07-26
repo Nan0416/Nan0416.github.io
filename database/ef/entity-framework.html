@@ -655,6 +655,7 @@ SyntaxHighlighter.all()
                         }
                     </pre>
                     <p>If the C# model does not define the foreign key property, ef will create a shadow property named {Navigation Property}{Primary Key}</p>
+                    <p><span style="color:red">Foreign key property should not be created explicitly most time, since it prevents from "inserting data into multiple table in one statement"</span> <a href="./ef-operation.html#insert-to-multitable">Reference</a></p>
                     <h4>Reference back</h4>
                     <p>After an entity A references to another entity B, then B can reference back to a single entity A (inverse navigation property: one-to-one) or a list of entity A (collection navigation property: many-to-one)</p>
                     <h4>Inverse navigation property</h4>
@@ -664,6 +665,17 @@ SyntaxHighlighter.all()
                     <p>Collection navigation propery is commonly used, and it doesn't affect the underlying database. It's EF provided feature.</p>
                     <p>Without reference navigation property, EF will still add a shadow foreign key into the "Student" entity.</p>
                     <p span style="color:red">On restricted when school is deleted</p>
+                </li>
+                <li>
+                    <h4>Fluent API rename shadow property</h4>
+                    <p>Since we may not want to create foreign key property explicitly, ef core will use its convention to create a shadow property for us. And the name of shadow property in database will have the same style in code e.g. "CamelCase" but we may want to use "underscore" style in database naming.</p>
+                    <pre class="brush:cpp">
+                        public void Configure(EntityTypeBuilder&lt;Student> builder){
+                            // update convention given name.
+                            builder.Property("CurrentSchoolId")
+                                .HasColumnName("current_school_id");
+                        }
+                    </pre>
                 </li>
                 <li>
                     <h4>Fluent API based relationship</h4>
