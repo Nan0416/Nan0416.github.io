@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>Linux&nbsp;Wget&Curl</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-08-03">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushPython.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushSql.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>Linux&nbsp;-&nbsp;Wget&Curl</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-08-03</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-04</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#wget">wget</a></li>
+<li><a href="#curl">curl</a></li>
+<!--<li><a href="#reference">References</a></li>-->
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="wget">
+<h3>wget</h3>
+<p>wget is a web resource downloader. It supports HTTP, HTTPS, and FTP. Most requests sent with wget are GET.</p>
+<div class="featureList">
+    <ol>
+        <li>
+            <h4>Syntax & Usage</h4>
+            <pre class="brush:bash">
+                # wget [OPTION]... [URL]...
+                wget --output-document=123.txt http://nan0416.github.io # download the curl to 123.txt
+            </pre>
+            <p>wget has several different kinds of options, including log, downloaded resource, http config, https config, ftp config and so on</p>
+        </li>
+        <li>
+            <h4>Log config</h4>
+            <p>Log by default print to stdout. But it can be muted or redirect to other location.</p>
+            <pre class="brush:bash">
+                wget --quiet http://nan0416.github.io # without logging
+                wget --output-file log.txt http://nan0416.github.io # output to log.txt
+            </pre>
+        </li>
+        <li>
+            <h4>Download config</h4>
+            <p>The output filename, download max speed, retries, username&password for ftp are configurable.</p>
+            <pre class="brush:bash">
+                wget --output-document "note.txt" http://nan0416.github.io # name the output file
+                wget --output-document - http://nan0416.github.io # download the file to stdout
+                wget --limit-rate 20k http://nan0416.github.io # max speed is 20 KB/s
+            </pre>
+        </li>
+    </ol>
+</div>
+</div>
+</li>
+<li>
+    <div class="content" id="curl">
+        <h3>Curl</h3>
+        <p>Curl can sent post request</p>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>Syntax & Usage</h4>
+                    <pre class="brush:bash">
+                        # curl [options...] url
+                    </pre>
+                </li>
+                <li>
+                    <h4>Curl post</h4>
+                    <pre class="brush:bash">
+                        curl --request POST http://nan0416.github.io
+                    </pre>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<!--<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li></li>
+    </ol>
+</div>
+</div>
+</li>-->
+</ol>
+</div>
+    
+</body>
+</html>
