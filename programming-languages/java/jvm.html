@@ -1,0 +1,254 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>Java&nbsp;JVM</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-08-04">
+<meta name="keywords" content="java">
+<meta name="keywords" content="jvm">
+<meta name="keywords" content="programming">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushPython.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushSql.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>Java&nbsp;-&nbsp;JVM</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-08-04</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-04</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#java-gc">Java Garbage Collection</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+<p>JVM (Java virtual machine) is the runtime of java application. It executes Java bytecode and helps manage memory.</p>
+<div class="featureList">
+    <ol>
+        <li>
+            <h4>JVM & .NET CLR</h4>
+            <p>
+                Java virtual machine. Java code is compiled to an intermediary language called bytecode, which can be understood and executed by the virtual machine. 
+                There exist different implementations of JVM, such as Oracle Hotspot, OpenJDK. Moreover, any other languages, such as Groovy and Scala that can also be compiled 
+                into bytecode can run on JVM. So a Groovy or Scala program can invoke Java's library in some ways.
+            </p>
+            <p>
+                .NET CLR (common language runtime) is a similar thing as JVM, but it is a Microsoft technology and only runs on Windows systems. Microsoft also had a .NET Core 
+                runtime, which is cross platform. .NET CLR can understand and execute MSIL (Microsoft Intermediate Language, an equivalent to bytecode). And C#, F#, VB can be 
+                compiled to MSIL.
+            </p>
+        </li>
+        <li>
+            <h4>JIT</h4>
+            <p>
+                JIT (Just in time) compilation is a Java technique. Because Java’s bytecode is executed by JVM instead of directly executing on a physical processor, it is a 
+                little bit inefficient. JIT compilation will compile the most frequently running code block into natively machine code to directly execute on processors.
+                The smallest block that can be JIT compiled is a method. Therefore, extracting the most common functionalities as methods can improve performance.
+            </p>
+            <p class="reference-box">
+                By default, a piece of code needs to be excuted 1500 times for it to be JIT compiled although this is configurable.  This leads to the concept of “warming up”
+                 the JVM.  It will be at it’s most performant the longer it runs as these optimisations occur.  On the downside, JIT compilation is not free; it takes time and 
+                 resource when it occurs. <a href="https://dzone.com/articles/jvm-and-garbage-collection">Reference</a>
+            </p>
+        </li>
+        <li>
+            <h4>Java Escape</h4>
+        </li>
+    </ol>
+</div>
+</div>
+</li>
+<li>
+    <div class="content" id="java-gc">
+        <h3>Java Garbage Collection</h3>
+        <p>Java Garbage Collection is part of memory management. It's responsible for reclaiming memory from heap.</p>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>Java memory model</h4>
+                    <p>Java has two types of memory, stack and heap. (<span style="color:red">stack per thread, heap per jvm process</span>). A stack holds references to objects that 
+                        store in heap and stores primitive type values; The heap stores objects. The heap is futher divided into serveral region for better GC performance.
+                    </p>
+                    <p><img src="./img/javamemory12.jpg" width="470" height="250"></p>
+                    <p>[image reference https://dzone.com/articles/java-memory-management]</p>  
+                </li>
+                <li>
+                    <h4>Java string pool</h4>
+                    <p>String is special object in terms of memory management. Because string is immutable, modication of a string is acutally to create a new string. In order to improve the performance, 
+                        java reuses string objects. In heap, there is area called string pool, which holds different string objects have been created. When declaring a new string, JVM will first try to find the same string from the string pool.
+                    </p>
+                    <p>
+                        This feature is called <span style="color:red">string interning</span>. This is the default behavior when declaring a string by using double quote.
+                        <pre class="brush:java">
+                            String name = "qinnan";
+                        </pre>
+                        However, using <span class="inline-code">new</span> or <span class="inline-code">.toString()</span> still create string object in heap. But we can use <span class="inline-code">.intern()</span> to futher interning the string.
+                        <pre class="brush:java">
+                            String name = new String("qinnan").intern();
+                            String name2 = new Object().toString().intern();
+                        </pre>
+                    </p>
+                    <pre class="brush:java">
+                        String name = "qinnan"; // create "qinnan" in the string pool.
+                        String name2 = "qinnan"; // found "qinnan" in the string pool, add reference to that string.
+                        String name3 = new String("qinnan");
+                        boolean isEqual = name == name2 ; // true because they reference to the same object.
+                        boolean isEqual2 = name == name3 ; // false
+                    </pre>
+                    <p class="reference-box">
+                        Before Java 7, the JVM placed the Java String Pool in the PermGen space, which has a fixed size — it can’t be expanded at runtime and is not eligible for garbage collection.
+                        <br>The risk of interning Strings in the PermGen (instead of the Heap) is that we can get an OutOfMemory error from the JVM if we intern too many Strings.
+                        <br>From Java 7 onwards, the Java String Pool is stored in the Heap space, which is garbage collected by the JVM. The advantage of this approach is the reduced risk of OutOfMemory error because unreferenced Strings will be removed from the pool, thereby releasing memory.
+                        <br><a href="https://www.baeldung.com/java-string-pool" target="_blank">reference</a>
+                    </p>
+                </li>
+                <li>
+                    <h4>Reference types</h4>
+                    <p>Java has 4 different reference types. Each reference type has a different behavior during garbage collection. The default reference is <span style="color:red">strong references</span>. For example</p>
+                    <pre class="brush:java">
+                        Student std = new Student("qinnan", 25, Gender.Male);
+                        StringBuilder sb = new StringBuilder();
+                    </pre>
+                    <p>This kind of objects will be reclaimed when no stack variables reference them.</p>
+                    <p><span style="color:red">Weak Reference</span>: declare a weak reachability object. Weak reachability objects are reclaimed on next GC.<span style="color:red">Soft Reference</span>: declare a soft reachability object, reclaim when running low on memory. These two type references are used with a wrapper class.</p>
+                    <pre class="brush:java">
+                        WeakReference&lt;Student> w_reference = new WeakReference&lt;>(new Student());
+                        SoftReference&lt;Student> s_reference = new SoftReference&lt;>(new Student());
+                        w_reference.get(); // less likely return null
+                        System.gc(); // explicitly run GC. But GC may not run. It is not guaranteed. GC is subject to reject the request.
+                        w_reference.get(); // most likely return null;
+                    </pre>
+                    <p><span style="color:red">PhantomReference</span> together with <span style="color:red">ReferenceQueue</span> can notify app when an object is going to be reclaimed.</p>
+                    <h4>Reachability</h4>
+                    <p class="reference-box">
+                        An object is strongly reachable if it can be reached by some thread without traversing any reference objects. A newly-created object is strongly reachable by the thread that created it.
+                        <br>An object is softly reachable if it is not strongly reachable but can be reached by traversing a soft reference.
+                        <br>An object is weakly reachable if it is neither strongly nor softly reachable but can be reached by traversing a weak reference. When the weak references to a weakly-reachable object are cleared, the object becomes eligible for finalization.
+                        <br>An object is phantom reachable if it is neither strongly, softly, nor weakly reachable, it has been finalized, and some phantom reference refers to it.
+                        <br>Finally, an object is unreachable, and therefore eligible for reclamation, when it is not reachable in any of the above ways.
+                    </p>
+                    <p><img src="./img/reachability.png" width="470" height="250"></p>
+                    <h4>Java reachability analysis</h4>
+                    <p>
+                        Before GC reclaim memory, it need to mark objects that cannot be reclaimed. This step is reachability analysis. It searches objects that can be reached via reference from the <span style="color:red">GC Root</span>. GC Root includes <br>
+                        1). Stack variables<br>
+                        2). Static variables of the main class<br>
+                        3). active threads
+                        <pre class="brush:java">
+                                new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        System.out.println("New Thread by anonymous class");
+                                    }
+                                }).start(); // we don't have a reference to it, but it's running.
+                        </pre>
+                        4). JNI references
+                    </p>
+                </li>
+                <li>
+                    <h4>Heap organization</h4>
+                    <p>
+                        Garbage collection is an expensive operation. During GC, threads may be paused. So it is not practical to run GC on the entire heap. 
+                        JVM stores objects into corresponding locations accroding to the time they have lived. Heap: Young generation, old generation, permanent generation. <span style="color:red">permgen is replaced by metaspace since Java 8.</span><br>
+                        GC run on young generation frequently. The young generation is futher divided into Eden space (伊甸园), survivor 0 (S0) and survivor 1 (S1).
+                    </p>
+                    <p>
+                        When an object is created, it is allocated on Eden space. Eden space is small, so it gets full quickly. GC run reachability analysis on Eden to mark alive objects. 
+                        And then GC moves alive objects from Eden and S1/0 to S0/1. S0 and S1 are "from" survivor and "to" survivor. Their role is changed after each GC. The conceptual "from" 
+                        survivor is always empty.
+                    </p>
+                    <p>After a couple round (<span style="color:red">tenuring threshold</span>, by default 15) objects in survivor will be copied to old generation space.</p>
+                    <p>
+                        Minor GC: only run GC on Eden, happens when Eden is full<br>
+                        Full GC: run GC on young, old, and permanent generation space, happens when old or permanent space is full, or invoking <span class="inline-code">System.gc()</span>
+
+                    </p>
+                </li>
+                <li>
+                    <h4>GC types</h4>
+                    <p>
+                        1). serial gc: one thread to execute gc, app is paused during gc;<br>
+                        2). parallel gc: multiple thread to execute gc, app is paused during gc;<br>
+                        3). mostly concurrent gc: app may be run during gc;
+                    </p>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="gc-practice">
+        <h3>GC Practices</h3>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <p><span style="color:red">-verbose:gc</span> print info when a gc happens.</p>
+                </li>
+                <li>
+                    <p>
+                        narrow down variables scope; 
+                        <br>explicitly set variables to null when possible;
+                        <br>don't use strong references when weak/soft references are possible;
+                        <br>don't use <span class='inline-code'>.finalizer</span>
+                    </p>
+                </li>
+                <li>
+                    config heap/stack size:<br>
+                    -Xms512m // init heap size = 512MB<br>
+                    -Xmx1024m // max heap = 1024MB<br>
+                    -Xss128m // thread size = 128MB per thread<br>
+                    -Xmn256m // young generation = 256MB
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li><a href="https://dzone.com/articles/java-memory-management" target="_blank">Java Memory Management</a></li>
+        <li><a href="https://docs.oracle.com/javase/7/docs/api/java/lang/ref/package-summary.html#reachability" target="_blank">Reachability</a></li>
+        <li><a href="https://blog.csdn.net/zmx729618/article/details/79423255" target="_blank">利用虚引用PhantomReference实现对象被回收时收到一个系统通知</a></li>
+        <li><a href="https://www.baeldung.com/java-permgen-metaspace" target="_blank">Permgen vs Metaspace in Java</a></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>
