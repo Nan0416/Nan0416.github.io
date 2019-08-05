@@ -37,15 +37,15 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Java&nbsp;-&nbsp;Cheatsheet</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-10-14</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-06-25</span></p>
+<p class="date"><span class="created-date">Created:2018-10-14</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-04</span></p>
 <div class="catalog">
 <ul class="catalogItems">
-<li><a href="#string">String</a></li>
+<li><a href="#string">String & StringBuilder</a></li>
 <li><a href="#array">Array</a></li>
 <li><a href="#collections">List/Set/Map/Stack/Queue</a></li>
 <li><a href="#math">Math</a></li>
 <li><a href="https://docs.oracle.com/javase/8/docs/api/" target="_blank" style="color:brown;font-weight:bold">Java SE 8 Doc</a></li>
-<!--<li><a href="#reference">References</a></li>-->
+<li><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/module-summary.html" target="_blank" style="color:brown;font-weight:bold">Java SE 11 Doc java.base module</a></li>
 </ul>
 </div>
 <hr>
@@ -53,12 +53,12 @@ SyntaxHighlighter.all()
 <ol>
 <li>
 <div class="content" id="string">
-<h3>String manipulation</h3>
-<p>String is immutable. Every time you modify a string, it acutally generates a new one.</p>
+<h3>String & StringBuilder</h3>
+<p>String is immutable. Java support string interning.</p>
 <div class="featureList">
     <ol>
         <li>
-                <h4><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/StringBuilder.html" target="_blank" style="color:brown;font-weight:bold">StringBuilder</a></h4>
+            <h4><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/StringBuilder.html" target="_blank" style="color:brown;font-weight:bold">StringBuilder</a></h4>
             <pre class="brush:java">
                 StringBuilder sb = new StringBuilder();
                 sb.append(* any type); // return a refernce to self so that can be chainable
@@ -81,8 +81,9 @@ SyntaxHighlighter.all()
                 .charAt(int): char
                 .toCharArray(): char []
                 .equals(String): boolean
-                .substring(int s, int e): String
-                + (concate): String
+                .substring(int s, int e): String / .substring(int beginindex): String
+                + / .concat(String str);: String
+                .hashCode() :int 
                 .length(): int
                 .split(String): String[]
                 .toLowerCase()/ .toUpperCase(): String[]
@@ -93,10 +94,11 @@ SyntaxHighlighter.all()
             <h4>Practice</h4>
             1). Construct/Modify a string: if the size is known, then use char[] and new String(char[]). Otherwise, using StringBuilder.<br>
             2). for loop a string: .charAt()<br>
-            3). upper case: (char)(char_c - 'a' + 'A') <span style="color:red">Return int</span>
+            3). upper case: (char)(char_c - 'a' + 'A') <span style="color:red">Return int</span><br>
+            4). use .equals to compare.
         </li>
-        </ol>
-    </div>
+    </ol>
+</div>
 </div>
 </li>
 <li>

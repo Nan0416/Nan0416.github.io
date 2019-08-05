@@ -44,8 +44,6 @@ SyntaxHighlighter.all()
 <li><a href="#datatype">Data Type</a></li>
 <li><a href="#object">Object</a></li>
 <li><a href="#date">Date</a></li>
-<li><a href="#basic">String/StringBuffer</a></li>
-<li><a href="#array">Array</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -113,7 +111,7 @@ SyntaxHighlighter.all()
     </li>
     <li>
     <div class="content" id="object">
-        <h3>Object</h3>
+        <h3>java.lang.Object</h3>
         <p>Java supports pre-defined primitive types, class (concrete & abstract), interface, enum, <span style="color:red">but not C# struct and delegate</span></p>
         <p>All classes in java inherit from Object class.</p>
         <div class="featureList">
@@ -200,40 +198,6 @@ SyntaxHighlighter.all()
     </div>
 </div>
 </li>
-<li>
-<div class="content" id="string">
-    <h3>String</h3>
-    <p>
-        <span style="color:red">
-            String is immutable, so when you want to dynamically create String, use StringBuffer.</span>
-            <br> String name = "Nan Qin";
-            <br> Constructors// String(byte [], Charset)
-            <br> .charAt(int index): char <span style="color:red">char in Java is 2-byte</span>
-            <br> + / .concat(String str); return a new string, the original string does not change.
-            <br> .hashCode() :int
-            <br> .length(): int // Array's length is not a function but an attributes.
-            <br> .toLowerCase();
-            <br> .toUpperCase();
-            <br> .substring(int beginindex);
-            <br> .substring(int beginindex, int endindex);
-    </p>
-    <h3>StringBuffer</h3>
-                <p>
-                    <span style="color:red">Essential method, append/insert</span>
-                    <br>new StringBuffer();
-                    <br>new StringBuffer(int initialCapa);
-                    <br>new StringBuffer(String str);
-                    <br>
-                    <br>append(any type): //append any type, internally call .toString();
-                    <br>insert(int offset, any type); // insert at the offset index, not after
-                    <br>length();
-                    <br>.toString();
-                    <br>.reverse(): StringBuffer; the original does not change, return a new StringBuffer
-                </p>
-</div>
-</li>
-
-
 <li>
 <div class="content" id="array">
     <h3>Array</h3>
