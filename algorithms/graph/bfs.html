@@ -2,7 +2,7 @@
 <!-- NewPage -->
 <html lang="en">
 <head>
-<title>BFS&nbsp;DFS</title>
+<title>Graph&nbsp;BFS</title>
 <meta charset="utf-8">
 <meta name="date" content="2019-02-05">
 <meta name="keywords" content="">
@@ -35,9 +35,9 @@ SyntaxHighlighter.all()
 </script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<strong>&nbsp;-&nbsp;</strong>
+<strong>Graph&nbsp;-&nbsp;BFS</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-02-05</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-05</span></p>
+<p class="date"><span class="created-date">Created:2019-02-05</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-07</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -53,8 +53,26 @@ SyntaxHighlighter.all()
 <h3>Introduction</h3>
 <p>The trivial alogrithms for BFS is Queue, DFS is recursion.</p>
 <p>BFS only has one order, DFS has 3 different orders (preorder, inorder and postorder) [Inorder only works with binary tree]</p>
-<h4>Preorder and Postorder</h4>
-<p>When you traverse a graph, postorder and preorder's order are not complete reverse. But the right-dominant preorder is in the reverse order of postorder.</p>
+<div class="featureList">
+    <ol>
+        <li>
+            <h4>BFS vs. DFS</h4>
+            <p>BFS 很老实, it iterates the entire graph, tree, matrix layer by layer. Finally, it can traverse every node. A well designed DFS is smart, it can also find a target very quick in O(h)=O(lgn). It can also iterates every node in O(n).</p>
+            <p style="color:red">BFS most likely applied with undirected graph, (directed) binary tree.</p>
+        </li>
+        <li>
+            <h4>BFS vs. Union Find</h4>
+            <p>When finding connected component in a undirected graph, or matrix. Both union find and BFS can be applied, but union find is better.</p>
+        </li>
+        <li>
+            <h4>Implementation of BFS</h4>
+            <p>BFS is implemented with a queue, first add the root to queue.</p>
+            <p style="color:red">*** # of nodes in a row = queue size before poping up this row's first element.</p>
+
+        </li>
+    </ol>
+</div>
+
 <p>
 <img src="./images/postorder.png" height="300" width="400"> 
 </p>

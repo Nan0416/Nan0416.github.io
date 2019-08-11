@@ -1,0 +1,323 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>Graph&nbsp;Topological ordering</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-08-05">
+<meta name="keywords" content="algorithm">
+<meta name="keywords" content="graph">
+<meta name="keywords" content="dfs">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushPython.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushSql.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>Graph&nbsp;-&nbsp;Topological ordering</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-08-05</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-07</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#example">Examples</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+<div class="featureList">
+    <ol>
+        <li>
+            <h4>Graph: directed vs undirected, cyclic vs acyclic</h4>
+            <p>Definition:<br>
+                1). A tree is an undirected graph in which any two vertices are connected by exactly one path.<br>
+                2). A binary tree is a tree data structure in which each node has at most two children (a polytree with at most two children)<br>
+                2). A polytree is a directed acyclic graph whose underlying undirected graph is a tree <span style="color:red">(a polytree is not a tree since a tree is undirected)</span>.<br>
+                3). DAG: (directed acyclic graph): a directed graph with no directed cycles, the underlying undirected graph may have cycles.<br>
+                4). A complete binary tree: a binary tree every level, except possibly the last, is completely filled, and all nodes in the last level are as far left as possible.
+                <p>
+                    h = (0, 1, 2, ...) #nodes in a level = 2^n. <img src="./img/sum.svg" alt="Kiwi standing on oval">
+
+                </p>
+            </p>
+            <p>Graph > Directed Graph > DAG > Polytree > Binary Tree</p>
+        </li>
+        <li>
+            <h4>Graph representation</h4>
+            <p>Graph, including Tree, are stored in Adjacent List or 2D array (matrix). A binary tree can be represented by a linked structure.</p>
+            <p>[todo: add images]</p>
+            <p>Java implementation of adjacent list can use an array of arraylist, or a hashmap of arraylist. <span style="color:red">ArrayList can introduce duplicated edges if adding twice, but the DFS algorithm can naturally ignore them.</span></p>
+            <pre class="brush:java">
+                //Adjacent list
+                ArrayList&lt;Integer> [] adj; // the list can have duplicated node.
+            </pre>
+        </li>
+        <li>
+            <h4>DFS algorithm</h4>
+            <p>DFS algorithm can run on the adjacent list, 2d array and the binary tree. It can use the idea of recursion and a visited flag, so it can be implemented with recursion or stack.</p>
+            <pre class="brush:java">
+                public class AdjacentListDFS {
+                    private LinkedList&lt;Integer> [] _adjacentList;
+                    private static final String VisitingTemplate = "Visiting %d, Pre-order %d";
+                    private static final String VisitedTemplate = "Visited %d, Post-order %d";
+                    private int _size;
+                
+                    public AdjacentListDFS(int size){
+                        _adjacentList = new LinkedList[size];
+                        _size = size;
+                    }
+                
+                    public void addEdge(int from, int to) throws IllegalArgumentException {
+                        if(from &lt; 0 || from >= _size || to &lt; 0 || to >= _size){
+                            throw new IllegalArgumentException("Invalid input.");
+                        }
+                        if(_adjacentList[from] == null){
+                            _adjacentList[from] = new LinkedList&lt;>();
+                        }
+                        _adjacentList[from].add(to);
+                    }
+                    // return next available count
+                    private int DFSTraversal(int node, boolean [] visited, int count){
+                        visited[node] = true;
+                        System.out.println(String.format(VisitingTemplate, node, count));
+                        count++; // used then inc
+                        if(_adjacentList[node] == null){
+                            System.out.println(String.format(VisitedTemplate, node, count));
+                            return count + 1; // used then inc
+                        }
+                        for(int i : _adjacentList[node]){
+                            if(!visited[i]){
+                                count = DFSTraversal(i, visited, count);
+                            }
+                        }
+                        System.out.println(String.format(VisitedTemplate, node, count));
+                        return count + 1; // used then inc
+                    }
+                
+                    public void DFS(int node) throws IllegalArgumentException{
+                        if(node &lt; 0 || node >= _size){
+                            throw new IllegalArgumentException("Invalid input.");
+                        }
+                        boolean [] visited = new boolean[_size];
+                        DFSTraversal(node, visited, 0);
+                    }
+                
+                    public void DFS(){
+                        boolean [] visited = new boolean[_size];
+                        int count = 0;
+                        for(int i = 0; i &lt; _size; i++){
+                            if(!visited[i]){
+                                count = DFSTraversal(i, visited, count);
+                            }
+                        }
+                    }
+                }
+                public static void main(String [] args){
+                    System.out.println("algorithm.dfs");
+                    AdjacentListDFS adjDFS = new AdjacentListDFS(5);
+                    adjDFS.addEdge(0, 1);
+                    adjDFS.addEdge(0, 2);
+                    adjDFS.addEdge(1, 2);
+                    adjDFS.addEdge(2, 3);
+                    adjDFS.addEdge(4, 3);
+                    adjDFS.addEdge(0, 4);
+                    adjDFS.DFS();
+                }
+                /*
+                Visiting 0, Pre-order 0
+                Visiting 1, Pre-order 1
+                Visiting 2, Pre-order 2
+                Visiting 3, Pre-order 3
+                Visited 3, Post-order 4
+                Visited 2, Post-order 5
+                Visited 1, Post-order 6
+                Visiting 4, Pre-order 7
+                Visited 4, Post-order 8
+                Visited 0, Post-order 9*/
+            </pre>
+            <h4>Status of each node</h4>
+            <p>
+                During a DFS, a node has three status: unvisited, visiting, visited.<br>
+                1). unvisited: we never touch this node yet.<br>
+                2). visiting: it is touched and we are currently exploring its children<br>
+                3). visited: this node and its children are visited.
+            </p>
+            <p>For a simple DFS, we only need unvisited and visited (=visiting + visited). However, <span style="color:red">when detecting whether a cycle existed in a directed graph, we need these three status.</span></p>
+        </li>
+        <li>
+            <h4>Detect cycle in a directed graph</h4>
+            <p>A cycle existed when a parent's post-order &lt; child's post-order. (A Graph has cycle iff its DFS tree has a back edge)</p>
+            <p>Idea: if a node is in visiting status, it means we are visiting itself or its children. If later we reach the node back and it's still in visiting status, it will mean we returns back from one of its children. In other words, it has a cycle.</p>
+            <p>** All visited nodes are not involved in any cycle. Because if a visited node is involved in a cycle, then we will find the cycle when visiting it.</p>
+            <pre class="brush:java">
+    // leetcode 207 course schedule.
+    public boolean canFinish(int numCourses, int [][] prerequisites){
+        int [] status = new int[numCourses]; // 0 untouched, 1 visiting, 2 visited
+        for(int course = 0; course &lt; numCourses; course++){
+            if(!isValidPrerequisites(course, status)){
+                return false;
+            }
+        }
+        return true;
+    }
+    private boolean isValidPrerequisites(int course, int [] status){
+        if(status[course] == 1){ // is already visiting
+            return false;
+        }else if(status[course] == 2){ // already visited
+            return true;
+        }
+        status[course] = 1;
+        if(adjPre[course] == null){
+            status[course] = 2;
+            return true;
+        }
+        for(int dependedCourse: adjPre[course]){
+            if(!isValidPrerequisites(dependedCourse, status)){
+                return false;
+            }
+        }
+        status[course] = 2;
+        return true;
+    }
+            </pre>
+            <p><span style="color:red">Common mistakes</span>: we have to distinguish visiting and visited status. e.g. A -> B, we first visited B, and then visit A. If we don't distinguish visiting and visited, then it will say a cycle existed.</p>
+
+        </li>
+        <li>
+            <h4>Topological Ordering</h4>
+            <p>Topological ordering is an ordering for a DAG's nodes, where vertices such that for every directed edge uv, vertex u comes before v in the ordering. <span style="color:red">Not direct before.</span>
+                Because DAG does not have cycles, so it has the concept of parent node and child node. (e.g. binary tree is a also DAG).</p>
+            <p>
+                <span style="color:red">DFS post-order</span>: when running dfs on a DAG, parent's post-order is greater than child's post-order. <br>
+                <span style="color:red">Reason: </span>Because parent's post-order is assigned after all of its children be visited (after the recursion return).<br>
+                <span style="color:red">Why cannot use Pre-order: </span>In DAG, each node can have multiple parent's nodes. But DFS can reach a child node after only visiting one of its parent nodes, so this child node may have a smaller pre-order than its other parent nodes. <span style="color:red">But if a node is guaranteed to have at most one parent node (such as binary tree), then we can use pre-order.</span>
+            </p>
+            <p>There 2 ways to build a topological ordering. 1) post-order + array 2). stack</p>
+            <pre class="brush:java">
+                // verify an directed graph is DAG and gives a topological ordering.
+                public class TopologicalSorting {
+                    private List&lt;Integer> [] _adjacentList;
+                    private static final String VisitingTemplate = "Visiting %d, Pre-order %d";
+                    private static final String VisitedTemplate = "Visited %d, Post-order %d";
+                    private int _size;
+                
+                    public TopologicalSorting(int size){
+                        _adjacentList = new List[size];
+                        for(int i = 0; i &lt; _adjacentList.length; i++){
+                            _adjacentList[i] = new ArrayList&lt;>();
+                        }
+                        _size = size;
+                    }
+                
+                    public void addEdge(int from, int to) throws IllegalArgumentException {
+                        if(from &lt; 0 || from >= _size || to &lt; 0 || to >= _size){
+                            throw new IllegalArgumentException("Invalid input.");
+                        }
+                        _adjacentList[from].add(to);
+                    }
+                    // return next available count
+                    private boolean isValidOrder(int node, int [] status, Stack&lt;Integer> st) {
+                        if(status[node] == 1){
+                            return false;
+                        }
+                        if(status[node] == 2){
+                            return true;
+                        }
+                        status[node] = 1;
+                        for(int i: _adjacentList[node]){
+                            if(!isValidOrder(i, status, st)){
+                                return false;
+                            }
+                        }
+                        st.push(node);
+                        status[node] = 2;
+                        return true;
+                    }
+                
+                    public int [] topologicalOrdering(){
+                        int [] status = new int[_size]; // 0 unvisited, 1 visiting, 2, visited
+                        Stack&lt;Integer> st = new Stack&lt;>();
+                        for(int i = 0; i &lt; _size; i++) {
+                            if (!isValidOrder(i, status, st)) {
+                                return null;
+                            }
+                        }
+                        int [] result = new int[st.size()];
+                        for(int i = 0; i &lt; result.length; i++){
+                            result[i] = st.pop();
+                        }
+                        return result;
+                    }
+                }
+            </pre>
+        </li>
+        <li>
+            <h4># of topological ordering</h4>
+            <p>Hard to find the # of ordering.</p>
+        </li>
+    </ol>
+</div>
+</div>
+</li>
+<li>
+    <div class="content" id="example">
+        <h3>Examples</h3>
+        <p>Course Schedule([207, 210] can we finish all class, give one order); alien dictionary [269]; sequence reconstruction [444]</p>
+        <p>
+            Topological sorting <br>
+            1). build adjacent graph<br>
+            2). build topological ordering and check if it's a DAG at the same time.
+        </p>
+        <p>
+            Sequence reconstruction [444] is a special problem, it asks if the ordering existed and verify a ordering is the unique topological ordering. 
+            Finding the number of topological orderings is complicated, but verifying if the ordering is unique is easy.
+        </p>
+        <p>
+            1). the nodes in the ordering cover all nodes in the graph.<br>
+            2). each adjacent nodes pair must have its edge in the graph. e.g. [a, b, c, d] is the ordering, then the graph must have a->b, b->c, c->d (walking through the graph)
+        </p>
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>

@@ -41,9 +41,10 @@ SyntaxHighlighter.all()
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#string">String & StringBuilder</a></li>
-<li><a href="#array">Array</a></li>
-<li><a href="#collections">List/Set/Map/Stack/Queue</a></li>
 <li><a href="#math">Math</a></li>
+<li><a href="#array">Array</a></li>
+<li><a href="#list">List</a></li>
+<li><a href="#collections">Set/Map/Stack/Queue</a></li>
 <li><a href="https://docs.oracle.com/javase/8/docs/api/" target="_blank" style="color:brown;font-weight:bold">Java SE 8 Doc</a></li>
 <li><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/module-summary.html" target="_blank" style="color:brown;font-weight:bold">Java SE 11 Doc java.base module</a></li>
 </ul>
@@ -102,6 +103,23 @@ SyntaxHighlighter.all()
 </div>
 </li>
 <li>
+    <div class="content" id="math">
+        <h3>Math</h3>
+        <p>Math is java class defined under java.lang package. It provides a few convenient methods</p>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>max, min</h4>
+                    <pre class="brush:java">
+                        int max = max > number?max; number;
+                        int max = Math.max(max, number);
+                    </pre>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
 <div class="content" id="array">
     <h3>Array</h3>
     <div class="featureList">
@@ -109,63 +127,189 @@ SyntaxHighlighter.all()
             <li>
                 <h4>Initialization</h4>
                 <pre class="brush:java">
-                        int [][] arr = new int[20][]; // 2d array
-                        // initial value of int [] is {0}, boolean [] is {false}, Object [] is {null}
+                    int [] numbers = new int[10];
+                    int [] numbers = new int[]{1,2,3};
+
+                    int [][] arr = new int[3][]; // 2d array
+                    for(int i = 0; i &lt; 3; i++){
+                        arr[i] = new int[i];
+                    }
+                    int [][] matrix = new int[3][3]; // a 3 by 3 matrix;
+                    
+                    // initial value of int [] is {0}, boolean [] is {false}, Object [] is {null}
+                    Integer [] ints = new Integer[10]; // init = null
+                    // Java doesn't support initalize generic array
+                    ArrayList&lt;Integer>[] arrayOfList = new ArrayList[10]; 
                 </pre>
+                <p>Things cannot be done</p>
+                <p>
+                    1). java doesn't support initalize a generic array.<span class="inline-code" style="text-decoration: line-through">ArrayList&lt;Integer>[] arrayOfList = new ArrayList&lt;Integer>[10];</span>
+                    <br>2). Primitive wrapper class cannot be autoboxed to primitive. <span class="inline-code" style="text-decoration: line-through">int [] numbers = new Integer[10];</span>
+                </p>
             </li>
+            
             <li>
                 <h4><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Arrays.html" target="_blank" style="color:brown;font-weight:bold">Arrays</a></h4>
+                <p>Arrays is a java class that defines static utility functions for array.</p>
                 <pre class="brush:java">
                     .sort(int/..[]): in-place sort O(nlgn)
-                    .fill(int[] / char[], int / char)
+
+                    // .fill(int[] / char[], int / char) fill each cell with the same primitive value/reference.
+                    int [] numbers = new int[10];
+                    ArrayList&lt;Integer> [] arr = new ArrayList[10];
+                    Arrays.fill(numbers, -1);
+                    Arrays.fill(arr, new ArrayList&lt;Integer>()); // never used this.
+
                     .copyOf(int [], int length) //  补零删多
                     .sort(Integer/.. [], Collections.reverseOrder())
                 </pre>
+                <p style="color:red">Array.fills fill with the same reference. The following statement use a single arraylist.</p>
+                <pre class="brush:java">
+                    Arrays.fill(arr, new ArrayList&lt;Integer>()); // never used this.
+                </pre>
             </li>
             <li>
-                    <h4>Practice</h4>
-                    <div class="featureList">
-                        <ol>
-                            <li>array can be used as hashmap in some cases</li>
-                        </ol>
-                    </div>
+                <h4>Practice</h4>
+                <div class="featureList">
+                    <ol>
+                        <li>array can be used as hashmap if hashmap's key's range is limited.</li>
+                        <li>
+                            <p>Get a 2d array matrix height and width</p>
+                            <pre class="brush:java">
+                                int height = matrix.length;
+                                int width = height == 0? 0: matrix[0].length;
+                            </pre>
+                        </li>
+                    </ol>
+                </div>
             </li>
         </ol>
     </div>
 </div>
 </li>
 <li>
-    <div class="content" id="collections">
-        <h3>List/Set/Map/Stack/Queue/Heap(PriorityQueue)</h3>
+    <div class="content" id="list">
+        <h3>ArrayList & LinkedList</h3>
+        <p>ArrayList in most case has a higher efficient than LinkedList</p>
         <div class="featureList">
             <ol>
+                <li>
+                    <h4>Hierarchy</h4>
+                    <p>Iterable > Collection > List </p>
+                    <pre class="brush:java">
+                        Collection{
+                            add
+                            clear
+                            addAll
+                            contains
+                            isEmpty
+                            remove
+                            size
+                            toArray(T[] a)
+                        }
+                        List{
+                            get
+                            indexOf
+                            lastIndexOf
+                            set
+                            sort 
+                            subList
+                        }
+                    </pre>
+                </li>
                 <li>
                     <h4>List [LinkedList, ArrayList]</h4>
                     <pre class="brush:java">
                         List&lt;String> ll = LinkedList&lt;>();
+                        
                         ll.add("example") ;// add to the end;
                         ll.add(0, "first") ; // add to the front;
-                        ll.remove(1) ;// remove
-                        ll.set(1, "new") ; // update
-                        String str = ll.get(1) ; // return 
+                        
+                        ll.remove(1) ;// remove by index, return the removed value or throw exception.
+                        ll.remove("first"); // remove by value, return true or false.
+                        
+                        ll.set(1, "new") ; // update by index
+                        ll.get(1) ; // return value or throw exception
+                       
                         boolean con = ll.contains("example"); // check existance.
                         int pos = ll.indexOf("new"); // return -1 if not found.
                         ll.clear(); // clear all
                         int len  = ll.size(); 
+                        String [] arr = ll.toArray(new String[ll.size()]);
                         for(String str: ll){
                             // loop
                         }
+                        
                         ll.sort((i1, i2)->Integer.compare(i1.length(), i2.length());
 
                         
-        
                         .add(int index, E e), .remove(int i) // out of bounds error
                         .push(E e); .pop():E // no such element error // Push/Pop is on the first (left, index 0) element
                         .removeFirst(); .add(E e) // queue
                         .set(index i, E e): replacement
                         all: .removeFirst/Last() .getFirst/Last() .addFirst/Last(E e)
                     </pre>
+                    <p>Boxing type, e.g. Integer, toArray cannot be cast to int []</p>
+                   
                 </li>
+            </ol>
+            <ol>
+                <h4>Practices</h4>
+                <li>
+                    <p>In some case, we need loop a ordered collection (e.g. list, array) with the i-th and i+1 th elements. In this case, we cannot use foreach</p>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="stack_queue">
+        <h3>Stack & Queue</h3>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Queue.html" target="_blank">Queue</a></h4>
+                    <p style="color:red">Queue in Java is a interface, its implementation is LinkedList</p>
+                    <p>Iterable > Collection > Queue</p>
+                    <pre class="brush:java">
+                        Queue{
+                            add
+                            offer; // same as "add" but "add" will throw exception when this is a size restricted queue.
+                            poll; // return null when empty, don't throw exception
+                            peek
+                        }
+                    </pre>
+                    <h4>Where used?</h4>
+                    <p>1). BFS</p>
+                </li>
+                <li>
+                    <h4><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Stack.html" target="_blank">Stack</a></h4>
+                    <p>Stack implements collection and list interface.</p>
+                    <pre class="brush:java">
+                        Stack&lt;String> st = new Stack&lt;>();
+                        st.push("example"); // different from "add" than append items, push/pop will add/remove the element at the first (addFirst). 
+                        String value = st.pop();
+                        String value = st.peek(); // return the top value but not pop.
+
+                        Stack&lt;Integer> st = new Stack&lt;>();
+                        st.push(1);
+                        int [] result = new int[st.size()];
+                        for(int i = 0; i &lt; result.length; i++){
+                            result[i] = st.pop();
+                        }
+                    </pre>
+                    <h4>Where used?</h4>
+                    <p>1). build topological ordering.</p>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="collections">
+        <h3>Set/Map/Stack/Queue/Heap(PriorityQueue)</h3>
+        <div class="featureList">
+            <ol>
                 <li>
                     <h4><a href="https://docs.oracle.com/javase/8/docs/api/java/util/TreeMap.html" target="_blank">TreeMap</a></h4>
                     <pre class="brush:java">
@@ -179,10 +323,7 @@ SyntaxHighlighter.all()
                 <li>
                     <h4>Stack</h4>
                     <pre class="brush:java">
-                        Stack&lt;String> st = new Stack&lt;>();
-                        st.push("example"); // different from "add" than append items, push/pop will add/remove the element at the first (addFirst). 
-                        String value = st.pop();
-                        String value = st.peek(); // return the top value but not pop.
+                        
                     </pre>
                 </li>
                 <li>
