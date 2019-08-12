@@ -37,14 +37,15 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Java&nbsp;-&nbsp;Cheatsheet</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-10-14</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-04</span></p>
+<p class="date"><span class="created-date">Created:2018-10-14</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-10</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#string">String & StringBuilder</a></li>
 <li><a href="#math">Math</a></li>
 <li><a href="#array">Array</a></li>
 <li><a href="#list">List</a></li>
-<li><a href="#collections">Set/Map/Stack/Queue</a></li>
+<li><a href="#map">Map</a></li>
+<li><a href="#collections">Set/Map</a></li>
 <li><a href="https://docs.oracle.com/javase/8/docs/api/" target="_blank" style="color:brown;font-weight:bold">Java SE 8 Doc</a></li>
 <li><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/module-summary.html" target="_blank" style="color:brown;font-weight:bold">Java SE 11 Doc java.base module</a></li>
 </ul>
@@ -151,21 +152,44 @@ SyntaxHighlighter.all()
             <li>
                 <h4><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Arrays.html" target="_blank" style="color:brown;font-weight:bold">Arrays</a></h4>
                 <p>Arrays is a java class that defines static utility functions for array.</p>
+                <h4>Sort</h4>
                 <pre class="brush:java">
-                    .sort(int/..[]): in-place sort O(nlgn)
-
+                        int [] numbers = new int[] {10, 3, -1, 34, 0, 0};
+                        Arrays.sort(numbers);
+                        System.out.println(Arrays.toString(numbers));
+                        Integer [] numbers2 = new Integer[] {10, 3, -1, 34, 0, 0};
+                
+                        // reverse order needs reference type
+                        // throw error if encountering null
+                        Arrays.sort(numbers2, Collections.reverseOrder());
+                        System.out.println(Arrays.toString(numbers2));
+                
+                        // self defined comparator
+                        int[][] intervals = new int[][]{{3, 4}, {1,2}, {5, 9}, {0, 2}};
+                        Arrays.sort(intervals, Comparator.comparingInt(interval -> interval[0]));
+                        Arrays.sort(intervals, (o1, o2) -> o1[0] - o2[0]);
+                        for(int[] interval: intervals){
+                            System.out.println(Arrays.toString(interval));
+                        }
+                </pre>
+                <h4>Fill</h4>
+                <p style="color:red">Array.fills fill with the same reference. The following statement use a single arraylist.</p>
+                <pre class="brush:java">
                     // .fill(int[] / char[], int / char) fill each cell with the same primitive value/reference.
                     int [] numbers = new int[10];
                     ArrayList&lt;Integer> [] arr = new ArrayList[10];
                     Arrays.fill(numbers, -1);
                     Arrays.fill(arr, new ArrayList&lt;Integer>()); // never used this.
+                    Arrays.fill(arr, new ArrayList&lt;Integer>()); // never used this.
 
                     .copyOf(int [], int length) //  补零删多
-                    .sort(Integer/.. [], Collections.reverseOrder())
                 </pre>
-                <p style="color:red">Array.fills fill with the same reference. The following statement use a single arraylist.</p>
+                <h4>BinarySearch</h4>
                 <pre class="brush:java">
-                    Arrays.fill(arr, new ArrayList&lt;Integer>()); // never used this.
+                        int [] numbers = new int[] {1, 2, 4, 5, 7, 8, 10};
+                        System.out.println(Arrays.binarySearch(numbers, 2)); // 1
+                        System.out.println(Arrays.binarySearch(numbers, 3)); // should be insert at index 2, return -2-1 = -3
+                        System.out.println(- 1 - Arrays.binarySearch(numbers, 3)); // 2
                 </pre>
             </li>
             <li>
@@ -306,39 +330,89 @@ SyntaxHighlighter.all()
     </div>
 </li>
 <li>
-    <div class="content" id="collections">
-        <h3>Set/Map/Stack/Queue/Heap(PriorityQueue)</h3>
+    <div class="content" id="map">
+        <h3>Map</h3>
+        <p>Map's implementation HashMap and TreeMap.</p>
         <div class="featureList">
             <ol>
                 <li>
+                    <h4>Map interface</h4>
+                    <p>Map's interface does not inherit from Collection</p>
+                    <pre class="brush:java">
+                        Map{
+                            void clear()
+                            boolean containsKey(Object key)
+                            boolean containsValue(Object value)
+                            V get(Object key)
+                            V getOrDefault(Object key, V defaultValue)
+                            V put(K key, V value) // return previous value or null
+                            V remove(Object key)
+
+                            boolean isEmpty()
+                            int size()
+
+                            Set&lt;K> keySet()
+                            Collection&lt;V> values()
+                        }
+                    </pre>
+                </li>
+                <li>
+                    <h4>HashMap</h4>
+                    <p>HashMap is an implementation of Map. Internally, it use an array of a customized linkedlist.</p>
+                    <p>The array's size is doubled when number of elements is greater a threshold.</p>
+                    <pre class="brush:java">
+                        static class Node&lt;K,V> implements Map.Entry&lt;K,V>{
+                            final int hash;
+                            final K key;
+                            V value;
+                            Node&lt;K,V> next;
+                        }
+
+                        public V put(K key, V value) {
+                            return putVal(hash(key), key, value, false, true);
+                        }
+                        static final int hash(Object key) {
+                            int h;
+                            return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);
+                        }
+                    </pre>
+                </li>
+                <li>
                     <h4><a href="https://docs.oracle.com/javase/8/docs/api/java/util/TreeMap.html" target="_blank">TreeMap</a></h4>
+                    <p>TreeMap is a map with ordering its key. Internally, it uses a red-black tree (a balance binary search tree)</p>
                     <pre class="brush:java">
-                        // for-loop is ordered in an ascending order.
-                        .ceilingEntry(K key): Map.Entry // return a entry's key >= input key 
-                        .ceilingKey(K key): K
-                        .floorEntry(K k), .floorKey(K k)
-                        .firstKey, firstEntry // Error when map is empty
+                        // runtime
+                        put, get, remove, containsKey O(lgn)                        
                     </pre>
-                </li>
-                <li>
-                    <h4>Stack</h4>
                     <pre class="brush:java">
-                        
+                        // commonly used method in binary search
+
+                        // return a key-value whose key is the least key >= the input key, null if not exist.
+                        Map.Entry&lt;K, V> ceilingEntry(K key);
+                        K ceilingKey(K key)
+
+                        // return a key-value whose key is the greatest key &lt;= the input key.
+                        floorEntry(K key)
+                        floorKey(K key)
+
+                        // return least key or null if empty
+                        firstEntry()
+                        firstKey()
                     </pre>
+                    <h4>Where to use?</h4>
+                    <p>Repeatedly get element's index in an unsorted array.<br>
+                        436. Find Right Interval
+                    </p>
                 </li>
-                <li>
-                    <h4>Queue</h4>
-                    <pre class="brush:java">
-                    // With list
-                    LinkedList&lt;String> queue = new LinkedList&lt;String>();
-                    queue.addLast("String");
-                    queue.addFirst("String");
-                    String first = queue.get/peekFirst(); // no such element exception / null
-                    String last = queue.getLast();
-                    String first = queue.pollFirst();
-                    String last = queue.pollLast();
-                    </pre>
-                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="collections">
+        <h3>Set/Heap(PriorityQueue)</h3>
+        <div class="featureList">
+            <ol>
                 <li>
                     <h4>Heap (PriorityQueue)</h4>
                     <pre class="brush:java">

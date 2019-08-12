@@ -1,0 +1,304 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>General&nbsp;Binary Search</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-08-10">
+<meta name="keywords" content="algorithm">
+<meta name="keywords" content="binary search">
+<meta name="keywords" content="">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushPython.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushSql.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>General&nbsp;-&nbsp;Binary Search</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-08-10</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-12</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#example">Example</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+<div class="featureList">
+    <ol>
+        <li>
+            <h4>Binary Search vs. Bineay search tree</h4>
+            <p>
+                BS is an algorithm, BST is a data structure. <br>
+                BST is a binary tree that left children are less than parent, right children are greater than parent. Because of the definition of BST, the in-order visiting of a BST is actually in sorted order.
+            </p>
+        </li>
+        <li>
+            <h4>Implementation</h4>
+            <p>BS problems are usually represented by an array. Binary search usually uses left/right boundary with while-loop, recursion is rarely used.</p>
+            <h4>left/right boundary</h4>
+            <p>Practice: <br>
+                0). search an element, if the array length is 1, then meaningless.<br>
+                1). left/right are inclusive<br>
+                2). how to make sure no infinite loop.
+                <pre class="brush:java">
+                    // ignore the mid point in both side in the next iteration.
+                    while(left &lt;= right){
+                        int mid = (left + right) / 2;
+                        if(...){
+                            mid = left - 1;
+                        }else{
+                            mid = right + 1;
+                        }
+                    }
+                    // let mid point be the left side in the next iteration.
+                    while(left &lt; right){
+                        int mid = (left + right) / 2;
+                        if(...){
+                            mid = left; // of course, mid = left - 1 also makes here.
+                        }else{
+                            mid = right + 1;
+                        }
+                    }
+                    // include mid point in both side.
+                    while(left + 1 &lt; right){
+                        int mid = (left + right) / 2;
+                        if(...){
+                            mid = left; 
+                        }else{
+                            mid = right;
+                        }
+                    }
+
+                    /*
+                    When left == right, mid = left;
+                    When left + 1 == right, mid = left;
+                    When left + 2 == right, mid = left + 1;
+                    */
+                </pre>
+                <span style="color:red">3). int mid = left + (right - left) / 2; instead of (left + right)/2 avoid overflow</span>
+            </p>
+        </li>
+        <li>
+            <h4>Binary search usage</h4>
+            <p>There 2 types of BS usages:<br>
+                1). find a target element (e.g. the peak) in a sorted collection (e.g. array)<br>
+                2). find the last 0's index in a sorted collection (e.g. [0, 0, 0, 1, 1])<br>
+            </p>
+            <pre class="brush:java">
+                // find last 0's index.
+                public static int FindLastZeroIndex(int [] numbers){
+                    if(numbers == null || numbers.length == 0){
+                        return 0;
+                    }
+                    int left = 0, right = numbers.length - 1;
+                    // when the loop terminated, right will be the last zero, left will be the first one.
+                    while(left &lt;= right){
+                        int mid = (left + right) / 2;
+                        // if we try to find a target, then here will be if-elseif-else.
+                        if(numbers[mid] == 0){
+                            left = mid + 1;
+                        }else{
+                            right = mid - 1;
+                        }
+                    }
+                    return right;
+                }
+            </pre>
+            <p>More complicated problem can be find first/last 8 in [1, 1, 8, 8, 9, 9]</p>
+        </li>
+        <li>
+            <h4>Binary Search vs. DFS</h4>
+            <p>DFS can search on a unsorted graph and eventually visit every node. 但是DFS 又有些像 BS 能够<span style="color:red">长驱直入</span>.</p>
+        </li>
+    </ol>
+</div>
+</div>
+</li>
+<li>
+    <div class="content" id="example">
+        <h3>Example</h3>
+        <h4>Problem keywords</h4>
+        <p>Sorted, Find</p>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>153. Find Minimum in Rotated Sorted Array</h4>
+                    <p>case 1. find target</p>
+                </li>
+                <li>
+                    <h4>34. Find First and Last Position of Element in Sorted Array</h4>
+                    <p>case 2. find boundary</p>
+
+                </li>
+                <li>
+                    <h4>240. Search a 2D Matrix II</h4>
+                    <p>
+                        <span style="color:red">Sorted Matrix</span>: a n x m matrix where each of the rows and columns are sorted in ascending order.<br>
+                    </p>
+                    <pre class="brush:bash">
+                        matrix = [
+                            [ 1,  5,  9],
+                            [10, 11, 13],
+                            [12, 13, 15]
+                        ]
+                    </pre>
+                    <p>How to check if a number existed, check the number of elements that are less than a number?</p>
+                    <p><img src="./img/sorted-matrix.png" width="400" height="170"></p>
+                    <pre class="brush:java">
+                            // runtime O(lgn)
+                            public class SortedMatrix {
+                                // return the number of elements that are less than num.
+                                // ** num may exist or not exist in the matrix.
+                                public static int OrderOfNumber(int [][] matrix, int num){
+                                    // matrix is not null
+                                    int height = matrix.length;
+                                    int width = height == 0? 0: matrix[0].length;
+                                    int i = 0, j = width - 1, count = 0;
+                                    while(i &lt; height && j >= 0){
+                                        if(matrix[i][j] &lt; num){
+                                            // the current row's elements are added when moving to next row.
+                                            count += j + 1;
+                                            i++;
+                                        }else{
+                                            j--;
+                                        }
+                                    }
+                                    return count;
+                                }
+                            
+                                public static boolean isNumberExisted(int [][] matrix, int num){
+                                    // matrix is not null
+                                    int height = matrix.length;
+                                    int width = height == 0? 0: matrix[0].length;
+                                    int i = 0, j = width - 1;
+                                    while(i &lt; height && j >= 0){
+                                        if(matrix[i][j] == num){
+                                            return true;
+                                        }else if(matrix[i][j] > num){
+                                            j--;
+                                        }else{
+                                            i++;
+                                        }
+                                    }
+                                    return false;
+                                }
+                            }
+                            
+                    </pre>
+                </li>
+                <li>
+                    <h4>378. Kth Smallest Element in a Sorted Matrix</h4>
+                    <h4>1060. Kth Missing Element in Sorted Array</h4>
+                    <p>Keywords are still "find" and "sorted". The searching strategy is a little bit different. <br>
+                        #378. we find a pivot number's position, if its > k then, we reduce the pivot number, otherwise increase. The reduce/increse is using binary search.
+                        <br>
+                        #1060. we find a how many numbers are missing before the pivot number.
+                    </p>
+                    <p>The difference between #378 and #1060 is #378 pivot number is not necessarily coming from the matrix, but #1060 pivot is coming from the array.</p>
+                    <h4>Pivot does not come from collections</h4>
+                    <p>
+                        1. runtime depends on input<br>
+                        2. according to the question, we may need to guarantee the pivot finally be one of elements in the collections (e.g. #378). How to guarantee? <span class="inline-code">while(left &lt;=right)</span>
+                    </p>
+                    <p>
+                        According to <span class="inline-code">while(left &lt;=right)</span> and each time left/right only inc/dec by one, we must have <span style="color:red">mid = left = right</span> at the last iteration. And if "H" is the anwser, then mid = "H" or "H-1".
+                        The binary search will eventually converge to "H" or "H-1"
+                    </p>
+                    <pre class="brush:java">
+                        // 378. Kth Smallest Element in a Sorted Matrix
+                        class Solution {
+                            public int kthSmallest(int[][] matrix, int k) {
+                                if(matrix == null){
+                                    return 0;
+                                }
+                                int height = matrix.length;
+                                int width = height == 0? 0: matrix[0].length;
+                                // binary search 
+                                int left = matrix[0][0], right = matrix[height - 1][width - 1];
+                                while(left &lt;= right){
+                                    // mid (pivot) may not exist in the matrix, but finally, 
+                                    int mid = left + (right - left) / 2;
+                                    int target = orderOfNumber(matrix, mid);
+                                    // we need make sure the mid's target + 1 = k
+                                    if(target &lt; k){
+                                        left = mid + 1;
+                                    }else{
+                                        right = mid - 1;
+                                    }
+                                }
+                                return right;
+                            }
+                            // find the number of elements that are less than "num"
+                            public int orderOfNumber(int [][] matrix, int num){
+                                int height = matrix.length;
+                                int width = height == 0? 0: matrix[0].length;
+                                int i = 0, j = width - 1, count = 0;
+                                while(i &lt; height && j >= 0){
+                                    if(matrix[i][j] &lt; num){
+                                        i++;
+                                        count += (j + 1);
+                                    }else{
+                                        j--;
+                                    }
+                                }
+                                return count;
+                            }
+                        }
+                    </pre>
+                </li>
+                <li>
+                    <h4>436. Find Right Interval</h4>
+                    <h4>Unsorted collections (not duplicated)</h4>
+                    <p>Sort the collection (e.g. array) and use binary search, and may also need to use HashMap to keep its original index;<br>
+                    <span style="color:red">Alternate approach is using TreeMap (key = value, value = index)</span>
+                    </p>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>
