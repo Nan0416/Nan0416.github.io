@@ -1,0 +1,146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>General&nbsp;LinkedList</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-02-03">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>General&nbsp;-&nbsp;LinkedList</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-02-03</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-16 @ Rockford, IL</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#example">Examples</a></li>
+<li><a href="#problem">Problems</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+<p>LinkedList的问题很直接，直接说明要怎么样一个linkedlist, e.g. deep copy. 主要考编程能力而不是算法。</p>
+<p>LinkedList的问题有时需要用到HashMap辅助，但一般这种题都有更tricky/smart的solution不用HashMap。</p>
+</div>
+</li>
+<li>
+    <div class="content" id="example">
+        <h3>Examples</h3>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>138. Copy List with Random Pointer</h4>
+                    <p>Approach 1. using hashmap: copy the linkedlist without considering the random pointer. During the process, create a mapping between old nodes and new nodes. Then use the mapping to build random pointers.</p>
+                    <p>Approach 2. Create the new list upon old list without using extra space.</p>
+                </li>
+                <li>
+                    <h4>Floyd Cycle detection algorithm</h4>
+                    <p>With different step</p>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="problem">
+        <h3>Problems</h3>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>2. Add Two Numbers</h4>
+                    <p>Desc: 2 non-empty linked lists (not Java LinkedList) in reverse order, each node represents a digit. Add the 2 lists as adding two integer, return the integer result.</p>
+                    <p>Sol: too easy to have a solution.</p>
+                </li>
+                <li>
+                    <h4>* 19. Remove Nth Node From End of List</h4>
+                    <p>Desc: Given a linked list, remove the n-th node from the end of list and return its head.</p>
+                    <p>
+                        Sol: A trivial solution is to first go through the list to find its length, and then in the second pass find the target node. <br>
+                        <span style="color:red">But we can reduce it to one pass by using two pointers, one pointer ahead of another pointer by n steps.</span>
+                    </p>
+                    <p>
+                        Corner case: 1). n = list's length (remove the 1st), 2). n = 0 (remove nothing)
+                    </p>
+                </li>
+                <li>
+                    <h4>21. Merge Two Sorted Lists</h4>
+                    <p>Desc: 2 sorted linked list (not Java LinkedList). Merge them in sorted order.</p>
+                    <p>Sol: too easy to have a solution.</p>
+                </li>
+                <li>
+                    <h4>* 23. Merge k Sorted Lists</h4>
+                    <p>Desc: Same as #21 but this merge an array of linkedlist.</p>
+                    <p>Sol: multiple solutions existed.<br>
+                        1). With #21 solution, we can merge linked list one by one.
+                        <pre class="brush:java">
+                            // O(m * N), m is array.length, N is total numbers of nodes.
+                            for(head: linkedlists){
+                                result = mergeTwo(result, head);
+                            }
+                        </pre>
+                        2). With priority queue N * 2 * lgm: the queue's size is m, each node has a enqueue and dequeue operation. So O(N 2 lgm) = O(Nlgm)<br>
+                        3). With binary merge
+                        <pre class="brush:java">
+                            // O(Nlgm)
+                            queue;
+                            while(queue.size() > 1){
+                                ListNode first = queue.poll();
+                                ListNode second = queue.poll();
+                                queue.offer(mergeTwoLists(first, second));
+                            }
+                            return queue.poll();
+                        </pre>
+                    </p>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<!--<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li></li>
+    </ol>
+</div>
+</div>
+</li>-->
+</ol>
+</div>
+    
+</body>
+</html>

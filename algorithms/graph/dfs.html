@@ -2,20 +2,22 @@
 <!-- NewPage -->
 <html lang="en">
 <head>
-<title>Graph&nbsp;BFS</title>
+<title>Graph&nbsp;DFS</title>
 <meta charset="utf-8">
-<meta name="date" content="2019-02-05">
-<meta name="keywords" content="">
-<meta name="keywords" content="">
+<meta name="date" content="2019-08-16">
+<meta name="keywords" content="graph">
+<meta name="keywords" content="DFS">
 <meta name="keywords" content="">
 <link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
 <script type="text/javascript" src="../../script.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushPython.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushSql.js"></script>
 <link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
 <link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
 
@@ -35,9 +37,9 @@ SyntaxHighlighter.all()
 </script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<strong>Graph&nbsp;-&nbsp;BFS</strong>
+<strong>Graph&nbsp;-&nbsp;DFS</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-02-05</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-07</span></p>
+<p class="date"><span class="created-date">Created:2019-08-16 @ Rockford, IL</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-16</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -51,35 +53,42 @@ SyntaxHighlighter.all()
 <li>
 <div class="content" id="intro">
 <h3>Introduction</h3>
-<p>The trivial alogrithms for BFS is Queue, DFS is recursion.</p>
-<p>BFS only has one order, DFS has 3 different orders (preorder, inorder and postorder) [Inorder only works with binary tree]</p>
+<p>DFS (Depth first search) is an algorithm that can run on matrix-based graph, adjacent-list based graph and tree data structure. The implementation of a DFS can be recursive or use "Stack".</p>
 <div class="featureList">
     <ol>
+        <li><a href="./topological-ordering.html#dfs-implementation">DFS node status & DFS on adjacent list with recursion</a></li>
         <li>
-            <h4>BFS vs. DFS</h4>
-            <p>BFS 很老实, it iterates the entire graph, tree, matrix layer by layer. Finally, it can traverse every node. A well designed DFS is smart, it can also find a target very quick in O(h)=O(lgn). It can also iterates every node in O(n).</p>
-            <p style="color:red">BFS most likely applied with undirected graph, (directed) binary tree.</p>
+            <h4>DFS on matrix with recursion</h4>
         </li>
         <li>
-            <h4>BFS vs. Union Find</h4>
-            <p>When finding connected component in a undirected graph, or matrix. Both union find and BFS can be applied, but union find is better.</p>
-        </li>
-        <li>
-            <h4>Implementation of BFS</h4>
-            <p>BFS is implemented with a queue (linkedlist), first add the root to queue.</p>
-            <p><span style="color:red">BFS properties</span><br>
-            1).  # of nodes in a row = queue size before poping up this row's first element.</p>
+            <h4>DFS on adjacent-list with Stack</h4>
         </li>
     </ol>
+    <h4>Traversal order</h4>
+    <ol>
+        <li>
+            <p>Compared to BFS, DFS has pre-order, in-order, and post-order traversal. Post-order are most useful since it's commonly used to build the topological ordering in a DAG. In-order is useful when traveling a binary search tree, which visits node in a sorted order.</p>
+        </li>
+        <li>
+            <p><span style="color:red">For a binary tree: postorder = right domniant preorder. </span></p>
+            <pre class="brush:java">
+
+            </pre>
+        </li>
+    </ol>    
 </div>
 </div>
 </li>
 <li>
     <div class="content" id="example">
         <h3>Examples</h3>
-        <div class="featureList">
+        <div class='featureList'>
             <ol>
-                
+                <li>
+                    <h4><a href="https://leetcode.com/problems/binary-tree-postorder-traversal/">Binary Tree Postorder Traversal</a></h4>
+                    <p>Desc: Given a binary tree, return the postorder traversal of its nodes' values. Using iteration instead of recursion</p>
+                    <p>Sol: too easy to have a solution.</p>
+                </li>
             </ol>
         </div>
     </div>

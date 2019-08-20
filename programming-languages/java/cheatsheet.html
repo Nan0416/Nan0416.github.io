@@ -37,13 +37,14 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Java&nbsp;-&nbsp;Cheatsheet</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-10-14</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-10</span></p>
+<p class="date"><span class="created-date">Created:2018-10-14</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-16@ Rockford, IL / 2019-08-19 @ First Day of Fall 2019</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#string">String & StringBuilder</a></li>
 <li><a href="#math">Math</a></li>
 <li><a href="#array">Array</a></li>
 <li><a href="#list">List</a></li>
+<li><a href="#stack-queue">Stack & Queue</a></li>
 <li><a href="#map">Map</a></li>
 <li><a href="#collections">Set/Map</a></li>
 <li><a href="https://docs.oracle.com/javase/8/docs/api/" target="_blank" style="color:brown;font-weight:bold">Java SE 8 Doc</a></li>
@@ -114,6 +115,19 @@ SyntaxHighlighter.all()
                     <pre class="brush:java">
                         int max = max > number?max; number;
                         int max = Math.max(max, number);
+                    </pre>
+                    <h4>pow</h4>
+                    <pre class="brush:java">
+                        int result = (int)Math.pow(2, 10); // 2^10 
+                    </pre>
+                    <h4>Bit operation</h4>
+                    <pre class="brush:java">
+                        public static void xor(){
+                            System.out.println(~0 ^ 1); // -2, ff ^ number = ~number
+                            System.out.println(0 ^ 5); // 5, 0 ^ number = number
+                            System.out.println(5 ^ 5); // 0, self ^ self = number
+                            System.out.println(5 ^ 6 ^ 5); // Commutative & associative
+                        }
                     </pre>
                 </li>
             </ol>
@@ -287,7 +301,7 @@ SyntaxHighlighter.all()
     </div>
 </li>
 <li>
-    <div class="content" id="stack_queue">
+    <div class="content" id="stack-queue">
         <h3>Stack & Queue</h3>
         <div class="featureList">
             <ol>
@@ -305,6 +319,38 @@ SyntaxHighlighter.all()
                     </pre>
                     <h4>Where used?</h4>
                     <p>1). BFS</p>
+                </li>
+                <li>
+                    <h4>PriorityQueue (Heap)</h4>
+                    <p>The underlying data structure of PriorityQueue is heap. So add/offer (insert operation) takes O(lgn), remove/poll (delete operation) takes O(lgn), and peek takes O(1)</p>
+                    <p></p>
+                    <pre class="brush:java">
+                        PriorityQueue&lt;Integer> queue = new PriorityQueue&lt;>();
+                        queue.add(100);
+                        queue.add(9);
+                        queue.add(2301);
+                        queue.add(-232);
+                        queue.add(0);
+                        while (!queue.isEmpty()){
+                            System.out.println(queue.poll()); // -232, 0, 9, 100, 2301
+                        }
+                    </pre>
+                    <pre class="brush:java">
+                        private static class Wrapper{
+                            public int val;
+                            public Wrapper(int val){
+                                this.val = val;
+                            }
+                        }
+                        // with a complex class, java cannot infer its type.
+                        PriorityQueue&lt;Wrapper> wQueue = new PriorityQueue&lt;Wrapper>((w1, w2)-> w1.val - w2.val);
+                        wQueue.add(new Wrapper(10));
+                        wQueue.add(new Wrapper(0));
+                        wQueue.add(new Wrapper(20));
+                        while (!wQueue.isEmpty()){
+                            System.out.println(wQueue.poll().val); // 0, 10, 20
+                        }
+                    </pre>
                 </li>
                 <li>
                     <h4><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Stack.html" target="_blank">Stack</a></h4>
@@ -353,6 +399,13 @@ SyntaxHighlighter.all()
 
                             Set&lt;K> keySet()
                             Collection&lt;V> values()
+                        }
+                    </pre>
+                    <pre class="brush:java">
+                        // loop a map
+                        for (Map.Entry&lt;String,String> entry : gfg.entrySet()){
+                            String key = entry.getKey();
+                            String value = entry.getValue();
                         }
                     </pre>
                 </li>
@@ -410,18 +463,9 @@ SyntaxHighlighter.all()
 </li>
 <li>
     <div class="content" id="collections">
-        <h3>Set/Heap(PriorityQueue)</h3>
+        <h3>Set</h3>
         <div class="featureList">
             <ol>
-                <li>
-                    <h4>Heap (PriorityQueue)</h4>
-                    <pre class="brush:java">
-                        PriorityQueue&lt;Integer> heap = new PriorityQueue&lt;>((n1, n2)-> ...);
-                        int min = heap.poll() ; // pop the min
-                        heap.add(10) ; // add an element
-                        int min = heap.peek(); // return the min;
-                    </pre>
-                </li>
                 <li>
                     <h4>Facilities</h4>
                     <pre class="brush:java">

@@ -1,0 +1,172 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>Sort&nbsp;QuickSelect & QuickSort</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-08-19">
+<meta name="keywords" content="QuickSelect">
+<meta name="keywords" content="QuickSort">
+<meta name="keywords" content="Sort">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushPython.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushSql.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>Sort&nbsp;-&nbsp;QuickSelect & QuickSort</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-08-19 @ First Day of Fall 2019</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-19</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#quickselect">QuickSelect</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+<p>QuickSelect: find the kth smallest element in an unsorted array. <span style="color:red">variety</span>: find the first K smallest elements; find the kth largest elements.</p>
+<p>QuickSort: it's a sorting algorithm.</p>
+<p>QuickSelect and QuickSort share the same idea that partition an array with a random pviot element.</p>
+<h4>Difference</h4>
+<p>
+    QuickSelect: After paritioning an array, the next round only goes through one of the parition.<br>
+    QuickSort: After paritioning an array, the next round needs to go through both parition.
+</p>
+<p>The different results in different runtime. Average runtime for QuickSelect is O(n), worst case O(n^2); average runtime for QuickSort is O(lgn), worst case O(n^2)</p>
+<h4>Runtime</h4>
+<p>Background: T(n) = T(n/2) + O(n) => O(n), n + n/2 + n/4 .. + 1 = 2n-1</p>
+<div>
+    <span class="MathJax" id="MathJax-Element-40-Frame" tabindex="-1" data-mathml="<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot; display=&quot;block&quot;><msup><mn>2</mn><mi>k</mi></msup><mo>+</mo><mfrac><msup><mn>2</mn><mi>k</mi></msup><mn>2</mn></mfrac><mo>+</mo><mfrac><msup><mn>2</mn><mi>k</mi></msup><mn>4</mn></mfrac><mo>+</mo><mo>&amp;#x22EF;</mo><mo>+</mo><mn>1</mn><mo>=</mo><msup><mn>2</mn><mi>k</mi></msup><mo>+</mo><msup><mn>2</mn><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mi>k</mi><mo>&amp;#x2212;</mo><mn>1</mn></mrow></msup><mo>+</mo><msup><mn>2</mn><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mi>k</mi><mo>&amp;#x2212;</mo><mn>2</mn></mrow></msup><mo>+</mo><mo>&amp;#x22EF;</mo><mo>+</mo><mn>1</mn><mo>=</mo><msup><mn>2</mn><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mi>k</mi><mo>+</mo><mn>1</mn></mrow></msup><mo>&amp;#x2212;</mo><mn>1</mn><mo>=</mo><mn>2</mn><mi>n</mi><mo>&amp;#x2212;</mo><mn>1</mn></math>" role="presentation" style="text-align: center; position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-248" style="width: 34.177em; display: inline-block;"><span style="display: inline-block; position: relative; width: 30.754em; height: 0px; font-size: 111%;"><span style="position: absolute; clip: rect(0.844em, 1030.634em, 3.426em, -999.997em); top: -2.58em; left: 0em;"><span class="mrow" id="MathJax-Span-249"><span class="msubsup" id="MathJax-Span-250"><span style="display: inline-block; position: relative; width: 0.964em; height: 0px;"><span style="position: absolute; clip: rect(3.186em, 1000.483em, 4.207em, -999.997em); top: -4.021em; left: 0em;"><span class="mn" id="MathJax-Span-251" style="font-family: STIXGeneral-Regular;">2</span><span style="display: inline-block; width: 0px; height: 4.027em;"></span></span><span style="position: absolute; top: -4.441em; left: 0.483em;"><span class="mi" id="MathJax-Span-252" style="font-size: 70.7%; font-family: STIXGeneral-Italic;">𝑘</span><span style="display: inline-block; width: 0px; height: 4.027em;"></span></span></span></span><span class="mo" id="MathJax-Span-253" style="font-family: STIXGeneral-Regular; padding-left: 0.243em;">+</span><span class="mfrac" id="MathJax-Span-254" style="padding-left: 0.243em;"><span style="display: inline-block; position: relative; width: 1.084em; height: 0px; margin-right: 0.123em; margin-left: 0.123em;"><span style="position: absolute; clip: rect(2.946em, 1000.964em, 4.207em, -999.997em); top: -4.682em; left: 50%; margin-left: -0.477em;"><span class="msubsup" id="MathJax-Span-255"><span style="display: inline-block; position: relative; width: 0.964em; height: 0px;"><span style="position: absolute; clip: rect(3.186em, 1000.483em, 4.207em, -999.997em); top: -4.021em; left: 0em;"><span class="mn" id="MathJax-Span-256" style="font-family: STIXGeneral-Regular;">2</span><span style="display: inline-block; width: 0px; height: 4.027em;"></span></span><span style="position: absolute; top: -4.441em; left: 0.483em;"><span class="mi" id="MathJax-Span-257" style="font-size: 70.7%; font-family: STIXGeneral-Italic;">𝑘</span><span style="display: inline-block; width: 0px; height: 4.027em;"></span></span></span></span><span style="display: inline-block; width: 0px; height: 4.027em;"></span></span><span style="position: absolute; clip: rect(3.186em, 1000.483em, 4.207em, -999.997em); top: -3.36em; left: 50%; margin-left: -0.237em;"><span class="mn" id="MathJax-Span-258" style="font-family: STIXGeneral-Regular;">2</span><span style="display: inline-block; width: 0px; height: 4.027em;"></span></span><span style="position: absolute; clip: rect(0.844em, 1001.084em, 1.264em, -999.997em); top: -1.318em; left: 0em;"><span style="display: inline-block; overflow: hidden; vertical-align: 0em; border-top-width: 1.3px; border-top-style: solid; width: 1.084em; height: 0px;"></span><span style="display: inline-block; width: 0px; height: 1.084em;"></span></span></span></span><span class="mo" id="MathJax-Span-259" style="font-family: STIXGeneral-Regular; padding-left: 0.243em;">+</span><span class="mfrac" id="MathJax-Span-260" style="padding-left: 0.243em;"><span style="display: inline-block; position: relative; width: 1.084em; height: 0px; margin-right: 0.123em; margin-left: 0.123em;"><span style="position: absolute; clip: rect(2.946em, 1000.964em, 4.207em, -999.997em); top: -4.682em; left: 50%; margin-left: -0.477em;"><span class="msubsup" id="MathJax-Span-261"><span style="display: inline-block; position: relative; width: 0.964em; height: 0px;"><span style="position: absolute; clip: rect(3.186em, 1000.483em, 4.207em, -999.997em); top: -4.021em; left: 0em;"><span class="mn" id="MathJax-Span-262" style="font-family: STIXGeneral-Regular;">2</span><span style="display: inline-block; width: 0px; height: 4.027em;"></span></span><span style="position: absolute; top: -4.441em; left: 0.483em;"><span class="mi" id="MathJax-Span-263" style="font-size: 70.7%; font-family: STIXGeneral-Italic;">𝑘</span><span style="display: inline-block; width: 0px; height: 4.027em;"></span></span></span></span><span style="display: inline-block; width: 0px; height: 4.027em;"></span></span><span style="position: absolute; clip: rect(3.186em, 1000.483em, 4.207em, -999.997em); top: -3.36em; left: 50%; margin-left: -0.237em;"><span class="mn" id="MathJax-Span-264" style="font-family: STIXGeneral-Regular;">4</span><span style="display: inline-block; width: 0px; height: 4.027em;"></span></span><span style="position: absolute; clip: rect(0.844em, 1001.084em, 1.264em, -999.997em); top: -1.318em; left: 0em;"><span style="display: inline-block; overflow: hidden; vertical-align: 0em; border-top-width: 1.3px; border-top-style: solid; width: 1.084em; height: 0px;"></span><span style="display: inline-block; width: 0px; height: 1.084em;"></span></span></span></span><span class="mo" id="MathJax-Span-265" style="font-family: STIXGeneral-Regular; padding-left: 0.243em;">+</span><span class="mo" id="MathJax-Span-266" style="font-family: STIXGeneral-Regular; padding-left: 0.243em;">⋯</span><span class="mo" id="MathJax-Span-267" style="font-family: STIXGeneral-Regular; padding-left: 0.243em;">+</span><span class="mn" id="MathJax-Span-268" style="font-family: STIXGeneral-Regular; padding-left: 0.243em;">1</span><span class="mo" id="MathJax-Span-269" style="font-family: STIXGeneral-Regular; padding-left: 0.303em;">=</span><span class="msubsup" id="MathJax-Span-270" style="padding-left: 0.303em;"><span style="display: inline-block; position: relative; width: 0.964em; height: 0px;"><span style="position: absolute; clip: rect(3.186em, 1000.483em, 4.207em, -999.997em); top: -4.021em; left: 0em;"><span class="mn" id="MathJax-Span-271" style="font-family: STIXGeneral-Regular;">2</span><span style="display: inline-block; width: 0px; height: 4.027em;"></span></span><span style="position: absolute; top: -4.441em; left: 0.483em;"><span class="mi" id="MathJax-Span-272" style="font-size: 70.7%; font-family: STIXGeneral-Italic;">𝑘</span><span style="display: inline-block; width: 0px; height: 4.027em;"></span></span></span></span><span class="mo" id="MathJax-Span-273" style="font-family: STIXGeneral-Regular; padding-left: 0.243em;">+</span><span class="msubsup" id="MathJax-Span-274" style="padding-left: 0.243em;"><span style="display: inline-block; position: relative; width: 1.805em; height: 0px;"><span style="position: absolute; clip: rect(3.186em, 1000.483em, 4.207em, -999.997em); top: -4.021em; left: 0em;"><span class="mn" id="MathJax-Span-275" style="font-family: STIXGeneral-Regular;">2</span><span style="display: inline-block; width: 0px; height: 4.027em;"></span></span><span style="position: absolute; top: -4.441em; left: 0.483em;"><span class="texatom" id="MathJax-Span-276"><span class="mrow" id="MathJax-Span-277"><span class="mi" id="MathJax-Span-278" style="font-size: 70.7%; font-family: STIXGeneral-Italic;">𝑘</span><span class="mo" id="MathJax-Span-279" style="font-size: 70.7%; font-family: STIXGeneral-Regular;">−</span><span class="mn" id="MathJax-Span-280" style="font-size: 70.7%; font-family: STIXGeneral-Regular;">1</span></span></span><span style="display: inline-block; width: 0px; height: 4.027em;"></span></span></span></span><span class="mo" id="MathJax-Span-281" style="font-family: STIXGeneral-Regular; padding-left: 0.243em;">+</span><span class="msubsup" id="MathJax-Span-282" style="padding-left: 0.243em;"><span style="display: inline-block; position: relative; width: 1.805em; height: 0px;"><span style="position: absolute; clip: rect(3.186em, 1000.483em, 4.207em, -999.997em); top: -4.021em; left: 0em;"><span class="mn" id="MathJax-Span-283" style="font-family: STIXGeneral-Regular;">2</span><span style="display: inline-block; width: 0px; height: 4.027em;"></span></span><span style="position: absolute; top: -4.441em; left: 0.483em;"><span class="texatom" id="MathJax-Span-284"><span class="mrow" id="MathJax-Span-285"><span class="mi" id="MathJax-Span-286" style="font-size: 70.7%; font-family: STIXGeneral-Italic;">𝑘</span><span class="mo" id="MathJax-Span-287" style="font-size: 70.7%; font-family: STIXGeneral-Regular;">−</span><span class="mn" id="MathJax-Span-288" style="font-size: 70.7%; font-family: STIXGeneral-Regular;">2</span></span></span><span style="display: inline-block; width: 0px; height: 4.027em;"></span></span></span></span><span class="mo" id="MathJax-Span-289" style="font-family: STIXGeneral-Regular; padding-left: 0.243em;">+</span><span class="mo" id="MathJax-Span-290" style="font-family: STIXGeneral-Regular; padding-left: 0.243em;">⋯</span><span class="mo" id="MathJax-Span-291" style="font-family: STIXGeneral-Regular; padding-left: 0.243em;">+</span><span class="mn" id="MathJax-Span-292" style="font-family: STIXGeneral-Regular; padding-left: 0.243em;">1</span><span class="mo" id="MathJax-Span-293" style="font-family: STIXGeneral-Regular; padding-left: 0.303em;">=</span><span class="msubsup" id="MathJax-Span-294" style="padding-left: 0.303em;"><span style="display: inline-block; position: relative; width: 1.805em; height: 0px;"><span style="position: absolute; clip: rect(3.186em, 1000.483em, 4.207em, -999.997em); top: -4.021em; left: 0em;"><span class="mn" id="MathJax-Span-295" style="font-family: STIXGeneral-Regular;">2</span><span style="display: inline-block; width: 0px; height: 4.027em;"></span></span><span style="position: absolute; top: -4.441em; left: 0.483em;"><span class="texatom" id="MathJax-Span-296"><span class="mrow" id="MathJax-Span-297"><span class="mi" id="MathJax-Span-298" style="font-size: 70.7%; font-family: STIXGeneral-Italic;">𝑘</span><span class="mo" id="MathJax-Span-299" style="font-size: 70.7%; font-family: STIXGeneral-Regular;">+</span><span class="mn" id="MathJax-Span-300" style="font-size: 70.7%; font-family: STIXGeneral-Regular;">1</span></span></span><span style="display: inline-block; width: 0px; height: 4.027em;"></span></span></span></span><span class="mo" id="MathJax-Span-301" style="font-family: STIXGeneral-Regular; padding-left: 0.243em;">−</span><span class="mn" id="MathJax-Span-302" style="font-family: STIXGeneral-Regular; padding-left: 0.243em;">1</span><span class="mo" id="MathJax-Span-303" style="font-family: STIXGeneral-Regular; padding-left: 0.303em;">=</span><span class="mn" id="MathJax-Span-304" style="font-family: STIXGeneral-Regular; padding-left: 0.303em;">2</span><span class="mi" id="MathJax-Span-305" style="font-family: STIXGeneral-Italic;">𝑛</span><span class="mo" id="MathJax-Span-306" style="font-family: STIXGeneral-Regular; padding-left: 0.243em;">−</span><span class="mn" id="MathJax-Span-307" style="font-family: STIXGeneral-Regular; padding-left: 0.243em;">1</span></span><span style="display: inline-block; width: 0px; height: 2.586em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.797em; border-left-width: 0px; border-left-style: solid; width: 0px; height: 2.603em;"></span></span></nobr><span class="MJX_Assistive_MathML MJX_Assistive_MathML_Block" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><msup><mn>2</mn><mi>k</mi></msup><mo>+</mo><mfrac><msup><mn>2</mn><mi>k</mi></msup><mn>2</mn></mfrac><mo>+</mo><mfrac><msup><mn>2</mn><mi>k</mi></msup><mn>4</mn></mfrac><mo>+</mo><mo>⋯</mo><mo>+</mo><mn>1</mn><mo>=</mo><msup><mn>2</mn><mi>k</mi></msup><mo>+</mo><msup><mn>2</mn><mrow class="MJX-TeXAtom-ORD"><mi>k</mi><mo>−</mo><mn>1</mn></mrow></msup><mo>+</mo><msup><mn>2</mn><mrow class="MJX-TeXAtom-ORD"><mi>k</mi><mo>−</mo><mn>2</mn></mrow></msup><mo>+</mo><mo>⋯</mo><mo>+</mo><mn>1</mn><mo>=</mo><msup><mn>2</mn><mrow class="MJX-TeXAtom-ORD"><mi>k</mi><mo>+</mo><mn>1</mn></mrow></msup><mo>−</mo><mn>1</mn><mo>=</mo><mn>2</mn><mi>n</mi><mo>−</mo><mn>1</mn></math></span></span>
+</div>
+<p>T(n) = T(0.9999 n) + O(n), it's O(n).</p>
+<p>Good pviot p needs to guarantee T(n) = T(3/4n) + O(n), this definition makes half of elements are good pviot.</p>
+</div>
+</li>
+<li>
+    <div class="content" id="quickselect">
+        <h3>QuickSelect</h3>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>Java Code</h4>
+                    <pre class="brush:java">
+public class QuickSelect {
+    private final static Random rand = new Random();
+    public static int quickSelect(int [] values, int k) {
+        int start = 0;
+        int end = values.length - 1;
+        int temp = 0;
+        k = k - 1; // convert to index
+        do{
+            temp = quickSelectCore(values, start, end);
+            if(k &lt; temp){
+                end = temp - 1;
+            }else if(temp &lt; k){
+                start = temp + 1;
+            }
+        }while(temp != k);
+        return values[k];
+    }
+    private static int quickSelectCore(int [] values, int start, int end){
+        // start &lt;= end;
+        // return an index where left side elements are less than values[index], right side elements are equal or bigger then values[index]
+        int index = start + rand.nextInt(end - start + 1);
+        swap(values, index, end);
+        int i = start, j = start; // j points to the first element that is larger than or equal to values[end]
+        while(i &lt; end){
+            if(values[i] &lt; values[end]) {
+                swap(values, i, j);
+                j++;
+            }
+            i++;
+        }
+        swap(values, j, end);
+        return j;
+    }
+    private static void swap(int [] values, int i, int j){
+        int temp = values[i];
+        values[i] = values[j];
+        values[j] = temp;
+    }
+}
+
+                    </pre>
+                </li>
+                <li>
+                    <p>Properties</p>
+                    <p>1). return the kth largest element</p>
+                    <p>
+                        2). the left half is less than or equal to the kth element; the right half is greater than or equal to the kth element; 
+                        <span style="color:red">Equal elements can existed on both side.</span>
+                    </p>
+                </li>
+            </ol>
+            <h4>Problems</h4>
+            <p>Keywords: <span style="color:red">unsorted</span>, <span style="color:red">kth smallest, closest, largest, top K</span></p>
+            <ol>
+                <li>
+                    <h4>215. Kth Largest Element in an Array</h4>
+                    <p>Desc: given an unsorted array, find the kth largest element.</p>
+                    <p>Sol: QuickSelect</p>
+                </li>
+                <li>
+                    <h4>347. Top K Frequent Elements</h4>
+                    <p>Desc:</p>
+                    <p>Sol: </p>
+                </li>
+                <li>
+                    <h4>973. K Closest Points to Origin</h4>
+                    <p>Desc: We have a list of points on the plane.  Find the K closest points to the origin (0, 0).</p>
+                    <p>
+                        Sol 1: calculate Euclidean distance for each point; bind distance with its points. Sort distance or using TreeMap/PriorityQueue. O(nlgn)<br>
+                        Sol 2: quickselect, average O(n)
+                    </p>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>
