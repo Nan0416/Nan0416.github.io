@@ -1,0 +1,245 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>Sort&nbsp;Heapsort & Priority Queue</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-08-20">
+<meta name="keywords" content="heapsort">
+<meta name="keywords" content="Priority queue">
+<meta name="keywords" content="heapify">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushPython.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushSql.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>Sort&nbsp;-&nbsp;HeapSort & Priority Queue</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-08-03</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-03</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#algorithm">Algorithm</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+<p>Both heap sort and priority queue use the same data structure of heap. A heap is a tree structure based on array, where a parent value always greater than or equal to children (max-heap). (min-heap: parent is smaller than or equal to all children)</p>
+<p>
+    <p>min-heap</p>
+    <img src="./img/min-heap.png" width="280" height="160">
+</p>
+<h4>Difference</h4>
+<p>
+    heapsort: the input of heapsort is an array, we need to heaify the entire array. During heaification, the size of array is fixed.<br>
+    priority queue: maintaining the heap as new elements are inserted.
+</p>
+<h4>Runtime</h4>
+<p>Because heap is always a complete binary tree, heapsort is O(nlgn). QuickSort on average is O(nlgn), but worst case can be O(n^2).</p>
+</div>
+</li>
+<li>
+    <div class='content' id="algorithm">
+        <h3>Algorithm</h3>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>Parent and Children index</h4>
+                    <pre class="brush:java">
+                        left child index = parent index * 2 + 1;
+                        right child index = parent index * 2 + 2;
+                        parent index = (either child index - 1) / 2;
+
+                        attention: 
+                        child = 0;
+                        parent = (child - 1) / 2; // parent is still 0.
+                    </pre>
+                </li>
+                <li>
+                    <h4>HeapSort</h4>
+                    <p>Required functions: <br>
+                        swap, <br>
+                        heapify: heapify on a node. This node's two children have to be heapified already.<br>
+                        maxHeap: depends on "heapify", build heap bottom-up<br>
+                        sort: init maxHeap, moving the first largest element to the end during each following heapify.
+                    </p>
+                    <pre class="brush:java">
+public class HeapSort {
+    // Because we need to guarantee the two child nodes are heapified before heapifying a node, so we have to do the
+    // heapify bottom up
+    public void heapSort(int [] arr){
+        // build heap
+        maxHeap(arr);
+        for(int i = arr.length - 1; i >= 0; i--){
+            swap(arr, 0, i); // put largest element in the heap to the end;
+            heapify(arr, 0, i); // heapify again
+        }
+    }
+    public void maxHeap(int [] arr){
+        // half elements have children.
+        int length = arr.length / 2;
+        for(int i = length - 1; i >= 0; i--){
+            heapify(arr, i, arr.length);
+        }
+    }
+    // When running heapify on a node, its two child nodes must be heapified already.
+    // we need give a "length" since in the sorting, we do not heapify the entire array.
+    public void heapify(int [] arr, int index, int length){
+        // max-heapify, O(lgn)
+        int leftChildIndex = index * 2 + 1;
+        int rightChildIndex = index * 2 + 2;
+        if(rightChildIndex &lt; length){
+           if(arr[leftChildIndex] > arr[index] || arr[rightChildIndex] > arr[index]){
+               if(arr[rightChildIndex] > arr[leftChildIndex]){
+                   // swap right child with parent
+                   swap(arr, rightChildIndex, index);
+                   heapify(arr, rightChildIndex, length);
+               }else{
+                   swap(arr, leftChildIndex, index);
+                   heapify(arr, leftChildIndex, length);
+               }
+           }
+        }else if(leftChildIndex &lt; length) {
+            if (arr[leftChildIndex] > arr[index]) {
+                swap(arr, leftChildIndex, index);
+            }
+        }
+    }
+    private void swap(int [] arr, int i, int j){
+        int temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+}
+                    </pre>
+                </li>
+                <li>
+                    <h4>Priority Queue</h4>
+                    <p>Different from heapsort, the heap size of a priority queue changes as offering/polling elements from the priority queue.</p>
+                    <p>Moreover, priority queue uses <span style="color:red">sift up</span> when inserting an element. (like bubble sort moving element up);<br>
+                    it uses <span style="color:red">heapify</span> when polling (removing) an element.</p>
+                    
+                    <pre class="brush:java">
+public class MyPriorityQueue {
+    private List&lt;Integer> containers; // min-heap.
+    public MyPriorityQueue(){
+        containers = new ArrayList&lt;>();
+    }
+    public int size(){
+        return containers.size();
+    }
+    public void offer(int number){
+        containers.add(number);
+        siftUp();
+    }
+    public int peek(){
+        if(containers.size() == 0){
+            throw new IndexOutOfBoundsException("Queue is empty");
+        }
+        return containers.get(0);
+    }
+    public int poll(){
+        int result = peek();
+        swap(0, containers.size() - 1);
+        containers.remove(containers.size() - 1);
+        heapify();
+        return result;
+    }
+    private void siftUp(){
+        // always siftup the last element.
+        int index = containers.size() - 1;
+        while(index != 0){
+            int parent = (index - 1) / 2;
+            if(containers.get(parent) > containers.get(index)){
+                swap(parent, index);
+            }else{
+                return;
+            }
+            index = parent;
+        }
+    }
+    private void heapify(){
+        // always heapify on the first
+        int index = 0;
+        while(2 * index + 1 &lt; containers.size()){ // terminated when no children
+            int leftChildIndex = 2 * index + 1;
+            int rightChildIndex = 2 * index + 2;
+            if(rightChildIndex &lt; containers.size()){
+                if(containers.get(leftChildIndex) &lt; containers.get(index) ||
+                        containers.get(rightChildIndex) &lt; containers.get(index)){
+                    if(containers.get(leftChildIndex) &lt; containers.get(rightChildIndex)){
+                        swap(leftChildIndex, index);
+                        index = leftChildIndex;
+                    }else{
+                        swap(rightChildIndex, index);
+                        index = rightChildIndex;
+                    }
+                }else{
+                    return;
+                }
+            }else{
+                if(containers.get(leftChildIndex) &lt; containers.get(index)){
+                    swap(leftChildIndex, index);
+                    index = leftChildIndex;
+                }else{
+                    return;
+                }
+            }
+        }
+    }
+    private void swap(int i, int j){
+        int temp = containers.get(i);
+        containers.set(i, containers.get(j));
+        containers.set(j, temp);
+    }
+}
+                    </pre>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>

@@ -40,6 +40,7 @@ SyntaxHighlighter.all()
 <p class="date"><span class="created-date">Created:2018-10-14</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-16@ Rockford, IL / 2019-08-19 @ First Day of Fall 2019</span></p>
 <div class="catalog">
 <ul class="catalogItems">
+<li><a href="#operation">Operation</a></li>
 <li><a href="#string">String & StringBuilder</a></li>
 <li><a href="#math">Math</a></li>
 <li><a href="#array">Array</a></li>
@@ -54,6 +55,48 @@ SyntaxHighlighter.all()
 <hr>
 <div class="contentContainer">
 <ol>
+    <li>
+        <div class="content" id="operation">
+            <h3>Operation</h3>
+            <div class="featureList">
+                <ol>
+                    <li>
+                        <h4>Shift</h4>
+                        <p>Left shift: shift loop</p>
+                        <pre class="brush:java">
+                            int temp = 0x1 &lt;&lt; 10;
+                            temp = 0x1 &lt;&lt; 31; // the most left shift for int32
+                            temp = 0x1 &lt;&lt; 32; // instead of results in 0, it shift like a loop. So left shift by 32 is the original value.
+                            boolean isTrue = 0x5 &lt;&lt; 34 == 0x5 &lt;&lt; 2; // true
+                        </pre>
+                        <p>priority: <br>
+                            minus/addition ahead shift operation<br>
+                            == != ahead & |
+                        </p>
+                    </li>
+                    <li>
+                        <h4>long to int</h4>
+                        <p>When writing an integer in Java, it's default an int 32 bits.</p>
+                        <pre class="brush:java">
+                            // create a long 0x00000000ffffffff mask
+                            // minus priority ahead of shift
+                            long mask = (1 &lt;&lt; 32) - 1; // 0, the 1 is int 32, shift 32 to left is itself.
+                            long mask2 = (1L &lt;&lt; 32) - 1; // correct
+                        </pre>
+                        <pre class="brush:java">
+                            // store two integers in a long
+                            int first = 0x23;
+                            int second = 0x2334; // attention: second integer can be negative.
+                            long result = first; // have to first convert first to a long and then shift;
+                            result = result &lt;&lt; 32;
+                            long temp = second; // if second is a negative number, then the long's leading 32 bits will be set to 1.
+                            result = result | second & mask;
+                        </pre>
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </li>
 <li>
 <div class="content" id="string">
 <h3>String & StringBuilder</h3>
@@ -389,7 +432,7 @@ SyntaxHighlighter.all()
                             void clear()
                             boolean containsKey(Object key)
                             boolean containsValue(Object value)
-                            V get(Object key)
+                            V get(Object key) // return null if not existed.
                             V getOrDefault(Object key, V defaultValue)
                             V put(K key, V value) // return previous value or null
                             V remove(Object key)

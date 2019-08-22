@@ -39,7 +39,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Graph&nbsp;-&nbsp;DFS</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-08-16 @ Rockford, IL</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-16</span></p>
+<p class="date"><span class="created-date">Created:2019-08-16 @ Rockford, IL</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-21</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -82,12 +82,58 @@ SyntaxHighlighter.all()
 <li>
     <div class="content" id="example">
         <h3>Examples</h3>
+    
         <div class='featureList'>
+            <h4>Where to apply DFS</h4>
+            <ol>
+                <li>
+                   <h4>Direct operation on a tree</h4>
+                   <p></p>
+                </li>
+                <li>
+                    <h4># connected components</h4>
+                    <p>e.g. #islands, this kind of questions can also be solved by union-find. If the problem directly gives a matrix represented graph, then DFS is better. If edges are given, then use UnionFind.</p>
+
+                </li>
+            </ol>
+            <h4>Tricks</h4>
+            <ol>
+                <li>Matrix representation: when knowing the size of the matrix is not too large, e.g. less than 100 * 100, a node position can be flatten to one integer i = row * width + col, which is efficient to mark visited element.</li>
+            </ol>
+            <hr>
             <ol>
                 <li>
                     <h4><a href="https://leetcode.com/problems/binary-tree-postorder-traversal/">Binary Tree Postorder Traversal</a></h4>
                     <p>Desc: Given a binary tree, return the postorder traversal of its nodes' values. Using iteration instead of recursion</p>
                     <p>Sol: too easy to have a solution.</p>
+                </li>
+                <li>
+                    <h4>130. Surrounded Regions</h4>
+                    <p>Desc: Given a 2D board containing 'X' and 'O', capture all regions surrounded by 'X'</p>
+                    <p>Sol: run dfs on 'O' that are located on the borders, and mark them. Later switch back.</p>
+                </li>
+                <br>
+                <br>
+                <li>
+                    <h4>200. Number of Islands</h4>
+                    <p>Desc: given a matrix with element either 1 or 0. 1 is land, 0 is sea. Find the #island.</p>
+                    <p>Sol: dfs</p>
+                </li>
+                <li>
+                    <h4>695. Max Area of Island</h4>
+                    <p>Desc: a matrix represent of island, find the max island (biggest area)</p>
+                    <p>Sol: dfs</p>
+                </li>
+                
+                <li>
+                    <h4>959. Regions Cut By Slashes</h4>
+                    <p>Desc: In a N x N grid composed of 1 x 1 squares, each 1 x 1 square consists of a /, \, or blank space.  These characters divide the square into contiguous regions.</p>
+                    <p>Sol: same as #island, implementation is sort of complicated.</p>
+                </li>
+                <li>
+                    <h4>* 463. Island Perimeter</h4>
+                    <p>Desc: a matrix represent of island, just one island. count it perimeter</p>
+                    <p>Sol: p = #island * 4 - 2 * adjacent</p>
                 </li>
             </ol>
         </div>

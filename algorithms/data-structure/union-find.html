@@ -1,0 +1,202 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>Data Structure&nbsp;Union Find</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-08-20">
+<meta name="keywords" content="data-structure">
+<meta name="keywords" content="union-find">
+<meta name="keywords" content="">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushPython.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushSql.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>Data Structure&nbsp;-&nbsp;Union-Find</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-08-20</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-21</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#example">Examples</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+<p>UnionFind is a data structure provides two operation, union and find. UnionFind can quickly find if two elements are in the same group ~O(1), and quickly merge two groups ~O(1).</p>
+<p><span style="color:red">The purpose of UnionFind is to merge two groups, and find what group that an element belongs to.</span></p>
+<p>UnionFind is a tree structure that is implemented with HashMap and may be optimized with array. <span style="color:red">Child node point to parent node; parent node does not know children.</span></p>
+<p>Using "path compression" and "union by rank" to achieve ~O(1) find;</p>
+<div class="featureList">
+    <ol>
+        <li>
+            <h4>Path Compression</h4>
+            <p>After each find, we bind the node directly to root.</p>
+            <p>
+                <img src="./img/path-compression.png" width="300" height="180">
+            </p>
+        </li>
+        <li>
+            <h4>Union by rank</h4>
+            <p>always attaches the shorter tree (low rank) to the root of the taller tree (high rank).</p>
+        </li>
+        <li>
+            <h4>Algorithm</h4>
+            <p>Union return false if two element already on the same group;</p>
+            <pre class="brush:java">
+                    public class UnionFind {
+                        private Map&lt;Integer, Integer> container;
+                        private Map&lt;Integer, Integer> rank;
+                        public UnionFind(){
+                            container = new HashMap&lt;>();
+                            rank = new HashMap&lt;>();
+                        }
+                        public Integer find(int element){
+                            Integer copyEle = element;
+                            Integer parent = container.get(element);
+                            while(parent!= null && parent != element){
+                                element = parent;
+                                parent = container.get(element);
+                            }
+                            if(parent != null){
+                                // path compression
+                                container.put(copyEle, parent);
+                            }
+                            return parent;
+                        }
+                        public boolean union(int element1, int element2){
+                            Integer p1 = find(element1);
+                            Integer p2 = find(element2);
+                            if(p1 == p2 && p1 != null){
+                                return false;
+                            }
+                            if(p1 == null && p2 == null){
+                                container.put(element1, element1);
+                                container.put(element2, element1);
+                                rank.put(element1, 1);
+                                rank.put(element2, 0);
+                            }else if(p1 == null){
+                                container.put(element1, p2);
+                            }else if(p2 == null){
+                                container.put(element2, p1);
+                            }else{
+                                int p1Rank = rank.get(p1);
+                                int p2Rank = rank.get(p2);
+                                if(p1Rank > p2Rank){
+                                    // p1 higher
+                                    container.put(p2, p1);
+                                }else if(p2Rank > p1Rank){
+                                    container.put(p1, p2);
+                                }else{
+                                    container.put(p2, p1);
+                                    rank.put(p1, rank.get(p1) + 1);
+                                }
+                            }
+                            return true;
+                        }
+                    }
+            </pre>
+        </li>
+        <li>
+            <h4>Optimization</h4>
+            <p>
+                The difference between hashmap and array implementation<br>
+                1). array's index is the element, which means we have to guarantee that elements span a small range e.g. (0, 100), or (100000, 100100)<br>
+                <span style="color:red">2). hashmap initially is empty, but we can assume array implementation is full, and each element is a group.</span>
+            </p>
+        </li>
+    </ol>
+</div>
+</div>
+</li>
+<li>
+    <div class="content" id="example">
+        <h3>Examples</h3>
+        <div class="featureList">
+            <ol>
+                <h4>Where to apply UnionFind</h4>
+                <li>
+                    <h4>Finding connectivity <span style="color:red">(can also be solved by DFS/BFS)</span></h4>
+                    <p> 
+                        If two items (nodes in graph) are connected by definition, then they belong to the same group.<br>
+                        <span style="color:red">** In a graph based problem, the "item" usually is a node (e.g. #islands, #friend-circles), but can also be others, e.g. union column/row in graph (e.g. #947. Most Stones Removed with Same Row or Column)</span>
+                    </p>
+                    <p>The answer is usually asking #group, or removing an edge (e.g. )</p>
+                    <h4>DFS/BFS vs. UnionFind on graph</h4>
+                    <p>If the problem gives edges (e.g. #261. Graph Valid Tree) instead of the graph (e.g. #island), then DFS/BFS will need to first build the graph with adjacent list, however, UnionFind does not require this step.</p>
+                    <p>** If edges are given, using UnionFind; if graph (matrix) is given, using DFS/BFS **</p>
+                </li>
+                <li>
+                    <h4>Build connectivity</h4>
+                    1102. Path With Maximum Minimum Value
+                </li>
+            </ol>
+            <hr>
+            <ol>
+                <li>
+                    <h4>261. Graph Valid Tree</h4>
+                    <p>Desc: given an array of undirected edges, check this tree is valid.</p>
+                    <p>Sol: unionfind, no cycle & <span style="color:red">one root</span>.</p>
+                </li>
+                <li>
+                    <h4>* 947. Most Stones Removed with Same Row or Column</h4>
+                    <p>Des: An array of 2d coordinate points. Each point is a stone. We can remove a stone if there exist another stone on the same row or column. Find the max number of stones we can remove.</p>
+                    <p>Sol: group any two nodes with the same row or column. Finally, each group should leave one node. <br>
+                        It is easier to the group col & row, instead of node.</p>
+                </li>
+                <li>
+                    <h4>305. Number of Islands II</h4>
+                    <p>Des: given an array of positions. we add a position of land to the sea. count #islands after each adding land.</p>
+                    <p>Sol: position is represented by 2d coordinate. Therefore using union-find instead of dfs. <span style="color:red">The union item is node. But instead of union node, we can union node index. (With this, union-find container can be an array).
+                        
+                        Moreover, using a hashmap to record land position, key = position, value = index in the array.</span></p>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li><a href="https://www.youtube.com/watch?v=VJnUwsE4fWA" target="_blank">[Youtube] Disjoint-set/Union-find Forest</a></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>
