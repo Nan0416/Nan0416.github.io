@@ -170,16 +170,21 @@ SyntaxHighlighter.all()
                 </li>
                 <li>
                     <h4>* 947. Most Stones Removed with Same Row or Column</h4>
-                    <p>Des: An array of 2d coordinate points. Each point is a stone. We can remove a stone if there exist another stone on the same row or column. Find the max number of stones we can remove.</p>
+                    <p>Desc: An array of 2d coordinate points. Each point is a stone. We can remove a stone if there exist another stone on the same row or column. Find the max number of stones we can remove.</p>
                     <p>Sol: group any two nodes with the same row or column. Finally, each group should leave one node. <br>
                         It is easier to the group col & row, instead of node.</p>
                 </li>
                 <li>
                     <h4>305. Number of Islands II</h4>
-                    <p>Des: given an array of positions. we add a position of land to the sea. count #islands after each adding land.</p>
+                    <p>Desc: given an array of positions. we add a position of land to the sea. count #islands after each adding land.</p>
                     <p>Sol: position is represented by 2d coordinate. Therefore using union-find instead of dfs. <span style="color:red">The union item is node. But instead of union node, we can union node index. (With this, union-find container can be an array).
                         
                         Moreover, using a hashmap to record land position, key = position, value = index in the array.</span></p>
+                </li>
+                <li>
+                    <h4>323. Number of Connected Components in an Undirected Graph</h4>
+                    <p>Desc: Given n nodes labeled from 0 to n - 1 and a list of undirected edges. #connected component</p>
+                    <p>Sol: Union find</p>
                 </li>
             </ol>
         </div>

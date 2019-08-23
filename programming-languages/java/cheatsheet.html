@@ -330,9 +330,14 @@ SyntaxHighlighter.all()
                         .set(index i, E e): replacement
                         all: .removeFirst/Last() .getFirst/Last() .addFirst/Last(E e)
                     </pre>
-                    <p>Boxing type, e.g. Integer, toArray cannot be cast to int []</p>
-                   
+                    <p>Boxing type, e.g. Integer, toArray cannot be cast to int [], instead doing</p>
+                    <pre class="brush:java">
+                        List&lt;Integer> ll;
+                        int [] arr = ll.toArray(new int[ll.size()]);
+                    </pre>
+                    <p><span style="color:red">Only LinkedList defined "addFirst" and "addLast" method; the List interface doesn't</span></p>
                 </li>
+                
             </ol>
             <ol>
                 <h4>Practices</h4>

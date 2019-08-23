@@ -37,7 +37,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Graph&nbsp;-&nbsp;BFS</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-02-05</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-07</span></p>
+<p class="date"><span class="created-date">Created:2019-02-05</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-22</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -58,17 +58,68 @@ SyntaxHighlighter.all()
         <li>
             <h4>BFS vs. DFS</h4>
             <p>BFS 很老实, it iterates the entire graph, tree, matrix layer by layer. Finally, it can traverse every node. A well designed DFS is smart, it can also find a target very quick in O(h)=O(lgn). It can also iterates every node in O(n).</p>
-            <p style="color:red">BFS most likely applied with undirected graph, (directed) binary tree.</p>
+            <p style="color:red">BFS most likely applied with undirected graph (undirect adjacent list, matrix island), (directed) binary tree.</p>
+            <p>
+                1). DFS start on a single node<br>
+                2). BFS can start either on a single node, multiple nodes, or a layer.
+                <p><img src="./img/bfs-traverse.jpeg" width="500" height="200"></p>
+            </p>
+            <h4>BFS on a matrix island, visiting layer by layer.</h4>
+            <p>Application: 934. Shortest Bridge</p>
+            <p>require a visited matrix and a queue.</p>
+            <pre class="brush:java">
+                public class BFSOnMatrix {
+                    private Queue&lt;int[]> queue;
+                    private int[][] directions;
+                    public void bfsMark(int [][] matrix, int [][] startingPoints){
+                        directions = new int[][]{{-1,0}, {1,0}, {0, -1}, {0, 1}};
+                        queue = new LinkedList&lt;>();
+                        int row = matrix.length;
+                        int col = row == 0? 0: matrix[0].length;
+                        byte[][] visited = new byte[row][col];
+                        for(int [] point: startingPoints){
+                            queue.offer(point);
+                            visited[point[0]][point[1]] = 1;
+                        }
+                        int layer = 0;
+                        while(queue.size() != 0){
+                            layer ++;
+                            int size = queue.size();
+                            for(int i = 0; i &lt; size; i++){ // a layer
+                                int [] point = queue.poll();
+                                matrix[point[0]][point[1]] = layer;
+                                for(int [] dir: directions){
+                                    int nx = point[0] + dir[0];
+                                    int ny = point[1] + dir[1];
+                                    if(nx &lt; 0 || ny &lt; 0 || nx >= row || ny >= col){
+                                        continue;
+                                    }
+                                    if(visited[nx][ny] == 1){
+                                        continue;
+                                    }
+                                    queue.offer(new int[]{nx, ny});
+                                    visited[nx][ny] = 1;
+                                }
+                            }
+                        }
+                    }
+                }
+            </pre>
+            <p><span style="color:red">Implementation attention</span>: we need mark a node as visited when adding it to the queue. (this mark "visited" actually means already in the queue or has been queued.</p>
         </li>
         <li>
             <h4>BFS vs. Union Find</h4>
-            <p>When finding connected component in a undirected graph, or matrix. Both union find and BFS can be applied, but union find is better.</p>
+            <p>When finding connected component in a undirected graph, or matrix. Both union find and BFS can be applied, but union find is better <span style="color:red">when the graph is given in a list of edge.</span></p>
         </li>
         <li>
             <h4>Implementation of BFS</h4>
             <p>BFS is implemented with a queue (linkedlist), first add the root to queue.</p>
-            <p><span style="color:red">BFS properties</span><br>
-            1).  # of nodes in a row = queue size before poping up this row's first element.</p>
+            <p>** <span style="color:red">Compared to a binary tree, if BFS needs to run on graph or matrix, we also need a "visited (already queued)" data structure.</span></p>
+            <p>
+                <span style="color:red">BFS properties</span><br>
+                1).  # of nodes in a row = queue size before poping up this row's first element.<br>
+                2). it can scan the graph layer by layer (山火一层一层的烧）(starting on a single point, a line, a cycle)
+            </p>
         </li>
     </ol>
 </div>
@@ -78,10 +129,66 @@ SyntaxHighlighter.all()
     <div class="content" id="example">
         <h3>Examples</h3>
         <div class="featureList">
+            <h4>Where to apply</h4>
             <ol>
-                <li>* 934. Shortest Bridge to connect two islands</li>
-                <p>Desc: a matrix representation has two islands. find a shortest path to connect two islands.</p>
-                <p>Sol: first doing dfs to mark one island. than bfs to grow the mark island until reach the second island. (doing bfs on matrix island.)</p>
+                <li>binary tree based: the implementation is easier, only need a queue.</li>
+                <li>matrix island based: besides the queue, also need the "visited/already queued" data structure.</li>
+                <li>Undirected Adjacent list based: besides the queue, also need the "visited/already queued" data structure.</li>
+                <li>** It usually ask do something on a tree, or find the shortest distance on a matrix island.</li>
+                <li>Keyword: <span style="color:red">shortest path/distance</span></li>
+            </ol>
+            <ol>
+                <li>
+                    <p>[1]</p>
+                    <h4>102. Binary Tree Level Order Traversal</h4>
+                    <h4>103. Binary Tree Zigzag Level Order Traversal</h4>
+                    <h4>107. Binary Tree Level Order Traversal II (bottom up)</h4>
+                    <p>Desc: given a binary tree, organize its node layer by layer</p>
+                    <p>Sol: too easy to have a solution. (just remember only <span style="color:red">LinkedList defines addFirst method.</span></p>
+                </li>
+                <li>
+                    <h4>199. Binary Tree Right Side View [1]</h4>
+                    <p>Desc: Given a binary tree, imagine yourself standing on the right side of it, return the values of the nodes you can see ordered from top to bottom.</p>
+                    <p>Sol: BFS the last element on each layer (It has a smarter DFS solution)</p>
+                </li>
+                <li>
+                    <h4>111. Minimum Depth of Binary Tree [1]</h4>
+                    <p>Desc: given a binary tree, find the shortest distance from root to one of leaves.</p>
+                    <p>Sol: bfs count layers or dfs recursion. attention 
+                        <pre class="brush:bash">
+                                1
+                             null  2
+                        # 1 is not leaf.
+                        </pre>
+                    </p>
+                </li>
+                <li>
+                    <h4>* 127. Word Ladder</h4>
+                    <p></p>
+                    <p>Sol: run BFS on undirect adjacent list</p>
+                </li>
+                <li>
+                    <h4>133. Clone Graph</h4>
+                    <p>Desc: deep copy of an undirect adjacent list graph</p>
+                    <p>Sol: HashMap + BFS/DFS</p>
+                </li>
+                <li>
+                    <h4>* 934. Shortest Bridge to connect two islands [2]</h4>
+                    <p>Desc: a matrix representation has two islands. find a shortest path to connect two islands.</p>
+                    <p>Sol: first doing dfs to mark one island. than bfs to grow the island layer by layer until reach the second island. (doing bfs on matrix)</p>
+                </li>
+                <li>
+                    <h4>286. Walls and Gates</h4>
+                    <p>The shortest distance to any one of the targets</p>
+                </li>
+                <li>
+                    <h4>310. Minimum Height Trees</h4>
+                    <p>The overall shortest distance to all targets</p>
+                </li>
+                <li>
+                    <h4>317. Shortest Distance from All Buildings</h4>
+                    <p>The overall shortest distance to all targets</p>
+                </li>
             </ol>
         </div>
     </div>
