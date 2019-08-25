@@ -39,7 +39,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Graph&nbsp;-&nbsp;DFS</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-08-16 @ Rockford, IL</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-21</span></p>
+<p class="date"><span class="created-date">Created:2019-08-16 @ Rockford, IL</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-24</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -63,6 +63,27 @@ SyntaxHighlighter.all()
         <li>
             <h4>DFS on adjacent-list with Stack</h4>
         </li>
+        <li>
+            <h4>Keep path info when traversing a tree</h4>
+            <p>When traversing a tree based structure, we can create and keep each path from root to leaf.</p>
+            <p>The key is keep a <span style="color:red">"stack"</span> to push node before a dfs and pop node after a dfs. When encountering a leaf, make of copy of it.</p>
+            <pre class="brush:java">
+    public List&lt;List&lt;Integer>> paths;
+    public void dfs(TreeNode node, LinkedList&lt;Integer> path){ // path = stack
+        path.add(node.val); // push at begin, pop at end.
+        if(node.left == null && node.right == null){
+            paths.add(new LinkedList&lt;>(path)); // reach leaf;
+        }
+        if(node.left != null){
+            dfs(node.left, path);
+        }
+        if(node.right != null){
+            dfs(node.right, path);
+        }
+        path.removeLast(); // pop
+    }
+            </pre>
+        </li>
     </ol>
     <h4>Traversal order</h4>
     <ol>
@@ -75,7 +96,7 @@ SyntaxHighlighter.all()
 
             </pre>
         </li>
-    </ol>    
+    </ol>
 </div>
 </div>
 </li>
@@ -88,11 +109,28 @@ SyntaxHighlighter.all()
             <ol>
                 <li>
                    <h4>Direct operation on a binary tree</h4>
-                   <p>This may require smart design: e.g. traverse ordering, when left child first, when right child first.</p>
+                   <p>This may require smart design: e.g. 1). traverse ordering, when left child first, when right child first. 2). keep path information</p>
                 </li>
                 <li>
                     <h4>Undirect matrix islands, # connected components</h4>
                     <p>e.g. #islands, this kind of questions can also be solved by union-find. If the problem directly gives a matrix represented graph, then DFS is better. If edges are given, then use UnionFind.</p>
+                </li>
+                <li>
+                    <h4>A special data structure (e.g. nested structure)</h4>
+                    <p>e.g. 339. Nested List Weight Sum</p>
+                </li>
+                <li>
+                    <h4>Operation on Preorder, Inorder, Postorder</h4>
+                    <p>e.g. given preorder & inorder to build the binary tree #105; Simulate preorder/inorder/postorder traverse on an array.</p>
+                    <p>Properties:<br>
+                    1). preorder: [3,9,20,15,7], inorder: [9,3,15,20,7], the first element of preorder "3" divides inorder to left subtree [9] and right subtree [15, 20, 7]<br>
+                    2). left subtree first approach's preorder == right subtree first approach's postorder.<br>
+                    3). inorder on a binary SEARCH tree returns sorted order.
+                    </p>
+                </li>
+                <li>
+                    <h4>Edge based</h4>
+                    <p>e.g. 332. Reconstruct Itinerary (doesn't ask connectivity, so unionfind does not use here)</p>
                 </li>
             </ol>
             <h4>Tricks</h4>
@@ -101,6 +139,35 @@ SyntaxHighlighter.all()
             </ol>
             <hr>
             <ol>
+                <li>
+                    <h4>105. Construct Binary Tree from Preorder and Inorder Traversal [4]</h4>
+                    <h4>106. Construct Binary Tree from Inorder and Postorder Traversal [4]</h4>
+                    <h4>Self. return inorder from preorder [9, 4, 5, 6, 7] and postorder[5, 6, 4, 7, 9]</h4>
+                    <p>Desc: Given preorder and inorder traversal of a tree, construct the binary tree.</p>
+                    <p>Sol: 105.DFS left-subtree-first. 106. DFS right-subtree-first. Moreover, using hashmap to record inorder value-index to speed up</p>
+                </li>
+                <li>
+                    <h4>108. Convert Sorted Array to Binary Search Tree [4]</h4>
+                    <h4>* 109. Convert Sorted List to Binary Search Tree [4]</h4>
+                    <p>Desc: Given a singly linked list where elements are sorted in ascending order, convert it to a height balanced BST.</p>
+                    <p>Sol: For the array question, we can random access element, then intuitively we can find the middle element and recursively build left subtree and right subtree. This is basically using preorder to build from top to bottom. <br>
+                        For the linked list, we have access data one by one. So we can use inorder to build the tree from left bottom to top and then to right bottom.</p>
+                </li>
+                <li>
+                    <h4>** 255. Verify Preorder Sequence in Binary Search Tree</h4>
+                    <p>Desc: Given an array of numbers, verify whether it is the correct preorder traversal sequence of a binary search tree.</p>
+                    <p>Sol: simulate the process of preorder traverse</p>
+                </li>
+                <li>
+                    <h4>114. Flatten Binary Tree to Linked List</h4>
+                    <p>Desc: Given a binary tree, flatten it to a linked list in-place.</p>
+                    <p>Sol: the underlying algorithm is a postorder-dfs. First flattern both children (either left first or right first), then flattern the parent itself.</p>
+                </li>
+                <li>
+                    <h4>430. Flatten a Multilevel Doubly Linked List</h4>
+                    <p>Desc: given a doubly linked list that each node may or may not have a children linked list as well. flattern it.</p>
+                    <p>Sol: stack. (stack of course is also dfs). attention: don't push null (when head.next is null) to stack.</p>
+                </li>
                 <li>
                     <h4>145. Binary Tree Postorder Traversal [1]</h4>
                     <p>Desc: Given a binary tree, return the postorder traversal of its nodes' values. Using iteration instead of recursion</p>
@@ -115,6 +182,50 @@ SyntaxHighlighter.all()
                     <h4>101. Symmetric Tree [1]</h4>
                     <p>Desc: determine if a binary tree is symmetric</p>
                     <p>Sol: one dfs function traverses two subtree at the same time.</p>
+                </li>
+                <li>
+                    <h4>366. Find Leaves of Binary Tree [1]</h4>
+                    <p>Desc: find leaves, remove leaves, find new leaves again, until tree is empty</p>
+                    <p>Sol: dfs find all leaves and remove leaves. loop the root again until root is leaf.</p>
+                </li>
+                <li>
+                    <h4>116. Populating Next Right Pointers in Each Node</h4>
+                    <h4>* 117. Populating Next Right Pointers in Each Node II</h4>
+                    <p>Desc: given a prefect binary tree (each node has either two children or no child). connect to right node. <span style="color:red">No extra space, recursion implicit stack is fine.</span>
+                        <p><img src="./img/116_sample.png" width="400" height="150"></p>
+                    </p>
+                    <p>
+                        117. different case 
+                        <pre class="brush:java">
+                                  1
+                              2 ----- 3
+                            4 ----- 5 - 6
+                           7 ------------ 8
+                        </pre>
+                    </p>
+                    <p>Sol: the intuitive solution would be BFS layer by layer. However, since no extra sqaure, so have to use DFS. the key is we can use parent's next pointer to set right child's next pointer.</p>
+                </li>
+                <li>
+                    <h4>112. Path Sum</h4>
+                    <h4>* 113. Path Sum II</h4>
+                    <p>Desc: given a binary tree and target sum. Find all paths that from root to leaf has the summation = target sum.</p>
+                    <p>Sol: dfs keeps path info.</p>
+                </li>
+                <li>
+                    <h4>257. Binary Tree Paths</h4>
+                    <p>Desc: Given a binary tree, return all root-to-leaf paths.</p>
+                </li>
+                <li>
+                    <h4>129. Sum Root to Leaf Numbers</h4>
+                    <p>Desc: a binary tree, sum from root to each leaf. e.g. 
+                        <pre class="brush:java">
+                                1
+                              2   3
+                            4
+                            = 124 + 13 = 137.
+                        </pre>
+                    </p>
+                    <p>Sol: DFS, we don't need to have each path info, just dfs with a single base.</p>
                 </li>
                 <li>
                     <h4>130. Surrounded Regions [2]</h4>
@@ -138,14 +249,36 @@ SyntaxHighlighter.all()
                 </li>
                 
                 <li>
-                    <h4>959. Regions Cut By Slashes</h4>
+                    <h4>959. Regions Cut By Slashes [2]</h4>
                     <p>Desc: In a N x N grid composed of 1 x 1 squares, each 1 x 1 square consists of a /, \, or blank space.  These characters divide the square into contiguous regions.</p>
                     <p>Sol: same as #island, implementation is sort of complicated.</p>
                 </li>
                 <li>
-                    <h4>* 463. Island Perimeter</h4>
+                    <h4>* 463. Island Perimeter [2]</h4>
                     <p>Desc: a matrix represent of island, just one island. count it perimeter</p>
                     <p>Sol: p = #island * 4 - 2 * adjacent</p>
+                </li>
+                <li>
+                    <h4>339. Nested List Weight Sum[3]</h4>
+                    <p>Desc: a nested list data structure, sum element * its depth, [[1,1], 3] = 1 * 2 + 1 * 2 + 3 * 1</p>
+                    <p>Sol: dfs with depth info</p>
+                </li>
+                <li>
+                    <h4>364. Nested List Weight Sum II</h4>
+                    <p>Desc: a nested list data structure, sum element * its depth, [[1,1], 3] = (1+1) * 1 + 3 * 2. The outer layer has a height weight.</p>
+                    <p>Sol: bfs with adding one more previous layer. or dfs with an arraylist store each layer sum, and then finally do the sum.</p>
+                </li>
+                <li>
+                    <h4>* 332. Reconstruct Itinerary</h4>
+                    <p>Desc: a list of airline tickets e.g. [[JFK, ATL], [MSP, ATL]]. Find a path/itinerary starts from JFK and used all tickets. If multiple solution existed, return the smallest in lexical order.</p>
+                    <p>Sol: </p>
+                </li>
+                <li>
+                    <h4>213. House Robber II</h4>
+                    <p>Desc: given a binary tree. cannot rob two directly connected node. the max value can return.</p>
+                    <p>Sol: dfs有些像dp. dp 解决sub problem 和原来的problem 有同样的structure. dfs search 的 subtree也仍然是tree.<br>
+                        search a subtree, return two result, one is maximum with using the root, another is the maximum without using the maximum.
+                    </p>
                 </li>
             </ol>
         </div>

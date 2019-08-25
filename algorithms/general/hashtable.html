@@ -37,11 +37,11 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>HashTable&nbsp;-&nbsp;Map</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-02-05</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-05</span></p>
+<p class="date"><span class="created-date">Created:2019-02-05</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-24</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
-<li><a href="#reference">References</a></li>
+<li><a href="#example">Examples</a></li>
 </ul>
 </div>
 <hr>
@@ -59,11 +59,61 @@ SyntaxHighlighter.all()
 </div>
 </li>
 <li>
-<div class="content" id="reference">
-<h3>References</h3>
+<div class="content" id="example">
+<h3>Examples</h3>
 <div class="featureList">
+    <h4>Where to apply?</h4>
     <ol>
-        <li></li>
+        <li>
+            <h4>OOD data structure design</h4>
+            <p>e.g. design twitter, randomset</p>
+        </li>
+        <li>
+            <h4>统计item出现的次数 或者 index</h4>
+            <p>If item has a small range (0, 100), ('a' to 'z') or (100000 to 100100), it can be optimized with an array.</p>
+            <p><span style="color:red">optimization: can you convert the item (hashmap's key) to a number within a specific range. (the range is 1M)</span></p>
+        </li>
+    </ol>
+</div>
+<div class="featureList">
+    <h4>Examples</h4>
+    <ol>
+        <li>
+            <h4>380. Insert Delete GetRandom O(1)[1]</h4>
+            <p>Desc: insert(val), remove(val), getRandom in O(1)</p>
+            <p>Sol: arraylist to store elements, hashmap keep element,index mapping.</p>
+        </li>
+        <li>
+            <h4>355. Design Twitter [1]</h4>
+            <p>Desc: postTweet, get most recent 10 tweets from followee and self, follow and unfollow.</p>
+            <p>Sol: each user has a linked list of tweet with a virtual time, using priority queue to get tweets<br>
+                1). make sure check tweet is not null before push to queue.<br>
+                2). make sure not to follow self, otherwise, queue will have duplicate data.
+            </p>
+        </li>
+        <li>
+            <h4>347. Top K Frequent Elements[2]</h4>
+            <p>Desc: Given a non-empty array of integers, return the k most frequent elements.</p>
+            <p>Sol: intutive approach is hashmap + priority queue. But it can use QuickSelect to achieve O(n).</p>
+        </li>
+        <li>
+            <h4>325. Maximum Size Subarray Sum Equals k[2]</h4>
+            <p>Desc: Given an array nums and a target value k, find the maximum length of a subarray that sums to k</p>
+            <p>Sol: accumulate result from 1 to n [1,2,3] -> [1, 3, 6]. Hash map each sum with its index when first appearance. <span style="color:red">put O at -1 index.</span></p>
+        </li>
+        <li>
+            <h4>249. Group Shifted Strings</h4>
+            
+        </li>
+        <li>
+            <h4>* 187. Repeated DNA Sequences</h4>
+            <p>Desc: find 10-letter repeated sequence in a DNA string, e.g. "AAAAACCCCCAAAAACCCCCCAAAAAGGGTTT" -> ["AAAAACCCCC", "CCCCCAAAAA"]</p>
+            <p>Sol: the naive solution is to use HashMap key= 10-letter substring, and value is # appearance.<br>
+            optimization, converting a 10-letter substring to a number (4-different char, 2bit represents a char, 20bit represents a substring. byte[2^20] = 1M)
+            // leetcode memory 128M array
+            </p>
+            
+        </li>
     </ol>
 </div>
 </div>
