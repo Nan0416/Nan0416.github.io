@@ -198,11 +198,20 @@ SyntaxHighlighter.all()
                     Integer [] ints = new Integer[10]; // init = null
                     // Java doesn't support initalize generic array
                     ArrayList&lt;Integer>[] arrayOfList = new ArrayList[10]; 
+
+                    // get iterator from array
+                    Integer [] arr = new Integer[]{1,2,3,4,5,6};
+                    Iterator&lt;Integer> iti = Arrays.asList(arr).iterator();
+                    while(it.hasNext()){
+                        System.out.println(it.next());
+                    }
+                    
                 </pre>
                 <p>Things cannot be done</p>
                 <p>
                     1). java doesn't support initalize a generic array.<span class="inline-code" style="text-decoration: line-through">ArrayList&lt;Integer>[] arrayOfList = new ArrayList&lt;Integer>[10];</span>
                     <br>2). Primitive wrapper class cannot be autoboxed to primitive. <span class="inline-code" style="text-decoration: line-through">int [] numbers = new Integer[10];</span>
+                    <br>3). cannot turn a int[] array to iterator, since <span style="color:red">Iterator&lt;int></span> is not valid.
                 </p>
             </li>
             

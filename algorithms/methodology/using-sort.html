@@ -55,9 +55,30 @@ SyntaxHighlighter.all()
 </li>
 <li>
     <div class="content" id="example">
-        <h3>Example</h3>
+        <h3>Examples</h3>
+        <p>Keywords: <span style="color:red">array</span></p>
+        <h4>Where to apply?</h4>
+        <div class='featureList'>
+            <ol>
+                <li>Given an array, return an element or a set elements (not index) that satisfy a condition (e.g. 3sum, 4sum)</li>
+            </ol>
+        </div>
         <div class="featureList">
             <ol>
+                <li>
+                    <h4>* 15. 3Sum</h4>
+                    <h4>16. 3Sum Closest</h4>
+                    <h4>* 259. 3Sum Smaller</h4>
+                    <p>Desc: <br>
+                        15. given an array of numbers, return all unique triplets the sum = 0<br>
+                        16. 3Sum closest is easier since don't need to consider the duplicated scenario.<br>
+                        259. Given an array integers and a target, find the number of all index triplets that sum &lt; target.
+                    </p>
+                    <p>Sol: 
+                        15 & 16. sorted and then loop. The inner loop is a kind of two pointers that move to each other. Avoid duplicated.
+                        259. sorted and then loop O(n^2), the inner loop is a two pointer.
+                    </p>
+                </li>
                 <li>
                     <h4><a href="https://leetcode.com/problems/merge-intervals/">Merge Interval</a></h4>
                     <pre class="brush:java">

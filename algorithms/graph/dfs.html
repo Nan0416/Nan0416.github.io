@@ -64,6 +64,34 @@ SyntaxHighlighter.all()
             <h4>DFS on adjacent-list with Stack</h4>
         </li>
         <li>
+            <h4>DFS on a tree, stack based preorder</h4>
+            <pre class="brush:java">
+    public List&lt;Integer> preOrderTraversal(TreeNode root){
+        if(root == null){
+            return new LinkedList&lt;Integer>();
+        }
+        List&lt;Integer> result = new LinkedList&lt;>();
+        Stack&lt;TreeNode> st = new Stack&lt;>();
+        st.push(root);
+        while(st.size() != 0){
+            // left
+            TreeNode node = st.pop();
+            result.add(node.val);
+            if(node.right != null){
+                st.push(node.right);
+            }
+            if(node.left != null){
+                st.push(node.left);
+            }
+        }
+        return result;
+    }
+            </pre>
+        </li>
+        <li>
+            
+        </li>
+        <li>
             <h4>Keep path info when traversing a tree</h4>
             <p>When traversing a tree based structure, we can create and keep each path from root to leaf.</p>
             <p>The key is keep a <span style="color:red">"stack"</span> to push node before a dfs and pop node after a dfs. When encountering a leaf, make of copy of it.</p>

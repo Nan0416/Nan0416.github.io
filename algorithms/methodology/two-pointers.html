@@ -37,7 +37,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>LeetCode&nbsp;-&nbsp;Two Pointers</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-02-03 都他妈的过年了，可我却在做leetcode，操蛋！！！</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-07-09 @2月3号秦楠，还好找到了Kabbage的Intern</span></p>
+<p class="date"><span class="created-date">Created:2019-02-03 都他妈的过年了，可我却在做leetcode，操蛋！！！</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-07-09 @2月3号秦楠，还好找到了Kabbage的Intern / 2019-08-26 找fulltime</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -54,7 +54,25 @@ SyntaxHighlighter.all()
     <p>Two pointers questions' goal is to find an optimal solution, e.g. "best time to buy & sell stock", "biggest volume of containers". This kind of questions is based on the form of array or string. So we need to iterate throught an array or char[], which usually take O(n) runtime.</p>
     <p>We would need <span class="inline-code">left_index</span>, <span class="inline-code">right_index</span>, <span class="inline-code">result</span> e.g. max, and <span class="inline-code">attemp</span></p>
     <p>For <span class="inline-code">left_index</span> and <span class="inline-code">right_index</span>, we need figure out how to move them (direction and moving condition); and the formula for calculating <span class="inline-code">attemp</span>, it is most likely very simple.</p>
-</p>
+    </div>
+    <div class="featureList">
+        <h4>Array question</h4>
+        <p>Array & String based questions can be solved by two pointers, dp, sorting, stack, backtracking</p>
+        <ol>
+            <li>
+                <h4>two pointers vs. dynamic programming</h4>
+            </li>
+            <li>
+                <h4>two pointers vs. sorting array</h4>
+                <p>If we need to know the sliding window size (relative distance of two element's index), or we need to return index. then we may not use sorting. <span style="color:red">(it's still possible to use sort with hashmap/array record index but no duplicated in the array)</span></p>
+                <p>If an array can have duplicated elements, and ask return index, then we won't use sorting.</p>
+            </li>
+            <li><h4>two pointers vs. stack</h4></li>
+            <li>
+                <h4>two pointers vs. backtracking</h4>
+                <p>Backtracking return a list of result. Backtracking's result is the enumeration of all valid result.</p>
+            </li>
+        </ol>
     </div>
 </li>
 <li>
@@ -62,6 +80,40 @@ SyntaxHighlighter.all()
         <h3>Examples</h3>
         <div class="featureList">
             <ol>
+                <li>
+                    <h4>3. Longest Substring Without Repeating Characters</h4>
+                    <p>Desc: Given a string, find the length of the longest substring without repeating characters.</p>
+                    <p>Sol: using a int[] (hashmap) to record char and its index. two pointer find max length. example "dvdf" (both pointer moves from right to left)</p>
+                </li>
+                <li>
+                    <h4>11. Container With Most Water</h4>
+                    <p>Desc: Given n non-negative integers a1, a2, ..., an. Each integer is the height of walls. What is the maximum amount of water?</p>
+                    <p>Sol: two pointers move toward each other.</p>
+                </li>
+                <li>
+                    <h4>* 26. Remove Duplicates from Sorted Array</h4>
+                    <h4>27. Remove Element</h4>
+                    <p>Desc: <br>
+                        26. given a sorted array that may have duplicated number, remove all duplicated number in-place by moving later elements forward. return length.
+                        27. remove a target element from an arrary.
+                    </p>
+                    <p>Sol: two pointer, left and right pointer starts from 1.
+                        <br> nextSlot.
+                    </p>
+                </li>
+                <li>
+                    <h4>** 75. Sort Colors</h4>
+                    <p>Desc: given an array contains 0, 1, 2. sort in-place in one pass.</p>
+                    <p>Sol: 3 pointer last0, current, first1. (last0 &lt; current &lt; first1). Dutch national flag problem</p>
+                </li>
+                <li>
+                    <h4>** 31. Next Permutation</h4>
+                    <p>Desc: given an array of integer, find the next permutation</p>
+                    <p>Sol: step1. from the right to left: find the first element Q that is less than its right element. (if not exist, then the current number is the largest number, reverse the entire array)<br>
+                        step2. from right to left: find the first element that is large than Q, and swap it with Q. 
+                        step3. reverse the subarray after the Q's original position.
+                    </p>
+                </li>
                 <li>
                     <h4><a href="https://leetcode.com/problems/best-time-to-buy-and-sell-stock/">Best time to buy and sell stock</a></h4>
                     <pre class="brush:java">
@@ -90,30 +142,6 @@ class Solution {
                     <p><span class="inline-code">right_index, max, attemp</span> are updated during each iteration. So the algorithm is generated by primarly thinking when to update the <span class="inline-code">left_index</span>. <span style="color:red">In the above example, <span class="inline-code">left_index</span> is updated when it is meaningless to update <span class="inline-code">attemp</span>.</p>
                     <h4>Verify solution</h4>
                     <p>...</p>
-                </li>
-                
-                <li>
-                    <h4><a href="https://leetcode.com/problems/container-with-most-water/">Container With most water</a></h4>
-                    <pre class="brush:java">
-// attemp = min(height[left_index], height[right_index]) * (right_index - left_index)
-class Solution {
-    public int maxArea(int[] height) {
-        int max = 0, attemp = 0, left_index = 0, right_index = height.length - 1;
-        while(left_index &lt; right_index){
-            attemp = Math.min(height[left_index], height[right_index]) * (right_index - left_index);
-            max = max > attemp? max : attemp;
-            if(height[left_index] &lt; height[right_index]){
-                left_index++;
-            }else{
-                right_index--;
-            }
-        }
-        return max;
-    }
-}
-                    </pre>
-                    <p>This question still involved the 4 variables. But the direction of moving poiner is different than the above question. This question moving <span class="inline-code">left_index</span> and <span class="inline-code">right_index</span> towards each others.</p>
-                    <p>In this question, the not moved index should have a bigger height since it could potentially result in a bigger volume.</p>
                 </li>
                 <li>
                     <h4><a href="https://leetcode.com/problems/trapping-rain-water/">Trapping rain water</a></h4>
@@ -151,47 +179,6 @@ class Solution {
             }
         }
         return volume;
-    }
-}
-                    </pre>
-                </li>
-                <li>
-                    <h4><a href="https://leetcode.com/problems/longest-substring-without-repeating-characters/">Longest Substring Without Repeating Characters</a></h4>
-                    <pre class="brush:java">
-/**
-* My mistake: using a set to record visited characters. When get a duplicated char,
-* start from 0. This is not correct e.g. "dvdef", when encountering the second "d", * we don't have to start from 0, instead we start from 1 with counting 'v'.
-*
-* This problem can be solved with sliding windows (two pointers).
-*
-* Using a map to record each visited char's index. A left pointer and a rigth 
-* pointer, when encounting a duplicated, mvoing the left pointer by 1.
-*
-* substring length is represent as rightIndex - leftIndex + 1, both side inclusive.
-* both side inclusive required string length >= 1.
-
-left side inclusive, right side exclusive: right - left = length;
-*/
-
-class Solution {
-    public int lengthOfLongestSubstring(String s) {
-        if(s == null) return 0;
-        Map&lt;Character, Integer> hm = new HashMap&lt;Character, Integer>();
-        int leftPointer = 0, rightPointer = 0, max = 0;
-        for(; rightPointer &lt; s.length(); rightPointer++){
-            if(hm.containsKey(s.charAt(rightPointer))){
-                //update leftPointer to the non-duplicated one
-                /*
-                * Using math.max to guarantee leftPointer only goes left.
-                */
-                leftPointer = 
-                    Math.max(hm.get(s.charAt(rightPointer)) + 1, leftPointer);
-            }
-            max = Math.max(max, rightPointer + 1 - leftPointer);
-            hm.put(s.charAt(rightPointer), rightPointer);
-        }
-        return max;
-        
     }
 }
                     </pre>
