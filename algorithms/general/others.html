@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>General&nbsp;Others</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-08-27">
+<meta name="keywords" content="others">
+<meta name="keywords" content="simulation">
+<meta name="keywords" content="">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushPython.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushSql.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>&nbsp;-&nbsp;</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-08-27</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-27</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#simulation">Simulation</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+</div>
+</li>
+<li>
+<div class="content" id="simulation">
+<h3>Simulation</h3>
+<div class="featureList">
+    <ol>
+        <li>
+            <h4>54. Spiral Matrix (盘旋矩阵)</h4>
+            <h4>59. Spiral Matrix II</h4>
+            <p>Desc: given an matrix (2d array), reorganize it in a spiral way. 
+                <br>
+                <pre class="brush:java">
+                    [
+                        [1,2,3]
+                        [4,5,6]
+                        [7,8,9]
+                    ] // [1,2,3,6,9,8,7,4,5]
+                </pre>
+            </p>
+            <p>Sol: simulate the process.</p>
+        </li>
+        <li>
+            <h4>* 55. Jump Game</h4>
+            <p>Desc: given an array of non-negative integers, each integer representes the #steps it can jump from the current index. check if it can the last index. e.g. [3,1,2,0,4]: yes 3->2->4 </p>
+            <p>Sol: <span style="color:red">the better solution is to use greedy</span><br>
+            <p>Simulation with recursion: tries to jump the farmost point from the current point, and then go to next explore. if cannot reach, go back to next farmost point.</p>
+            </p>
+        </li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>

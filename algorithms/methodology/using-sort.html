@@ -111,6 +111,14 @@ class Solution {
 }
                     </pre>
                 </li>
+                <li>
+                    <h4>* 56. Merge Intervals</h4>
+                    <p>Desc: given an array of interval (each interval is an array of 2 elements) merge all interval, .e.g [[1,4],[4,7],[2,5],[8,9]] ->[[1,7],[8,9]]</p>
+                    <p>Sol: 1). this question is actually a <span style="color:red">connected components</span> question, however, different from a traditional UnionFind question, it doesn't
+                         give any two interval are in one group (e.g. each interval is an node, you have to build edges by yourself). But the building each edge will need O(n) time. So With unionfind,
+                          the runtime will be O(n^2)</p>
+                    <p>The simple solution is using sort. Sort by the interval start point. Merge two intervals e.g. [1,5] & [4,7] and <span style="color:red">[1,5] & [2,3] and update the end point with the biggest value.</span></p>
+                </li>
             </ol>
         </div>
     </div>

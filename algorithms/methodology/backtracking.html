@@ -54,7 +54,7 @@ SyntaxHighlighter.all()
 <h3>Introduction</h3>
 <p>Backtracking is a kind of recursion, sub-recur is used to solve the same problem.</p>
 <p>还是有些像DFS. Difference is DFS operates on a tree or graph, backtracking usually operates on an array. AND backtracking need to keep track of the visited path.</p>
-
+<p><span style="color:red">Runtime usually equals to the size of result.</span></p>
 </div>
 </li>
 <li>
@@ -73,10 +73,16 @@ SyntaxHighlighter.all()
     <ol>
         <li>
             <h4>39. Combination Sum</h4>
-            <p>Desc: an array of positive integers without duplicated and a target number. find all unique combinations' sum = target<br>
-                [2,3,5], 8 => [[2,2,2,2], [2, 3, 3], [3, 5]]
+            <h4>40. Combination Sum II</h4>
+            <p>Desc: <br>
+                30. an array of positive integers without duplicated and a target number. find all unique combinations' sum = target<br>
+                [2,3,5], 8 => [[2,2,2,2], [2, 3, 3], [3, 5]]<br>
+                40. same as 30 the array can have duplicated element, and a number can only be used once, and make sure no duplicated in result
             </p>
-            <p>Sol: Backtracking. Supposed 2 is used, then [2,3,5] = 8-2 = 6. recursive this step until target less than 1 since all integer > positive.</p>
+            <p>Sol:<br> 
+                30.Backtracking. Supposed 2 is used, then [2,3,5] = 8-2 = 6. recursive this step until target less than 1 since all integer > positive.<br>
+                40.Backtracking. First sort, and then same as 30 but make sure no duplicated. e.g. [1, 1, 1, 2] target = 4
+            </p>
             <pre class="brush:java">
                 for(int i = 0; i &lt; arr.length; i++){
                     helper(i, arr, target-i);
@@ -100,6 +106,19 @@ SyntaxHighlighter.all()
         <li>
             <h4>17. Letter Combinations of a Phone Number</h4>
             <p></p>
+        </li>
+        <li>
+            <h4>78. Subsets</h4>
+            <p>Desc: an array of distinct numbers, return all its subsets. e.g. [1,2,3] -> [], [1], [2], [3], [1,2],[1,2,3], [1,3],[2,3]</p>
+            <p>Sol: backtracking. : <span style="color:red">ArrayList is faster LinkedList</span></p>
+            <pre class="brush:java">
+                arraylist.remove(arraylist.size()-1); // == linkedlist.removeLast()
+            </pre>
+        </li>
+        <li>
+            <h4>46. Permutations</h4>
+            <p>Desc: an array of distinct numbers, return all its permutations, e.g. [1,2,3] -> [1,2,3],[1,3,2], [2,1,3] ...</p>
+            <p>Sol: backtracking: using an other byte[] as a flag array to recorded used or not</p>
         </li>
     </ol>
 </div>

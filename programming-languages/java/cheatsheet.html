@@ -37,7 +37,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Java&nbsp;-&nbsp;Cheatsheet</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-10-14</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-16@ Rockford, IL / 2019-08-19 @ First Day of Fall 2019</span></p>
+<p class="date"><span class="created-date">Created:2018-10-14</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-16@ Rockford, IL / 2019-08-19 @ First Day of Fall 2019 / 2019-08-27</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#operation">Operation</a></li>
@@ -118,7 +118,14 @@ SyntaxHighlighter.all()
                 .reverse(): self
                 .substring(int s, int e):String
                 .length(): int
+
+                .deleteCharAt(int index); // return self
+                .delete(int start, int end); [start, end) if start == end, no change. if end > string length, then delete all after start.                
             </pre>
+            <p><span style="color:red">
+            StringBuilder does not have a constructor(char [])<br>
+            StringBuilder does not have remove(index) or removeLast(). Using deleteCharAt(index)
+            </span></p>
         </li>
         <li>
             <h4><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html" target="_blank" style="color:brown;font-weight:bold">String</a></h4>
