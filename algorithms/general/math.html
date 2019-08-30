@@ -39,7 +39,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>General&nbsp;-&nbsp;Math</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-08-13</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-13</span></p>
+<p class="date"><span class="created-date">Created:2019-08-13</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-29</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -61,9 +61,19 @@ SyntaxHighlighter.all()
         <div class='featureList'>
             <ol>
                 <li>
-                    <h4>XOR</h4>
-                    <p>xor: 0 ^ 6 = 6, 6 ^ 6 = 0</p>
-                    <p>136. Single Number</p>
+                    <h4>136. single number</h4>
+                    <p>Desc: an array of integers, where each number appears twice except one number appears once. Find the single number.</p>
+                    <p>Sol: xor: 0 ^ 6 = 6, 6 ^ 6 = 0</p>
+                </li>
+                <li>
+                    <h4>96. Unique Binary Search Trees</h4>
+                    <p>Desc: given n number 1, 2, 3 to n, the number of unique Binary Search tree can construct by using those n numbers.</p>
+                    <p>Sol: DP + math formula. <br>
+                        G(n): the #BST with n numbers. G(0) = 1, G(1) = 1<br>
+                        F(i, n): the #BST with n numbers and i as root. F(i, n) = G(i-1) * G(n-i)<br>
+                        So G(n) = sum over i (G(i-1), G(n-i))<br>
+                        Using DP to solve it.
+                    </p>
                 </li>
             </ol>
         </div>
