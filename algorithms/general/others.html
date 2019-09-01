@@ -81,6 +81,48 @@ SyntaxHighlighter.all()
             <p>Simulation with recursion: tries to jump the farmost point from the current point, and then go to next explore. if cannot reach, go back to next farmost point.</p>
             </p>
         </li>
+        <li>
+            <h4>264. Ugly Number II</h4>
+            <p>Desc: find n-th ugly number. ugly number: a number whose prime factors only include 2,3,5. The largest n is 1690. e.g. [1,2,3,4,5,6,8,9 ...] are ugly number.</p>
+            <p>Sol: the key is to maintain order. it takes the advantage of max n is 1690.
+                <pre class="brush:java">
+                    int [] result = new int[1690];
+                    result[0] = 1;
+                    int i2 = 0, i3 = 0, i5 = 0;
+                    for(int i = 1; i &lt; 1690; i++){
+                        int nextUgly = min(result[i2] * 2, result[i3] * 3, result[i5] * 5);
+                        if(nextUgly == result[i2] * 2){
+                            i2++;
+                        }else if(nextUgly == result[i3] * 3){
+                            i3++;
+                        }else{
+                            i5++;
+                        }
+                        result[i] = nextUgly;
+                    }
+                </pre>
+            </p>
+        </li>
+        <li>
+            <h4>152. Maximum Product Subarray</h4>
+            <p>Desc: an array of integer, e.g. [10, -2, 9, 23, 0, 2], find the max product of subarray, e.g. [9,23] -> 207.</p>
+            <p>Sol: the naive solution is DP. O(n^2) runtime. But it has a tricky "greedy" solution.<br>
+            idea: the absolution value only increase or same when integer * integer. So we can keep using the next value, and maintain a max value, and min value.
+            </p>
+            <pre class="brush:java">
+                max = nums[0]
+                min = nums[0]
+                globalMax = max;
+                for(int n: nums){
+                    max_ = max(n, n * min, n * max);
+                    min_ = min(n, n * min, n * max);
+                    globalMax = max(max_, globalMax);
+                    max = max_;
+                    min = min_;
+                }
+                return max;
+            </pre>
+        </li>
     </ol>
 </div>
 </div>

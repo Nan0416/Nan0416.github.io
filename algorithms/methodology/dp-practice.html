@@ -46,7 +46,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Methodology&nbsp;Dynamic Programming (Practice)</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-09-10</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-28</span></p>
+<p class="date"><span class="created-date">Created:2018-09-10</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-31</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#example">Examples</a></li>
@@ -109,6 +109,16 @@ SyntaxHighlighter.all()
                     <p>Sol: DP, subproblem is a stair with n-1 steps. O(n) time, O(1) space</p>
                 </li>
                 <li>
+                    <h4>** 279. Perfect Squares</h4>
+                    <p>Desc: find a the least number of perfect square numbers (1,4,9,16, ...) which sum to n. e.g. 13 = 4 + 9, which needs 2 perfect square number.</p>
+                    <p>Sol: DP, result[n] = min(1 + result[n - i*i]) i = 0...i*i &lt; j. <span style="color:red">The naive solution is result[n] = min(result[i] + result[n-i]), but it's O(n^2). With i*i as the boundary, runtime is sum(root(i))</span>.</p>
+                </li>
+                <li>
+                    <h4>198. House Robber</h4>
+                    <p>Desc: a row of house, each house has certain money, [10, 20, 13, 4]. a robber cannot rob two adjacent houses. the maximum amount money a robber can get.</p>
+                    <p>Sol: DP, O(n) runtime, O(1) space. sum[i] = max(money[i] + sum[i-2], sum[i-1); // rob, or not rob.</p>
+                </li>
+                <li>
                     <h4>91. Decode Ways</h4>
                     <p>Desc: given that encode method: a -> '1', b -> '2', .. z -> '26'. Now given a digit string e.g. '1234' determine how many way to decode. <span style="color:red">The input string may not be valid, e.g. '0123', '1002', in this case, return 0.</span></p>
                     <p>Sol: DP, O(n) time, O(1) space. pay attention to '0'.</p>
@@ -116,11 +126,39 @@ SyntaxHighlighter.all()
                 <li>
                     <h4>5. Longest Palindromic Substring</h4>
                     <h4>516. Longest Palindromic Subsequence</h4>
-                    <p>Desc: given a string, find the longest palindromic substring (e.g. ababa, cddc)</p>
+                    <h4>* 300. Longest Increasing Subsequence</h4>
+                    <p>Desc: #5 & #516. given a string, find the longest palindromic substring (e.g. ababa, cddc)<br>
+                        #300. given an number array,e.g. [10, 9, 2, 5, 3, 4] find the length of longest increasing sequence. ([2,3,4] returns 3)
+                    </p>
                     <p>DP, simulation (expand around center), Manacher's algorithm</p>
                     <p><span style="color:red">Notice</span>: the solution is a classic because the two layer of loop iterates all substring or subsequence.</p>
+                    <p>08-31: DP 有时感觉没什么套路。比如#300 和 #516 感觉挺像，但是他们有着完全不一样的transition function.</p>
+                    <p>Sol: #300<br>
+                    DP solution: O(n^2). keep 1d array "result[]" has the same length as nums. <br>
+                    1). <span style="color:red">result[i] means the length of LIS that ends at nums[i].</span><br>
+                    2). <span style="color:red">result[i] = max(result[0...i-1] + 1) where nums[i-1] &lt; nums[i]</span><br>
+                    BinarySearch + DP solution: as iterating each elements in the array, we build the LIS. <br>
+                    1). <span style="color:red">Having a LIS with nums[0...i-1].</span><br>
+                    2). <span style="color:red">LIS.append(nums[i]) if nums[i] > LIS.last(); LIS.replace(nums[i]) find the nums[i]'s position in the LIS with binary search, and replace it with old element.</span>
+                    </p>
                 </li>
-
+                <li>
+                    <h4>* 139. Word Break</h4>
+                    <p>Desc: a string and a list of words. can the string be broken according to the given list of words, .e.g "helloworld" ['hello', 'world'] -> return true</p>
+                    <p>Sol: brute force with memorization. e.g. "catsandhello", given [cat, cats, sand, and, ...] both can reach catsand, so only one need to do the feature exploration.</p>
+                </li>
+                <li>
+                    <h4>* 140. Word Break II</h4>
+                    <p>Desc: same as word break, but instead of answering if a string can be broken. Now, it asks all possible breaking. e.g. "catsandhello...." ["cats, and", "cat", "sand", "hello"]</p>
+                    <p>Sol: DFS (backtracking) with memorization <span style="color:red">the same subproblem is both "cat" + "sand" and "cats" + "and" results in "hello....", so we only need to solve the "hello..." once.</span></p>
+                </li>
+                <hr>
+                <li>
+                    <h4>221. Maximal Square</h4>
+                    <p>Desc: a 2d char array contains only '0' and '1', find the max area of 1-constructed square</p>
+                    <p>Sol: the result[i][j] is the edge length of a square whose bottom-right is (i,j). result[i][j] = 0 if '0', otherwise, it depends on result[i-1][j], result[i-1][j-1], and result[i][j-1]</p>
+                </li>
+                <hr>
                 <li>
                     <h4>1143. Longest Common Subsequence</h4>
                     <p>Desc: given <span style="color:red">two strings</span>, find the longest common subsequence (e.g. "abcdef" & "bedf" -> "bef")</p>
@@ -152,6 +190,8 @@ SyntaxHighlighter.all()
                     transition: (dp[i][j] = dp[i-1][j] & s1[i] as end || dp[i][j-1] & s2[j] as end)
                     </p>
                 </li>
+                
+                <hr>
                 <li>
                     <h4>120. Triangle</h4>
                     <p>Desc: a given List&lt;List&lt;Integer>> represent a triangle
@@ -168,15 +208,11 @@ SyntaxHighlighter.all()
                     <p>Sol: dp, subproblem [9], [2] we can build [[4],[9,2]], from bottom to top. O(n^2) time, O(n) space</p>
                 </li>
                 <li>
-                    <h4>* 139. Word Break</h4>
-                    <p>Desc: a string and a list of words. can the string be broken according to the given list of words, .e.g "helloworld" ['hello', 'world'] -> return true</p>
-                    <p>Sol: brute force with memorization. e.g. "catsandhello", given [cat, cats, sand, and, ...] both can reach catsand, so only one need to do the feature exploration.</p>
+                    <h4>256. Paint House</h4>
+                    <p>Desc: a row of n house, each house can be painted with one of three colors. Two adjacent housese are not allowed to have the same color. given a costs table [[123, 23, 12], [23, 24,12], ...], find the mininum costs</p>
+                    <p>Sol: DP O(n) time, O(1) space. Create a [n * 3] costs table, costs[i][j] is the minimum cost of painting 0 to i-th house AND painting i-th house with j-th color. costs[i+1][j] = costs[i+1][j] + min(costs[i][0... except j])</p>
                 </li>
-                <li>
-                    <h4>* 140. Word Break II</h4>
-                    <p>Desc: same as word break, but instead of answering if a string can be broken. Now, it asks all possible breaking. e.g. "catsandhello...." ["cats, and", "cat", "sand", "hello"]</p>
-                    <p>Sol: DFS (backtracking) with memorization <span style="color:red">the same subproblem is both "cat" + "sand" and "cats" + "and" results in "hello....", so we only need to solve the "hello..." once.</span></p>
-                </li>
+                <hr>
                 <li>
                     <h4>Knapsack[3]</h4>
                     <p>Desc: an array of integers represent each item's value, an array of integres represent each item's weight. A knapsack with maximum capacity of weight W, find the max value it can take.</p>
@@ -213,6 +249,20 @@ SyntaxHighlighter.all()
         return results[weight.length - 1][maxWeight];
     }
                     </pre>
+                </li>
+                <hr>
+                <li>
+                    <h4>304. Range Sum Query 2D - Immutable</h4>
+                    <p>Desc: Given a 2D matrix matrix, find the sum over any rectangle.</p>
+                    <p>
+                        Sol: DP O(n^2) initialize a matrix that mat[i,j] is the sum over (0,0,i,j) <span style="color:red">mat[i,j] = mat[i,j] + mat[i-1,j] + mat[i, j-1] - mat[i-1,j-1]</span> <br>
+                        getsum takes O(1)
+                    </p>
+                </li>
+                <hr>
+                <li>
+                    <h4>Easy</h4>
+                    <p>303. Range Sum Query - Immutable (given an array of integer, find any sum over a range. O(1) space, O(n) init, O(1) get sum.</p>
                 </li>
             </ol>
         </div>
