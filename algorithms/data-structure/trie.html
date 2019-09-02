@@ -52,7 +52,99 @@ SyntaxHighlighter.all()
 <li>
 <div class="content" id="intro">
 <h3>Introduction</h3>
-<p>Trie (prefix Tree, radix tree, digital tree)</p>
+<div class="featureList">
+    <ol>
+        <li>
+            <p>Trie (prefix Tree, radix tree, digital tree). Trie is a tree structure (each node can have a number of children, not limited to 2). It provides the hashmap function, key is always string. Moreover, it can search "prefix".</p>
+            <p><span style="color:red">Trie can also implemented as a hashset function, which does not store any value.</span></p>
+            <p>Operation:<br>
+            1). insertion(key, value) // O(m), m is the length of key.
+            2). prefix(key): boolean // O(m)
+            3). search(key): value // O(m)
+            </p>
+        </li>
+        <li>
+            <h4>Implementation</h4>
+            <pre class="brush:java">
+                // insert "qin", "qx", "abc", "abd"
+                layer 1 ""
+                layer 2 a,              q
+                layer 3 b,              i,      x
+                layer 4 c, d            n
+            </pre>
+            <pre class="brush:java">
+class TrieNode{
+    public final int R = 26;
+    public boolean isEnd = false;
+    public Object value; // optional
+    public TrieNode [] children;
+    public TrieNode(){
+        children = new TrieNode[R];
+    }
+    public TrieNode get(char c){
+        return children[c - 'a'];
+    }
+    public void put(char c, TrieNode node){
+        children[c-'a'] = node;
+    }
+    public boolean contains(char c){
+        return children[c-'a'] != null;
+    }
+    public void setEnd(){
+        isEnd = true;
+    }
+    public boolean isEnd(){
+        return isEnd;
+    }
+    public Object getValue(){
+        return value;
+    }
+} 
+            </pre>
+            <p style="color:red">Trie node does not record this node's value, it only record children existance via the children array's index. (if children[index] != null, then the children "index" existed)</p>
+            <p>According to the structure of Tire, the key must be a sequence of item whose value is in a specific range.</p>
+            <p>Space: O(m), m is #nodes.</p>
+            <pre class="brush:java">
+                    public class Trie {
+                        private TrieNode root;
+                        public Trie(){
+                            root = new TrieNode();
+                        }
+                        public void insert(String key) {
+                            char[] carr = key.toCharArray();
+                            TrieNode node = root;
+                            for (int i = 0; i &lt; carr.length; i++) {
+                                if (!node.contains(carr[i])) {
+                                    node.put(carr[i], new TrieNode());
+                                }
+                                node = node.get(carr[i]);
+                            }
+                            node.setEnd();
+                        }
+                        private TrieNode searchPrefix(String key){
+                            char [] carr = key.toCharArray();
+                            TrieNode node = root;
+                            for(int i = 0; i &lt; carr.length; i++){
+                                if(!node.contains(carr[i])){
+                                    return null;
+                                }
+                                node = node.get(carr[i]);
+                            }
+                            return node;
+                        }
+                        public boolean search(String key){
+                            TrieNode node = searchPrefix(key);
+                            return node != null && node.isEnd();
+                        }
+                        public boolean prefix(String key){
+                            return searchPrefix(key) != null;
+                        }
+                    }
+            </pre>
+        </li>
+    </ol>
+</div>
+
 </div>
 </li>
 <li>

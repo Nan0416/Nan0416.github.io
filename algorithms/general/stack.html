@@ -2,7 +2,7 @@
 <!-- NewPage -->
 <html lang="en">
 <head>
-<title>Leetcode&nbsp;Stack</title>
+<title>Leetcode&nbsp;Using Stack</title>
 <meta charset="utf-8">
 <meta name="date" content="2019-02-05">
 <meta name="keywords" content="">
@@ -35,9 +35,9 @@ SyntaxHighlighter.all()
 </script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<strong>Leetcode&nbsp;-&nbsp;Stack</strong>
+<strong>Leetcode&nbsp;-&nbsp;Using Stack</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-02-05</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-16 @ Rockford, IL / 2019-08-24</span></p>
+<p class="date"><span class="created-date">Created:2019-02-05</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-16 @ Rockford, IL / 2019-09-01</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -54,14 +54,6 @@ SyntaxHighlighter.all()
 <p>stack: repeated, depth, intersection [  [ ]  ]<br>
 <span style="color:red">Stack的感觉就是我有若干个值（I don't know the exact number), 但是我要用一个variable来表示它们。而stack的功能就是帮我暂时保管它们</span>
 </p>
-<div class="featureList">
-    <ol>
-        <li>
-        
-        
-        </li>
-    </ol>
-</div>
 </div>
 </li>
 <li>
@@ -71,19 +63,83 @@ SyntaxHighlighter.all()
             <h4>Where to apply?</h4>
             <ol>
                 <li>
-                    <h4>given a string, an array (a collection of item), the later element will depends on the previous element.</h4>
-                    <p>The key is know how does later elements depends on former elements.</p>
+                    <h4>Later elements affect former elements.</h4>
+                    <p>e.g. parenthese validator, simplify linux path.</p>
+                    <p>The key is to know how does later elements affect former elements.</p>
                 </li>
                 <li>
                     <h4>Nested structure</h4>
-                    <p>It may also use DFS/BFS.</p>
+                    <p>e.g. flatten or build a nested data structure. <span style="color:red">DFS can also be applied and is usually faster and code is shorter.</span></p>
+                </li>
+                <li>
+                    <h4>Implement Non-recursive DFS</h4>
+                    <p>You may be required to use non-recursive implementation to do inorder/preorder/postorder traversal.</p>
+                    <p><span style="color:red">Stack DFS inorder</span>: disconnect node.left child when push node.left into stack.</p>
+                    <p>
+                        <span style="color:red">Stack DFS preorder/inorder</span>:preorder doesn’t need modify the tree. Since postorder = 
+                        reverse of right-dominated preorder, so postorder doesn’t need modify the tree.
+                    </p>
                 </li>
             </ol>
         </div>
+        <h4>Examples</h4>
         <div class="featureList">
             <ol>
                 <li>
-                    
+                    <h4>71. Simplify Path [1]</h4>
+                    <p>Desc: given a linux path e.g. /a/../d/.././../sd/. simplify it to the canonical path e.g. /sd</p>
+                    <p>Sol: stack. First, convert the input string to '/'-split array. Second, apply stack to build the path.</p>
+                </li>
+                <li>
+                    <h4>* 331. Verify Preorder Serialization of a Binary Tree</h4>
+                    <p>Desc: a Binary Tree can be serialized by pre-order. e.g. 
+                        <pre class="brush:java">
+                                1
+                            null  2
+                                3  null
+                            null null
+                            = "1,#,2,3,#,#,#".
+                        </pre>
+                        Now given a such string, validate if it's a valid BT serialization.
+                    </p>
+                    <p>Sol: <br>
+                        stack solution: each node (either null or not-null) consumes 1 slot, each not-null node provides 2 slots. <br>
+                        when having a not-null node, push (2) it to the stack, as well as decrese the previous stack value.<br>
+                        O(1) space solution: compress the above stack into a single integer. <span style="color:red">keep a currentSlot (which is the stack) variable, and iterate the string, make sure it is not smaller than 0 during the iteration.</span> 
+                    </p>
+                </li>
+                <hr>
+                <li>
+                    <h4>251. Flatten 2D Vector (2d array)   [2]</h4>
+                    <h4>341. Flatten Nested List Iterator</h4>
+                    <h4>430. Flatten a Multilevel Doubly Linked List</h4>
+                    <p>Desc: #251 and #341 ask to return an iterator. #430 ask to return the flatten result.</p>
+                    <p>
+                        Sol:<br>
+                        #251. Because it has limited layer (2 layers), it's not a typically nested structure. keep 2 indices to flatten it.<br>
+                        #341. DFS seems not applied here since DFS will flatten it at once and here it asks an iterator. <span style="color:red">but we can flatten it to an array at the constructor, and return value one by one.</span><br>
+                            Stack solution: two stacks. one stack keep nested structure layer by layer, another one keeps each nested structure index.<br>
+                        #430. Stack: when encountering a node that has child, push the node's next node to the stack <span style="color:red">make sure it's not null</span> and make child as next.
+                    </p>
+                </li>
+                <li>
+                    <h4>385. Mini Parser</h4>
+                    <p>Desc: Given a string "[12,[21,[23],32],12,[2,3]]" generate the "NestedInteger" structure.</p>
+                    <p>
+                        Sol: <span style="color:red">DFS is better than Stack</span><br>
+                        Stack solution: when encountering a [, add a new "nestedinteger" and push it to the stack, ] pop up<br>
+                        DFS: todo
+                    </p>
+                </li>
+                <hr>
+                <li>
+                    <h4>173. Binary Search Tree Iterator [3]</h4>
+                    <h4>94. Binary Tree Inorder Traversal</h4>
+                    <p>
+                        Desc: #173 ask an iterator of traversing a BST.<br>
+                        #94. directly ask a non-recursive solution.
+                    </p>
+                    <p>Sol: #173. Because it asks an iterator, so cannot use recursive DFS. And inorder traversal of BST returns number in order.</p>
                 </li>
                 <li>
                     <h4><a href="https://leetcode.com/problems/decode-string/">Decode String</a></h4>
@@ -151,43 +207,6 @@ class Solution {
     }
 }
 </pre>
-                </li>
-                <li>
-                    <h4><a href="https://leetcode.com/problems/binary-tree-inorder-traversal/">Binary Tree Inorder Traversal</a></h4>
-                    <pre class="brush:java">
-/**
- * in order to avoid infinite loop, add a flag down
- */
-class Solution {
-    public List&lt;Integer> inorderTraversal(TreeNode root) {
-        Stack&lt;TreeNode> st = new Stack&lt;TreeNode>();
-        List&lt;Integer> ll = new LinkedList&lt;Integer>();
-        if(root == null){
-            return ll;
-        }
-        st.push(root);
-        boolean down = true;
-        while(st.size() != 0){
-            // not empty
-            TreeNode node = st.peek();
-            while(down && node.left != null){
-                st.push(node.left);
-                node = node.left;
-            }
-            //visiting
-            node = st.pop();
-            ll.add(node.val);
-            if(node.right != null){
-                st.push(node.right);
-                down = true;
-            }else{
-                down = false;
-            }
-        }
-        return ll;
-    }
-}
-                    </pre>
                 </li>
                 <li>
                     <h4><a href="https://leetcode.com/problems/daily-temperatures/">Daily Temperatures</a></h4>

@@ -134,13 +134,15 @@ SyntaxHighlighter.all()
                 .charAt(int): char
                 .toCharArray(): char []
                 .equals(String): boolean
-                .substring(int s, int e): String / .substring(int beginindex): String
+                .substring(int s, int e): String / .substring(int beginindex): String (if end > length throw error. if end == start, return "")
+                .split(",") // regex split all string, e.g. "qin,nan,hello"->["qin","nan","hello"]
                 + / .concat(String str);: String
                 .hashCode() :int 
                 .length(): int
                 .split(String): String[]
                 .toLowerCase()/ .toUpperCase(): String[]
                 .indexOf(String): int
+                .indexOf()
             </pre>
         </li>
         <li>
