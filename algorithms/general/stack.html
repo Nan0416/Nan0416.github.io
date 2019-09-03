@@ -108,6 +108,17 @@ SyntaxHighlighter.all()
                         O(1) space solution: compress the above stack into a single integer. <span style="color:red">keep a currentSlot (which is the stack) variable, and iterate the string, make sure it is not smaller than 0 during the iteration.</span> 
                     </p>
                 </li>
+                <li>
+                    <h4>** 84. Largest Rectangle in Histogram</h4>
+                    <p>Desc: Given n non-negative integers representing the histogram's bar height where the width of each bar is 1, find the area of largest rectangle in the histogram.</p>
+                    <p>Sol: maintain a stack that stores indices. The corresponding values are in increasing order. When next value is less than stack value, pop up stack value and calculate its maxArea.</p>
+                    <p><img src="./img/stack-84.png" width="300" height="150"></p>
+                </li>
+                <li>
+                    <h4>* 402. Remove K Digits</h4>
+                    <p>Desc: given a string represented non-negative integer (no leading zero). remove k digits to make it smallest.</p>
+                    <p>Sol: <span style="color:red">iterate from left to right, if digit[i] > digit[i+1], then remove digit[i], remove at most k times; finally, if k > 0, then remove rest of k elements.</span>. During the process, we need a stack based on char[].</p>
+                </li>
                 <hr>
                 <li>
                     <h4>251. Flatten 2D Vector (2d array)   [2]</h4>
@@ -140,6 +151,12 @@ SyntaxHighlighter.all()
                         #94. directly ask a non-recursive solution.
                     </p>
                     <p>Sol: #173. Because it asks an iterator, so cannot use recursive DFS. And inorder traversal of BST returns number in order.</p>
+                </li>
+                <hr>
+                <li>
+                    <h4>Easy</h4>
+                    <p>225. Implement Stack using Queues (sol: one in stack, and one out stack)</p>
+                    <p>232. Implement Queue using Stacks (sol: one queue, let push be O(n), (push has a helper queue) then top and pop will be easy.</p>
                 </li>
                 <li>
                     <h4><a href="https://leetcode.com/problems/decode-string/">Decode String</a></h4>
