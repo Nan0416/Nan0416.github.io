@@ -93,8 +93,17 @@ SyntaxHighlighter.all()
         </li>
         <li>
             <h4>347. Top K Frequent Elements[2]</h4>
-            <p>Desc: Given a non-empty array of integers, return the k most frequent elements.</p>
+            <p>Desc: Given a non-empty array of integers, return the k most frequent elements. <span style="color:red">the top k can return in any order.</span></p>
             <p>Sol: intutive approach is hashmap + priority queue. But it can use QuickSelect to achieve O(n).</p>
+        </li>
+        <li>
+            <h4>692. Top K Frequent Words</h4>
+            <p>Desc: Given a non-empty list of words, return the k most frequent elements.</p>
+            <p>Sol: basic idea: 1). get freuency of each word, 2). sorting by frequency and word.<br>
+                fastest: using trie to get each word's frequency, and using mergesort to sort according to frquency and word.<br>
+                my solution: hashmap get frequency, priority queue sort each frequency's word.<br>
+                another slower solution: treemap get frequency and it automatically sort word in alphabeta order.
+            </p>
         </li>
         <li>
             <h4>325. Maximum Size Subarray Sum Equals k[2]</h4>

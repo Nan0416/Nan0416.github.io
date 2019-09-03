@@ -39,10 +39,11 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>data-structure&nbsp;-&nbsp;Trie</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-08-31</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-31</span></p>
+<p class="date"><span class="created-date">Created:2019-08-31</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-09-02</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
+<li><a href="#example">Examples</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -142,10 +143,56 @@ class TrieNode{
                     }
             </pre>
         </li>
+        <li>
+            <h4>Operation on the trie</h4>
+            <p>According to problem, a variant of search may need to perform on the trie. But since trie is just a tree, search on it is kind of DFS or BFS.</p>
+            <p>e.g. 676. Implement Magic Dictionary asks to make exactly one character different</p>
+        </li>
     </ol>
 </div>
-
 </div>
+</li>
+<li>
+    <div class="content" id="example">
+        <h3>Examples</h3>
+        <div class="featureList">
+            <h4>Where to apply?</h4>
+            <ol>
+                <li>string prefix related. (e.g. only 'a'-'z')</li>
+                <li>string related data-structure desgin.</li>
+            </ol>
+        </div>
+        
+        <div class="featureList">
+            <h4>Examples</h4>
+            <ol>
+                <li>
+                    <h4>648. Replace Words with shortest root word</h4>
+                    <p>Desc: given a list of root words e.g.["an", "do", "ant"], and a sentence e.g. "another ants", replace each word with shortest root. -> "an an" </p>
+                    <p>Sol: trie</p>
+                </li>
+                <li>
+                    <h4>211. Add and Search Word - Data structure design</h4>
+                    <h4>676. Implement Magic Dictionary</h4>
+                    <p>Desc:<br>
+                        #211. given a list of words [e.g. "hello", "tomorrow"], now search a word e.g. "he.l." it only contains 'a'-'z' and '.' (. match any char)<br>
+                        #676. given a list of words, now search a word that has exactly one char different from one of the given words. e.g. 'hxllo' matches 'hello'
+                    </p>
+                    <p>Sol:<br>
+                        #211 & #676 build the regular Trie with given words. When searching for a word, using DFS.
+                    </p>
+                </li>
+                <li>
+                    <h4>* 421. Maximum XOR of Two Numbers in an Array</h4>
+                    <p>Desc: given a list of number [0, 2^31], find two numbers that generate the max xor.</p>
+                    <p>Sol: view each number as binary. build trie, each node has two children 0 or 1. Since each number is 31bit, add a number is O(1).<br>
+                        after building the trie, 1). you can search max different for each number against the trie. or<br>
+                        recursive DFS on the trie. find the first different digit. DFS(TrieNode node1, TrieNode node2, depth);
+                    </p>
+                </li>
+            </ol>
+        </div>  
+    </div>
 </li>
 <li>
 <div class="content" id="reference">
