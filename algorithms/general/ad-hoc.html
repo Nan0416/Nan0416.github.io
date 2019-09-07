@@ -39,7 +39,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>General&nbsp;-&nbsp;Ad-Hoc</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-08-25</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-25</span></p>
+<p class="date"><span class="created-date">Created:2019-08-25</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-09-06</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -70,6 +70,25 @@ SyntaxHighlighter.all()
             <h4>122. Best Time to Buy and Sell Stock II</h4>
             <p>Desc: an array of integer, each integer is the ith day stock prices. #121 at most one transaction/#122 unlimited transactions, the maximum profit.</p>
             <p>Sol: one pass. keep update lowest prices, keep update max profit/accumulate the profit.</p>
+        </li>
+        <li>
+            <p class="algorithm-problem-title">54. Spiral Matrix</p>
+            <p class="algorithm-problem-title">59. Spiral Matrix II</p>
+            <p>Desc:<br>
+                #54. Given a matrix of m x n elements (m rows, n columns), return all elements of the matrix in spiral order.
+                #59. Given a positive integer n, generate a square matrix filled with elements from 1 to n2 in spiral order.
+            </p>
+            <p>Sol: the key is to know how to loop in spiral way.</p>
+            <pre class="brush:java">
+                Simulation with 4 directions, right, down, left, and up. We should
+                go down when i + j + 1 = col
+                turn left when i == j
+                go up when i + j + 1 = row
+                turn right when i = j + 1 // not i == j
+            </pre>
+        </li>
+        <li>
+            <h4>93. Restore IP Addresses</h4>
         </li>
     </ol>
 </div>

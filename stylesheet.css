@@ -621,3 +621,7 @@ span.inline-code{
     font-family: monospace;
     font-weight: bold;
 }
+.algorithm-problem-title{
+    font-weight: 600;
+    margin:0px;
+}

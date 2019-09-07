@@ -46,15 +46,43 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Methodology&nbsp;Dynamic Programming (Practice)</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-09-10</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-31</span></p>
+<p class="date"><span class="created-date">Created:2018-09-10</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-09-03</span></p>
 <div class="catalog">
 <ul class="catalogItems">
-<li><a href="#example">Examples</a></li>
+    <li><a href="#intro">Introduction</a></li>
+    <li><a href="#example">Examples</a></li>
 </ul>
 </div>
 <hr>
 <div class="contentContainer">
 <ol>
+    <li>
+        <div class="content" id="intro">
+            <h3>Introduction</h3>
+            <div class="featureList">
+                <ol>
+                    <li>
+                        <h4>How to solve DP</h4>
+                        <p>For a simple DP problem (easy/medium), directly find the problem dimension and transition functions</p>
+                        <p>For a hard DP that cannot easily find a transition function, using brute force (backtracking) + memorization.</p>
+                    </li>
+                    <li>
+                        Once found the transition function, then it's just programming and optimization
+                        <h4>How to find transition function</h4>
+                        <p>
+                            First <span style="color:red">identified the problem size</span> according to the input.<br>
+                            e.g. input(int [] arr, int amount). then the problem size (result array) is usually 2 dimension. (inc arr size and inc amount. result[i][j] = subproblem result[i-1][j] and result[i][j-1])<br>
+                            e.g. input(int [] arr), then the problem size can be 1 dimension or 2 dimension (inc arr size or inc arr size from two left and right.)
+                        </p>
+                    </li>
+                    <li>
+                        <h4>Optimization</h4>
+                        <p>Sometimes, the 2d result array can be optimized to 1d</p>
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </li>
 <li>
     <div class="content" id="example">
         <h3>Examples</h3>
@@ -152,6 +180,15 @@ SyntaxHighlighter.all()
                     <p>Desc: same as word break, but instead of answering if a string can be broken. Now, it asks all possible breaking. e.g. "catsandhello...." ["cats, and", "cat", "sand", "hello"]</p>
                     <p>Sol: DFS (backtracking) with memorization <span style="color:red">the same subproblem is both "cat" + "sand" and "cats" + "and" results in "hello....", so we only need to solve the "hello..." once.</span></p>
                 </li>
+                <li>
+                    <h4>343. Integer Break</h4>
+                    <p>Desc: given a positive integer, break it into at least 2 numbers' sum. and find the maximum product of these numbers. e.g. 10 = 3 + 3 + 4, which generates 3 * 3 * 4 = 36</p>
+                    <p>Sol: DP O(n^2) time and O(n) space.<br>
+                        for(int i = 1; i &lt;= n; i++){
+                            result[n] = max(result[n], max(i, result[i]) * max(n-i, result[n-i]));
+                        }
+                    </p>
+                </li>
                 <hr>
                 <li>
                     <h4>221. Maximal Square</h4>
@@ -212,6 +249,27 @@ SyntaxHighlighter.all()
                     <p>Desc: a row of n house, each house can be painted with one of three colors. Two adjacent housese are not allowed to have the same color. given a costs table [[123, 23, 12], [23, 24,12], ...], find the mininum costs</p>
                     <p>Sol: DP O(n) time, O(1) space. Create a [n * 3] costs table, costs[i][j] is the minimum cost of painting 0 to i-th house AND painting i-th house with j-th color. costs[i+1][j] = costs[i+1][j] + min(costs[i][0... except j])</p>
                 </li>
+                <li>
+                    <h4>** 312. Burst Balloons</h4>
+                    <p>Desc: given an array of non-negative integer [4,3,6,6]. Remove a number one by one, and you get a value = num[left] * num[i] * num[right]. after remove the i-th number, (i-1)th and (i+1) are adjacent each other. find the max value you can get.</p>
+                    <p>
+                        Sol: <span style="color:red">The hardest part is two numbers become adjacent after removing the middle number.</span> So we have to <span style="color:red">think this problem in backward, which means we don't consider which number to remove first, we consider which number remove last.</span> 
+                        In this way, we can easily build result[i][j], which is the max value we can get from subarray i to j.
+                    </p>
+                    <pre class="brush:java">
+                        for(int i = left+1; i &lt; right; i++){ // left and right are exclusive
+                            // think about remove i-th after removing all other number. because i-th existed, so i-1 and i+1 are not adjacent.
+                            result = max(num[left] * num[i] * num[right] + call(num, left, i-1) + call(num, i+1, right)) 
+                            // num[left] * num[i] * num[right] when we calculate i-th, all others have been removed, so the left and right are not i-1 and i+1.
+                        }
+                    </pre>
+                    <p>
+                        <span style="color:red">backtracking with memorization idea</span>: remove one number and then calculate rest. <br>
+                        e.g. 4 numbers. using [1,1,1,1] indicates which one has been removed. we have to try all combination event with memorization.<br>
+                        so we have to try [1,1,1,1],[1,1,1,0], [1,1,0,1] ... and futhermore think it as a 4-bit integer, we have to try 2^n-1 times. O(2^n).<br>
+                        Without memorization is will be O(sum(2^i) where i = 1...n)
+                    </p>
+                </li>
                 <hr>
                 <li>
                     <h4>Knapsack[3]</h4>
@@ -250,6 +308,40 @@ SyntaxHighlighter.all()
     }
                     </pre>
                 </li>
+                <li>
+                    <h4>322. Coin Change</h4>
+                    <p>Desc: given a list of available coin denominations (no duplicated value), and a target amount. Find latest number of coins that are sum to the target.</p>
+                    <p>Same problems: find target number with minimum numbers.</p>
+                    <p>Sol:
+                    <p>#1. 2d DP. one dimension is #coin-denomination, another is target amount.
+                        <pre class="brush:java">
+                                result[i][j] = Math.min(result[i][j-1], 1 + result[i-coins[j]][j]);// i is amount, j is #coin
+                        </pre>
+                        <span style="color:red">using [j] instead of [j-1] is because a denominations can be used repeatedly.</span>
+                    </p>
+                    <p>
+                        #2. 1d DP. only dimension is amount.
+                        <pre class="brush:java">
+                            for(int j = 0; j &lt; coins.length; j++){
+                                result[i] = Math.min(result[i], 1 + result[i-coins[j]]);
+                            }
+                        </pre>
+                        <p>It still has the same runtime as 2d DP but the space is O(n).</p>
+                    </p>
+                    </p>
+                </li>
+                <li>
+                    <h4>983. Minimum Cost For Tickets</h4>
+                    <p>Desc: given a list of days [1...365] on which you will travel by train. And it provides 1 day pass, 7 day pass and 30 day pass tickets for different prices. Find the minimum costs.</p>
+                    <p>Sol: 1d DP. result[i] indicates the total minimum costs before and including the i-th day. (result = new int[366])<br>
+                    <pre class="brush:java">
+                        int c1 = costs[0] + ((i - 1 >= 0) ? result[i-1]: 0);
+                        int c2 = costs[1] + ((i - 7 >= 0) ? result[i-7]: 0);
+                        int c3 = costs[2] + ((i - 30 >= 0) ? result[i-30]: 0);
+                        result[i] = Math.min(c1, Math.min(c2, c3));
+                    </pre>
+                    </p>
+                </li>
                 <hr>
                 <li>
                     <h4>304. Range Sum Query 2D - Immutable</h4>
@@ -263,6 +355,7 @@ SyntaxHighlighter.all()
                 <li>
                     <h4>Easy</h4>
                     <p>303. Range Sum Query - Immutable (given an array of integer, find any sum over a range. O(1) space, O(n) init, O(1) get sum.</p>
+                    <p>338. Counting Bits (given a number, count each number's 1 in binary for all [0...number]). <span style="color:red">result[i] = result[i>>1] + ((i & 1) == 1? 1:0);</span> (Attention: using (i & 1) == 1 instead of (i % 2) == 1</p>
                 </li>
             </ol>
         </div>

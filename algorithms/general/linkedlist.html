@@ -54,6 +54,8 @@ SyntaxHighlighter.all()
 <h3>Introduction</h3>
 <p>LinkedList的问题很直接，直接说明要怎么样一个linkedlist, e.g. deep copy. 主要考编程能力而不是算法。</p>
 <p>LinkedList的问题有时需要用到HashMap辅助，但一般这种题都有更tricky/smart的solution不用HashMap。</p>
+<p>Tips: dummyHead node. Create a dummy node as the new head when the original head may be updated or removed.</p>
+<p>Using recursion can also make problems easier.</p>
 </div>
 </li>
 <li>
@@ -96,13 +98,48 @@ SyntaxHighlighter.all()
                     </p>
                 </li>
                 <li>
-                    <h4>21. Merge Two Sorted Lists</h4>
-                    <p>Desc: 2 sorted linked list (not Java LinkedList). Merge them in sorted order.</p>
-                    <p>Sol: too easy to have a solution.</p>
+                    <h4>24. Swap Nodes in Pairs</h4>
+                    <p>Desc: given a linkedlist, swap nodes in pairs e.g. 1->2->3->4->5, 2->1->4->3->5.</p>
+                    <p>Sol: a easier solution is to use recursion. in this case, we don't need the dummyhead even through the original head is modified.</p>
                 </li>
                 <li>
-                    <h4>* 23. Merge k Sorted Lists</h4>
-                    <p>Desc: Same as #21 but this merge an array of linkedlist.</p>
+                    <h4>* 61. Rotate List</h4>
+                    <p>Desc: given a linkedlist and a number k, rotate the linked list k times.  1->2->3->4->5->NULL, k = 2, return 4->5->1->2->3->NULL</p>
+                    <p>Sol: (the k may > len). 1. find the length 2. find k = k % len. 3. find the new head at len - k. 4 connect end to front.<br>
+                    <span style="color:red"> another solution is switch step 3 and step 4. first construct a ring.</span>
+                    </p>
+                </li>
+                <li>
+                    <h4>92. Reverse Linked List II</h4>
+                    <p>Desc: given a linkedlist and two number n,m (1 &lt;= n &lt;= m &lt;= len). e.g. 1->2->3->4->5->NULL, m = 2, n = 4, return 1->4->3->2->5->NULL</p>
+                    <p>Sol: using dummyhead since the original head may change.</p>
+                </li>
+                <li>
+                    <h4>86. Partition List</h4>
+                    <p>Desc: given a linkedlist and a target number, put node at front if node.val &lt; target, otherwise put at the end. Moreover, preserve the original relative order. e.g. 1->4->3->2->5->2, x = 3, return 1->2->2->4->3->5</p>
+                    <p>Sol: two dummyhead smalllist, biglist and then put the biglist at the end of smallist. <span style="color:red">Bug: do not forget to terminate the last element of biglist.</span></p>
+                </li>
+                <li>
+                    <p class="algorithm-problem-title">* 82. Remove Duplicates from Sorted List II</p>
+                    <p class="algorithm-problem-title">83. Remove Duplicates from Sorted List</p>
+                    <p>
+                        Desc:<br>
+                        #82. given a sorted linkedlist, remove all nodes that have duplicates. 1->2->3->3->4->4->5->null, return 1->2->5->null.<br>
+                        #83. given a sorted linkedlist, remove duplicate node to make each number only appears once.
+                    </p>
+                    <p>Sol:<br>
+                        #83 is easy, create a removeNext function, if the next node is same the current node, remove the next node; otherwise, we move to next node.<br>
+                        #82. <span style="color:red">Using dummyhead since the original head may be deleted.</span>
+                    </p>
+                </li>
+                <li>
+                    <p class="algorithm-problem-title">21. Merge Two Sorted Lists</p>
+                    <p class="algorithm-problem-title">* 23. Merge k Sorted Lists</p>
+                    <p>
+                        Desc: <br>
+                        #21. 2 sorted linked list (not Java LinkedList). Merge them in sorted order.<br>
+                        #23. Same as #21 but this merge an array of linkedlist.
+                    </p>
                     <p>Sol: multiple solutions existed.<br>
                         1). With #21 solution, we can merge linked list one by one.
                         <pre class="brush:java">
@@ -112,7 +149,7 @@ SyntaxHighlighter.all()
                             }
                         </pre>
                         2). With priority queue N * 2 * lgm: the queue's size is m, each node has a enqueue and dequeue operation. So O(N 2 lgm) = O(Nlgm)<br>
-                        3). With binary merge
+                        3). With binary merge <span style="color:red">Fastest</span>
                         <pre class="brush:java">
                             // O(Nlgm)
                             queue;
@@ -125,27 +162,10 @@ SyntaxHighlighter.all()
                         </pre>
                     </p>
                 </li>
-                <li>
-                    <h4>* 61. Rotate List</h4>
-                    <p>Desc: given a linked list and a number k, rotate the linked list k times. Each rotation is put the last node into the front.</p>
-                    <p>Sol: (the k may > len). 1. find the length 2. find k = k % len. 3. find the new head at len - k. 4 connect end to front.<br>
-                    <span style="color:red"> another solution is switch step 3 and step 4. first construct a ring.</span>
-                    </p>
-                </li>
             </ol>
         </div>
     </div>
 </li>
-<!--<li>
-<div class="content" id="reference">
-<h3>References</h3>
-<div class="featureList">
-    <ol>
-        <li></li>
-    </ol>
-</div>
-</div>
-</li>-->
 </ol>
 </div>
     

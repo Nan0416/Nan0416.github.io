@@ -39,7 +39,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Methodology&nbsp;-&nbsp;Backtracking</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-08-27</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-27</span></p>
+<p class="date"><span class="created-date">Created:2019-08-27</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-09-06</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -75,54 +75,138 @@ SyntaxHighlighter.all()
 <div class="featureList">
     <ol>
         <li>
-            <h4>39. Combination Sum</h4>
-            <h4>40. Combination Sum II</h4>
+            <p class="algorithm-problem-title">39. Combination (Subset) Sum</p>
+            <p class="algorithm-problem-title">40. Combination (Subset) Sum II</p>
+            <p class="algorithm-problem-title">77. Combinations</p>
+            <p class="algorithm-problem-title">78. Subsets</p>
+            <p class="algorithm-problem-title">90. Subsets II</p>
+            <p class="algorithm-problem-title">46. Permutations</p>
+            <p class="algorithm-problem-title">47. Permutations II</p>
             <p>Desc: <br>
-                30. an array of positive integers without duplicated and a target number. find all unique combinations' sum = target<br>
-                [2,3,5], 8 => [[2,2,2,2], [2, 3, 3], [3, 5]]<br>
-                40. same as 30 the array can have duplicated element, and a number can only be used once, and make sure no duplicated in result
+                39. an array of positive integers without duplicated and a target number. find all unique combinations' sum = target e.g. [2,3,5], 8 => [[2,2,2,2], [2, 3, 3], [3, 5]] <span style="color:red">a number can be repeatedly used.</span><br>
+                40. an array of positive integers may have duplicated element, and a number can only be used once. make sure no duplicated in result<br>
+                77. Given two integers n and k, return all possible combinations of k numbers out of 1 ... n. e.g. n = 3, k = 2, [1,2],[1,3],[2,3]<br>
+                78. an array of distinct numbers, return all its subsets. e.g. [1,2,3] -> [], [1], [2], [3], [1,2],[1,2,3], [1,3],[2,3]<br>
+                79. an array that may have duplicated numbers, return all its subsets without duplicated.<br>
+                46. an array of distinct numbers, return all its permutations, e.g. [1,2,3] -> [1,2,3],[1,3,2], [2,1,3] ...<br>
+                47. an array may have duplicate numbers, return all its permutations without duplicated.
             </p>
-            <p>Sol:<br> 
-                30.Backtracking. Supposed 2 is used, then [2,3,5] = 8-2 = 6. recursive this step until target less than 1 since all integer > positive.<br>
-                40.Backtracking. First sort, and then same as 30 but make sure no duplicated. e.g. [1, 1, 1, 2] target = 4
+            <h4 style="color:red">Summary (Combination vs. Permutation)</h4>
+            <p>
+                subset: select numbers from array, each number may select once or multiple times.<br>
+                combination: select k numbers from an array and order doesn't matter.<br>
+                permutation: select k numbers (usually all k = nums.length) from an array and arrange in different orders.<br>
+                <p style="font-weight: bold">1). without considering duplicated element.</p>
+                <pre class="brush:java">
+                    // permutation uses an flag array to indicates if the number is used. The base condition is path.size() == nums.length.
+                    // combination doesn't need the flag array. It has base condition when path.size() == k
+                    // subset doesn't need the flag array. It doesn't has base condition, it iterate the array until end.
+
+                    // permutation
+                    public void premutationHelper(int [] nums, byte[] used, LinkedList&lt;Integer> path, List&lt;List&lt;Integer>> result){
+                        if(path.size() == nums.length){
+                            result.add(new ArrayList&lt;>(path)); // diff: add only when path.size() == nums.length;
+                            return;
+                        }
+                        for(int i = 0; i &lt; used.length; i++){ // diff: start from 0
+                            if(used[i] == 0
+                            // && (i == 0 || nums[i-1] != nums[i] || flags[i-1] == 1) // avoid duplicated.
+                            ){
+                                used[i] = 1;
+                                path.add(nums[i]);
+                                premutationHelper(nums, used, path, result);
+                                path.remove(path.size()-1);
+                                used[i] = 0;
+                            }
+                        }
+                    }
+                    // combination
+
+                    public void combinationHelper(int [] nums, int index, int k, List&lt;Integer> path, List&lt;List&lt;Integer>> result){
+                        if(k == 0){
+                            result.add(new ArrayList&lt;>(path));
+                            return;
+                        }
+                        for(int i = index; i &lt; nums.length; i++){
+                            /*if(i > 0 && nums[i] == nums[i-1]){ // avoid duplicated.
+                                continue; 
+                            }*/
+                            path.add(nums[i]);
+                            combinationHelper(nums, i+1, k - 1, path, result);
+                            path.remove(path.size()-1);
+                        }
+                    }
+                    // subset.
+                    public void subsetsHelper(int [] nums, int index, List&lt;Integer> path, List&lt;List&lt;Integer>> result){
+                        for(int i = index; i &lt; nums.length; i++){ // diff: start from index.
+                            /*if(i > index && nums[i-1] == nums[i]){ // avoid duplicated
+                                continue;
+                            }*/
+                            path.add(nums[i]);
+                            result.add(new ArrayList&lt;>(path));   // diff: add every possible path.
+                            subsetsHelper(nums, i + 1, result, path); 
+                            path.remove(path.size()-1);
+                        }
+                    }
+                </pre>
+                <p style="font-weight: bold">2). with duplicated element</p>
+                <p>First thing is to sort the array, and then before adding new element we need to check if it's same as the previous element.</p>
+                <p style="font-weight: bold">3). allow repeatedly use elements?</p>
+                <p>If an element is allowed to use repeatedly, then the recursive call starts from i instead of i+1</p>
+                <pre class="brush:java">
+                for(int i = index; i &lt; nums.length; i++){
+                    // subsetsHelper(nums, i + 1, result, path);
+                    subsetsHelper(nums, i, result, path);
+                } 
+                </pre>
+                <p>First thing is to sort the array, and then before adding new element we need to check if it's same as the previous element.</p>
+                <p style="font-weight: bold">4). Tips</p>
+                <p>
+                    1). using ArrayList instead of LinkedList<br>
+                    2). subset includes empty list.
+                </p>
             </p>
-            <pre class="brush:java">
-                for(int i = 0; i &lt; arr.length; i++){
-                    helper(i, arr, target-i);
-                }
-                helper(int from, arr, target){
-                    // arr[from] must be used in result.
-                    if(arr[from] > target){
-                        return;
-                    }
-                    if(arr[from] == target){
-                        add to result.
-                    }
-                    tempresult.add(arr[from]);
-                    for(int i = from; i &lt; arr.length; i++){
-                        helper(i, arr, target - arr[from]);
-                    }
-                    tempresult.removeLast();
-                }
-            </pre>
         </li>
         <li>
             <h4>17. Letter Combinations of a Phone Number</h4>
-            <p></p>
+            <p>Desc: given a old cellphone keyboard, that each digit except 1 has 3 or 4 letter. e.g.[2"abc", 3"def" ...]. Now given a digit string contains [2-9], return all possible string.</p>
+            <p>Sol: DFS's backtracking.<br>
+                optimization: using "char [] + index" to behave as the path arraylist.
+            </p>
+        </li>   
+        <li>
+            <h4>79. Word Search</h4>
+            <p>Desc: given a char matrix, and a string word, find if the word exist in the grid. The word can be constructed from letters of sequentially adjacent cell. <span style="color:red">a cell once used once.</span></p>
+            <p>Sol: 2d backtracking permutation. <br>
+                optimization 1: it needs a 2d used array, but can be optimized by using the char matrix). [kind of DFS]<br>
+            </p>
         </li>
         <li>
-            <h4>78. Subsets</h4>
-            <p>Desc: an array of distinct numbers, return all its subsets. e.g. [1,2,3] -> [], [1], [2], [3], [1,2],[1,2,3], [1,3],[2,3]</p>
-            <p>Sol: backtracking. : <span style="color:red">ArrayList is faster LinkedList</span></p>
-            <pre class="brush:java">
-                arraylist.remove(arraylist.size()-1); // == linkedlist.removeLast()
-            </pre>
+            <h4>89. gray code</h4>
+            <p>Desc: given integer n, return a list of n-bit gray code in order. .e.g. n = 4 return [0,1,3,2]</p>
+            <p>Sol: rules
+                <pre class="brush:java">
+                    n = 1; 0, 1
+                    n = 2; 00 01 11 10
+                    n = 3; 000 001 011 010 110 111 101 100
+                    n = 4; prepend 0 on each number when n=3, and reverse n=3, prepend 1.
+                </pre>
+                <pre class="brush:java">
+                    List&lt;Integer> number = new ArrayList&lt;>();
+                    number.add(0);
+                    int count = 0;
+                    while(count &lt; n){
+                        int size = number.size();
+                        for(int i = size - 1; i >= 0; i--){
+                            number.add(number.get(i) | 1 &lt;&lt; count);
+                        }
+                        count++;
+                    }
+                    
+                </pre>
+            </p>
         </li>
-        <li>
-            <h4>46. Permutations</h4>
-            <p>Desc: an array of distinct numbers, return all its permutations, e.g. [1,2,3] -> [1,2,3],[1,3,2], [2,1,3] ...</p>
-            <p>Sol: backtracking: using an other byte[] as a flag array to recorded used or not</p>
-        </li>
+
     </ol>
 </div>
 </div>
