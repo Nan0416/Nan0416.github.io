@@ -90,6 +90,17 @@ SyntaxHighlighter.all()
         <li>
             <h4>93. Restore IP Addresses</h4>
         </li>
+        <li>
+            <h4>57. Insert Interval</h4>
+        </li>
+        <li>
+            <h4>406. Queue Reconstruction by Height</h4>
+            <p>Desc: given a list of "people", a person is represented by a two-integer array [h,k], h is height, k is the # of people that have a height greater than or equal to this person before him. sort it by order.
+                <br> e.g. [[7,0], [4,4], [7,1], [5,0], [6,1], [5,2]] =>[[5,0], [7,0], [5,2], [6,1], [4,4], [7,1]]
+            </p>
+            <p>Sol: <span style="color:red">lower people are invisible to heigher peopel. [7,0], [2,x],[3,x]..[7,1] is correct order since [7,x] ignore [2,],[3,]</span>, so sort from heigh to low, and insert lower people.<br>
+            </p>
+        </li>
     </ol>
 </div>
 </div>

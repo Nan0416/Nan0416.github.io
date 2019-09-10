@@ -37,7 +37,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Java&nbsp;-&nbsp;Cheatsheet</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-10-14</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-16@ Rockford, IL / 2019-08-19 @ First Day of Fall 2019 / 2019-08-27</span></p>
+<p class="date"><span class="created-date">Created:2018-10-14</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-16@ Rockford, IL / 2019-08-19 @ First Day of Fall 2019 / 2019-09-10</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#operation">Operation</a></li>
@@ -260,6 +260,13 @@ SyntaxHighlighter.all()
                         for(int[] interval: intervals){
                             System.out.println(Arrays.toString(interval));
                         }
+                        Arrays.sort(intervals, new Comparator&lt;int[]>{
+                            @Override
+                            public int compare(int [] i1, int [] i2){
+                                ...
+                            }
+                        });
+                        // the first time of using lambda is slower than just using a comparator class. (since JVM need loading helper classes that are used to generate the lambda).
                 </pre>
                 <h4>Fill</h4>
                 <p style="color:red">Array.fills fill with the same reference. The following statement use a single arraylist.</p>

@@ -37,7 +37,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Array&nbsp;-&nbsp;Sorting</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-02-04</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-04</span></p>
+<p class="date"><span class="created-date">Created:2019-02-04</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-09-09</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -50,19 +50,21 @@ SyntaxHighlighter.all()
 <li>
 <div class="content" id="intro">
 <h3>Introduction</h3>
-<p>Math: XOR <a href="https://leetcode.com/problems/single-number/">Single Number</a></p>
+
 </div>
 </li>
 <li>
     <div class="content" id="example">
         <h3>Examples</h3>
-        <p>Keywords: <span style="color:red">array</span></p>
+        <p>Keywords: <span style="color:red">array, merge, intervals</span></p>
         <h4>Where to apply?</h4>
         <div class='featureList'>
             <ol>
                 <li>Given an array, return an element or a set elements (not index) that satisfy a condition (e.g. 3sum, 4sum)</li>
+                <li>Intervals</li>
             </ol>
         </div>
+        <h4>Examples</h4>
         <div class="featureList">
             <ol>
                 <li>
@@ -80,40 +82,52 @@ SyntaxHighlighter.all()
                     </p>
                 </li>
                 <li>
-                    <h4><a href="https://leetcode.com/problems/merge-intervals/">Merge Interval</a></h4>
-                    <pre class="brush:java">
-/**
-* Java 8 lambda sorting
-* intervals.sort((i1, i2)->Integer.compare(i1.start, i2.start));
-*/
-class Solution {
-    public List&lt;Interval> merge(List&lt;Interval> intervals) {
-        intervals.sort((i1, i2)->Integer.compare(i1.start, i2.start));
-        List&lt;Interval> result = new LinkedList&lt;Interval>();
-        Interval interv = null;
-       
-        for(int i = 0; i &lt; intervals.size(); i++){
-            Interval temp = intervals.get(i);
-            if(interv == null){
-                interv = temp;
-            }else if(interv.end >= temp.start){
-                // merge
-                interv.end = interv.end > temp.end? interv.end: temp.end;
+                    <p class="algorithm-problem-title">* 56. Merge Intervals</p>
+                    <p class="algorithm-problem-title">252. Meeting Rooms</p>
+                    <p class="algorithm-problem-title">* 253. Meeting Rooms II</p>
+                    <p class="algorithm-problem-title">435. Non-overlapping Intervals</p>
+                    <p class="algorithm-problem-title">452. Minimum Number of Arrows to Burst Balloons</p>
+                    
+                    <p>Desc<br>
+                        # 56. given an array of intervals, merge overlapping intervals.
+                        # 252. given an array of time intervals, find a person can attend all meetings. <span style="color:red">== can use 1 meeting room to hold all meeting?</span><br>
+                        # 253. given an array of time intervals, find the minimum required number of rooms in order to hold all meetings.<br>
+                        # 435. given an array of intervals, find the minimum number of intervals need to be removed in order to non overlap.<br>
+                        # 452. given an array of position intervals, using minimum number of arrows that cross all intervals. <br>
+                    </p>
+                    <p>Sol:<br>
+                        #56. two solutions.<br>
+                        Sol 1. sorting, and merging with updating ending.<br>
+                        Sol 2. sorting starting and ending separately
+                        <pre class="brush:cpp">
+                            starting = [1,2,3,7,10]
+                            ending =   [4,5,6,9,11]
+                            if starting[i+1] > ending[i], for example, 7 > 6, it means [1,2,3] and [4,5,6] are together, and it build a large interval [1,6]
+                        </pre>
+                        #252 and #253 are scheduling.<br>
+                        Sol 1. sorting by starting time, put into a priority queue by ending time. The final size of the queue is the minimum number of required rooms.<br>
+                        Sol 2. sort starting time and ending time separately. 
+                        <pre class="brush:java">
+                            e.g. starting = [1,2,3,7,8,9] ending = [4,10,11,12,13]. one of meetings that start at [1,2,3] must end at [4] since [7,8,9] cannot end at 4.
+                            // It also means that the first three meeting has overlap. one of [1,2,3] ends at 4. the one of [x, x, 7, 8, 9] ends at 10, the rest end after 10.
+                            , so we will provide at least 3 rooms.
+                        </pre>
+                        <pre class="brush:java">
+        for(int i = 0; i &lt; intervals.length; i++){
+            if(endingTime[endIndex] &lt;= startingTime[i]){
+                endIndex++;
             }else{
-                result.add(interv);
-                interv = temp;
+                count++;
             }
         }
-        if(interv!=null)
-            result.add(interv);
-        return result;
-    }
-}
-                    </pre>
-                </li>
-                <li>
-                    <h4>* 56. Merge Intervals</h4>
-                    <p>Desc: given an array of interval (each interval is an array of 2 elements) merge all interval, .e.g [[1,4],[4,7],[2,5],[8,9]] ->[[1,7],[8,9]]</p>
+        return count;
+                        </pre>
+                    </p>
+                    <p>
+                        #435 and #452's starting and ending cannot be sorted individually. Both of them are kind of greedy.<br>
+                        #435. sorting by ending. compare the ending with others' startings. If overlapping, then increment count. (meaning removing the interval)<br>
+                        #452. sorting by ending, compare the ending with others' startings. If not overlapping, then increment count & update endAt. (meaing using next arrow)<br>
+                    </p>
                     <p>Sol: 1). this question is actually a <span style="color:red">connected components</span> question, however, different from a traditional UnionFind question, it doesn't
                          give any two interval are in one group (e.g. each interval is an node, you have to build edges by yourself). But the building each edge will need O(n) time. So With unionfind,
                           the runtime will be O(n^2)</p>

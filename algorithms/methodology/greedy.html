@@ -39,7 +39,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Methodology&nbsp;-&nbsp;Greedy</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-08-27</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-27</span></p>
+<p class="date"><span class="created-date">Created:2019-08-27</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-09-10</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -62,12 +62,26 @@ SyntaxHighlighter.all()
     <h4>Examples</h4>
     <ol>
         <li>
-            <h4>53. Maximum Subarray</h4>
-            <p>Desc: given an array of integers, find a continuous subarray that has the largest sum e.g. [-1, 4, -2, 4, -9, 8] -> 6 [4,-2, 4]</p>
-            <p>Sol: greedy, one the a local sum is less than (or equal to) zero, than restart the sum.</p>
+            <p class="algorithm-problem-title">53. Maximum Subarray</p>
+            <p class="algorithm-problem-title">* 1186. Maximum Subarray Sum with One Deletion</p>
+            <p>Desc: <br>
+                #53. given an array of integers, find a continuous subarray that has the largest sum e.g. [-1, 4, -2, 4, -9, 8] -> 6 [4,-2, 4]<br>
+                #1186. given an array of interges, find a continuous subarray that at most delete one elements results in maximum sum. (the subarray cannot be empty.)<br>
+            </p>
+            <p>Sol: <br>
+                #53. greedy, one the a local sum is less than (or equal to) zero, than restart the sum.<br>
+                #1186. DP. keep two 1d DP array, <span style="color:red">can be optimized by using two variables.</span>
+                <pre class="brush:java">
+                    // int[] sum1 the max sum of subarray ends at i.
+                    // int[] sum2 the max sum of subarray ends at i with deleting one element.
+                    sum2[i] = max(sum1[i-1], sum2[i-1] + curr[i]);
+                    sum1[i] = max(sum1[i-1], 0) + curr[i]; // greedy.
+                </pre>
+            </p>
         </li>
         <li>
-            <h4>* 55. Jump Game</h4>
+            <p class="algorithm-problem-title">* 55. Jump Game</p>
+            
             <p>Desc: given an array of non-negative integers, each integer representes the #steps it can jump from the current index. check if it can the last index. e.g. [3,1,2,0,4]: yes 3->2->4</p>
             <p>Sol: the intutive solution is to simulate the jump process with recursion.<br>
             But it can be solved with greedy. loop the array, keep a "farmost". find if we can reach i+1 from i, if we can update "farmost" by testing i+1.
@@ -83,6 +97,69 @@ SyntaxHighlighter.all()
                     }
                     return true;
             </pre>
+        </li>
+        <li>
+            <p class="algorithm-problem-title">134. Gas Station</p>
+            <p>Desc: a car with unlimited gas tank need to run on a loop, the loop is represented by two arrays of integers, one array is gas stations, each number is the gas it has, another array is cost, 
+                cost[i] = the cost of gas from i to i+1. e.g. gas = [1,2,3,4,5], costs =  [3,4,5,1,2]. return the start station index if the car can run the loop. otherwise, return -1.
+            </p>
+            <p>
+                Sol: use two variable. total_tank; <span style="color:red">answer if the car can run the loop</span>. current_tank; <span style="color:red">starts from which station?</span><br>
+                greedy to keep starting_station: the starting_station is the first station that let current_tank be positive.
+                <pre class="brush:java">
+                    int total_tank = 0;
+                    int current_tank = 0;
+                    int starting_station = -1;
+                    for(int i = 0; i &lt; gas.length; i++){
+                        total_tank += gas[i] - cost[i];
+                        current_tank += gas[i] - cost[i];
+                        if(current_tank >= 0 && starting_station == -1){
+                            starting_station = 1; // greedy.
+                        }else if(current_tank &lt; 0){
+                            current_tank = 0;
+                            starting_station = -1; // reset
+                        }
+                    }
+                    return total_tank >= 0? starting_station: -1;
+                </pre>
+            </p>
+        </li>
+        <li>
+            <h4>* 402. Remove K Digits</h4>
+            <p>Desc: given an non-negative number represented by string, remove k digits from the string to make the new number as small as possible.</p>
+            <p>Sol: greedy + using stack. From the left to right, if a digit > next digit, then remove it. e.g. 1221, -> (remove the second 2 since 2 > 1). now it is 121 -> 11.<br>
+                the result may contains leading 0.
+            </p>
+        </li>
+        <li>
+            <h4>* 763. Partition Labels</h4>
+            <p>Desc: given a string only contains lower case.</p>
+        </li>
+        <li>
+            <h4>122. Best Time to Buy and Sell Stock II</h4>
+            <p>Desc: you can complete unlimited transactions.</p>
+        </li>
+        <li>
+            <p class="algorithm-problem-title">392. Is Subsequence</p>
+            <p class="algorithm-problem-title">* 792. Number of Matching Subsequences</p>
+            <p>Desc: <br>
+                #392. given two string s and t, check if s is a subsequence of t. e.g. "abc" is a subsequence of "axcebdwc"<br>
+                #792. given a string s and a list of strings, words, find the number of strings in words that are subsequence of string s.
+            </p>
+            <p>Sol: <br>
+                #392. greedy two pointers, one pointer on s and another pointer on t.<br>
+                #792. the naive solution is O(s.length * words.length), which is "time limit exceeded"<br>
+                A sophisticated solution is to use a dedicated data structure that process words only when necessary.
+                <pre class="brush:java">
+                    ArrayList&lt;String> [] head = new ArrayList[26];
+                    // head keep the words starts at (char)(i+'a') for the current char.
+                </pre>
+            </p>
+        </li>
+        <li>
+            <p class="algorithm-problem-title">455. Assign Cookies</p>
+            <p>Desc: an array of integers that represents the cookie size needed by each child. an array of integers that represents each cookie's size. Find the max number of children that can be content with.</p>
+            <p>Sol: 田忌赛马. sort two arrays and then greedy match.</p>
         </li>
     </ol>
 </div>
