@@ -162,6 +162,39 @@ SyntaxHighlighter.all()
                         </pre>
                     </p>
                 </li>
+                <li>
+                    <p class="algorithm-problem-title">141. Linked List Cycle</p>
+                    <p class="algorithm-problem-title">142. Linked List Cycle II</p>
+                    <p class="algorithm-problem-title">287. Find the Duplicate Number</p>
+                    <p>
+                        Desc: <br>
+                        #141. given a linked list, determine if it has a cycle in it.<br>
+                        #142. given a linked list, find the cycle entry node if there exist a cycle otherwise null.<br>
+                        #287. given an array of size n + 1, and it contains [1..n], find the duplicated number by using constant space.<br>
+                    </p>
+                    <p>Sol:<br>
+                        #141. Floyd's Tortoise and Hare (faster pointer and slower pointer.)<br>
+                        #142. property: 2(f+a) = f + a + b + a. => f = b. here f is the distance from head to cycle entry point; a is the distance from entry point to intersection point,
+                        b is the distance from intersection point to entry point. f+a is slower's distance, and faster is 2 * (f+a), at the same time, faster's distance is also f +a + b+a.<br>
+                        # 287. value is index. (faster + slower), the duplicated element is the entry point.<br>
+                    </p>
+                </li>
+                <li>
+                    <p class="algorithm-problem-title">143. Reorder List</p>
+                    <p>Desc: Given 1->2->3->4, reorder it to 1->4->2->3; Given 1->2->3->4->5, reorder it to 1->5->2->4->3;</p>
+                    <p>Sol: first stack the first half; and then iterating the second half and pop up the first half. (with dummyhead).</p>
+                </li>
+                <li>
+                    <p class="algorithm-problem-title">147. Insertion Sort List</p>
+                    <p class="algorithm-problem-title">148. Sort List</p>
+                    <p>Desc: using insertion sort & mergesort to sort a linkedlist in place.</p>
+                    <p>Sol: pure algorithm. (don't forget break the linkedlist in divide & conquer, otherwise memory limit exceeded).</p>
+                </li>
+                <hr>
+                <li>
+                    <h4>Easy</h4>
+                    
+                </li>
             </ol>
         </div>
     </div>

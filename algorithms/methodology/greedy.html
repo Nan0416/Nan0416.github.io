@@ -125,10 +125,29 @@ SyntaxHighlighter.all()
             </p>
         </li>
         <li>
-            <h4>* 402. Remove K Digits</h4>
-            <p>Desc: given an non-negative number represented by string, remove k digits from the string to make the new number as small as possible.</p>
-            <p>Sol: greedy + using stack. From the left to right, if a digit > next digit, then remove it. e.g. 1221, -> (remove the second 2 since 2 > 1). now it is 121 -> 11.<br>
-                the result may contains leading 0.
+            <p class="algorithm-problem-title">* 402. Remove K Digits</p>
+            <p class="algorithm-problem-title">31. Next Permutation</p>
+            <p class="algorithm-problem-title">484. Find Permutation</p>
+            <p>
+                Desc: <br>
+                #402. given an non-negative number represented by string, remove k digits from the string to make the new number as small as possible.<br>
+                #31. given an array of integer that contains 0-9, which represents a number ,e.g. [1,4,3,2] = 1432, find its next permutation. e.g. [2,1,3,4]<br>
+                #484. given a string that contains 'D' and 'I' e.g. "DDID", it encodes an integer array that 'D' means left > right, 'I' means left &lt; right. e.g. [DDID] = [3,2,1,5,4], there may multiple permutation exist, find the minimum one.
+            </p>
+            <p>Sol: <br>
+                # 402. greedy + using stack. From the left to right, if a digit > next digit, then remove it. e.g. 1221, -> (remove the second 2 since 2 > 1). now it is 121 -> 11. (the result may contains leading 0.)<br>
+                # 31. from right to left, find the first decreasing number, switch it with the first bigger element, and reverse after it. [1,4,3,2], 1 is the first decreasing element, switch it with 2, [2,4,3,1], reverse the rest, [2,1,3,4].<br>
+                # 484. from left to rigth, keep the last index of 'I', insert the next digit at the last index of I.<br>
+                <pre class="brush:java">
+                    result.add(1);
+                    int lastI = 0;
+                    for(int i = 0; i &lt; sarr.length; i++){
+                        if(sarr[i] == 'I'){
+                            lastI = i+1;
+                        }
+                        result.add(lastI, i + 2);
+                    }
+                </pre> 
             </p>
         </li>
         <li>
@@ -160,6 +179,38 @@ SyntaxHighlighter.all()
             <p class="algorithm-problem-title">455. Assign Cookies</p>
             <p>Desc: an array of integers that represents the cookie size needed by each child. an array of integers that represents each cookie's size. Find the max number of children that can be content with.</p>
             <p>Sol: 田忌赛马. sort two arrays and then greedy match.</p>
+        </li>
+        <li>
+            <p class="algorithm-problem-title">* 621. Task Scheduler</p>
+            <p>Desc:given an array of char (only 'A'-'Z'), each char is represents tasks e.g. ('A','A','C','A'), there 2 tasks A and C. And a cooldown time means that  two same tasks cannot be executed within colldown time. 
+                tasks can be executed at any order, find the minimum time required. e.g. ('A', 'A', 'C', 'A') n = 1-> ACAiAiA = 7.
+            </p>
+            <p>Sol:<br>
+                Sol 1. greedy, using priorityqueue to execute the longest job first with cooldown enabled.
+                <pre class="brush:cpp">
+                    int [] tasklen = new int[26];
+                    for(c: task){
+                        tasklen[c-'a']++;
+                    }
+                    for(i: tasklen){
+                        if i != 0 pq.add(i); // from big to small.
+                    }
+                    while(pq.size() > 0){
+                        int jobnum = pq.size();
+                        int cooldown = n + 1;
+                        list.
+                        while(jobnum > 0 && cooldown > 0){
+                           i = pq.poll()-1
+                           if i > 0 list.add(i);
+                           jobnum--; cooldown--; cycle++;
+                        }
+                        if(pq.size == 0){return cycle;}
+                        cycle += max(0, cooldown);
+                        for(i: list) pq.add(i);
+                    }
+                </pre>
+                Sol 2: using graph.
+            </p>
         </li>
     </ol>
 </div>

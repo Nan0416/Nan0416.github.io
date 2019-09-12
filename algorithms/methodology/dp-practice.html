@@ -189,6 +189,38 @@ SyntaxHighlighter.all()
                         }
                     </p>
                 </li>
+                <li>
+                    <p class="algorithm-problem-title">651. 4 Keys Keyboard</p>
+                    <p>Desc: given a keyboard that contains 4 keys. key 1 prints A on screen, key 2 selects all screen, key 3 copies selected into buffer, key 4 prints buffer on screen. Now press key N times, find the maximum length of A on screen.</p>
+                    <p>Sol: the key is once the buffer is not empty, then using (key 4) is always better the using (key 1)
+                        <pre class="brush:java">
+                            int [] nums = new int[N+1];
+                            for(int i = 1; i &lt;= N; i++){
+                                nums[i] = i;
+                                for(int j = 3; j &lt;= N; ++){ // we only print buffer after a certain point.
+                                    nums[i] = Math.max()
+                                }
+                            }
+                           
+                        </pre>
+                        <!--
+                             A
+                            1
+                            A A
+                            1 2
+                            A A A
+                            1 3 4
+                            A A A A
+                            1 2 3 4
+                            A A A A A
+                            1 2 3 4 5
+                            A A A 2 3 4 4 5
+                            1 2 3 3 3 6 9 ?
+                                        5, 5 * 2, 4 * 3, 3 * 4
+                        -->
+                    </p>
+                    
+                </li>
                 <hr>
                 <li>
                     <h4>221. Maximal Square</h4>
