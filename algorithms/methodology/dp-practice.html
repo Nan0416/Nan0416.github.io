@@ -190,6 +190,52 @@ SyntaxHighlighter.all()
                     </p>
                 </li>
                 <li>
+                    <p class="algorithm-problem-title">53. Maximum Subarray</p>
+                    <p class="algorithm-problem-title">152. Maximum Product Subarray</p>
+                    <p class="algorithm-problem-title">918. Maximum Sum Circular Subarray</p>
+                    <p class="algorithm-problem-title">1186. Maximum Subarray Sum with One Deletion</p>
+                    <p>Desc:<br> 
+                        #53. given an array of integers (contains negative, 0, and positive), find the subarray that produces maximum summation.<br>
+                        #152. given an array of integers, find the subarray that produces the maximum product.<br>
+                        #918. given an array of integers, treat the array as circular, and find the subarray that produces maximum sum.<br>
+                        #1186. given an array of integers, find the subarray that produces maximum summation after you optional delete at most one element from the subarray.
+                    </p>
+                    <p>Sol:<br>
+                        #53. DP. <span style="color:red">Kadane's Algorithm</span> Keep a current-sum and global-sum, if current-sum is less than 0, then reset it to 0 <span style="color:red">equivalent to reset the local-left boundary of subarray.</span> 
+                        and also update the global-sum when getting a bigger current-sum <span style="color:red">equivalent to update the global left and right boundaries of the subarry</span>
+                        <br>
+                        <br>
+                        #152. DP. keep the maximum (largest positive) and minimum ("largest" negative). When multiplying a number (either + or -), one of them will produce maximum.
+                        <br>
+                        <br>
+                        #918. convert to non-circlar case. case 1. the max subarray doesn't cross the boundary. case 2. the max subarray crosses the boundary, which means the min subarray does not cross the boundary.
+                        <pre class="brush:java">
+                            int max = non-circular-max;
+                            int min = non-circular-min;
+                            int sum = sum(nums);
+                            if(sum == min){
+                                // all number are 0 or negative
+                                return max;
+                            }
+                            return Max(max, sum - min);
+                        </pre>
+                        <br>
+                        <br>
+                        #1186. DP + #53 greedy. <span style="color:red">We can delete at most one number, which means we have two cases: not delete (same as #53, or delete one)</span>
+                        <pre class="brush:java">
+                            int local0 = nums[0]; // as #53.
+                            int local1 = 0; // max by delete one.
+                            int global = max(loca1, local0);
+                            for(int i = 1; i &lt; nums.length; i++){
+                                local1 = max(local0, local1 + nums[i]); // delete current one, or delete a previous one.
+                                local0 = max(0, local0) + nums[i]; // reset, or keep adding.
+                                global = max(global, local0, local1);
+                            }
+                            return global;
+                        </pre>
+                    </p>
+                </li>
+                <li>
                     <p class="algorithm-problem-title">651. 4 Keys Keyboard</p>
                     <p>Desc: given a keyboard that contains 4 keys. key 1 prints A on screen, key 2 selects all screen, key 3 copies selected into buffer, key 4 prints buffer on screen. Now press key N times, find the maximum length of A on screen.</p>
                     <p>Sol: the key is once the buffer is not empty, then using (key 4) is always better the using (key 1)

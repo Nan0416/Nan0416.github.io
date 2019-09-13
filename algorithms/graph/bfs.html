@@ -189,6 +189,67 @@ SyntaxHighlighter.all()
                     <h4>317. Shortest Distance from All Buildings</h4>
                     <p>The overall shortest distance to all targets</p>
                 </li>
+                <li>
+                    <p class="alogrithm-problem-title">490. The Maze</p>
+                    <p>Desc: given a 2d array(matrix) contains 0 and 1. 1 means wall and 0 means space. Now suppose a ball at a given start point (represented as indices), find if it can reach a destination position. <span style="color:red">The ball can only turn direction when hit a wall.</span></p>
+                    <p>
+                        Sol: It's easy to solve with BFS instead of DFS. <br>
+                        <span style="color:red">Another questions:</span> given a such graph, find if a path existed on two point.<br>
+                        This question can also easily be solved with DFS. When using DFS on a matrix graph <span style="color:red">matrix = undirected graph</span>, <br>
+                        <span style="color:green; text-decoration: line-through">we need to guarantee that a child doesn't explore its parent, otherwise infinite loop</span>.
+                    </p>
+                        <h4>Topic: Avoid infinite loop when using DFS on a undirect graph.</h4>
+                        <p>
+                            Solution 1. marking node (unvisited, visiting, visited)<br>
+                            Solution 2. marking visited directions
+                        </p>
+                        <pre class="brush:java">
+                            A new discovery: when using dfs to explore a graph, there are two ways to go from one node to another. 
+                            1). via a link
+                            2). return from a recursion call.
+                            The normal operation is that from parent to children we follow a link, from children back to parent we use "returning from a recursion".
+
+                            However, the foundmental thing we need to guarantee is that for each link (direction), it is only used once (explored once).
+                            So a child can go back to visit its parent as long as its parent will not go throught the same link to visit this child again.
+
+                            [C2] - [P] - [C1] - [CC1]
+                            Stack view of a normal DFS with visiting.
+                            [P], [P,C1], [P,C1,CC1], [P,C1], [P], [P,C2], [P], [] // preorder P, C1, CC1, C2 
+                            General view.
+                            [P], [P,C1], [P,C1,P], [P, C1, P, C2], [P, C1, P], "--(a parent go back to child via recursion instead of link) -->"
+                             [P, C1], [P,C1,CC1], [P,C1], [P] [] // preorder P, C1, C2, CC1.
+                            We start from P, explore C1 and "remember that we used P->C link or remember this direction has been visited", now go back to P and then explore C2.
+                            At this time, the memory stack would be [P,C1,P,C2]
+                        </pre>
+                        <pre class="brush:java">
+                            Sol.2
+                            dfs(i, j, matrix){
+                                for(dir: directions){
+                                    int mask = encode(dir);
+                                    if((matrix[i][j] & mask) == 1){
+                                        continue; // the direction has been visited.
+                                    }
+                                    matrix[i][j] |= mask;
+                                    dfs(i + dir.1, j + dir.2 , matrix);
+                                }
+                            }
+                        </pre>
+                        
+                        <pre class="brush:java">
+                            Sol.1
+                            dfs(i, j, matrix){
+                                if(matrix[i][j] == visited || visiting){
+                                    return;
+                                }
+                                matrix[i][j] = visiting;
+                                for(dir: directions){
+                                    dfs(i+dir.1, j + dir.2, matrix);
+                                }
+                                matrix[i][j] = visited;
+                            }
+                        </pre>
+                    
+                </li>
             </ol>
         </div>
     </div>
