@@ -2,7 +2,7 @@
 <!-- NewPage -->
 <html lang="en">
 <head>
-<title>Array&nbsp;Sorting</title>
+<title>[Array]&nbsp;Using Sorting</title>
 <meta charset="utf-8">
 <meta name="date" content="2019-02-04">
 <meta name="keywords" content="">
@@ -35,9 +35,9 @@ SyntaxHighlighter.all()
 </script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<strong>Array&nbsp;-&nbsp;Sorting</strong>
+<strong>[Array]&nbsp;-&nbsp;Using Sorting</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-02-04</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-09-09</span></p>
+<p class="date"><span class="created-date">Created:2019-02-04</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-09-13</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -68,17 +68,23 @@ SyntaxHighlighter.all()
         <div class="featureList">
             <ol>
                 <li>
-                    <h4>* 15. 3Sum</h4>
-                    <h4>16. 3Sum Closest</h4>
-                    <h4>* 259. 3Sum Smaller</h4>
+                    <p class="algorithm-problem-title">1. Two Sum</p>
+                    <p class="algorithm-problem-title">* 15. 3Sum</p>
+                    <p class="algorithm-problem-title">16. 3Sum Closest</p>
+                    <p class="algorithm-problem-title">259. 3Sum Smaller</p>
+                    <p class="algorithm-problem-title">18. 4Sum</p>
                     <p>Desc: <br>
+                        1. given an array of integers, find the indices of two numbers that sum to a target number<br>
                         15. given an array of numbers, return all unique triplets the sum = 0<br>
                         16. 3Sum closest is easier since don't need to consider the duplicated scenario.<br>
-                        259. Given an array integers and a target, find the number of all index triplets that sum &lt; target.
+                        259. Given an array integers and a target, find the number of all index triplets that sum &lt; target.<br>
+                        18. given an array of numbers, return all unique quadruplets that sum = 0.
                     </p>
-                    <p>Sol: 
-                        15 & 16. sorted and then loop. The inner loop is a kind of two pointers that move to each other. Avoid duplicated.
-                        259. sorted and then loop O(n^2), the inner loop is a two pointer.
+                    <p>Sol:<br> 
+                        1. return indices (mostly like cannot sort, moreover sort result in at least o(nlgn)), using hashmap + one-pass.<br>
+                        15 & 16. sorted and then loop. The inner loop is a kind of two pointers that move to each other. Avoid duplicated. <span style="color:red">use two pointers instead of binary search (it's slower)</span><br>
+                        259. sorted and then loop. the inner loop is a two pointer.<br>
+                        18. sorted and then apply 2Sum in a nested loop. O(n^2 * n)
                     </p>
                 </li>
                 <li>

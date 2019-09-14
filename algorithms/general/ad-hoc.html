@@ -74,17 +74,28 @@ SyntaxHighlighter.all()
         <li>
             <p class="algorithm-problem-title">54. Spiral Matrix</p>
             <p class="algorithm-problem-title">59. Spiral Matrix II</p>
+            <p class="algorithm-problem-title">48. Rotate Image</p>
             <p>Desc:<br>
-                #54. Given a matrix of m x n elements (m rows, n columns), return all elements of the matrix in spiral order.
-                #59. Given a positive integer n, generate a square matrix filled with elements from 1 to n2 in spiral order.
+                #54. Given a matrix of m x n elements (m rows, n columns), return all elements of the matrix in spiral order.<br>
+                #59. Given a positive integer n, generate a square matrix filled with elements from 1 to n2 in spiral order.<br>
+                #48. given a n * n matrix (2d array), rotate clockwise 90 degrees.
             </p>
-            <p>Sol: the key is to know how to loop in spiral way.</p>
+            <p>Sol #54 & #59: the key is to know how to loop in spiral way.</p>
             <pre class="brush:java">
                 Simulation with 4 directions, right, down, left, and up. We should
                 go down when i + j + 1 = col
                 turn left when i == j
                 go up when i + j + 1 = row
                 turn right when i = j + 1 // not i == j
+            </pre>
+            <p>Sol: #48. find 4 corresponding points and rotated. And we need to rotate on 1/4 elements.</p>
+            <pre class="brush:java">
+                int n = matrix.length;
+                for(int i = 0; i &lt; n / 2; i++){
+                    for(int j = 0; j &lt; (n + 1) / 2; j++){ // n + 1/ 2 in case n is odd.
+                        helper(matrix, i, j, n);
+                    }
+                }
             </pre>
         </li>
         <li>

@@ -134,10 +134,19 @@ SyntaxHighlighter.all()
                 #31. given an array of integer that contains 0-9, which represents a number ,e.g. [1,4,3,2] = 1432, find its next permutation. e.g. [2,1,3,4]<br>
                 #484. given a string that contains 'D' and 'I' e.g. "DDID", it encodes an integer array that 'D' means left > right, 'I' means left &lt; right. e.g. [DDID] = [3,2,1,5,4], there may multiple permutation exist, find the minimum one.
             </p>
-            <p>Sol: <br>
+            <p>Sol: 
+            <pre class="brush:java">
+                // Greedy Rules
+                If you want to get a biggest/smallest number, then have to keep the left-side (高位) as big/small as possible.
+                If you want to get next/last (bigger/smaller) number, then do it from right-side (低位) to make it bigger/smaller.
+            </pre>
                 # 402. greedy + using stack. From the left to right, if a digit > next digit, then remove it. e.g. 1221, -> (remove the second 2 since 2 > 1). now it is 121 -> 11. (the result may contains leading 0.)<br>
                 # 31. from right to left, find the first decreasing number, switch it with the first bigger element, and reverse after it. [1,4,3,2], 1 is the first decreasing element, switch it with 2, [2,4,3,1], reverse the rest, [2,1,3,4].<br>
                 # 484. from left to rigth, keep the last index of 'I', insert the next digit at the last index of I.<br>
+                <span style="color:red">
+                    Because we need to find the smallest value, we have to insert digit (from smaller to bigger) from left-bit to right-bit (低位) as much as possible.<br>
+                    If we need to find the biggest value, we have to insert digit (from bigger to smaller) from left-bit to right-bit.
+                </span>
                 <pre class="brush:java">
                     result.add(1);
                     int lastI = 0;

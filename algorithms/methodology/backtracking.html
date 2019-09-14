@@ -54,6 +54,16 @@ SyntaxHighlighter.all()
 <h3>Introduction</h3>
 <p>Backtracking is a kind of recursion, sub-recur is used to solve the same problem.</p>
 <p>还是有些像DFS. Difference is DFS operates on a tree or graph, backtracking usually operates on an array. AND backtracking need to keep track of the visited path.</p>
+<p><span style="color:red">New discovrey</span>: difference between backtracking & DFS</p>
+<p>DFS guarantee exploring every node, Backtracking guarantee exploring every possible path, which usually cause visiting a node mutliple times.</p>
+<pre class="brush:java">
+    // DFS: start at one node, and visiting all other nodes, after visiting a node, you marked it as visited.
+
+    // backtracking: start at one node, visiting other nodes, after visiting a node, you marked it as visited. However, after return from recursion, you need to mark this node as unvisited.
+</pre>
+<p>
+    <img src="./img/dfs-vs-backtracking.png" width="400" height="150">
+</p>
 <p><span style="color:red">Runtime usually equals to the size of result.</span></p>
 </div>
 </li>

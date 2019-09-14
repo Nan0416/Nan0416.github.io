@@ -109,7 +109,24 @@ SyntaxHighlighter.all()
                 <li>
                     <h4>** 75. Sort Colors</h4>
                     <p>Desc: given an array contains 0, 1, 2. sort in-place in one pass.</p>
-                    <p>Sol: 3 pointer last0, current, first1. (last0 &lt; current &lt; first1). Dutch national flag problem</p>
+                    <p>Sol: 3 pointer last0, current, first1. (last0 &lt; current &lt; first1). <span style="color:red">Dutch national flag problem.</span></p>
+                    <pre class="brush:java">
+                            int left = -1, curr = 0, right = nums.length;
+                            while(curr &lt; right){ // always keep left points at last 0, right points at last 2.
+                                if(nums[curr] == 0){
+                                    left++;
+                                    nums[curr] = nums[left];
+                                    nums[left] = 0;
+                                    curr++;
+                                }else if(nums[curr] == 2){
+                                    right--;
+                                    nums[curr] = nums[right];
+                                    nums[right] = 2;
+                                }else{
+                                    curr++;
+                                }
+                            }
+                    </pre>
                 </li>
                 <li>
                     <h4>** 31. Next Permutation</h4>
