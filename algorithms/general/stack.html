@@ -54,6 +54,9 @@ SyntaxHighlighter.all()
 <p>stack: repeated, depth, intersection [  [ ]  ]<br>
 <span style="color:red">Stack的感觉就是我有若干个值（I don't know the exact number), 但是我要用一个variable来表示它们。而stack的功能就是帮我暂时保管它们</span>
 </p>
+<p>
+    Trick: push a Integer.MAX_VALUE or Integer.MIN_VALUE to the stack as a boundary.
+</p>
 </div>
 </li>
 <li>
@@ -63,7 +66,7 @@ SyntaxHighlighter.all()
             <h4>Where to apply?</h4>
             <ol>
                 <li>
-                    <h4>Later elements affect former elements.</h4>
+                    <h4>** Later elements affect former elements.</h4>
                     <p>e.g. parenthese validator, simplify linux path.</p>
                     <p>The key is to know how does later elements affect former elements.</p>
                 </li>
@@ -96,6 +99,11 @@ SyntaxHighlighter.all()
                     <p>Sol: stack. First, convert the input string to '/'-split array. Second, apply stack to build the path.</p>
                 </li>
                 <li>
+                    <h4>* 402. Remove K Digits</h4>
+                    <p>Desc: given a string represented non-negative integer (no leading zero). remove k digits to make it smallest.</p>
+                    <p>Sol: <span style="color:red">iterate from left to right, if digit[i] > digit[i+1], then remove digit[i], remove at most k times; finally, if k > 0, then remove rest of k elements.</span>. During the process, we need a stack based on char[].</p>
+                </li>
+                <li>
                     <h4>* 331. Verify Preorder Serialization of a Binary Tree</h4>
                     <p>Desc: a Binary Tree can be serialized by pre-order. e.g. 
                         <pre class="brush:java">
@@ -114,16 +122,39 @@ SyntaxHighlighter.all()
                     </p>
                 </li>
                 <li>
+                    <p class="algorithm-problem-title">1130. Minimum Cost Tree From Leaf Values</p>
+                    <p>Desc: given an array of integers to build a tree, where each tree node has either two children or none (which is the leaf). The given integer array's elements are tree's leaves. Now creating a node's cost = max(left subtree's leaf) * max(right subtree's leaf). 
+                        Find a way to build the tree such that has minimum cost. e.g. [3,2,4,1] = [3,2],[4,1] => 3 * 2 + 4 * 1 + 3 * 4 = 22.</p>
+                    <p>Sol 1: The problem can be solved with DP. O(n^3)</p>
+                    <pre class="brush:java">
+                        for(int k = i; k &lt; j; k++){
+                            dp[i][j] = min(dp[i][j], dp[i][k] + dp[k+1][j] + maxValue[i][k] * maxValue[k+1][j])
+                        }
+                        maxValue[i][j] = max(maxValue[i][i], maxValue[i+1][j]);
+                    </pre>
+                    <p>Sol 2: can also be solved with using stack.</p>
+                    <pre class="brush:java">
+                        // intuition: we don't want to put a big value as a leaf that has a large depth, because it will increase the total cost.
+                        // so we want to use a small value as a leaf that has a large depth.
+                        // [3,2,4] we need to use 2 as deep as possible.
+                        st.push(Integer.MAX_VALUE);
+                        for(int num: nums){
+                            while(st.peek() &lt;= num){
+                                cost += st.pop() * min(st.peek(), num); 
+                                // 2 * min(3,4) 
+                                // 3 * min(Integer.MAX_VALUE, 4);
+                            }
+                            st.push(num);
+                        }
+                    </pre>
+                </li>
+                <li>
                     <h4>** 84. Largest Rectangle in Histogram</h4>
                     <p>Desc: Given n non-negative integers representing the histogram's bar height where the width of each bar is 1, find the area of largest rectangle in the histogram.</p>
                     <p>Sol: maintain a stack that stores indices. The corresponding values are in increasing order. When next value is less than stack value, pop up stack value and calculate its maxArea.</p>
                     <p><img src="./img/stack-84.png" width="300" height="150"></p>
                 </li>
                 <li>
-                    <h4>* 402. Remove K Digits</h4>
-                    <p>Desc: given a string represented non-negative integer (no leading zero). remove k digits to make it smallest.</p>
-                    <p>Sol: <span style="color:red">iterate from left to right, if digit[i] > digit[i+1], then remove digit[i], remove at most k times; finally, if k > 0, then remove rest of k elements.</span>. During the process, we need a stack based on char[].</p>
-                </li>
                 <hr>
                 <li>
                     <h4>251. Flatten 2D Vector (2d array)   [2]</h4>

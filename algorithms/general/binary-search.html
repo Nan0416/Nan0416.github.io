@@ -152,22 +152,40 @@ SyntaxHighlighter.all()
         <div class="featureList">
             <ol>
                 <li>
-                    <h4>153. Find Minimum in Rotated Sorted Array</h4>
-                    <p>case 1. find target</p>
+                    <p class="algorithm-problem-title">162. Find Peak Element</p>
+                    <p>Desc: given an array of integers that neighbors are not same, find one of peak value's index e.g. [1,4,1,3,2], either 1 or 3 is the answer. (suppose nums[-1] and nums[length] = -inf)</p>
+                    <p>Sol: identify a peak position using binary search.</p>
                 </li>
                 <li>
                     <p class="algorithm-problem-title">34. Find First and Last Position of Element in Sorted Array</p>
                     <p>Desc: given a sorted array that may contain duplicated, find a target element's start index and end index. e.g. [1,1,2,3,3,3,4] 3 => [3,5]</p>
                     <p>Sol: find boundary</p>
-
                 </li>
                 <li>
+                    <p class="algorithm-problem-title">153. Find Minimum in Rotated Sorted Array</p>
                     <p class="algorithm-problem-title">33. Search in a rotated sorted array</p>
-                    <p>Desc: given a sorted integer array (no duplicated) but was rotated at some point. e.g. [1,2,3,4,5] => [4,5,1,2,3]. Now given a integer, search its index. If not existed, return -1</p>
-                    <p>Sol:<br>
-                        Sol 1. two-pass. first find the rotated point, now you have two sorted subarrays, choose the appropriate subarray and apply binary search.  
-                        <br>
-                        Sol 2. one-pass. divide array at middle into left-half and right-half, now identify which part is rotated. <span style="color:red">Using nums[mid] to compare instead of the target.</span></p>
+                    <p>Desc: <br>
+                        # 153. given a sorted integer array (no duplicated) but was rotated at some point. e.g. [1,2,3,4,5] => [4,5,1,2,3]. find the minimum value.<br>
+                        # 33. given a rotated sorted array and an integer, search its index. If not existed, return -1</p>
+                    <p>Sol: <br>
+                        #153. the minimum value is just in the first element after the rotated point.<br>
+                        <pre class="brush:java">
+                            int left = 0, right = nums.length - 1;
+                            while(left &lt; right){
+                                int mid = left + (right - left) / 2;
+                                if(nums[mid] > nums[mid+1]){ // rotated point
+                                    return nums[mid+1];
+                                }else if(nums[left] &lt;= nums[mid]){ 
+                                    // rotated point is on the right half. 
+                                    // or if the original array is unrotated [1,2,3,4]
+                                    left = mid + 1;
+                                }else{
+                                    right = mid;
+                                }
+                            }
+                            return nums[0];
+                        </pre>
+                        # 33. one-pass. divide array at middle into left-half and right-half, now identify which part is rotated. <span style="color:red">Using nums[mid] to compare instead of the target.</span></p>
                         <pre class="brush:java">
                                 if(nums[mid] == target){
                                     return mid;
@@ -179,7 +197,7 @@ SyntaxHighlighter.all()
                         </pre>
                 </li>
                 <li>
-                    <p class="algorithm-problem-title">4. Median of Two Sorted Arrays</p>
+                    <p class="algorithm-problem-title">* 4. Median of Two Sorted Arrays</p>
                     <p>Desc: given two sorted integer arrays, find the median of by treating the two arrays as a whole.</p>
                     <p>Sol: Binary search over two arrays. 1). start at both middle indices of the two arrays, which divide the two arrays into left and right, and left part size == right part size.<br>
                     Moreover, we need to have max(left) &lt;= min(right). With this goal, we move the indices.

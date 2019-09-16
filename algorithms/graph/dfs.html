@@ -168,11 +168,50 @@ SyntaxHighlighter.all()
             <hr>
             <ol>
                 <li>
-                    <h4>105. Construct Binary Tree from Preorder and Inorder Traversal [4]</h4>
-                    <h4>106. Construct Binary Tree from Inorder and Postorder Traversal [4]</h4>
-                    <h4>Self. return inorder from preorder [9, 4, 5, 6, 7] and postorder[5, 6, 4, 7, 9]</h4>
+                    <p class="algorithm-problem-title">105. Construct Binary Tree from Preorder and Inorder Traversal [4]</p>
+                    <p class="algorithm-problem-title">106. Construct Binary Tree from Inorder and Postorder Traversal [4]</p>
+                    <p class="algorithm-problem-title">Self. return inorder from preorder [9, 4, 5, 6, 7] and postorder[5, 6, 4, 7, 9]</p>
                     <p>Desc: Given preorder and inorder traversal of a tree, construct the binary tree.</p>
                     <p>Sol: 105.DFS left-subtree-first. 106. DFS right-subtree-first. Moreover, using hashmap to record inorder value-index to speed up</p>
+                    <pre class="brush:java">
+                        // given preorder & postorder may not be able to identify a unique tree, then no unique inorder.
+                        e.g. 
+                            6   and 6 
+                           /         \
+                          1           1
+                        // both have preorder [6,1] and postorder [1,6]
+                        // in other words, if a node only has one child, then we cannot determine it with preorer and postorder.
+                    </pre>
+                    <pre class="brush:java">
+                        // suppose a tree's node has either two children or none.
+                        pre = [10, 3, 4, 2, 6, 5, 1]
+                        post = [4, 2, 3, 5, 1, 6, 10]
+                        // with this, we know
+                        1). the element after 10 is left child in pre-order, the element before 10 is right child in post-order.
+                           10
+                        3     6
+                      4   2
+                      // 
+                      preorderIndex = 0;
+                      public Node build(int [] preorder, int [] postorder){
+                        if(preorderIndex == preorder.length){
+                            return null;
+                        }
+                        int nodeValue = preorder[preorderIndex];
+                        preorderIndex++;
+                        int postOrderIndex = postMapping.get(nodeValue);
+                        if(postorder[postOrderIndex] == -1){
+                            return null;
+                        }
+                        postorder[postOrderIndex] = -1;
+                        Node node = new Node(nodeValue);
+                        if(postOrderIndex != 0 && postorder[postOrderIndex-1] != -1){
+                            node.left = build(preorder, postorder);
+                            node.right = build(preorder, postorder);
+                        }
+                        return node;
+                    }
+                    </pre>
                 </li>
                 <li>
                     <h4>108. Convert Sorted Array to Binary Search Tree [4]</h4>

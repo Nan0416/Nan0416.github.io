@@ -51,7 +51,7 @@ SyntaxHighlighter.all()
 <li>
     <div class="content" id="intro">
     <h3>Introduction</h3>
-    <p>Two pointers questions' goal is to find an optimal solution, e.g. "best time to buy & sell stock", "biggest volume of containers". This kind of questions is based on the form of array or string. So we need to iterate throught an array or char[], which usually take O(n) runtime.</p>
+    <p>Two pointers questions' goal is to find an optimal solution, e.g. "best time to buy & sell stock", "biggest volume of containers". This kind of questions is based on the form of array or string.</p>
     <p>We would need <span class="inline-code">left_index</span>, <span class="inline-code">right_index</span>, <span class="inline-code">result</span> e.g. max, and <span class="inline-code">attemp</span></p>
     <p>For <span class="inline-code">left_index</span> and <span class="inline-code">right_index</span>, we need figure out how to move them (direction and moving condition); and the formula for calculating <span class="inline-code">attemp</span>, it is most likely very simple.</p>
     </div>
@@ -98,9 +98,8 @@ SyntaxHighlighter.all()
                     <p class="algorithm-problem-title">80. Remove Duplicates from Sorted Array II</p>
                     <p>Desc: <br>
                         #26. given a sorted array that may have duplicated number, remove duplicates (最多出现一次), return new length.<br>
+                        #27. given an array of integers and a target element, remove the target element from an arrary in-place.<br>
                         #80. given a sorted array, remove the duplicates in-place (最多出现两次), return new length.
-                        #27. remove a target element from an arrary.
-
                     </p>
                     <p>Sol: two pointer, left and right pointer starts from 1.
                         <br> nextSlot.
@@ -204,6 +203,21 @@ class Solution {
     }
 }
                     </pre>
+                </li>
+                <li>
+                    <p class="algorithm-problem-title">88. Merge Sorted Array</p>
+                    <p>Desc:<br>
+                        #88. given two sorted arrays and their size, merge the second array into the first array. (first array has enough space.)
+                    </p>
+                    <p>
+                        Sol:<br>
+                        #88. merge from end.
+                    </p>
+                </li>
+                <hr>
+                <li>
+                   <h4>Easy</h4>
+                   <p>209. Minimum Size Subarray Sum</p>
                 </li>
             </ol>
         </div>
