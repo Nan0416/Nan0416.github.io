@@ -99,6 +99,42 @@ SyntaxHighlighter.all()
                     <p>Sol: stack. First, convert the input string to '/'-split array. Second, apply stack to build the path.</p>
                 </li>
                 <li>
+                    <p class="algorithm-problem-title">20. Valid Parentheses</p>
+                    <p class="algorithm-problem-title">32. Longest Valid Parentheses</p>
+                    <p>
+                        Desc:<br>
+                        #20. given a string e.g. "{[]()}" or "{{[}}", valid if it's valid.<br>
+                        #32. given a string that only contains '(' and ')' e.g. "(()", find the longest valid substring.
+                    </p>
+                    <p>
+                        Sol: #32. DP or using Stack.<br>
+                        1. using stack. Push index to stack and keep track the longest substring.
+                    </p>
+                    <pre class="brush:java">
+                        st.push(-1); // valid substring start from -1.
+                        for(int i = 0; i &lt; c.length; i++){
+                            if(c[i] == '('){
+                                st.push(i);
+                            }else{
+                                if(st.size() > 1){
+                                    st.pop();
+                                    len = max(len, i - st.peek());
+                                }else{
+                                    st.pop();
+                                    st.push(i); // update the valid substring's left.
+                                }
+                            }
+                        }
+                    </pre>
+                    <p>
+                        2. DP solution. When giving '(', ignore. 
+                        <pre class="brush:java">
+                            // When c[i] = '(', dp[i] = 0.
+                            // When c[i] = ')', dp[i] = dp[i- dp[i-1] - 1] == '(' ? 2 + dp[i-1] + dp[i- dp[i-1] - 2]:0
+                        </pre>
+                    </p>
+                </li>
+                <li>
                     <h4>* 402. Remove K Digits</h4>
                     <p>Desc: given a string represented non-negative integer (no leading zero). remove k digits to make it smallest.</p>
                     <p>Sol: <span style="color:red">iterate from left to right, if digit[i] > digit[i+1], then remove digit[i], remove at most k times; finally, if k > 0, then remove rest of k elements.</span>. During the process, we need a stack based on char[].</p>
@@ -147,6 +183,11 @@ SyntaxHighlighter.all()
                             st.push(num);
                         }
                     </pre>
+                </li>
+                <li>
+                    <p class="algorithm-problem-title">* 636. Exclusive Time of Functions</p>
+                    <p>Desc: given a list of function start and end time, function may nested. return the time spend on each function. ** a function time doesn't include its child functions time **</p>
+                    <p>Sol: using stack to record the function invocation stack. Whenever an event (start/end) happens, we add time spent on last function (** time index)</p>
                 </li>
                 <li>
                     <h4>** 84. Largest Rectangle in Histogram</h4>

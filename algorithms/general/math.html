@@ -39,7 +39,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>General&nbsp;-&nbsp;Math</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-08-13</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-29</span></p>
+<p class="date"><span class="created-date">Created:2019-08-13</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-09-18</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -61,11 +61,6 @@ SyntaxHighlighter.all()
         <div class='featureList'>
             <ol>
                 <li>
-                    <h4>136. single number</h4>
-                    <p>Desc: an array of integers, where each number appears twice except one number appears once. Find the single number.</p>
-                    <p>Sol: xor: 0 ^ 6 = 6, 6 ^ 6 = 0</p>
-                </li>
-                <li>
                     <h4>96. Unique Binary Search Trees</h4>
                     <p>Desc: given n number 1, 2, 3 to n, the number of unique Binary Search tree can construct by using those n numbers.</p>
                     <p>Sol: DP + math formula. <br>
@@ -74,6 +69,22 @@ SyntaxHighlighter.all()
                         So G(n) = sum over i (G(i-1), G(n-i))<br>
                         Using DP to solve it.
                     </p>
+                </li>
+                <li>
+                    <p class="algorithm-problem-title">357. Count Numbers with Unique Digits</p>
+                    <p>Desc: given an non-negative integer n, count all numbers with unique digits x, where 0 &lt;= x &lt; 10^x</p>
+                    <p>Sol: find unique digits x with no more than n digits.<br>
+                        Because there are only 10 digits, if 11 and above digits' numbers must have duplicated digits.<br>
+                        math (permutation) + DP.<br>
+                    </p>
+                    <pre class="brush:java">
+                            // n = 0, 1
+                            // n = 1, 9
+                            // n = 2, 9 * 9
+                            // n = 3, 9 * 9 * 8
+                            // ..
+                            // n = 10, 9 * 9 * 8 * 7 ... 1
+                    </pre>
                 </li>
             </ol>
         </div>

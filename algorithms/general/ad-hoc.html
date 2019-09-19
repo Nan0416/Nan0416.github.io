@@ -2,7 +2,7 @@
 <!-- NewPage -->
 <html lang="en">
 <head>
-<title>General&nbsp;Ad-Hoc</title>
+<title>General&nbsp;Ad-Hoc (Simulation)</title>
 <meta charset="utf-8">
 <meta name="date" content="2019-08-25">
 <meta name="keywords" content="general">
@@ -37,7 +37,7 @@ SyntaxHighlighter.all()
 </script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<strong>General&nbsp;-&nbsp;Ad-Hoc</strong>
+<strong>General&nbsp;-&nbsp;Ad-Hoc (Simulation)</strong>
 </div>
 <p class="date"><span class="created-date">Created:2019-08-25</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-09-06</span></p>
 <div class="catalog">
@@ -52,13 +52,14 @@ SyntaxHighlighter.all()
 <li>
 <div class="content" id="intro">
 <h3>Introduction</h3>
-<p>No algorithm for this kind of questions</p>
+<p>No algorithm for this kind of questions. One kind is using simulation according to the question description.</p>
 </div>
 </li>
 <li>
 <div class="content" id="example">
 <h3>Examples</h3>
 <div class="featureList">
+    <h4>Simulation</h4>
     <ol>
         <li>
             <h4>794. Valid Tic-Tac-Toe State</h4>
@@ -66,10 +67,28 @@ SyntaxHighlighter.all()
             <p>Sol: brute force search row, col and diagonals.</p>
         </li>
         <li>
-            <h4>121. Best Time to Buy and Sell Stock</h4>
-            <h4>122. Best Time to Buy and Sell Stock II</h4>
-            <p>Desc: an array of integer, each integer is the ith day stock prices. #121 at most one transaction/#122 unlimited transactions, the maximum profit.</p>
-            <p>Sol: one pass. keep update lowest prices, keep update max profit/accumulate the profit.</p>
+            <p class="algorithm-problem-title">289. Game of Life</p>
+            <p class="algorithm-problem-title">73. Set Matrix Zeroes</p>
+            <p class="algorithm-problem-title">723. Candy Crush</p>
+            <p>Desc: <br>
+                These questions are going to modify some values in the original 2d array (matrix). And modification of a specific cell depends on the value of other cells. The problem is how to do that in-place.
+            </p>
+            <p>Sol: Why doing in-place is hard?<br>
+                We have to guarantee the modification of current cell will not affect other cells that are not checked yet. <span style="color:red">One approach is encode/decode data, and we need to find a number that does not exist in the current matrix.</span>
+            </p>
+            <p>Candy Crush: <span style="color:red">Attention on the game rule, the 3 continuous elements must on same line either vertically or horizontally.</span></p>
+            <pre class="brush:java">
+                1
+                1 1 // is not a valid.
+                
+                 1
+               1 1 1 // the top one is not valid.
+            </pre>
+        </li>
+        <li>
+            <p class="algorithm-problem-title">755. Pour Water</p>
+            <p>Desc: given an array of integers represents the height of terrain, now dropping V volume of water at K index. Rules: water always go to lowest index as it can (left first), otherwise remaining at K</p>
+            <p>Sol: <span style="color:red">Simulate</span> each volume unit one by one. The runtime is O(V*n).</p>
         </li>
         <li>
             <p class="algorithm-problem-title">54. Spiral Matrix</p>
@@ -80,7 +99,7 @@ SyntaxHighlighter.all()
                 #59. Given a positive integer n, generate a square matrix filled with elements from 1 to n2 in spiral order.<br>
                 #48. given a n * n matrix (2d array), rotate clockwise 90 degrees.
             </p>
-            <p>Sol #54 & #59: the key is to know how to loop in spiral way.</p>
+            <p>Sol <span style="color:red">Simulation</span>#54 & #59: the key is to know how to loop in spiral way.</p>
             <pre class="brush:java">
                 Simulation with 4 directions, right, down, left, and up. We should
                 go down when i + j + 1 = col
@@ -98,9 +117,20 @@ SyntaxHighlighter.all()
                 }
             </pre>
         </li>
-        <li>
+         <li>
             <h4>93. Restore IP Addresses</h4>
         </li>
+    </ol>
+    <hr>
+    <h4>Tricks</h4>
+    <ol>
+        <li>
+            <p class="algorithm-problem-title">121. Best Time to Buy and Sell Stock</p>
+            <p class="algorithm-problem-title">122. Best Time to Buy and Sell Stock II</p>
+            <p>Desc: an array of integer, each integer is the ith day stock prices. #121 at most one transaction/#122 unlimited transactions, the maximum profit.</p>
+            <p>Sol: one pass. keep update lowest prices, keep update max profit/accumulate the profit.</p>
+        </li>
+       
         <li>
             <h4>57. Insert Interval</h4>
         </li>
@@ -113,9 +143,22 @@ SyntaxHighlighter.all()
             </p>
         </li>
         <li>
-            <h4>169. Majority Element</h4>
-            <p>Desc: given an array of number, more than half of them are the same (majority element), find it.</p>
-            <p>Sol: Boyer-Moore Voting Algorithm</p>
+            <p class="algorithm-problem-title">169. Majority Element</p>
+            <p class="algorithm-problem-title">229. Majority Element II</p>
+            <p>Desc: 
+                <br># 169. given an array of number, more than half of them are the same (majority element), find it.
+                <br># 229. given an array of number, find majority elements whose occurance is more than ceil(length/3). Using constant time and linear time.
+            </p>
+            <p>Sol: <br>
+                #169. Boyer-Moore Voting Algorithm<br>
+                #229. <span style="color:red">Observation: at most 2 such majority elements.</span>We use two counters and two targets. 
+                <pre class="brush:java">
+                If either counter = 0, we set its target to the next number;
+                If next number match to a target, we increment its count by 1. 
+                If next number doesn't match any target, we decrement both count by 1. （杀伤力是2)
+                </pre>
+                <span style="color:red">Finally, we need loop the array again to check if the two targets satisfy the requirements. e.g. [1,1,1,1,3], the "3" is not a majority element.</span>
+            </p>
         </li>
         <li>
             <p class="algorithm-problem-title">* (smart) 795. Number of Subarrays with Bounded Maximum</p>
@@ -135,6 +178,42 @@ SyntaxHighlighter.all()
                     }
                 </pre>
             </p>
+        </li>
+        
+        <li>
+            <p class="algorithm-problem-title">560. Subarray Sum Equals K</p>
+            <p class="algorithm-problem-title">974. Subarray Sums Divisible by K</p>
+            <p>Desc: <br>
+            #560. given an array of integers, find the number of subarray whose sum eqauls to K.
+            #974. given an array of integers, find the number of subarray whose sum is divisible by K.
+            </p>
+            <p>Sol:<br>
+            #560. 1). naive solution. first doing prefix sum and then O(n^2) to check every subarray.<br>
+            2). improved solution. using a map (k = prefix sum, value = a list of indices that have this prefix sum). And then for each prefix sum (s) at index (i), we find the indices of (k-s). 
+            and then using binary search to find number of indices before (i). The trick here is the indices in each list is automatically sorted. O(nlgn).<br>
+            3). improved solution. using a map (k = prefix sum, value = # of indices that have this prefix sum). We count the result as we iterates the array. So we guarantee all the record indices are before the current index (i). O(n).
+            </p>
+            <pre class="brush:java">
+                map.put(0, 1);
+                for(int i = 0; i &lt; nums.length; i++){
+                    sum += nums[i];
+                    result += map.getOrDefault(sum-k, 0);
+                    map.put(sum, map.getOrDefault(sum, 0) + 1);
+                }
+                return result;
+            </pre>
+            #974. <span style="color:red">#subarray = n * (n + 1) / 2</span> e.g. Suppose prefix sum (i) % K = 1, and prefix sum (j) % K = 1. then [i+1, j]'s sum is divisble by K.
+            <pre class="brush:java">
+                    int [] helper = new int[K];
+                    helper[0]++;
+                    for(int i = 0; i &lt; A.length; i++){
+                        prefixSum += A[i];
+                        int index = ((prefixSum % K) + K) % K;
+                        count += helper[index];
+                        helper[index]++;
+                    }
+                    return count;
+            </pre>
         </li>
     </ol>
 </div>

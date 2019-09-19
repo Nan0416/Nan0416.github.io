@@ -81,10 +81,15 @@ SyntaxHighlighter.all()
         </li>
         <li>
             <p class="algorithm-problem-title">* 55. Jump Game</p>
-            
-            <p>Desc: given an array of non-negative integers, each integer representes the #steps it can jump from the current index. check if it can the last index. e.g. [3,1,2,0,4]: yes 3->2->4</p>
-            <p>Sol: the intutive solution is to simulate the jump process with recursion.<br>
-            But it can be solved with greedy. loop the array, keep a "farmost". find if we can reach i+1 from i, if we can update "farmost" by testing i+1.
+            <p class="algorithm-problem-title">* 45. Jump Game II</p>
+            <p>Desc:<br>
+                #55. given an array of non-negative integers, each integer representes the #steps it can jump from the current index. check if it can the last index. e.g. [3,1,2,0,4]: yes 3->2->4<br>
+                #45. same as above, return minimum number of jumps need to reach the end index.
+            </p>
+            <p>Sol: <br>
+                #55. the intutive solution is to simulate the jump process with recursion.<br>
+            But it can be solved with greedy. loop the array, keep a "farmost". find if we can reach i+1 from i, if we can update "farmost" by testing i+1.<br>
+                #45. Apply the first jump, during the first jump, find the maximum next jump. At the end of current jump, apply the next maximum jump found during the current jump.
             </p>
             <pre class="brush:java">
                     int farmost = nums[0];
@@ -96,6 +101,24 @@ SyntaxHighlighter.all()
                         }
                     }
                     return true;
+            </pre>
+            <pre class="brush:java">
+                    int numOfJump = 1;
+                    int farRight = nums[0], nextFarRight = 0; // 0-based index value.
+                    for(int i = 1; i &lt; nums.length; i++){
+                        if(i &lt;= farRight){ // choose the next far.
+                            nextFarRight = Math.max(nextFarRight, i + nums[i]);
+                        }
+                        if(farRight >= nums.length - 1){
+                            return numOfJump;
+                        }
+                        if(i == farRight){ // jump and update farRight
+                            numOfJump++;
+                            farRight = nextFarRight;
+                            nextFarRight = 0;
+                        }
+                    }
+                    return numOfJump;
             </pre>
         </li>
         <li>
