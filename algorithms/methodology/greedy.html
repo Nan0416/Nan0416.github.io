@@ -151,11 +151,13 @@ SyntaxHighlighter.all()
             <p class="algorithm-problem-title">* 402. Remove K Digits</p>
             <p class="algorithm-problem-title">31. Next Permutation</p>
             <p class="algorithm-problem-title">484. Find Permutation</p>
+            <p class="algorithm-problem-title">670. Maximum Swap</p>
             <p>
                 Desc: <br>
                 #402. given an non-negative number represented by string, remove k digits from the string to make the new number as small as possible.<br>
                 #31. given an array of integer that contains 0-9, which represents a number ,e.g. [1,4,3,2] = 1432, find its next permutation. e.g. [2,1,3,4]<br>
-                #484. given a string that contains 'D' and 'I' e.g. "DDID", it encodes an integer array that 'D' means left > right, 'I' means left &lt; right. e.g. [DDID] = [3,2,1,5,4], there may multiple permutation exist, find the minimum one.
+                #484. given a string that contains 'D' and 'I' e.g. "DDID", it encodes an integer array that 'D' means left > right, 'I' means left &lt; right. e.g. [DDID] = [3,2,1,5,4], there may multiple permutation exist, find the minimum one.<br>
+                #670. given an integer [0 - 10^8], swap two digits to make the maximum integers.
             </p>
             <p>Sol: 
             <pre class="brush:java">
@@ -180,6 +182,34 @@ SyntaxHighlighter.all()
                         result.add(lastI, i + 2);
                     }
                 </pre> 
+            </p>
+            <p>
+                #670: In order to achieve the largest number with one swap, you have to swap the first digit (from left to right) that has larger digits on its right.<br>
+                e.g. 98368. 1). on 9's right, there no larger digits, 2). on 8's right, there no larger digits, 3) on 3's right, there are two larger digits 6 and 8, and 8 is the largest, swap(3,8);<br>
+                <pre class="brush:java">
+                    // convert the number to array base, there are two approach
+                    char [] carr = Integer.toString(num).toCharArray();
+                    int [] digits= new int[9]; // since we know the number's range.
+                    int i = 0;
+                    while(num > 0){
+                        digits[i++] = num % 10;
+                        num = num / 10; 
+                    }
+
+                    int [] maxIndex = new int[narr.length]; 
+                    // kind of DP to find the maxIndex on its right
+                    for(int i = narr.length - 1; i >= 0; i--){
+                        if(i == narr.length - 1){
+                            maxIndex[i] = i;
+                        }else{
+                            if(narr[i] > narr[maxIndex[i+1]]){
+                                maxIndex[i] = i;
+                            }else{
+                                maxIndex[i] = maxIndex[i+1];
+                            }
+                        }
+                    }
+                </pre>
             </p>
         </li>
         <li>

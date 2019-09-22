@@ -37,7 +37,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Java&nbsp;-&nbsp;Cheatsheet</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-10-14</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-16@ Rockford, IL / 2019-08-19 @ First Day of Fall 2019 / 2019-09-10</span></p>
+<p class="date"><span class="created-date">Created:2018-10-14</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-16@ Rockford, IL / 2019-08-19 @ First Day of Fall 2019 / 2019-09-22</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#operation">Operation</a></li>
@@ -338,36 +338,26 @@ SyntaxHighlighter.all()
                     </pre>
                 </li>
                 <li>
-                    <h4>List [LinkedList, ArrayList]</h4>
+                    <h4>List</h4>
                     <pre class="brush:java">
-                        List&lt;String> ll = LinkedList&lt;>();
-                        
-                        ll.add("example") ;// add to the end;
-                        ll.add(0, "first") ; // add to the front;
-                        
-                        ll.remove(1) ;// remove by index, return the removed value or throw exception.
-                        ll.remove("first"); // remove by value, return true or false.
-                        
-                        ll.set(1, "new") ; // update by index
-                        ll.get(1) ; // return value or throw exception
-                       
-                        boolean con = ll.contains("example"); // check existance.
-                        int pos = ll.indexOf("new"); // return -1 if not found.
-                        ll.clear(); // clear all
-                        int len  = ll.size(); 
-                        String [] arr = ll.toArray(new String[ll.size()]);
-                        for(String str: ll){
-                            // loop
-                        }
-                        
-                        ll.sort((i1, i2)->Integer.compare(i1.length(), i2.length());
-
-                        
-                        .add(int index, E e), .remove(int i) // out of bounds error
-                        .push(E e); .pop():E // no such element error // Push/Pop is on the first (left, index 0) element
-                        .removeFirst(); .add(E e) // queue
-                        .set(index i, E e): replacement
-                        all: .removeFirst/Last() .getFirst/Last() .addFirst/Last(E e)
+                        get(index), add(E), add(index, E), addAll(collection), set(index, E), 
+                        remove(index), remove(Object), clear(), indexOf(Object) //return -1 if no such object.
+                        size(), toArray(T[] a), contains(Object o)
+                    </pre>
+                    <h4>ArrayList</h4>
+                    <pre class="brush:java">
+                        ArrayList(Collection)
+                    </pre>
+                    <h4>LinkedList</h4>
+                    <pre class="brush:java">
+                        // Important, linkedlist defines a few extra methods that allows it to be used as a Queue or a Stack.
+                        // Sometimes we need linkedlist to behave as a Queue or a stack, because queue or stack doesn't define the method for random accessing.
+                        add, addLast, offer, offerLast, 
+                        addFirst, push (stack)
+                        getLast, peekLast, 
+                        getFirst, peekFirst, peek (queue, stack)
+                        pollFirst, poll (queue), pop (stack), removeFirst
+                        pollLast, removeLast
                     </pre>
                     <p>Boxing type, e.g. Integer, toArray cannot be cast to int [], instead doing</p>
                     <pre class="brush:java">
@@ -403,9 +393,23 @@ SyntaxHighlighter.all()
                             poll; // return null when empty, don't throw exception
                             peek
                         }
+                        Deque: Queue only allows FIFO, but Deque allows add/remove elements from both head and tail.
                     </pre>
                     <h4>Where used?</h4>
                     <p>1). BFS</p>
+                </li>
+                <li>
+                    <h4><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Stack.html" target="_blank">Stack</a></h4>
+                    <p>Stack implements collection and list interface.</p>
+                    <pre class="brush:java">
+                        Stack&lt;String> st = new Stack&lt;>();
+                        push, pop, peek, size
+                    </pre>
+                    <h4>Where used?</h4>
+                    <p>1). build topological ordering.</p>
+                </li>
+                <li>
+                    <h4>Sometimes w</h4>
                 </li>
                 <li>
                     <h4>PriorityQueue (Heap)</h4>
@@ -439,25 +443,7 @@ SyntaxHighlighter.all()
                         }
                     </pre>
                 </li>
-                <li>
-                    <h4><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Stack.html" target="_blank">Stack</a></h4>
-                    <p>Stack implements collection and list interface.</p>
-                    <pre class="brush:java">
-                        Stack&lt;String> st = new Stack&lt;>();
-                        st.push("example"); // different from "add" than append items, push/pop will add/remove the element at the first (addFirst). 
-                        String value = st.pop();
-                        String value = st.peek(); // return the top value but not pop.
-
-                        Stack&lt;Integer> st = new Stack&lt;>();
-                        st.push(1);
-                        int [] result = new int[st.size()];
-                        for(int i = 0; i &lt; result.length; i++){
-                            result[i] = st.pop();
-                        }
-                    </pre>
-                    <h4>Where used?</h4>
-                    <p>1). build topological ordering.</p>
-                </li>
+                
             </ol>
         </div>
     </div>
