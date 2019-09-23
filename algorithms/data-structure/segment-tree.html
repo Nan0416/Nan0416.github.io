@@ -1,0 +1,137 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>Data structure&nbsp;Segment Tree</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-09-22">
+<meta name="keywords" content="segment tree">
+<meta name="keywords" content="data structure">
+<meta name="keywords" content="">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushPython.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushSql.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>Data structure&nbsp;-&nbsp;Segment Tree</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-09-22</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-09-22</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+<p>Segment Tree is a data structure helps answer query over a <span style="color:red">mutable</span> range .e.g. sum, max, min, greatest common divisor, least common denominator. (If a range is immutable, we may be able to use one-pass to find the result).</p>
+<p>Implementation: even thought it is tree structure, it's implemented with array as a binary tree. (e.g. Heap).</p>
+<h4>Implementation</h4>
+<div class="featureList">
+    <ol>
+        <li>
+            <h4>Rules</h4>
+            <pre class="brush:java">
+                (parent => child) parent's index = i   =>   left child = i * 2, right child = i * 2 + 1
+                (child => parent) child's index = i   =>   parent index = i / 2 
+            </pre>
+            <p>A parent's value is the aggregate result (sum, max, min ..) of its children.</p>
+            <p><span style="color:red">For initalize/update/query, we always use a bottom-up pattern.</span>e.g. suppose we know parent is the result of [i..j], we don't know it's individual child's result range.</p>
+        </li>
+        <li>
+            <h4>Sample question :307. Range Sum Query - Mutable</h4>
+            <p>Desc: given an array of integers, write two functions sumRange, update. sumRange will return the sum over a specific range, update will update the value at a specific index.</p>
+            <pre class="brush:java">
+                public class SegmentTree {
+                    private int[] tree;
+                    private int n;
+                    public SegmentTree(int [] nums){ // O(n) even length and odd length are the same.
+                        n = nums.length;
+                        tree = new int[nums.length * 2];
+                        for(int i = nums.length; i &lt; tree.length; i++){
+                            tree[i] = nums[i - nums.length];
+                        }
+                        for(int i = nums.length - 1; i > 0; i--){// tree[0] is never used.
+                            tree[i] = tree[i * 2] + tree[i * 2 + 1];
+                        }
+                    }
+                    public void update(int index, int value){ // lg(n)
+                        index = index + n;
+                        tree[index] = value;
+                        while(index > 0){ // bottom-up
+                            if((index & 1) == 1){ // odd index => right child
+                                tree[index / 2] = tree[index - 1] + tree[index];
+                            }else{
+                                tree[index / 2] = tree[index] + tree[index + 1];
+                            }
+                            index = index / 2;
+                        }
+                    }
+                    public int sumRange(int l, int r){ // lg(n)
+                        int result = 0;
+                        l += n;
+                        r += n;
+                        while(l &lt;= r){
+                            if((l & 1) == 1){ // make sure l is a start point of left child
+                                result += tree[l];
+                                l++;
+                            }
+                            if((r & 1) == 0){
+                                result += tree[r];
+                                r--;
+                            }
+                            l = l / 2;
+                            r = r / 2;
+                        }
+                        return result;
+                    }
+                }
+            </pre>
+        </li>
+    </ol>
+</div>
+</div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>
