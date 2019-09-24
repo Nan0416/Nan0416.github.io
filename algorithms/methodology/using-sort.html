@@ -37,7 +37,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>[Array]&nbsp;-&nbsp;Using Sorting</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-02-04</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-09-13</span></p>
+<p class="date"><span class="created-date">Created:2019-02-04</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-09-23</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -141,6 +141,23 @@ SyntaxHighlighter.all()
                          give any two interval are in one group (e.g. each interval is an node, you have to build edges by yourself). But the building each edge will need O(n) time. So With unionfind,
                           the runtime will be O(n^2)</p>
                     <p>The simple solution is using sort. Sort by the interval start point. Merge two intervals e.g. [1,5] & [4,7] and <span style="color:red">[1,5] & [2,3] and update the end point with the biggest value.</span></p>
+                </li>
+                <li>
+                    <p class="algorithm-problem-title">179. Largest Number</p>
+                    <p>Desc: given an array of non-negative integers, e.g. [1,12,0], re-order them to produce the largest number. => "1210", (since result is large, it returns as a string)</p>
+                    <p>Sol: Using a customized sort. first convert each number to a string.</p>
+                    <pre class="brush:java">
+                        Arrays.sort(nums, (s1, s2)->{
+                            return (s2 + s1).compareTo(s1 + s2);
+                        });
+                    </pre>
+                </li>
+                <li>
+                    <p class="algorithm-problem-title">937. Reorder Data in Log Files</p>
+                    <p>Desc: given an array of strings (logs), each log is either a letter log (id word ...) or number log (id number ..). reorder the log such that letter log comes before number log, and letter sorted in alphabetical order, number log keep in original order.</p>
+                    <p>Sol:
+                        customized comparator. <span style="color:red">return 0 keep the original order; -1 the first argument first; 1 the second argument first.</span>
+                    </p>
                 </li>
             </ol>
         </div>

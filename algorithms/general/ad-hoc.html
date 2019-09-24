@@ -39,7 +39,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>General&nbsp;-&nbsp;Ad-Hoc (Simulation)</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-08-25</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-09-06</span></p>
+<p class="date"><span class="created-date">Created:2019-08-25</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-09-23</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -62,21 +62,36 @@ SyntaxHighlighter.all()
     <h4>Simulation</h4>
     <ol>
         <li>
-            <h4>794. Valid Tic-Tac-Toe State</h4>
-            <p>Desc: validate tic-tac-toe state on a String array. 一字棋. ["XXX", " OO", "O  "]</p>
-            <p>Sol: brute force search row, col and diagonals.</p>
+            <p class="algorithm-problem-title">794. Valid Tic-Tac-Toe State</p>
+            <p class="algorithm-problem-title">348. Design Tic-Tac-Toe</p>
+            <p>Desc: <br>
+                #794. validate tic-tac-toe state on a String array. 一字棋. ["XXX", " OO", "O  "]<br>
+                #348. design a tic-tac-toe class that has a constructor with board's size, and a move(int row, int col, int player) return game status.
+            </p>
+            <p>Sol: <br>
+                #794. brute force search row, col and diagonals.<br>
+                #348. space optimization <span style="color:red">We don't need to use O(N^2) space, instead, keep track of each row O(n), col O(n), and diagonal O(1), anti-diagonal O(1).</span>
+            </p>
+        </li>
+        <li>
+            <p class="algorithm-problem-title">353. Design Snake Game</p>
+            <p>Desc:<br>
+            </p>
         </li>
         <li>
             <p class="algorithm-problem-title">289. Game of Life</p>
             <p class="algorithm-problem-title">73. Set Matrix Zeroes</p>
             <p class="algorithm-problem-title">723. Candy Crush</p>
+            <p class="algorithm-problem-title">957. Prison Cells after N days.</p>
             <p>Desc: <br>
                 These questions are going to modify some values in the original 2d array (matrix). And modification of a specific cell depends on the value of other cells. The problem is how to do that in-place.
+                <br># 957. given an 8-number array that only contains 1 or 0. After one day, a 0 becomes 1 if its both two neigbhors are same (e.g. both 0 or 1). otherwise, it becomes 0. Find the status after N days. (N could be large);
             </p>
             <p>Sol: Why doing in-place is hard?<br>
                 We have to guarantee the modification of current cell will not affect other cells that are not checked yet. <span style="color:red">One approach is encode/decode data, and we need to find a number that does not exist in the current matrix.</span>
+            
             </p>
-            <p>Candy Crush: <span style="color:red">Attention on the game rule, the 3 continuous elements must on same line either vertically or horizontally.</span></p>
+            <p>#723. Candy Crush: <span style="color:red">Attention on the game rule, the 3 continuous elements must on same line either vertically or horizontally.</span></p>
             <pre class="brush:java">
                 1
                 1 1 // is not a valid.
@@ -84,11 +99,25 @@ SyntaxHighlighter.all()
                  1
                1 1 1 // the top one is not valid.
             </pre>
+            <p>#957. <br>
+            1). Becasue only 8 numbers and only 1 or 0. we can use a "byte" to represent it. And the status update is
+            <pre class="brush:java">
+                status = ~((status &lt;&lt; 1) ^ (status >> 1));
+            </pre>
+            Because bit-wise operation returns int instead of byte, we use int to store the 8-number array.<br>
+            2). <span style="color:red">8 numbers only contains 256 status, and N is extremely larger than 256, so there exist cycle (period). Found the period with hashmap to futher reduce unnecessary computation.</span>
+            </p>
         </li>
         <li>
             <p class="algorithm-problem-title">755. Pour Water</p>
             <p>Desc: given an array of integers represents the height of terrain, now dropping V volume of water at K index. Rules: water always go to lowest index as it can (left first), otherwise remaining at K</p>
             <p>Sol: <span style="color:red">Simulate</span> each volume unit one by one. The runtime is O(V*n).</p>
+        </li>
+        <li>
+            <p class="algorithm-problem-title">165. Compare Version Numbers</p>
+            <p>Desc: given two version string "e.g. 12.0.01.2", compare two version number</p>
+            <p>Sol: split by "\\." <span style="color:red">regex</span>, paresInt helps <span style="color:red">remove leading zeros</span>. <br>
+                we need to check until the end. e.g. "12.1.0.0" is longer than "12.1", but they are same.</p>
         </li>
         <li>
             <p class="algorithm-problem-title">54. Spiral Matrix</p>
@@ -214,6 +243,10 @@ SyntaxHighlighter.all()
                     }
                     return count;
             </pre>
+        </li>
+        <li>
+            <h4>Easy</h4>
+            <p>151. Reverse Words in a String. Desc: given a string contains words and space. reverse worlds.</p>
         </li>
     </ol>
 </div>

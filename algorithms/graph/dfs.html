@@ -39,7 +39,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Graph&nbsp;-&nbsp;DFS</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-08-16 @ Rockford, IL</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-24</span></p>
+<p class="date"><span class="created-date">Created:2019-08-16 @ Rockford, IL</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-09-23</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -241,9 +241,16 @@ SyntaxHighlighter.all()
                     <p>Sol: too easy to have a solution.</p>
                 </li>
                 <li>
-                    <h4>* 199. Binary Tree Right Side View</h4>
-                    <p>Desc: Given a binary tree, imagine yourself standing on the right side of it, return the values of the nodes you can see ordered from top to bottom.</p>
-                    <p>Sol: always try to use right child first, also keep the depth information to help insert value.</p>
+                    <p class="algorithm-problem-title">* 199. Binary Tree Right Side View</p>
+                    <p class="algorithm-problem-title">545. Boundary of Binary Tree</p>
+                    <p>Desc: <br>
+                        #199. Given a binary tree, imagine yourself standing on the right side of it, return the values of the nodes you can see ordered from top to bottom.<br>
+                        #545. given a binary tree, return its boundary (root, left-boundary, leaves, right-boundary). left-bounary: the nodes on the path from root to left-most node and then go to right, continue explore left if possible.
+                    </p>
+                    <p>Sol: <br>
+                        #199. always try to use right child first, also keep the depth information to help insert value.<br>
+                        #545. dfs with a flag (isAdd) to indicate if we add a node to the boundary.
+                    </p>
                 </li>
                 <li>
                     <h4>101. Symmetric Tree [1]</h4>
