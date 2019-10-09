@@ -75,7 +75,11 @@ SyntaxHighlighter.all()
         </li>
         <li>
             <p class="algorithm-problem-title">353. Design Snake Game</p>
-            <p>Desc:<br>
+            <p>
+                Desc:design a SnakeGame class that constructor takes board size(height, width) and a series of food locations. Food is ate one by one. Implement a method called move with a direction, which returns game score after a move or -1 if game over.
+            </p>
+            <p>
+                Using a queue structure to represent the body of the snake. <span style="color:red">Using a set to record all the location of the snake to check if the snake collides with itself.</span>
             </p>
         </li>
         <li>
@@ -149,6 +153,10 @@ SyntaxHighlighter.all()
          <li>
             <h4>93. Restore IP Addresses</h4>
         </li>
+        <li>
+            <p class="algorithm-problem-title">43. Multiply Strings</p>
+            <p>Desc: </p>
+        </li>
     </ol>
     <hr>
     <h4>Tricks</h4>
@@ -161,7 +169,9 @@ SyntaxHighlighter.all()
         </li>
        
         <li>
-            <h4>57. Insert Interval</h4>
+            <p class="algorithm-problem-title">57. Insert Interval</p>
+            <p>Desc: given an interval, insert it into a list of ordered interval.</p>
+            <p>Sol: <span style="color:red">lots of corner case</span>An interval can be inserted at front, middle, and end. An interval can merged with another existed interval. An interval can also be ignore since it may be covered by another interval.</p>
         </li>
         <li>
             <h4>406. Queue Reconstruction by Height</h4>
@@ -170,6 +180,45 @@ SyntaxHighlighter.all()
             </p>
             <p>Sol: <span style="color:red">lower people are invisible to heigher peopel. [7,0], [2,x],[3,x]..[7,1] is correct order since [7,x] ignore [2,],[3,]</span>, so sort from heigh to low, and insert lower people.<br>
             </p>
+        </li>
+        <li>
+            <p class="algorithm-problem-title">388. Longest Absolute File Path</p>
+            <p>Desc: given a string "dir\n\tsubdir1\n\tsubdir2\n\t\tfile.ext", represents a file hierarchy.</p>
+            <pre class="brush:java">
+                dir
+                    subdir1
+                    subdir2
+                        file.ext
+                dir/subdir2/file.ext is the longest.
+            </pre>
+            <p>Sol: one pass with a arraylist to record the longest file.</p>
+            <pre class="brush:java">
+                for(char c: carr){
+                    if(c == '\n'){
+                        updateList(numTabs, len, isFile);
+                        numTabs = 0;
+                        len = 0;
+                        isFile = false;
+                    }else if(c == '\t'){
+                        numTabs++;
+                    }else{
+                        len++;
+                        if(c == '.'){
+                            isFile = true;
+                        }
+                    }
+                }
+                updateList(numTabs, len, isFile){
+                    totalLen = 0;
+                    if(numTabs == 0){
+                        totalLen = len;
+                    }else{
+                        totalLen = list.get(numTabs -1) + 1+ len;
+                    }
+                    list.set(numTabs, len);
+                    maxLen = isFile? max(maxLen, totalLen): maxLen;
+                }
+            </pre>
         </li>
         <li>
             <p class="algorithm-problem-title">169. Majority Element</p>

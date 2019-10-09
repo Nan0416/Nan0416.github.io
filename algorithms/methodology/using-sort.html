@@ -71,6 +71,7 @@ SyntaxHighlighter.all()
                     <p class="algorithm-problem-title">1. Two Sum</p>
                     <p class="algorithm-problem-title">167. Two Sum II - Input array is sorted</p>
                     <p class="algorithm-problem-title">* 15. 3Sum</p>
+                    <p class="algorithm-problem-title">611. valid triangle number</p>
                     <p class="algorithm-problem-title">16. 3Sum Closest</p>
                     <p class="algorithm-problem-title">259. 3Sum Smaller</p>
                     <p class="algorithm-problem-title">18. 4Sum</p>
@@ -78,6 +79,7 @@ SyntaxHighlighter.all()
                         1. given an array of integers, find the indices of two numbers that sum to a target number<br>
                         167. given an sorted array of integers, find the indices of two numbers that sum to a target number<br>
                         15. given an array of numbers, return all unique triplets the sum = 0<br>
+                        611. given an array of numbers, return the # of valid triangle.<br>
                         16. 3Sum closest is easier since don't need to consider the duplicated scenario.<br>
                         259. Given an array integers and a target, find the number of all index triplets that sum &lt; target.<br>
                         18. given an array of numbers, return all unique quadruplets that sum = 0.
@@ -86,6 +88,20 @@ SyntaxHighlighter.all()
                         1. return indices (mostly like cannot sort, moreover sort result in at least o(nlgn)), using hashmap + one-pass.<br>
                         167. two pointer O(n)<br>
                         15 & 16. sorted and then loop. The inner loop is a kind of two pointers that move to each other. Avoid duplicated. <span style="color:red">use two pointers instead of binary search (it's slower)</span><br>
+                        611. sort and inner two pointer <span style="color:red">A triange has a + b > c, the key is to know start inner from 0 .. i-1 with a and b.</span>
+                        <pre class="brush:java">
+                            for(int i = nums.length - 1; i >= 2; i--){
+                                int left = 0, right = i - 1;
+                                while(left &lt; right){
+                                    if(nums[left] + nums[right] > nums[i]){
+                                        count += right - left; // meaning with right and i fixed, all numbers from [left....right-1] are good to make a valid triangle.
+                                        right--;
+                                    }else{
+                                        left++;
+                                    }
+                                }
+                            }
+                        </pre>
                         259. sorted and then loop. the inner loop is a two pointer.<br>
                         18. sorted and then apply 2Sum in a nested loop. O(n^2 * n)
                     </p>
@@ -94,25 +110,29 @@ SyntaxHighlighter.all()
                     <p class="algorithm-problem-title">* 56. Merge Intervals</p>
                     <p class="algorithm-problem-title">252. Meeting Rooms</p>
                     <p class="algorithm-problem-title">* 253. Meeting Rooms II</p>
+                    <p class="algorithm-problem-title">Self. max number of meetings</p>
                     <p class="algorithm-problem-title">435. Non-overlapping Intervals</p>
                     <p class="algorithm-problem-title">452. Minimum Number of Arrows to Burst Balloons</p>
                     
                     <p>Desc<br>
-                        # 56. given an array of intervals, merge overlapping intervals.
+                        # 56. given an array of intervals, merge overlapping intervals.<br>
                         # 252. given an array of time intervals, find a person can attend all meetings. <span style="color:red">== can use 1 meeting room to hold all meeting?</span><br>
                         # 253. given an array of time intervals, find the minimum required number of rooms in order to hold all meetings.<br>
-                        # 435. given an array of intervals, find the minimum number of intervals need to be removed in order to non overlap.<br>
-                        # 452. given an array of position intervals, using minimum number of arrows that cross all intervals. <br>
+                        Self. given an array of time intervals, find the maximum number of meetings can be held with only one meeting number.<br>
+                        # 435. <span style="color:red">Same as above = intervals.length - result. </span>given an array of intervals, find the minimum number of intervals need to be removed in order to non overlap.<br>
+                        # 452. given an array of position intervals, using minimum number of arrows that cross all intervals.
                     </p>
                     <p>Sol:<br>
                         #56. two solutions.<br>
                         Sol 1. sorting, and merging with updating ending.<br>
-                        Sol 2. sorting starting and ending separately
+                        Sol 2. 1). sorting starting and ending separately
                         <pre class="brush:cpp">
                             starting = [1,2,3,7,10]
                             ending =   [4,5,6,9,11]
                             if starting[i+1] > ending[i], for example, 7 > 6, it means [1,2,3] and [4,5,6] are together, and it build a large interval [1,6]
                         </pre>
+                        2). sort start-time, using priority queue to handle end-time.<br>
+                        Self. greedy: sorted accroding to the end time, always use the first end time as possible.<br>
                         #252 and #253 are scheduling.<br>
                         Sol 1. sorting by starting time, put into a priority queue by ending time. The final size of the queue is the minimum number of required rooms.<br>
                         Sol 2. sort starting time and ending time separately. 
@@ -151,6 +171,7 @@ SyntaxHighlighter.all()
                             return (s2 + s1).compareTo(s1 + s2);
                         });
                     </pre>
+                    <p><span style="color:red">Don't directly compare two string value, e.g. "221" is beyond "22" but, "22221" > "22122"</span></p>
                 </li>
                 <li>
                     <p class="algorithm-problem-title">937. Reorder Data in Log Files</p>

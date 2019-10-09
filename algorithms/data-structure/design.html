@@ -2,7 +2,7 @@
 <!-- NewPage -->
 <html lang="en">
 <head>
-<title>General&nbsp;Design</title>
+<title>Data Structure&nbsp;Design</title>
 <meta charset="utf-8">
 <meta name="date" content="2019-08-26">
 <meta name="keywords" content="design">
@@ -37,9 +37,9 @@ SyntaxHighlighter.all()
 </script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<strong>&nbsp;-&nbsp;</strong>
+<strong>Data Structure&nbsp;-&nbsp;Design</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-08-26</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-26</span></p>
+<p class="date"><span class="created-date">Created:2019-08-26</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-10-01(颗粒无收)</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -70,9 +70,40 @@ SyntaxHighlighter.all()
             <p>Sol: Map&lt;String, ArrayList&lt;Integer>>: key is word, value is a list of integers. <span style="color:red">the key is the indexes in each arraylist is automatically sorted.</span></p>
         </li>
         <li>
-            <p class="algorithm-problem-title">Self. Keep track of median</p>
+            <p class="algorithm-problem-title">146. LRU Cache</p>
+            <p>Desc: LRU (least recently used) cache with a certain capacity.</p>
+            <p>Sol: HashMap with a self defined LinkedList. (linkedlist keeps the least recently, hashmap helps get operation)</p>
+        </li>
+        <li>
+            <p class="algorithm-problem-title">295. Find Median from Data Stream</p>
             <p>Desc: given a stream of numbers (in range of [0,255]). Take each number at a time, and return the current median, e.g. [1,2,3], after input 1, median is 1; after input 2, median is 1.5; after input 3, median is 2.</p>
-            <p>Sol: </p>
+            <p>
+                Sol: <br>
+                1). keep a arraylist sorted (find position with binary search, and insert), return median in O(1)<br>
+                2). use two priorityqueues, always keep the first values in the two queues are the median candidates.
+            </p>
+        </li>
+        <li>
+            <h4>Iterator</h4>
+            <p class="algorithm-problem-title">281. Zigzag Iterator</p>
+            <p class="algorithm-problem-title">284. Peeking Iterator</p>
+            <p>Desc: <br>
+                General: given a collection/collections data, output it as a iterator.<br>
+                #281.
+            </p>
+            <p>Sol:</p>
+            <pre class="brush:java">
+                current_pointer;
+                hasNext(); test if the current_pointer is a valid result, otherwise, move current_pointer until finding a valid result.
+                next(); call hasNext() to find the next valid value, return the current_pointer's value. move the current_pointer by 1.
+            </pre>
+        </li>
+        <li>
+            <p class="algorithm-problem-title">635. Design Log Storage System</p>
+        </li>
+        <li>
+            <p class="algorithm-problem-title">362. Design hit counter</p>
+            <p>Desc: </p>
         </li>
     </ol>
 </div>
