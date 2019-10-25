@@ -1,0 +1,180 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>Java&nbsp;Interface</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-10-25">
+<meta name="keywords" content="java">
+<meta name="keywords" content="interface">
+<meta name="keywords" content="java lambda">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushPython.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushSql.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>Java&nbsp;-&nbsp;Interface</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-10-25</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-10-25</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#example">Examples</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+<p>Java 8 introduces interface default method, function interface and lambda function.</p>
+</div>
+</li>
+<li>
+    <div class="content" id="example">
+        <h3>Examples</h3>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>Basic</h4>
+                    <p>A function signature inside a interface can only be "public abstract". Because it's the only valid modifier, so the two keywords can be ignored.</p>
+                    <pre class="brush:java">
+                        interface PubSubService{
+                            void subscribe(Subscriber sub, Topic topic);
+                            void publish(Publisher pub, Topic topic, Message msg);
+                        }
+                        interface Subscriber{
+                            void notify(Topic topic, Message msg);
+                        }
+                    </pre>
+                </li>
+                <li>
+                    <h4>Marker Interface</h4>
+                    <p>An interface without method is called marker interface (tagging interface)</p>
+                    <pre class="brush:java">
+                        interface RandomAccess{}
+                        class ArrayBasedList implements ListInterface, RandomAccess{
+                            // ...
+                        }
+                        {
+                            ArrayBasedList al = new ArrayBasedList();
+                            int lastValue = 0;
+                            if(al instanceof RandomAccess){ // marker interface.
+                                lastValue = al.get(al.size()-1);
+                            }else{
+                                lastValue = al.getLast(); 
+                            }
+                        }
+                    </pre>
+                </li>
+                <li>
+                    <h4>Default methods and static methods inside a interface</h4>
+                    <p>Java allows to provide default method and static method with implementation inside an interface. The default method can be overriden by other concrete classes, but static method cannot be overriden since static is bound to the class definition..</p>
+                    <pre class="brush:java">
+                        interface DrivableDevice{
+                            int maxSpeed();
+                            boolean isReversible();
+                            static boolean isEqual(){
+
+                            }
+                            default String getName(){
+                                return this.toString();
+                            }
+                        }
+                    </pre>
+                </li>
+                <li>
+                    <h4>Function Interface & Lambda Expression</h4>
+                    <p>Java 8 support function interface, a function interface is an interface without only one abstract method and several optional default methods. 
+                        By having an function interface, we can use Lambda syntax to create the instance of a function interface.</p>
+                    <pre class="brush:java">
+                        @FunctionalInterface // optional annotation
+                        interface Fun&lt;IN, OUT>{
+                            OUT convert(IN input);
+                        }
+                        
+                        interface Map&lt;IN, OUT>{
+                            List&lt;OUT> map(Fun&lt;IN, OUT> fun, List&lt;IN> input);
+                            default String getName(){ // can have mulitple default method.
+                                return this.toString();
+                            }
+                        }
+                        public class FunctionInterfaceTest {
+                            public static void main(String[] args){
+                               
+                                List&lt;Integer> list = new ArrayList&lt;>(); list.add(1); list.add(2);
+                                Map&lt;Integer, String> mapping = (fun, input) -> {
+                                    List&lt;String> output = new ArrayList&lt;>();
+                                    for(Integer i : input){
+                                        output.add(fun.convert(i));
+                                    }
+                                    return output;
+                                };
+                                List&lt;String> output = mapping.map(i->i.toString(), list);
+                                for(String s: output){
+                                    System.out.println(s);
+                                }
+                            }
+                        }
+                        
+                    </pre>
+                    <p>Lambda function returns an instance of the interface not a method. Java doesn't have direct methods.</p>
+                </li>
+                <li>
+                    <h4>java.util.function</h4>
+                    <p>java.util.function package defines common functional programming style interfaces.</p>
+                    <div class="featureList">
+                        interface Predicate&lt;T>{
+                            boolean test(T t); 
+                        }
+                        interface Function&lt;T,R>{
+                            R apply(T t);
+                        }
+                    </div>
+                </li>
+            </ol>
+        </div>
+  
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>

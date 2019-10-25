@@ -38,12 +38,13 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Java&nbsp;-&nbsp;Introduction</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-08-30</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-08-02</span></p>
+<p class="date"><span class="created-date">Created:2018-08-30</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-10-24</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#introduction">Java Introduction</a></li>
 <li><a href="#structure">Java Project Structure</a></li>
 <li><a href="#command-line">Command lines</a></li>
+<li><a href="#update-version">Update Java Version</a></li>
 <li><a href="#rule">Rules</a></li>
 <li><a href="#reference">Reference</a></li>
 </ul>
@@ -202,6 +203,26 @@ SyntaxHighlighter.all()
                         java -cp "../../jars/*:../../out/production/wieraLocal/"  umn.dcsg.wieralocalserver.LocalServer
                         # start a jar file that has a manifest
                         java -jar output.jar
+                    </pre>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="update-version">
+        <h3>Update Java Version</h3>
+        <h4>Update java verson on MacOS</h4>
+        <div class="featureList">
+            <ol>
+                <li>You may install multiple java/javac (jre/jdk) on the same OS. Now you want to switch java version.
+                    <pre class="brush:bash">
+                        # 1. check current used java version
+                        java -version; javac -version
+                        # 2. check all installed java 
+                        /usr/libexec/java_home -V
+                        # 3. switch version, update (add) JAVA_HOME environment variable in ~/.bash_profile
+                        export JAVA_HOME=`/usr/libexec/java_home -v 1.8`
                     </pre>
                 </li>
             </ol>
