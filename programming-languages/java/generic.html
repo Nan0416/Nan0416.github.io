@@ -216,7 +216,7 @@ public class GenericBound&lt;T extends Numeric&lt;T>>
 <li>
 <div class="content" id="wildcard">
 <h3>Wildcard Generic</h3>
-<p style="color:red">Employee is a super class of Manager, but Generic&lt;Employee> is not a super class of Generic&lt;Manager> becuase Generic&lt;Employee> does not have Generic&lt;Manager>'s members.</p>
+<p style="color:red">Employee is a super class of Manager, but Generic&lt;Employee> is not a super class of Generic&lt;Manager> becuase Generic&lt;Manager> does not have Generic&lt;Employee>'s members.</p>
 <div class="featureList">
     <ol>
         <li>
@@ -238,16 +238,16 @@ public class GenericBound&lt;T extends Numeric&lt;T>>
                 IGreeting&lt;Employee> // is a specific generic interface.
                 IGreeting&lt;Manager> // is another specific generic interface.
             </pre>
-            <p>Java's wildcard is similar but different from C# covariance and contraviance. Java's wildcard allows a generic class be assigned to a wildcard generic class.</p>
+            <p>Java's wildcard is similar but different from C# covariance and contraviance. Java's wildcard allows to assign an object of a generic class to a wildcard generic class type.</p>
         </li>
         <li>
             <h4>How to use?</h4>
             <p>Wildcard generic is usually used as parameters of a function.</p>
             <pre class="brush:java">
                 public class Operation{
-                    #  this method only works with GenericClass&lt;Employee>
+                    //  this method only works with GenericClass&lt;Employee>
                     public void Operate(GenericClass&lt;Employee> value){}
-                    #  this method works with GenericClass&lt;Employee> GenericClass&lt;Manager> GenericClass&lt;CEO>
+                    //  this method works with GenericClass&lt;Employee> GenericClass&lt;Manager> GenericClass&lt;CEO>
                     public void Operate(GenericClass&lt;? extends Employee> value){}
                 }
             </pre>
