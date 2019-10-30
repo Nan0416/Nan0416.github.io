@@ -2,12 +2,12 @@
 <!-- NewPage -->
 <html lang="en">
 <head>
-<title>Python&nbsp;Package</title>
+<title>Python&nbsp;Package & Module</title>
 <meta charset="utf-8">
-<meta name="date" content="2019-03-02">
-<meta name="keywords" content="">
-<meta name="keywords" content="">
-<meta name="keywords" content="">
+<meta name="date" content="2019-10-30">
+<meta name="keywords" content="module">
+<meta name="keywords" content="python">
+<meta name="keywords" content="package">
 <link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
 <script type="text/javascript" src="../../script.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
@@ -36,12 +36,14 @@ SyntaxHighlighter.all()
 </script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<strong>&nbsp;-&nbsp;</strong>
+<strong>Python&nbsp;-&nbsp;Module & Python</strong>
+<!-- 我还没有找到工作，心情是难受的。十月三日 2019-->
 </div>
-<p class="date"><span class="created-date">Created:2019-03-02</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-03-02</span></p>
+<p class="date"><span class="created-date">Created:2019-10-30</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-10-30</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
+<li><a href="#runtime">Import at runtime</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -51,6 +53,91 @@ SyntaxHighlighter.all()
 <li>
 <div class="content" id="intro">
 <h3>Introduction</h3>
+<p>Python uses Modules and Packages to organize code. Each .py file is a module, a collection of modules within a directory is a package. A package can also have subpackage.</p>
+<div class="featureList">
+    <ol>
+        <li>
+            <h4>Module</h4>
+            <p>Each module is a file, and module name is just the filename without ".py". Module name can be accessed with global variable __name__</p>
+            <pre class="brush:python">
+                __name__
+            </pre>
+            <p style="color:red">If a module is directly run with python cmd, e.g. python script.py, then the module name is '__main__' instead of '__script__'</p>
+            <pre class="brush:python">
+                import script
+                print(script.__name__) # script
+            </pre>
+        </li>
+        <li>
+            <h4>Package</h4>
+            <p>A package is a collection of modules and sub-packages.</p>
+            <pre class="brush:bash">
+                package\
+                    __init__.py
+                    subpackage\
+                        __init__.py
+                        module1.py
+                        module2.py
+                    module3.py
+                    module4.py
+            </pre>
+            <p>The __init__.py is used to define metadata, pre-run code of the package.</p>
+            <pre class="brush:python">
+                __all__ = ['module3', 'subpackage']
+                __name__ = "qinnan"
+                print("Imported package")
+            </pre>
+            <p>The __init__.py will be run at the first time of importing this package. In the above case, it updates two global variables name, and print a message.</p>
+            <pre class="brush:bash">
+                # By default, __init__.py can be empty.
+
+                # When using "from package import *", python will import all the modules defined in __all__,
+                # in this case, only "module3" and "package" is imported and "module4" is omitted. 
+                # If __all__ is not overriden, its value is [], which means nothing will be import with "from package import *",
+                # Have to explicitly using from package import module3
+            </pre>
+        </li>
+        <li>
+            <h4>Module/Package searching path</h4>
+            <p>Python has a system variable, "sys.path", which defines the search path for module. The variable is initialized when launching python runtime. sys.path is initialized from the following sources in order.</p>
+            <p>
+                1). the directory contains the running script, or the current directory if running python interpreter.<br>
+                2). the PYTHONPATH shell environment variable, by default, it is empty.<br>
+                3). the installation-dependent default. (depends on OS)
+            </p>
+            <p>** With this searching order, user can override built-in package with the same package/module name.</p>
+            <p style="color:red">You can change the path at runtime and do dynamic loading</p>
+        </li>
+        <li>
+            <h4>Import module/package</h4>
+            <p>A package/module/class,function,varaible can be import in the following manner.</p>
+            <pre class="brush:python">
+                import package/module
+                from package/module import package/module/class,function,variable
+
+                # for example, because "loads" is a function in json module, we cannot do "import json.loads", instead, do "from json import loads"
+            </pre>
+            <p>When importing a module, the module .py file is executed. When import a package, the __init__.py is executed. But they are only executed once per session.</p>
+            <h4>Intra package importing</h4>
+            <p>module2 wants to import module3's function</p>
+            <pre class="brush:python">
+                # relative path
+                from .. import module3
+                module3.fun()
+                from ..module3 import fun
+                fun()
+                from ..module3 import *
+                fun()
+                from .. import * # also import module4
+                module3.fun()
+
+                # absolute path
+                from package.module3 import fun
+                fun()
+            </pre>
+        </li>
+    </ol>
+</div>
 </div>
 </li>
 <li>
@@ -58,7 +145,8 @@ SyntaxHighlighter.all()
 <h3>References</h3>
 <div class="featureList">
     <ol>
-        <li></li>
+        <li><a href="https://docs.python.org/3/tutorial/modules.html" target="_blank">6. Modules - PyDocs</a></li>
+        <li><a href="https://docs.python.org/3/reference/import.html" target="_blank">5. The import system</a></li>
     </ol>
 </div>
 </div>
