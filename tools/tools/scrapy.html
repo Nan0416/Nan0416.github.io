@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>Tools&nbsp;Scrapy</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-10-30">
+<meta name="keywords" content="spider">
+<meta name="keywords" content="python">
+<meta name="keywords" content="scrapy">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushPython.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushSql.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>Tools&nbsp;-&nbsp;Scrapy</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-10-30</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-10-30</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#scrapy">Scrapy</a></li>
+<li><a href="#example">Example</a></li>
+<li><a href="#scrapyd">Scrapyd</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="scrapy">
+<h3>Scrapy (based on v1.8)</h3>
+<p>Scrapy is python crawling framework. Developers need to define how to crawl a site, following links, extract data, persist data. The framework helps schedule crawling, download pages, and form the pipeline.</p>
+<div class="featureList">
+    <ol>
+        <li>
+            <h4>Architecture/WorkFlow</h4>
+            <p>Scrapy allows to define multiple spiders in a project. Each spider is a job implemented as a subclass of <span class="inline-code">scrapy.Spider</span></p>
+            <p>The spider class has the start urls, and yield <span class="inline-code">Request</span> to 'engine', the 'engine' send request to 'scheduler'</p>
+            <pre class="brush:bash">
+                spider -> (Request) -> scheduler -> downloader -> (Response) -> spider defined parser -> (Request) -> scheduler -> ...
+                                                                                                      -> (Item) -> pipeline
+            </pre>
+            <p style="color:red">** The above process omit engine. **</p>
+        </li>
+        <li>
+            <h4>Installation/Template</h4>
+            <p>Using a isolated python environment with virtualenv</p>
+            <pre class="brush:bash">
+                pip install scrapy # install the scrapy python package, also a command line
+                pip install scrapyd # install the scrapy deployment server.
+            
+            </pre>
+            <p>scrapy cmd can provide a starting template</p>
+            <pre class="brush:bash">
+                scrapy startproject [project-name] # create project template
+                cd project; # cd into the project directory.
+                scrapy crawl [spider-name] # run the specific spider by given name.
+            </pre>
+            <p>It will generate a directory named as the project name and it includes a python package and a .cfg configuration file.</p>
+            <p style="color:red">Under the project directory, scrapy has more sub-commands.</p>
+        </li>
+    </ol>
+</div>
+</div>
+</li>   
+<li>
+<div class="content" id="example">
+    <h3>Example</h3>
+    <div class="featureList">
+        <ol>
+            <li>
+                <h4>scrapy.spiders.Spider</h4>
+                <p>Docs: https://docs.scrapy.org/en/latest/topics/spiders.html, Source: https://github.com/scrapy/scrapy/blob/1.8/scrapy/spiders/__init__.py</p>
+                <p>A user defined spider has two way to provides start urls, <br>
+                    1). define an attributes called <span class="inline-code">start_urls</span> of type list<br>
+                    2). define a function <span class="inline-code">start_requests</span> yield Request.
+                </p>
+                <p>The difference between two ways is the function can yeild a request, which can specify the parse callback function, otherwise, using the default function called <span class="inline-code">parse(self, response)</span></p>
+                <h4>Request class</h4>
+                <p>Request class specifies: <br>
+                    url, method, header, body, cookie, encoding // downloader required info<br>
+                    priority, dont_filter // scheduler required info <span style="color:red">dont_filter = False (default) will remove duplicate urls to avoid loop</span>
+                    callback, errback, meta, cb_kwargs // framework required info
+                </p>
+                <p>meta: meta is used to populate data through the pipeline, but it can also contain special keys that can be recoginized by the scrapy framework.</p>
+                <h4>parse function</h4>
+                <p>A spider class has a parser function that will be invoked after the downloader downloads the request.</p>
+                <pre class="brush:python">
+                        def parse(self, response, *args, **cb_kwargs):
+                            # cb_kwargs comes from request.
+                            pass
+                        def parse(self, response):
+                            pass
+                </pre>
+            </li>
+        </ol>
+    </div>
+</div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li><a href="https://docs.scrapy.org/en/latest/topics/architecture.html" target="_blank">Scrapy Architecture</a></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>
