@@ -99,6 +99,13 @@ SyntaxHighlighter.all()
                     <span class="inline-code">AnnotationConfigApplicationContext</span>: A SpringBoot standalone.<br>
                     <span class="inline-code">AnnotationConfigServletWebServerApplicationContext</span>: A SpringBoot with web app with servlet container.
                 </p>
+                <p>Compared to SpringBoot, Spring Framework uses XML file to initiate the Application Context</p>
+                <p class="reference-box">
+                    Several implementations of the ApplicationContext interface are supplied with Spring. In stand-alone applications, it is common to create
+                     an instance of ClassPathXmlApplicationContext or FileSystemXmlApplicationContext. While XML has been the traditional format for defining 
+                     configuration metadata, you can instruct the container to use Java annotations or code as the metadata format by providing a small amount 
+                     of XML configuration to declaratively enable support for these additional metadata formats.
+                </p>
             </li>
             <li>
                 <h4>BeanFactory</h4>
