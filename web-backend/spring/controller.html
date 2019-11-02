@@ -1,0 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>Spring&nbsp;Controller</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-11-01">
+<meta name="keywords" content="spring">
+<meta name="keywords" content="controller">
+<meta name="keywords" content="">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushPython.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushSql.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>Spring&nbsp;-&nbsp;Controller</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-10-25</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-10-25</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#mapping">Mapping & Parameters</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+<p>DispatchServlet listens http request, and select proper controller from IoC controller, and then invoke a proper method.</p>
+</div>
+</li>
+<li>
+    <div class="content" id="mapping">
+        <h3>Mapping & Parameters</h3>
+        <h4>Mapping</h4>
+        <p><span class="inline-code">@RequestMapping</span> is used to annotate controller class/method to let them handle centain request.</p>
+        <div class="featureList">
+            <ol>
+                <li>Url Matching
+                    <pre class="brush:java">
+                        // url = "/stock/meta/baba" will method the getId method.
+                        @RequestMapping(path = "/stock") // path is alias of value.
+                        public class Controller{
+                            @RequestMapping(value = "/meta/{symbol}") // symbol is a placeholder.
+                            public string getId(@PathVariable("symbol") String symbol){
+                                return "21343209";
+                            }
+                        }
+                    </pre>
+                </li>
+                <li>Http method: by default, if the request mapping maps all http methods.
+                    <pre class="brush:java">
+                        @RequestMapping(value = "/stock/meta/{symbol}", method = RequestMethod.GET) // only allow GET
+                        @RequestMapping(value = "/stock/meta/{symbol}", method = {RequestMethod.GET, RequestMethod.POST}) // allow GET and POST
+
+                        // ** if both of them appear, it will cause runtime error due to ambiguous. 
+                    </pre>
+                </li>
+                <li>
+                    HTTP URL Parameters
+                    <pre class="brush:java">
+                        @RequestMapping(value="/meta", params = {"symbol", "!company", "member=premium", "period!=10"})
+                        // map url, must have symbol, not have company, member and its value = premium
+                        // period can be ignore, but if has period, its value cannot be 10.
+
+                        // meta?symbol&member=premium&period=11
+                        // meta?symbol=12&member=premium&period
+                        // meta?symbol=12&member=premium
+                    </pre>
+                </li>
+                <li>
+                    <h4>Others</h4>
+                    HTTP request headers, media types in request, accept media types.
+                </li>
+            </ol>
+        </div>
+        <p><span class="inline-code">@RequestParam, @PathVariable, @RequestHeader</span>, get value from url parameter, url matching, http header.</p>
+        <div class="featureList">
+            <ol>
+                <li>@RequestParam
+                    <pre class="brush:java">
+                        @RequestParam(value = "symbol", required = true, defaultValue = "amzn")
+                    </pre>
+                </li>
+                <li>
+                    @PathVariable
+                    <pre class="brush:java">
+                            @RequestMapping(value = "/meta/{symbol}", method= RequestMethod.GET)
+                            public String getID(@PathVariable("symbol") String symbol){
+                                return "21343209";
+                            }
+                    </pre>
+                </li>
+            </ol>
+        </div>
+        <p><span class="inline-code">@ResponseBody</span> convert a container class to json. The container class must have standard .getXxxx method.</p>
+        <p><span class="inline-code">@RequestBody</span></p>
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>

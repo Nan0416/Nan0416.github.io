@@ -43,7 +43,8 @@ SyntaxHighlighter.all()
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
-<li><a href="#practice">Practice</a></li>
+<li><a href="#register">Bean Registration</a></li>
+<li><a href="#injection">Bean Injection</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -62,18 +63,221 @@ SyntaxHighlighter.all()
         <li>+ Reduce module complexity, increase module reusbability.</li>
         <li>- hard to debug due to not explicitly initiate objects</li>
     </ol>
+    <h4>XML vs. Annotation-based configuration</h4>
+    <ol>
+        <li>XML: no need to modify source code, no need to recompile by modifying the dependency configuration.</li>
+        <li>Annotation-based: more flexible, quick to start.</li>
+    </ol>
 </div>
-</div>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>ApplicationContext class hierarchy</h4>
+                    <pre class="brush:java">
+                        DefaultResourceLoader (: ResourceLoader)
+                            AbstractApplicationContext (: ConfigurableApplicationContext)
+                                GenericApplicationContext (: BeanDefinitionRegistry)
+                                    GenericWebApplicationContext (: ConfigurableWebApplicationContext, ThemeSource)
+                    </pre>
+                </li>
+                <li>
+                    <h4>BeanDefinitionRegistry</h4>
+                    <p>This interface defines a collections of method that allows to add/delete beans registration at runtime.</p>
+                    <pre class="brush:java">
+                        void registerBeanDefinition(String beanName, BeanDefinition beanDefinition) throws BeanDefinitionStoreException;
+                        void removeBeanDefinition(String beanName) throws NoSuchBeanDefinitionException;
+                        BeanDefinition getBeanDefinition(String beanName) throws NoSuchBeanDefinitionException;
+                        boolean containsBeanDefinition(String beanName);
+                        ...
+                    </pre>
+                    <p><span class="inline-code">GenericApplicationContext</span> implements these abstract methods and elaborate them for more practical usage. e.g.</p>
+                    <pre class="brush:java">
+                        public class GenericApplicationContext{
+                            public final &lt;T> void registerBean(Class&lt;T> beanClass, Supplier&lt;T> supplier, BeanDefinitionCustomizer... customizers) {//...}
+                        }
+                    </pre>
+                </li>
+                <li>
+                    <h4>Beans behaviors</h4>
+                    <p>** Scope **</p>
+                    <p>Singleton, Prototype, Request, Session, Application, Websocket. (The latter 4 scopes are only valid for web context).</p>
+                    <p>1. Singleton: an IoC container only has one singleton instance.<br>
+                        If the singleton has dependency injected from constructor or field, then because singleton only institiated once, these dependencies will keep alive no matter what scopes they are.<br>
+                        Singleton is the default bean's scope.
+                    </p>
+                    <p>
+                        2. Prototype: always get a new instance whenever asked/injected from the container.<br>
+                        <span style="color:red">IoC container only creates the prototype objects but doesn't destory them.</span>
+                    </p>
+                    <p>
+                        3. request, session, application, websocket.<br>
+                        application: A servlet container (tomcat server) has a single servlet context, but there may exist serveral servlets (spring dispatcherservlet) inside the container. And each servlet has its own application context.
+                        <span style="color:red">The application scope is bound to the container's servletcontext, so it's shared across all servlet.</span> ** application scope is larger than singleton scope.
+                    </p>
+                    <p class="reference-box">
+                        In contrast to the other scopes, Spring does not manage the complete lifecycle of a prototype bean. The container instantiates, 
+                        configures, and otherwise assembles a prototype object and hands it to the client, with no further record of that prototype instance.
+                        Thus, although initialization lifecycle callback methods are called on all objects regardless of scope, in the case of prototypes, 
+                        configured destruction lifecycle callbacks are not called. The client code must clean up prototype-scoped objects and release expensive 
+                        resources that the prototype beans hold. To get the Spring container to release resources held by prototype-scoped beans, try using a 
+                        custom bean post-processor, which holds a reference to beans that need to be cleaned up.
+                    </p>
+                    <h4>Singleton depends Prototype</h4>
+                    <p>
+                        Automatic bean's method argument injection: this is almost impossible due to the face that developer's code invokes beans/service method.<br>
+                        But it may possible for controller, since controller method is invoked by the spring framework (dispatcherservlet).<br>
+                    </p>
+                    <p>
+                        <a href="#lookup-method">Lookup method</a>: allow singletons get new prototype instances at each access.
+                    </p>
+
+                    <h4>Other beans behaviors</h4>
+                    <p>1). name/id/alias: a bean can have a unique name/id inside the container, and serveral alias. By default, the name of a bean is the annotated method name. It can be customized by given</p>
+                    <pre class="brush:java">
+                        @Bean(name={"aNewName", "anAlias"})
+                        // the first string is name, others are alias.
+                    </pre>
+                    <p>2). is primary: a </p>
+                </li>
+            </ol>
+        </div>
+    </div>
 </li>
 <li>
-    <div class="content" id="practice">
-        <h3>Practice</h3>
+    <div class="content" id="register">
+        <h3>Bean registration</h3>
         <div class="featureList">
-            <h4>Register dependency</h4>
-            <h4>Get dependency</h4>
-            <h4>Inject dependency</h4>
-            <h4>Scope</h4>
+            <h4>Register dependency & beans control</h4>
+            <ol>
+                <li>
+                    <h4>By code at runtime</h4>
+                    <p>A bean can be registered at runtime with the <span class="inline-code">GenericApplicationContext</span>'s method registerBean.</p>
+                    <pre class="brush:java">
+                        @Bean
+                        public CommandLineRunner getRunner(GenericWebApplicationContext ctx){
+                            // inside the commandlinerunner, register a bean.
+                            return (args)-> {
+                                ctx.registerBean(StockPrice.class, () -> new RobinhoodStockPrice());
+                                StockPrice st = ctx.getBean(StockPrice.class);
+                            };
+                        }
+                    </pre>
+                    <p><span class="inline-code">registerBean</span>'s full signature takes bean.name, bean.class, supplier, and customizers.<br>
+                    2). bean.class: usually is the interface, instead of the concrete class.<br>
+                    3).supplier: an object of <span class="inline-code">Supplier</span> interface, which has a function <span class="inline-code">T get();</span> that defines how to generate the bean instance.<br>
+                    4). customizers: a series of intances of <span class="inline-code">BeanDefinitionCustomizer</span> interface, which has a function <span class="inline-code">void customize(BeanDefinition bd);</span> defines how to control the beans behavior.
+                    </p>
+                    <h4>Beans behavior & BeanDefinition class</h4>
+                    <p>
+                        Beans behavior includes<br>
+                        1). scope,
+                        2). primary or not,
+                        3). 
+                    </p>
+                </li>
+                <li>
+                    <h4>Register beans by annotation</h4>
+                    <p>@Configuration indicates this class contains beans, @Import registers this configuration.</p>
+                    <p style="color:red">Event through a class can be imported without @Configuration, but having @Configuration makes the config class itself also managed by the IoC.</p>
+                    <pre class="brush:java">
+                        @Configuration
+                        public class PrinterConfig{}
+                        @Configuration
+                        public class PaymentConfig{}
+    
+                        @Configuration
+                        @Import(PrinterConfig.class, PaymentConfig.class)
+                        public class MainConfig{}
+
+                        public class Application{
+                            public static void main(String [] args){
+                                SpringApplication.run(MainConfig.class, args);
+                            }
+                        }
+                    </pre>
+                </li>
+                <li>
+                    <h4>Register beans by stereotype annotation</h4>
+                    <p>@Component {@Repository, @Service and @Controller} annotated classes themself are beans. With using @ComponentScan, these beans will be registered to IoC Container.</p>
+                    <p>
+                        By default, ComponentScan will scan all @Component class on the same package and its subpackages. @Component includes @Configuration, @Controller, @Service. 
+                        Because @ComponentScan includes all component, so it's not efficient when having lots of component.
+                    </p>
+                    <p><span class="inline-code">@ComponentScan(basePackages = {"stockdata.controller"})</span>Scan all the component (e.g. @RestController) inside the specified package.</p>
+                    <h4>@Component/@ComponentScan vs. @Configuration;@Bean/@Import</h4>
+                    <p>
+                        1). @Bean and @Component are used to declare objects that should be managed by IoC container. @Bean declare a method <span style="color:red">like a factory method</span> that instructs how to init the bean instance. @Component declare a class that defines the bean.<br>
+                        2). @Configuration itself is a @Component. With the default scope, a configuration class itself is a singleton object in the IoC container.<br>
+                        3). @Import can also import components.<br>
+                        4)? @Bean return interface type, @Component return concrete class type.???
+                    </p>
+                    <h4>Lite mode</h4>
+                    <p>Beans are in lite mode when configuration class without @Configuration</p>
+                </li>
+            </ol>
         </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="injection">
+        <h3>Inject dependency</h3> 
+        <p>
+            1). Dependency can be injected into <span style="color:red">constructor arguments, method arguments, lookup method properties (fields)</span>. <span style="color:red">Method argument injection is only avaliable when using @Configuration class to initialize beans.</span><br>
+            1.5). Dependency can be directly asked from the context.<br>
+            2). Mulitple implementation of an interface can be resolved with @Primary or @Qualifier.<br>
+            3). Mutliple implementation of an interface can be injected all with a specific order.<br>
+            4). Non-existed dependency can be ignore with (required=false)
+        </p>
+        <p style="color:red">@Required annontation is deprecated.</p>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>@Autowired with contructor, setter method, fields.</h4>
+                    <p>It's only meaningful that the annotated constructor, method and fields are invoked or set by the IoC Container. For example, IoC container will invoke the constructor, set fields to create the bean instance.</p>
+                    <pre class="brush:java">
+                        public class AImpl implements A{
+                            @Autowired
+                            private Client cli;
+
+                            @
+                        }
+                    </pre>
+                </li>
+                <li id="lookup-method">
+                    <h4>Lookup method</h4>
+                    <p>Why need lookup method? Suppose a singleton wants a prototype at each access. You cannot use constructor or field injection because they only initiated once.</p>
+                    <pre class="brush:java">
+                        @Scope("singleton")
+                        public abstract class StockPrice{
+                            public RobinhoodStockPrice(){
+                                System.out.println(this.getClass().getName()); // StockPrice$$EnhancerBySpringCGLIB$$354acd8c
+                            }
+                            // &lt;public|protected> [abstract] &lt;return-type> theMethodName(no-arguments);
+                            @Lookup
+                            protected abstract RestClient getClient();
+
+                            public Price getStockPrice(string symbol){
+                                return getClient().getPrice("symbol");
+                            }
+                        }
+
+                        @Scope("singleton")
+                        public class StockPrice{
+                            // &lt;public|protected> [abstract] &lt;return-type> theMethodName(no-arguments);
+                            @Lookup
+                            protected RestClient getClient(){
+                                return null;
+                            }
+                            public Price getStockPrice(string symbol){
+                                return getClient().getPrice("symbol");
+                            }
+                        }
+                    </pre>
+                    <p>IoC container will create a concrete subclass of the abstract StockPrice or override its Lookup method.</p>
+                    <p style="color:red">When using @Configuration class to register this class, since we need return an bean object in the @Bean method. So we cannot use the abstract class.</p>
+                </li>
+            </ol>
+        </div>       
     </div>
 </li>
 <li>
@@ -81,7 +285,9 @@ SyntaxHighlighter.all()
 <h3>References</h3>
 <div class="featureList">
     <ol>
-        <li></li>
+        <li><a href="https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/core.html#beans-factory-scopes-prototype" target="_blank">1.5.2. The Prototype Scope</a></li>
+        <li><a href="https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/core.html#beans-factory-lookup-method-injection" target="_blank">Lookup method injection</a></li>
+        <li><a href="https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/core.html#beans-java-basic-concepts" target="_blank">Lite Mode</a></li>
     </ol>
 </div>
 </div>

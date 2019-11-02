@@ -1,0 +1,149 @@
+
+Servlet container
+
+
+
+
+package javax.servlet;
+public interface Servlet{
+    // A servlet is a small Java program that runs within a Web server. Servlets
+    // receive and respond to requests from Web clients, usually across HTTP
+    public void service(ServletRequest req, ServletResponse res);
+}
+
+public interface ServletConfig{
+    // A servlet configuration object used by a servlet container to pass
+    // information to a servlet during initialization.
+
+    // Returns a reference to the {@link ServletContext} in which the caller is executing.
+    public ServletContext getServletContext();
+}
+package javax.servlet;
+public interface RequestDispatcher{
+    //Defines an object that receives requests from the client and sends them to
+    // any resource (such as a servlet, HTML file, or JSP file) on the server
+    public void forward(ServletRequest request, ServletResponse response);
+}
+
+public interface ServletContext{
+    // Defines a set of methods that a servlet uses to communicate with its servlet
+    // container
+    // Returns a servlet context object that corresponds to a specified URL on the server.
+    public ServletContext getContext(String uripath);
+    public RequestDispatcher getRequestDispatcher(String path);
+}
+
+// this servlet is protocol-independent.
+// given a request, dosomething, return a response.
+public abstract class GenericServlet implements Servlet, ServletConfig{
+
+}
+
+// this servlet is http protocol specific
+// given a http request, do something, return a response.
+public abstract class HttpServlet extends GenericServlet{
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp); // http specific request.
+}
+
+
+
+// spring defined.
+abstract class HttpServletBean extends HttpServlet{
+    // register servlet context to bean factory?
+
+    init(){
+        initServletBean(){ // empty }
+    }
+}
+
+abstract class FrameworkServlet extends HttpServletBean implements ApplicationContextAware{
+    // basic spring implementation of java ee http servlet, 
+    // integrate with spring application context.
+    
+    initServletBean(){
+        this.webApplicationContext = initWebApplicationContext(){
+            WebApplicationContext rootContext = servletcontext.getAttribute("annotatiion config servlet web server application context")
+            servletcontext.set("context.dispatchservlet" , wac)
+        }
+		initFrameworkServlet();
+    }
+
+
+    // implement service() calls abstract doService 
+}
+
+public class DispatcherServlet extends FrameworkServlet{
+    doService(HttpServletRequest, HttpServletResponse){
+        // add more attributes to request e.g. web application context.
+        doDispatch(request, response){
+            get handler
+            process
+            return;
+        }
+    }
+}
+
+servlet container will institate servlet instance at the first request.
+
+
+tomcat
+catalina.core;
+class StandardWrapper{
+    public Servlet allocate(){
+        Servlet servlet = instanceManager.newInstance(servletClassName); // "catalina.servlets.defaultservlet"
+        servlet.init(new StandardWrapperFacade(this));
+        
+    }
+}
+
+
+catalina.core;
+class StandardWrapperValve{
+    invoke(Request, Response){
+        get servlet;
+        build filter chain with the servlet;
+        dofilter(requst, response)
+    }
+}
+
+spring application context
+
+SpringApplication.run(){
+    context = AnnotationConfigServletWebServerApplicationContext;
+    context.refresh(){ // abstract application context
+        invokeBeanFactoryPostProcessor(DefaultListableBeanFactory)
+        onRefresh{ // ServletWebServerApplicationContext
+            createWebServer(){
+                this.webServer = TomcatServletWebServerFactory.getWebServer(initializers){
+                    Tomcat tomcat = new Tomcat();
+                    prepareContext{
+                        TomcatEmbeddedContext ctx = new ...
+                        addDefaultServlet(ctx);
+                    }
+                    return new TomcatWebServer(tomcat);
+                }
+                
+            }
+        }
+        finishRefresh{
+            this.webServer.start(){
+                StandardWrapper.loadServlet // load the default servlet
+
+            }
+        }
+    }
+}
+
+
+
+
+
+Spring WebApplicationContext1,     WebApplicationContext2
+
+Spring DispatcherServlet1,          DispatecherServlet2
+
+                    [servlet context //TomcatEmbeddedContext]
+
+                    Tomcat servlet container
+
+https://stackoverflow.com/questions/29096511/using-multiple-dispatcher-servlets-web-contexts-with-spring-boot
