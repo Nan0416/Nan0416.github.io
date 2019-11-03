@@ -45,6 +45,7 @@ SyntaxHighlighter.all()
 <li><a href="#intro">Introduction</a></li>
 <li><a href="#register">Bean Registration</a></li>
 <li><a href="#injection">Bean Injection</a></li>
+<li><a href="#practice">Practice</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -209,7 +210,7 @@ SyntaxHighlighter.all()
                         1). @Bean and @Component are used to declare objects that should be managed by IoC container. @Bean declare a method <span style="color:red">like a factory method</span> that instructs how to init the bean instance. @Component declare a class that defines the bean.<br>
                         2). @Configuration itself is a @Component. With the default scope, a configuration class itself is a singleton object in the IoC container.<br>
                         3). @Import can also import components.<br>
-                        4)? @Bean return interface type, @Component return concrete class type.???
+                        4). With @Bean method, the instance is not fully managed by the IoC container. For example, we have to manually define code to return a new statement to tell how to initialize.
                     </p>
                     <h4>Lite mode</h4>
                     <p>Beans are in lite mode when configuration class without @Configuration</p>
@@ -232,14 +233,22 @@ SyntaxHighlighter.all()
         <div class="featureList">
             <ol>
                 <li>
-                    <h4>@Autowired with contructor, setter method, fields.</h4>
+                    <h4>@Autowired</h4>
+                    <p>@Autowired can be used in any class whose instances are managed by IoC container, including @Component and @Bean generated instance. The places @Autowired can be applied are contructor, setter method, fields.</p>
                     <p>It's only meaningful that the annotated constructor, method and fields are invoked or set by the IoC Container. For example, IoC container will invoke the constructor, set fields to create the bean instance.</p>
                     <pre class="brush:java">
                         public class AImpl implements A{
                             @Autowired
                             private Client cli;
-
-                            @
+                            
+                            public void ADefinedMethod(){..}
+                        }
+                        @Configuration
+                        public class MainConfig{
+                            @Bean("optionalbeanname")
+                            public A getA(){
+                                return new AImpl();
+                            }
                         }
                     </pre>
                 </li>
@@ -274,10 +283,59 @@ SyntaxHighlighter.all()
                         }
                     </pre>
                     <p>IoC container will create a concrete subclass of the abstract StockPrice or override its Lookup method.</p>
-                    <p style="color:red">When using @Configuration class to register this class, since we need return an bean object in the @Bean method. So we cannot use the abstract class.</p>
+                    <p><span style="color:red">@Lookup doesn't work when using @Configuration class with @Bean "factory method" to register this class.</span> Because the bean is initialized by developer with "new", IoC doesn't have a change to inject the method.</p>
+                </li>
+                <li>
+                    <h4>Proxy</h4>
+                    <p>Proxy is another way to allow a singleton get new prototype beans at each request.</p>
+                    <p>The underlying principle is to create a wrapper class (proxy class) around the prototype bean. Proxy class has the same type (via either interface or subclass) as the prototype bean. Singleton will has a single proxy instance, whenever a method invoke on the proxy instance, it first asks a new prototype beans, and then invoke method on it.</p>
+                    <p>
+                        There are two kinds of proxy<br>
+                        1) jdk dynamic proxy: the actual bean must implement an interface, bean is also registered and injected with the interface. (With this, the proxy class also implements same interface.)<br>
+                        2). CGLIB: cglib creates subclass of the bean, so no need for interface.
+                    </p>
+                    <pre class="brush:java">
+                            public interface BInterface {
+                                String getValue();
+                            }
+                            @Component
+                            @Scope(value = "prototype", proxyMode = ScopedProxyMode.INTERFACES)
+                            public class ComB implements BInterface{
+                                private String msg;
+                                public ComB(){
+                                    System.out.println("---- *** " + this.getClass().getName() + " init");
+                                    msg = new Random().nextInt(1000) + "";
+                                }
+                                @Override
+                                public String getValue(){
+                                    return "B msg: " + msg ;
+                                }
+                            }
+
+                            @Component
+                            @Scope("singleton")
+                            public class ComA {
+                                @Autowired
+                                private BInterface b;
+                                public String getData(){
+                                    return b.getValue() + ". from A";
+                                }
+                            }
+                    </pre>
+                </li>
+                <li>
+                    <h4>Multiple beans, Collection injection, Order</h4>
+                    <h4>Order</h4>
+                    <p>Order only works with @Component class with the same required type, not @Bean.</p>
                 </li>
             </ol>
         </div>       
+    </div>
+</li>
+
+<li>
+    <div class="content" id="practice">
+        <h3>Practice</h3>
     </div>
 </li>
 <li>
@@ -288,6 +346,7 @@ SyntaxHighlighter.all()
         <li><a href="https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/core.html#beans-factory-scopes-prototype" target="_blank">1.5.2. The Prototype Scope</a></li>
         <li><a href="https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/core.html#beans-factory-lookup-method-injection" target="_blank">Lookup method injection</a></li>
         <li><a href="https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/core.html#beans-java-basic-concepts" target="_blank">Lite Mode</a></li>
+        <li><a href="https://stackoverflow.com/questions/10664182/what-is-the-difference-between-jdk-dynamic-proxy-and-cglib" target="_blank">What is the difference between jdk dynamic proxy and cglib?</a></li>
     </ol>
 </div>
 </div>
