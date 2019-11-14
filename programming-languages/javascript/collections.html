@@ -2,12 +2,12 @@
 <!-- NewPage -->
 <html lang="en">
 <head>
-<title>JS&nbsp;Collections</title>
+<title>JS&nbsp;Types & Collections</title>
 <meta charset="utf-8">
 <meta name="date" content="2018-10-08">
-<meta name="keywords" content="">
-<meta name="keywords" content="">
-<meta name="keywords" content="">
+<meta name="keywords" content="javascript">
+<meta name="keywords" content="type">
+<meta name="keywords" content="collection">
 <link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
 <script type="text/javascript" src="../../script.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
@@ -35,13 +35,13 @@ SyntaxHighlighter.all()
 </script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<strong>JS&nbsp;-&nbsp;Collections</strong>
+<strong>JS&nbsp;-&nbsp;Type & Collections</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-10-08</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-10-08</span></p>
+<p class="date"><span class="created-date">Created:2018-10-08</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-11-12</span></p>
 <div class="catalog">
 <ul class="catalogItems">
-<li><a href="#intro">Collections</a></li>
-<li><a href="#iterable">Iterable</a></li>
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#collection">Collections</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -50,9 +50,73 @@ SyntaxHighlighter.all()
 <ol>
 <li>
 <div class="content" id="intro">
-<h3>Collections</h3>
-<p>JS provides collections, <a href="#map">map</a>, <a href="#set">set</a>, <a href="#arr">array</a></p>
-
+    <h3>Introduction</h3>
+    <p>Javascript doesn't support class natively, so developers cannot define new types. The language itself provides a few primitive type and common data structures.</p>
+	<div class="featureList">
+        <h4>Primitive types</h4>
+        <p>Each primitive type has a wrapper class. Same as Java, JavaScript automatically perform wrapping.</p>
+		<ol>
+            <li>number</li>
+            <li>boolean</li>
+            <li>string</li>
+            <li>
+                undefined: the accessed member is not defined, not existed. In theory, undefined should not have any inhabitant. <span style="color:red">don't assign undefined to any varaible even if it's syntax-correct</span>
+                <br>When a variable leave unassigned, it will be undefined. When a function with arguments but invoked without passing in arguments, the arguments will be undefined.
+            </li>
+            <li>null: the only instance of null is null (one inhabitant). But null itself is a value.
+                <pre class="brush:javascript">
+                    // strict equality and standard equality have a different behavior when comparing null and undefined.
+                    null === undefined // false;
+                    null === null // true;
+                    null == undefined // true;
+                </pre>
+            </li>
+            <li>symbol: a specifical type that always return a unique object.
+                <pre class="brush:javascript">
+                    const s1 = Symbol('ss'); // cannot use new keyword.
+                    const s2 = Symbol('ss');
+                    s1 == s2; // false.
+                </pre>
+            </li>
+        </ol>
+        <h4>Objects</h4>
+        <p>objects, Array, Map, Set, Date, Error, JSON, Math, and Regex</p>
+        <ol>
+            <li>Date
+                <pre class="brush:javascript">
+                        const a = new Date('2019-11-12T22:08:15.454Z');
+                        console.log(a.getHours()); // current hour in local time zone.
+                        console.log(a.getUTCHours()); // current hour in UTC, London.
+                        console.log(a.getTimezoneOffset()); // 300, time difference in minutes, e.g. 300 is the different between UTC and EST.
+                        console.log(a.getTime()) ; //1573596286789, Returns the number of milliseconds since midnight Jan 1 1970, and a specified date
+                        console.log(a.toISOString()); // 2019-11-12T22:08:15.454Z, standard format
+                        console.log(a.toDateString()); // Tue Nov 12 2019
+                        console.log(a.toUTCString()); // Tue, 12 Nov 2019 22:09:38 GMT
+                </pre>
+            </li>
+            <li>
+                Error
+                <pre class="brush:javascript">
+                    const err = new Error("What's the error?")
+                    console.log(err.message); // What's the error?
+                    console.log(err.name); // Error
+                </pre>
+            </li>
+            <li>
+                JSON: java provides two methods, stringify a js object to json string, parse a string into js object.
+                <pre class="brush:javascript">
+                    let obj = {"first-name": "nan", age:10}
+                    console.log(JSON.stringify(obj, null, 4)); // pretty stringify.                        
+                </pre>
+            </li>
+        </ol>
+    </div>
+</div>
+</li>
+<li>
+    <div class="content" id="collection">
+    <h3>Collections</h3>
+    <p>JS provides collections, <a href="#map">map</a>, <a href="#set">set</a>, <a href="#arr">array</a></p>
 <div class="featureList">
     <ol>
         <li id="map">
@@ -98,11 +162,11 @@ SyntaxHighlighter.all()
             <h4>Array</h4>
             <p>Array defines a lot of <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">high order functions</a>.</p>
             <pre class="brush:js">
-                let arr = [1, "name", false];
+                const arr = [1, "name", false];
                 arr.length; // 3
                 arr[1]; // "name"
                 arr[4]; // not error, return undefined
-                arr.push("new");
+                arr.push("new"); // return new length, 4
                 arr.pop(); // return "new"
                 arr[10] = 10; // becomes [1,"name", false, undefined * 7, 10]
                 for(let i = 0; i &lt; arr.length; i++){
@@ -117,14 +181,10 @@ SyntaxHighlighter.all()
             </pre>
         </li>
     </ol>
-</div>
-</div>
-</li>
-<li>
-    <div class="content" id="iterable">
-        <h3>Iterable</h3>
-        <p>yield keyword (similar to python) and function* indicates this is a generator function</p>
-        <pre class="brush:js">
+    </div>
+    <h4>Iterable</h4>
+    <p>yield keyword (similar to python) and function* indicates this is a generator function</p>
+    <pre class="brush:js">
                 function* generator(i) {
                     for(let x = 0; x &lt; 10; x++){
                         yield i;
@@ -140,7 +200,7 @@ SyntaxHighlighter.all()
                 for(let i of generator(10)){ // generator function only called once.
                     console.log(i);
                 }
-        </pre>
+    </pre>
     </div>
 </li>
 <li>
@@ -149,6 +209,7 @@ SyntaxHighlighter.all()
 <div class="featureList">
     <ol>
         <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Keyed_collections" target="_blank">Keyed collections</a></li>
+        <li><a href="https://www.w3schools.com/jsref/default.asp" target="_blank">JavaScript & HTML DOM Reference</a></li>
     </ol>
 </div>
 </div>

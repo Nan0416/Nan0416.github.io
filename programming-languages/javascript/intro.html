@@ -37,25 +37,26 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Javascript&nbsp;-&nbsp;Syntax</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-03-26</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-11</span></p>
+<p class="date"><span class="created-date">Created:2018-03-26</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-11-12</span></p>
 <div class="catalog">
 <ul class="catalogItems">
-<li><a href="#jsIntro">Introduction</a></li>
-<li><a href="#jsConcept">Concepts</a></li>
-<li><a href="#jsScope">Variable Scope</a></li>
-<li><a href="#jsVariable">Declaring variables and variable types</a></li>
-<li><a href="#jsThis">Nodejs "this"</a></li>
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#concept">Concepts</a></li>
+<li><a href="#scope">Variable Scope</a></li>
+<li><a href="#this">Nodejs "this"</a></li>
+<li><a href="#type">Variable types</a></li>
+
 <li><a href="#jsClass">Class</a></li>
 <li><a href="#jsFunction">Function calls</a></li>
 <li><a href="#jsSyntax">Syntax</a></li>
-<li><a href="#jsReference">References</a></li>
+<li><a href="#reference">References</a></li>
 </ul>
 </div>
 <hr>
 <div class="contentContainer">
 <ol>
 <li>
-<div class="content" id="jsIntro">
+<div class="content" id="intro">
 <h3>Introduction</h3>
 <p>1. JS is a weak type, interpreted, dynamic language.</p>
 <p>2. programming paradigm: event-driven, functional, prototype-based and object-oriented</p>
@@ -69,7 +70,7 @@ SyntaxHighlighter.all()
 <h4>ECMAScript</h4>
 <div class="featureList">
 	<ol>
-		<li>ES 5 (2009.12): strict mode</li>
+		<li>ES 5 (2009.12): strict mode (where you cannot use undeclared variable, disable global variable.)</li>
 		<li>ES 6 (2015.06): new syntax, class, modules, arrow functions, promise, collections, for/of loop</li>
 		<li>ES 7 (2016.06): </li>
 		<li>ES 8 (2017.06): syntactic integration with promises (async/await)</li>
@@ -80,7 +81,7 @@ SyntaxHighlighter.all()
 </div>
 </li>
 <li>
-<div class="content" id="jsConcept">
+<div class="content" id="concept">
 <h3>Concept</h3>
 <div class="featureList">
 <ol>
@@ -122,11 +123,10 @@ l2();
 </div>
 </li>
 <li>
-<div class="content" id="jsScope">
-<h3>Variable scope</h3>
+<div class="content" id="scope">
+<h3>Variable scopes</h3>
 <div class="featureList">
 <ol>
-<li>Module:</li>
 <li>var: <span style="color:red">A function scope variable instead of C/C++/Java block scope</span>
 <pre class="brush:js">
 var local = 10;
@@ -145,16 +145,22 @@ f();
 console.log(local); // 101
 </pre>
 </li>
-<li>let: <span style="color:red">A block scope variable</span>
+<li>let / const: <span style="color:red">A block scope variable</span>
 <pre class="brush:js">
 let local = 10;
 if(true){
 	let local = 15; // create a new variable
+	console.log(local); // 15
 }
+function f(){
+	let local = 100;
+	console.log(local);
+}
+f() // 100
 console.log(local); // 10
 </pre>
+<p>let and const are block scope variables, which can only be declared once in this scope and the const variable cannot be updated.</p>
 </li>
-<li>const: <span style="color:red">A block scope variable</span></li>
 <li>Global variable: any variables declared at any location without "var".
 <br>
 <span style="color:red">Global variable before function block variable</span>
@@ -183,11 +189,22 @@ console.log(local); // this "local" is the function block variable.
 	</div>
 </p>
 </li>
-<li>local variable: any variables declared with a "var", it will become a local variable in this scope {}</li>
+<li>
+	<h4>Module</h4>
+	<p>A module is a file. Any objects that want to be exported by using "module.exports.obj = obj", and any module want to import it can use "require('./module').obj"</p>
+	<pre class="brush:javascript">
+		this = {x:1, y:2};
+		// same.
+		module.exports.x = 1;
+		module.exports.y = 2;
+		// module global object can also be accessed with global.process.mainModule
+	</pre>
+</li>
 </ol>
 <h4>JS executing order</h4>
 <ol>
-<li>scope is defined by {}. <span style="color:red">Before executing a function, JS scan the code first to find the right variable.</span>
+<li>scope is defined by {}. <span style="color:red">Before executing a function, JS scan the code first to find the right variable, only "var".</span>
+<p>hoisting</p>
 <pre class="brush:js">
 var variable = "variable in global";
 function show(){
@@ -213,140 +230,47 @@ show();
 </div>
 </li>
 <li>
-<div class="content" id="jsVariable">
-<h3>Declaring variables and variable types</h3>
-<h4>declaring variables:let, var, const</h4>
+<div class="content" id="this">
+<h3>"this"</h3>
 <div class="featureList">
-<ol>
-<li>
-No prefix: global variable.
-<pre class="brush:js">
-x = 10;
-console.log(global.x);
-</pre>
-</li>
-<li>
-const: not mutable, declared once.
-<pre class="brush:js">
-const z = 11;
-// const z = 12; // error
-// z = 12; // error
-</pre>
-</li>
-<li>
-let: mutable, can be declared once, otherwise X redeclaration. Usually use in for-loop.
-<span style="color:blue">{} inside {} access</span>
-<pre class="brush:js">
-let x = 11;
-// let x = 12; // error
-for(let x = 0; x &amp; 10; x++){
+	<p>The "this" are different in the global environments of NodeJs and HTML</p>
+	<ol>
+	<li>In html, the global "this" is set to the "window" object.</li>
+	<li>In nodejs, the "this" is referenced to the <i>module.exports</i> when using it in a global environment and executed as a file/module.
+		<pre class="brush:js">
+			// module_x.js
+			this.x = 10;
+			console.log(module.exports.x); // 10
 
-}
-console.log(x); // 11
-</pre>
-</li>
-<li>
-var: mutable, can be declared multiple times. 
-<span style="color:blue"> non (function) stack, global access</span>
-<pre class="brush:js">
-var y = 11;
-var y = 12;
-for(var y = 0; y &amp; 2; y++){
-	var x = 10;
-}
-console.log(y); // 2
-console.log(x); // 10
-function func(){
-	var z = 10;
-}
-// console.log(z); // error
-</pre>
-</li>
-<li>
-<h4>var vs. let</h4>
-<p>let's variables has the traditional C-like scope
-	<pre class="brush:js">
-		let x = 10;
-		{
-			console.log(x); // *** not defined, the new define is below
-			let x = 100;
-			let x2 = 11;
-			console.log(x); // 100
-		}
-		console.log(x); // 10
-		console.log(x2) ; // not defined.
-	</pre>
-</p>
-<p>all var's variables intend to be a function
-	<pre class="brush:js">
-		{
-			var x2 = 10;
-		}
-		console.log(x2); // 10
-		function printing(){
-			for(var i = 0; i&lt;10; i++) {
-			  console.log(i)
+			// index.js
+			var x = require('module_x.js');
+			console.log(x.x); // 10
+		</pre>
+	</li>
+	<li>In nodejs, the "this" is referenced to the <i style="color:red">global</i> global variable when using it in a function or in nodejs interpreter.
+		<pre class="brush:js">
+			function f(){
+				this.x = 10;
 			}
+			f();
+			console.log(x); // 10 
+			console.log(global.x); // 10
+		</pre>
+		<p>All defined global variable in the module will be mounted to the global variable.</p>
+		<p><a href="#nodejs_global">Global variable</a></p>
+	</li>
+	<li>
+		In nodejs, the "this" is referenced to its instance when using it in a constructor.
+		<p class="starMark">* If a function is called with a "new", then the function is treated as a constructor.</p>
+		<pre class="brush:js">
+		function f(){
+			this.x = 10;
 		}
-		printing()
-		console.log(i) // undefined, var's scope is the function
-	</pre>
-</p>
-</li>
-</ol>
-<h4>Variable types</h4>
-<div class="featureList">
-<ol>
-<li>Primitive types: number, string, boolean, null, undefined, symbol : all symbol are unique. </li>
-<li>Object: objects, Array, Date, Map, Set and Regex</li>
-</ol>
-</div>
-</div>
-</div>
-</li>
-<li>
-<div class="content" id="jsThis">
-<h3>Global "this"</h3>
-<div class="featureList">
-<ol>
-<li>The "this" are different in the global environments of NodeJs and HTML</li>
-<li>In html, the global "this" is set to the "window" object.</li>
-
-<li>In nodejs, the "this" is referenced to the <i>module.exports</i> when using it in a global environment.
-<pre class="brush:js">
-// module_x.js
-this.x = 10;
-console.log(module.exports.x); // 10
-
-// index.js
-var x = require('module_x.js');
-console.log(x.x); // 10
-</pre>
-</li>
-<li>In nodejs, the "this" is referenced to the <i style="color:red">global</i> global variable when using it in a function.
-<pre class="brush:js">
-function f(){
-	this.x = 10;
-}
-f();
-console.log(x); // 10 
-console.log(global.x); // 10
-</pre>
-<p>All defined global variable in the module will be mounted to the global variable.</p>
-<p><a href="#nodejs_global">Global variable</a></p>
-</li>
-<li>
-In nodejs, the "this" is referenced to its instance when using it in a constructor.
-<p class="starMark">* If a function is called with a "new", then the function is treated as a constructor.</p>
-<pre class="brush:js">
-function f(){
-	this.x = 10;
-}
-var f = new f();
-console.log(this); // {}
-console.log(global.x) // undefined.
-</pre>
-</li>
+		var f = new f();
+		console.log(this); // {}
+		console.log(global.x) // undefined.
+		</pre>
+	</li>
 </ol>
 </div>
 </div>
@@ -510,13 +434,14 @@ Object.keys(x).forEach((key) => {}); // it gives the key as string. The keys are
 </div>
 </li>
 <li>
-<div class="content" id="jsReference">
+<div class="content" id="reference">
 <h3>References</h3>
 <div class="featureList">
 <ol>
 	<li><a href="https://en.wikipedia.org/wiki/ECMAScript#Versions" target="_blank">ECMAScript Wiki</a></li>
 	<li><a href="http://www.jb51.net/article/81556.htm" target="_blank">Nodejs中的this详解</a></li>
 	<li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Control_flow_and_error_handling">JavaScript Guide</a></li>
+	<li><a href="https://www.w3schools.com/js/js_reserved.asp" target="_blank">Reversed words</a></li>
 </ol>
 </div>
 </div>

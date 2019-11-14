@@ -39,12 +39,13 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>ElasticSearch&nbsp;-&nbsp;Intro</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-06-29</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-06-29</span></p>
+<p class="date"><span class="created-date">Created:2019-06-29</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-11-13 [Macbook Pro 16-inch released today]</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
-<li><a href="#api">APIs</a></li>
-<li><a href="#mapping">Mapping [ToDo]</a></li>
+<li><a href="#mapping">Mapping</a></li>
+<li><a href="#api">Rest Api</a></li>
+
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -80,12 +81,12 @@ SyntaxHighlighter.all()
             </p>
         </li>
         <li>
-            Scalability: An index can be broken down into multiple shards. A shard is physicall stored in one node or multiple nodes to achieve data redundancy.
+            Scalability: An index (a table/relation) can be broken down into multiple shards (paritions). A shard is physicall stored in one node or multiple nodes to achieve data redundancy.
             <br>The average size of one shard is between a few GB and a few tens of GB.
             <br>Practice: The goal of multiple nodes in one cluster is to achieve high performance (throughput and short response time). Nodes should be put in the same data center to reduce the sync and rebalance time. High availability is achieved by using mutliple clusters in different data centers with Cross-cluster replication (CCR).
         </li>
         <li>
-            ES Index: elastic index is a composite index of different fields of docs with different data structure.
+            ES Index: elastic index is a composite index of different fields of docs with different data structure. (e.g. Schema of RDBMS)
             <pre class="brush:bash">
                     properties": {
                         "account_number": {
@@ -124,16 +125,21 @@ SyntaxHighlighter.all()
             will be performed on the multiple indices, <span style="color:red">a document will also be inserted into the multiple index ????.</span>
         </li>
         <li>
-            <h4>Structure</h4>
-            <pre>
-index_1
-shard_1_primary, shard_1_replica, shard_1_replica, shard_2_primary, shard_2_replica, shard_2_replica
+            <h4>Design & Architecture</h4>
+            <p>At the beginning, elasticsearch has a single index and all different documents are stored in the single index. And each document has a associated mapping type that indicates how this document should be indexed.</p>
+            <p>Elasticsearch has deprecated this design. Now elasticsearch can have multiple indexes (tables), and each index has a document type (mapping type) that tells how to indexes documents stored in this index. And each document doesn't need the associated mapping type anymore.</p>
+            <p>
+                Elasticsearch employs parition not only because data is too big to be accomdated by a single node, but also for improving the query throughput since a request can be queries concurrency.<br>
+                Replication is used for resilience.
+            </p>
+            <pre class="brush:bash">
+                index_1 => (shard_1_primary, shard_1_replica, shard_1_replica, shard_2_primary, shard_2_replica, shard_2_replica)
 
-node1, node2, node3
-cluster
+                node1, node2, node3
+                cluster
 
-# shard_1's primary and replica cannot exist on the same node.
-# node1 and node2 can co-exist on same machine.
+                # shard_1's primary and replica cannot exist on the same node.
+                # node1 and node2 can co-exist on same machine.
             </pre>
         </li>
     </ol>
@@ -141,10 +147,21 @@ cluster
 </div>
 </li>
 <li>
+    <div class="content" id="mapping">
+        <h3>Mapping</h3>
+        <p class="reference-box">
+            Mapping is the process of defining how a document, and the fields it contains, are stored and indexed.
+        </p>
+        <p>It's kind like the process of defining the data model in a RDBMS. Define each field's type and how to index can increase the query preformance.</p>
+    </div>
+</li>
+<li>
     <div class="content" id="api">
-        <h3>APIs</h3>
-        <p>{domain}{index}{endpoint}?{param}</p>
+        <h3>Rest Api</h3>
+        <p>{domain}{index}{endpoint}?{param}, by default, elasticsearch runs at :9200 port.</p>
+        
         <div class="featureList">
+            <h4>_cat API</h4>
             <ol>
                 <li>
                         <h4><a href="https://www.elastic.co/guide/en/elasticsearch/reference/7.2/cat.html" target="_blank">cat APIs</a></h4>
@@ -153,21 +170,64 @@ cluster
         _cat/{target}?[help|v|h={field, [field], ...}][&format=json]
                         </pre>
                 </li>
+            </ol>
+            <h4>Index Management API</h4>
+            <p>Index management involves creating, deleting, updating indexes. The metadata about each mapping contains</p>
+            <ol>
                 <li>
-                    <h4>Create an index</h4>
-                    <p>An index can be created by a HTTP PUT along with index_name, or by adding a new document to a unknown index and then the index is created automatically.</p>
-                    <p>ElasticSearch will detect the inserted document fields, and generate mapping for this index. As new field is inserted, the mapping is also growing. It is called dynamic mapping.</p>
-                    <pre class="brush:bash">
-                        # PUT {{domain}}index_name
-                        # list all index {{domain}}_cat/indices?v&format=json
+                    <p>List all indices</p>
+                    <p>GET /_cat/indices?v&format=json</p>
+                </li>
+                <li>
+                    <p>Get metadata (alias, mapping, setting) about a index</p>
+                    <p>GET /{index-name}</p>
+                </li>
+                <li>
+                    <p>Create index automatically</p>
+                </li>
+            </ol>
+            <h4>Create/Update/Access documents</h4>
+            <ol>
+                <li>
+                    <p>Push document into elasticsearch</p>
+                    <p>Two methods for pushing data into elastichsearch, POST without id will store the document and generates the id, PUT with id will update the doc and its version if already exist.
+                        POST /{index-name}/_doc, body: json object.<br>
+                        PUT /{index-name}/_doc/{id}<br>
+                        <p><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-index_.html" target="_blank">reference: https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-index_.html</a></p>
+                    </p>
+                    <pre class="brush:javascript">
+                        // response.
+                        {
+                            "_index": "index-name",
+                            "_type": "_doc",
+                            "_id": "rGIcaG4BHnqRwlrZOHsQ", // _id is automatically generated if using POST, using PUT with designated id can control this field.
+                            "_version": 1, // number of update.
+                            "result": "created",
+                            "_shards": {
+                                "total": 2,
+                                "successful": 1,
+                                "failed": 0
+                            },
+                            "_seq_no": 0, // a index global count, update/create operation will increment this number.
+                            "_primary_term": 2
+                        }
                     </pre>
                 </li>
                 <li>
-                    <h4>Add document with _doc or _bulk endpoint.</h4>
+                    <p>Get document by id: GET /{index-name}/_doc/{id}</p>
+                    <p></p>
+
                 </li>
+            </ol>
+            <h4>Query/Search documents</h4>
+            <p>Search criteria can be specified at either URI params or request body. Request body is using the Query DSL and it is more expressive.</p>
+            <ol>
                 <li>
-                    <h4>Search document with _search endpoint.</h4>
-                    <p>Search criteria can be specified at either URI params or request body. Request body is using the Query DSL and it is more expressive.</p>
+                    <p>URI search<br>
+                        1). GET /{index-name}/_search?q={query}
+                        2). GET /_search?q={query}
+                    </p>
+                    <p><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/search-uri-request.html" target="_blank">https://www.elastic.co/guide/en/elasticsearch/reference/current/search-uri-request.html</a></p>
                     <pre class="brush:bash">
                         # HTTP GET Request Body
                         {
@@ -191,6 +251,24 @@ cluster
                         QUERY_THEN_FETCH (default): first sorting over the all relavent shards, then ask N documents according the new sorting.<br>
                         ...
                     </p>
+                </li>
+            </ol>
+        </div>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>Create an index</h4>
+                    <p>An index can be created by a HTTP PUT along with index_name, or by adding a new document to a unknown index and then the index is created automatically.</p>
+                    <p>ElasticSearch will detect the inserted document fields, and generate mapping for this index. As new field is inserted, the mapping is also growing. It is called dynamic mapping.</p>
+                    <pre class="brush:bash">
+                        # PUT {{domain}}index_name
+                        # list all index {{domain}}_cat/indices?v&format=json
+                    </pre>
+                </li>
+                <li>
+                    <h4>Add document with _doc or _bulk endpoint.</h4>
+                </li>
+
                     <p>
                         <h4>Multi-index search</h4>
                        
@@ -209,6 +287,7 @@ cluster
 <div class="featureList">
     <ol>
         <li><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/getting-started.html" target="_blank">ElasticSearch Get Started.</a></li>
+        <li><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html" target="_blank">Mapping</a></li>
         <li><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-body.html" target="_blank">_search request body.</a></li>
     </ol>
 </div>
