@@ -86,8 +86,8 @@ SyntaxHighlighter.all()
                 </pre>
             </p>
         </li>
-        <li> <h4>Windows installation</h4>
-            <p>Same as Windowns, the default installation path is /Library/PostgreSQL/{version_number}/</p>
+        <li> <h4>MacOS installation</h4>
+            <p>Same as Windows, the default installation path is /Library/PostgreSQL/{version_number}/</p>
         </li>
     </ol>
    
@@ -107,7 +107,7 @@ SyntaxHighlighter.all()
                         psql -h localhost -U postgres -d postgres -p 5432
                         // -h server address, -p port number, -U username, -d database 
 
-                        // prompt {db_name}=#
+                        //{db_name}=#
                         postgres=#
                     </pre>
                     By default, it will connect to the postgres database.
@@ -121,6 +121,7 @@ SyntaxHighlighter.all()
                         select current_database(); -- show the current database.
                         create database mydb; -- create a new database named mydb.
                         \connect mydb; -- connect to a mydb.
+                        \conninfo; -- print database name, server address, role (user) and port.
                     </pre>
                 </li>
                 <li>
@@ -148,7 +149,10 @@ SyntaxHighlighter.all()
 <li>
     <div class="content" id="authentication">
         <h3>Login Authentication</h3>
-        <p>PostgreSQL login authentication is controlled by /etc/postgresql/10/main/pg_hba.conf. </p>
+        <p>
+            PostgreSQL login authentication is controlled by /etc/postgresql/10/main/pg_hba.conf.<br>
+            Listen to public ip /etc/postgresql/10/main/postgresql.conf
+        </p>
         <div class="featureList">
             <ol>
                 <li>
@@ -173,11 +177,22 @@ SyntaxHighlighter.all()
                     PostgreSQL distinguishes the behavior of local login (local, unix domain socket) and remote login (host, socket).<br>
                     local login does not need a source address
                 </li>
-                <li>0.0.0.0/0 matches all</li>
-                <li>authentication method<br>
-                md5: using role password to login <br>
-                peer: the OS username same as Role name. #<span style="color:red">this is why another OS user (nan) cannot login  
-                    DB role postgres. After change this field to md5, nan can login postgres. ** But only one auth method can be used for a role ** </span>
+                <li>
+                    0.0.0.0/0 matches all<br>
+                    In order to allow remote connection, it also need to modify the listen ip address.
+                    <pre class="brush:bash">
+                        netstat -nlt
+                        # tcp        0      0 127.0.0.1:5432  means the postgres server only listen to localhost.
+                    </pre>
+                    Modify "postgresql.conf" with adding line <span class="inline-code">listen_addresses = '*'</span>
+                    <br>
+                    In addition, if it's running on Azure or AWS, the VM's ip port has to be enabled.
+                </li>
+                <li>
+                    authentication method<br>
+                    md5: using role password to login <br>
+                    peer: the OS username same as Role name. #<span style="color:red">this is why another OS user (nan) cannot login  
+                        DB role postgres. After change this field to md5, nan can login postgres. ** But only one auth method can be used for a role ** </span>
                 </li>
             </ol>
         </div>
