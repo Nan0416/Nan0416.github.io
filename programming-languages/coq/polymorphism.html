@@ -1,0 +1,138 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>Coq&nbsp;Polymorphism</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-11-17">
+<meta name="keywords" content="coq">
+<meta name="keywords" content="polymorphism">
+<meta name="keywords" content="higher-order function">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushPython.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushSql.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>Coq&nbsp;-&nbsp;Polymorphism</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-11-17</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-11-17</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+<p>Polymorphism makes type as a parameter, but this parameter can be used in type's position.</p>
+<div class="featureList">
+    <ol>
+        <li>
+            <h4>Example</h4>
+            <pre class="brush:bash">
+                Inductive natlist: Type :=
+                | nil
+                | cons (n: nat) (l: natlist).
+
+                Inductive list (X: Type) :Type := (* inductive definition usually doesn't need a parameter. but now it can accept a type parameter.*)
+                | nil
+                | cons (n: X) (l: list X). (* inside the definition, X is used as a type. *)
+
+                Definition mynatlist : list nat := cons n nil.  
+            </pre>
+        </li>
+        <li>
+            <h4>Definition function for the generic list</h4>
+            <p>The type parameter should be placed at the beginning since we will use it in the later argument.</p>
+            <pre class="brush:bash">
+                Fixpoint length (X: Type) (l: list X): nat :=
+                match l with
+                | nil => O,
+                | cons _ l' => S (length X l')
+                end.
+            </pre>
+        </li>
+        <li>
+            <h4>Implicit type parameter in function</h4>
+            <p>Coq can infer the type parameter according to the input.</p>
+            <pre class="brush:bash">
+                Fixpoint length {X: Type} (l: list X): nat :=
+                match l with
+                | nil => O,
+                | cons _ l' => S (length X l')
+                end.
+            </pre>
+            <p>When applying length with giving a list of a certain type instaces, coq can infer the type.</p>
+            <p>You can also supply the type by using @</p>
+            <pre class="brush:bash">
+                @length nat l. (* in this case, @length must be given the type. *)
+            </pre>
+        </li>
+        <li>
+            <h4>higher-order function</h4>
+            <p>A function has another function as input</p>
+            <pre class="brush:bash">
+                Fixpoint natlistfilter (predicate: nat -> bool) (l: natlist) : natlist :=
+                match l with
+                | nil => nil
+                | cons n' l' => if (predicate n') then cons n' (natlistfilter predicate l') else (natlistfilter predicate l')
+                end.
+
+                Fixpoint filter {X: Type} (predicate: X -> bool) (l: list X): list X :=
+                match l with
+                | nil => nil
+                | cons n' l' => if (predicate n') then cons n' (natlistfilter predicate l') else (natlistfilter predicate l')
+                end.
+            </pre>
+        </li>
+        <li>
+            <h4>Anonymous function</h4>
+            <p></p>
+        </li>
+    </ol>
+</div>
+</div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>

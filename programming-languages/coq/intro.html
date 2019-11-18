@@ -1,0 +1,253 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>Coq&nbsp;A proof assistant tool</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-11-16">
+<meta name="keywords" content="Proof">
+<meta name="keywords" content="Logic">
+<meta name="keywords" content="Math">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushPython.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushSql.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>Coq&nbsp;-&nbsp;Introduction</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-11-01</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-11-01</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#data-structure">Data structures/Collections</a></li>
+<li><a href="#proof">Proof</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+<p>Coq (kào kē) is a proof assistant tool. It allows to proof logic/math theorem. The proof workflow is <br>
+    #1. define the object you want to prove, <br>
+    #2. define the logic.<br>
+</p>
+<p>
+    For example, proving 1 + 1 = 2. First define what is 1, 2, + and =. e.g. 1 is O, 2 is S(O) 3 is S(S(O)), tells Coq the definition and property of 1, 2, 3, and how + works. And coq suppose if A = B, then A and B have the same. <br>
+    And then you will need to instruct how to simplify the left and right sides according to the number's properties and +. Finally reach the left and right sides have the same form.
+    <span style="color:red">Coq's = is symbolic same. Everything, number and boolean, are symbols in Coq, they don't have any meaning. Or their meaning are given by functions.</span>
+</p>
+<div class="featureList">
+    <ol>
+        <li>
+            <h4>Coq with Programming Language</h4>
+            <p>When designing a programming language, we need to guarantee the programming language has two properties, progress (the program doesn't stuck) and prevservation (deterministic), according to the existed syntax and semantics.</p>
+            <p>We can define the syntax and semantics of a programming language in coq, and use coq to prove the programming language doesn't stuck and is always deterministic.</p>
+        </li>
+        <li>
+            <h4>Definition</h4>
+            <p>Coq can define data type and its instances with "Inductive", operation/function with "Definition/Fixpoint"</p>
+        </li>
+        <li>
+            <h4>Proof</h4>
+            <p>Coq function is designed for using, is designed for proving. So Coq doesn't allow to invoke a function without proving something. A function should be invoked a testcase ("Example") or a theorem ("Theorem"). 
+                And its proof must follow immediately, otherwise using "Admitted" to skip.</p>
+            <p>
+                Example: an example is used to prove a single case (a single input), kind like a testcase in software development.<br>
+                Theorem: a theorem is used to prove all cases, forall.
+            </p>
+        </li>
+        <li>
+            <h4>Example</h4>
+            <p>
+                Definition what is number (nat), and a function toZero. Prove for all the nat input, the toZero returns O.
+            </p>
+            <p style="color:red">
+                Fixpoint/Defintion name (arg: type) (arg: type) .. : return_type := {body}.<br>
+                Definition name : type := {value}.
+            </p>
+            <p style="color:blue">
+                Fixpoint/Defintion name (arg1 arg2: type) : return_type := {body}.<br>
+                Definition name := {value}.
+            </p>
+            <pre class="brush:bash">
+                    Inductive nat: Type :=
+                    | O
+                    | S (n: nat).
+
+                    Fixpoint toZero(n: nat): nat :=
+                    match n with
+                    | O => O 
+                    | S n' => toZero n' (* applying function doesn't need () *)
+                    end.
+
+                    (* invoke this function *)
+                    Compute toZero (S (S O)). 
+
+                    (* example prove a single case *)
+                    Example example_name: toZero (S (S (S O))) = O.
+                    Admitted. (* skip the proof *)
+
+                    (* theorm prove for all *)
+                    Theorem theorem_name: forall n: nat, toZero n = O.
+
+                    (* implies -> *)
+                    Theorem theorem_name_2: forall n m: nat, 
+                        n = m (* this is a pre-condition *)
+                        -> n + n = m + m. (* we still prove the equality but with a precondition *)
+            </pre>
+        </li>
+        <li>
+            <h4>Proof strategies & Tactis</h4>
+            <p>Common proof strategies: <br>
+                simplication:<span class="inline-code">simpl.</span> works for a single case, where it apply the value to the function to calculate the result.
+                introduce pre-condition: <span class="inline-code">intros.</span> if a theorem has something on the left side of ->, they can introduced as assumption.
+                rewrite with assumption: <span class="inline-code">rewrite.</span> apply assumption to replace symbols.
+                case by case
+                induction
+            </p>
+            <p>When proving a claim, we need to think about which strategy or strategies combination to use.</p>
+            <p>Tactis: tactis are the proof operator provides by Coq. With coq, we can simplify formula, introduce pre-condition, rewrite formula with introduced pre-condition...</p>
+        </li>
+    </ol>
+</div>
+</div>
+</li>
+<li>
+    <div class="content" id="data-structure">
+        <h3>Data structures/Collections</h3>
+        <p>Coq is not programming language for developing application, such as Java and Python. It's a proof language. So Coq doesn't provide the concept of heap memory. Collections data is wrapped by functions.</p>
+        <p>An item is wrapped by a function, invoking this function is same as accessing the data. For collection structure, data items are wrapped one by one.</p>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>List</h4>
+                    <pre class="brush:bash">
+                        Inductive natlist: Type :=
+                            | nil (* empty *)
+                            | cons (n: nat) (l: natlist) (* use cons to wrap a nat and another list. *)
+                        Notation "x :: l" := (cons x l)
+                        Notation "[ ]" := nil.
+                        Notation "[ x ; .. ; y ]" := (cons x .. (cons y nil) ..).
+
+                        Fixpoint repeat (n count : nat) : natlist :=
+                            match count with
+                            | O ⇒ nil
+                            | S count' ⇒ n :: (repeat n count')
+                            end.
+                        Fixpoint length (l: natlist) : nat :=
+                            match l with
+                            | nil => O
+                            | cons _ l' => S (length l')
+                            end.
+                    </pre>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="proof">
+        <h3>Proof Strategies</h3>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>rewrite</h4>
+                    <p>assumption H: n = m, prove n + n = m + m, apply <span class="inline-code">rewrite -> H</span> will replace all n in the target m, so have m + m = m + m.<br>
+                    or <span class="inline-code">rewrite &lt;- H</span> will replace m by n, so have n + n = m + m.
+                    </p>
+                </li>
+                <li>
+                    <h4>destruct</h4>
+                    <p>case by case.</p>
+                    <pre class="brush:bash">
+                        Theorem plus_1_neq_0 : forall n : nat,
+                            (n + 1) =? 0 = false.
+
+                        intros n. destruct n as [| n'] eqn:E. 
+                        (* destruct n according to nat definition, 
+                        arg1 | arg2 | ...
+                        arg1 is the argument of the first constructor, since first constructor is O, which doesn't have arguments, so it is empty.
+                        arg2 is the argument of the second constructor, which is n'.
+                        arg2 can be a list of arguments if the second constructor has multiple input. e.g. natlist.
+                        in each sub-goal, the "n" is automatically replaced by the case. *)
+                        (* 
+                            in this case, n can be O or S n' 
+                            so the proof becomes (O + 1) =? 0 = false and (S n' + 1) =? 0 = false.
+                            case 1 can be simplied.
+                            case 2 can also be simplied by (S n' + 1) => S (n' + 1), which is different from O according to the default of =?.
+                        *)
+                        - simpl. reflexivity. (* - means a case *)
+                        - simpl. reflexivity.
+                    </pre>
+                </li>
+                <li>
+                    <h4>Induction</h4>
+                    <p>Induction introduces two cases, base case and inductive case. Besides the two cases, it's also introduces a assumption for the inductive case.</p>
+                    <pre class="brush:bash">
+                        Theorem plus_n_O : forall n:nat, n = n + 0.
+                        Proof.
+                        intros n. induction n as [| n' IHn']. (* the inductive case has number n' and assumption IHn' *)
+                        - reflexivity.
+                        (* IHn' :  n' = n' + 0, we need to prove S n' = S n' + 0* )
+                        - simpl. rewrite &lt;- IHn'. reflexivity.  Qed.
+                    </pre>
+                </li>
+                <li>
+                    <h4>Inline proof</h4>
+                    <p>Some large proof may depend on trivial proof, we can prove the trivial proof inline.</p>
+                    <pre class="brush:bash">
+                        Theorem mult_0_plus' : forall n m : nat,
+                            (0 + n) * m = n * m.
+                        Proof.
+                            intros n m.
+                            assert (H: 0 + n = n). { reflexivity. } (* given a name H to the proof. *)
+                            rewrite -> H. (* apply the proof *)
+                            reflexivity.  Qed.
+                    </pre>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li><a href="https://softwarefoundations.cis.upenn.edu/lf-current/Induction.html#lab48" target="_blank">Software Foundations Volume 1: logical foundations.</a></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>
