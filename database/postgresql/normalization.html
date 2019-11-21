@@ -1,0 +1,201 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>Database Design&nbsp;Normalization</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-11-20">
+<meta name="keywords" content="database">
+<meta name="keywords" content="Function Dependency">
+<meta name="keywords" content="normalization">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushPython.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushSql.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>Database Design&nbsp;-&nbsp;Normalization</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-11-01</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-11-01</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#normal-form">Normal Forms</a></li>
+<li><a href="#functional-dependency">Functional Dependency</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+<p>Noramlization: a process of removing redundant information, decomposing a relation into multiple relations.</p>
+<div class="featureList">
+    <h4>Design Principles</h4>
+    <ol>
+        <li>A tuple (a row) should represents a single entity or a a single relationship. (Don't put an employee and an department in one row)</li>
+        <li>No redundant information, which can waste storage, cause update (insertion, modification, deletion) anomalies. </li>
+        <li>Relations should be designed such their tuples have as few null as possible. </li>
+        <li>lossless join</li>
+    </ol>
+    <h4>Functional Dependencies</h4>
+    <ol>
+        <li>A set of attributes Y in a relation depends on another set of attributes X in the same relation. (X -> Y)</li>
+        <li>A set of attributes X functionally determines a set of attributes Y if the value of X determines a unique value for Y (X -> Y)</li>
+        <li>If X1 = X2, then Y1 = Y2; if Y1 = Y2, we don't if X1 = X2. e.g. SSN -> name, gender, date_of_birth</li>
+        <li>Trivial functional dependency: {A, B, C} -> {B, C}</li>
+    </ol>
+</div>
+</div>
+</li>
+<li>
+    <div class="content" id="normal-form">
+        <h3>Normal Forms</h3>
+        <p>Normalization: The process of decomposing unsatisfactory "bad" relations by breaking up their attributes into smaller relations.</p>
+        <p>Normal form: Condition using keys and FDs of a relation to certify whether a relation schema is in a particular normal form </p>
+        <p>A relation in a higher normal form has less redundant information than in a lower normal form.</p>
+        <p>Denormalization: The process of storing the join of higher normal form relations as a base relation—which is in a lower normal form.<br>
+            <span style="color:red">generating a lower normal form relations by join multiple higher normal form relations.</span>
+        </p>
+        <div class="featureList">
+            <h4>Concepts</h4>
+            <ol>
+                <li>superkey: a set of attributes that can uniquely identify a tuple in a relation.</li>
+                <li>key: the minimum set of superkey.</li>
+                <li>candidate key: all keys are called candidate key.</li>
+                <li>primary key: one of the candidate keys is designated as the primary key.</li>
+                <li>prime attribute: an attribute in one of the candidate keys.</li>
+            </ol>
+        </div>
+        <div class="featureList">
+            <h4>normal forms</h4>
+            <ol>
+                <li>1st normal form: no composite attributes, all attribute values are atomic (primitive type).</li>
+                <li>2nd normal form: 1st normal form + no non-prime attribute is functionally dependent on any subset of any candidate key.
+                    <br>
+                    <img src="./normal-forms/nf2.png" width="350" height="150">
+                    <p>manufacturer country is a non-prime attribute because it is not part of any candidate keys, and it depends on manufacturer attribute, which is a subset of candidate key. So it's not in the 2nd normal form.</p>
+                </li>
+                <li>3rd normal form: 2nd normal form + <br>
+                    no non-prime attribute depends on other non-prime attribute. (Same as, non-prime attributes only directly depend on candidate keys)<br>
+                    <img src="./normal-forms/nf3.png" width="350" height="120">
+                    <p>winner's date of birth depends on not only the primary key but also the winner, which is another non-prime attribute.</p>
+                </li>
+                <li>
+                    BCNF (3.5th) normal form<br>
+                    For all FDs X -> Y, either the fd is trivial or X is a super key. <span style="color:red">All attributes are determined by some keys.</span>
+                    example [A, B, C, D, E]. {A, B, C} and {D, E} are the two candidate keys so all attributes are prime. But we also have D -> C, which violates BCNF.
+                </li>
+                <li>4th normal form.
+                    <p><span style="font-weight: bold;">Multivalued dependency</span>: 
+                    <pre class="brush:bash">
+                        course, language, lecturer
+                        cs101,  java,      David,
+                        cs101,  python,     John,
+                        cs101,  java,       John,
+                        cs101,  python,    David
+                    </pre>
+                    t[course] all the same, t1 & t3 have the same language, t2 & t4 have the same language, t2 & t3 have the same lecture, t1 & t4 have the same lecturer.
+                    <br>
+                    course ->> language, course ->> lecturer.
+                    </p>
+                    4th normal form: every non-trivial multivalue ddependency X—>>Y inF+, X is a superkey for R. (trivial: X U Y = R, or Y belongs to X.)
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="functional-dependency">
+        <h3>Functional Dependency</h3>
+        <div class="featureList">
+            <h4>Armstrong's inference rules</h4>
+            <ol>
+                <li>If Y is a subset of X, then X -> Y</li>
+                <li>If X -> Y, then XZ -> YZ</li>
+                <li>If X -> Y and Y -> Z, then X -> Z</li>
+            </ol>
+            <p>The above 3 rules forms a sound and complete set of inference rules.</p>
+            <h4>Deductive rules</h4>
+            <ol>
+                <li>Decomposition: If X -> YZ, then X -> Y and X -> Z.</li>
+                <li>Union: If X -> Y and X -> Z, then X -> YZ.</li>
+                <li>Psuedotransitivity: If X -> Y and WY -> Z, then WX -> Z.</li>
+            </ol>
+            <h4>Concepts</h4>
+            <ol>
+                <li>Closure of a set F of FD: F+ all FDs that can inferred from F.</li>
+                <li>Closure of a set attributes X with respect to F is the set of X+ of attributes that are functionally determined by X.</li>
+                <pre class="brush:bash">
+                    # algorithm for finding X+ by given X and F.
+                    X+ := X.
+                    do{
+                        len := size(X+);
+                        for(FD := Y->Z in F){
+                            if(every attribute of Y in X+){
+                                X+ := X+ union Z
+                            }
+                        }
+                    }while(len != size(X+));
+                    return X+;
+                </pre>
+                <li>Two sets of FDs F and G are equivalent if (F+ = G+)<br>
+                    1). Every FD in F can be inferred from G<br>
+                    2). Every FD in G can be inferred form F.
+                </li>
+                <li>F covers G if G+ is a subset of F+.</li>
+                <li><span style="font-weight: bold">Extraneous attribute: an attribute can be removed from a FD. if {a1, a2} -> Y, then {a1, a2, a3} -> Y, but a3 is an extraneous attribute.</span></li>
+            </ol>
+            <h4>Minimal set (cover) of FDs</h4>
+            <p>A set of FDs is minimal if</p>
+            <ol>
+                <li>Every dependency in F has a single attribute for its RHS (right hand side.).</li>
+                <li>Cannot remove any FD from F and have the same equivalent sets as F.</li>
+                <li>Cannot remove any attributes from left hand side, and have the same equivalent sets as F.</li>
+                <li><p><img src="./normal-forms/algorithm-for-finding-minimum-set.png" width="400" height="200"></p></li>
+            </ol>
+            
+        </div>
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li><a>Chapter 14 Functional Dependency And Normal Forms, Ramez Elmasri, Shamkant B. Navathe</a></li>
+        <li>Wikipedia: normal forms.</li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>

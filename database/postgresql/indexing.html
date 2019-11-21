@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>Database Design&nbsp;Indexing</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-11-20">
+<meta name="keywords" content="database design">
+<meta name="keywords" content="indexing">
+<meta name="keywords" content="query">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushPython.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushSql.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>Database Design&nbsp;-&nbsp;Indexing</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-11-20</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-11-20</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+<p>Indexes are data structure to facilitate the query process. It provides a secondary access path. A relation can have any number of indexes on arbitrary columns.</p>
+<p>Indexes is like a map data structure, where the key is the indexed column(s), the key is a pointer to disk of the row.</p>
+<div class="featureList">
+    <ol>
+        <li>Data file: the file that stores the table.</li>
+        <li>Primary Index: designate a superkey as the order for a table's physical storage. In other words, the primary index gives an order of the data file.<br>
+            <span style="color:red">Primary index is not necessary to use the fields of the primary key, but it has to be unique.</span>
+        </li>
+        <li>Clustering index: designate a non unqiue field(s) as the order for the data file. <br>
+            <span style="color:red">Because each table can only have one physical store, then primary index and clustering index cannot use together.</span>
+        </li>
+        <li>
+            Ordered data file vs. Heap file: A table's physical store can be unordered, in this case, it's called a heap file. <br>
+            Insertion & Deletion of an ordered file are slow because it has to shift record. Using a heap file can be quick because it just appends new record at the end of the file.<br>
+            Postgres database uses heap file.
+        </li>
+        <li>
+            Secondary index: an index create on any fields.
+        </li>
+    </ol>
+</div>
+<p>Dense & sparse only for <span style="color:red">ordered</span> indexes<br>
+    1). dense index: for each data record (tuple), there is an index record.
+    2). sparse index: for each block of data records, there is an index record that point to the first data record. 
+    (But the data file has to be sorted according to the index, <span style="color:red">so is there a secondary sparse index? √</span>)
+    <br><br>
+    , which means postgresql doesn't sparse index.
+</p>
+<h4>Multilevel index</h4>
+</div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>
