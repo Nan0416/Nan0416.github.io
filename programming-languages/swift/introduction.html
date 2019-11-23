@@ -1,0 +1,148 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>Swift&nbsp;Introduction</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-11-22">
+<meta name="keywords" content="swift">
+<meta name="keywords" content="programming-language">
+<meta name="keywords" content="apple">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<!--<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushPython.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushSql.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />-->
+
+<link rel="stylesheet"
+      href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.16.2/build/styles/default.min.css">
+<script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.16.2/build/highlight.min.js"></script>
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+    hljs.initHighlightingOnLoad();
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>Swift&nbsp;-&nbsp;Introduction</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-11-22</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-11-22</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#primitive-types">"primitive types (int, double)"</a></li>
+<li><a href="#control-flow">Control flow</a></li>
+<li><a href="#compiler">Compiler</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+<p>Swift is general-purpose programming language developed by . Its development started in July 2010, and the first version 1.0 was in 2014. The current (2019.11) version is 5.1.2</p>
+<p>Swift is a multi-paradigm (object-oriented), compiled programming language.</p>
+<div class="featureList">
+    <h4>Special Features</h4>
+    <ol>
+        <li>Protocol-oriented programming (interface/agreement): extension based on protocol. (like C# extension methods).</li>
+        <li>Value type: support not only class, but also struct. (different from java, same as C#)</li>
+        <li>No primitive type: int, double are value type (struct).</li>
+        <li>Support closure.</li>
+        <li>Optional and chaining.</li>
+        <li>Type inference: 后置type</li>
+        <li>Functions are the first-class member. (different from java).</li>
+        <li>Garbage collector: automatic reference counting (ARC).</li>
+        <li>let & var: let makes a constant, var makes a variable. <span style="color:red">This constant restricts the content of value type and the reference of reference type.</span></li>
+        <li>switch support break <span style="color:red">use fallthrough instead of break</span></li>
+    </ol>
+</div>
+</div>
+</li>
+<li>
+    <div class="content" id="syntax">
+        <h3>Syntax</h3>
+        <p>Features:<br>
+        0). no ; semicolon<br>
+        1). type inference<br>
+        2). string interpolation<br>
+        3). double-quoted string<br>
+        4). statement, function invocation can be written in global, no main function is required (kind of python)
+        </p>
+        <pre>
+<code class="swift">
+    // declare variable
+    // {let | var} variable_name [: type] = value
+    let age = 25
+    let weigth: Double = 144
+
+    // string interpolation, string is double-quoted.
+    let intro: String = "I am /(age) years old"
+    print(intro)
+
+    // let assignment.
+    // a let variable can be assigned after the declaration, but only assign once and cannot use it before the assignment.
+    let message: String
+    // print(message) cannot use before assigning value.
+    message = "hihi"
+    print(message)
+</code>
+        </pre>
+        <h4>Optional</h4>
+    </div>
+</li>
+<li>
+    <div class="content" id="primitive-types">
+        <h3>"primitive types"</h3>
+        <p>Swift doesn't have primitive types like C/C++ and Java. Numeric type and boolean type are struct, so they start with a capital letter.</p>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <p>Integer: swift provides 8,16,32,64 bit signed and unsigned integers.</p>
+                    <p>Int8, Int16, Int32, Int64, UInt8, UInt16, UInt32, UInt64</p>
+                    <p>Int/UInt: a signed/unsigned integer whose size is same as the platform native word size. 64-bit machine is Int64/UInt64.</p>
+                    
+                </li>
+            </ol>
+        </div>
+<pre>
+<code class="swift">
+
+</code>
+</pre>
+    </div>
+</li>
+<li>
+    <div class="content" id="control-flow">
+        <h3>Control Flow</h3>
+        
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li><a href="https://en.wikipedia.org/wiki/Swift_(programming_language)" target="_blank">Swift (programming languages) wiki</a></li>
+        <li><a href="https://docs.swift.org/swift-book/ReferenceManual/Types.html" target="_blank">Types</a></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>

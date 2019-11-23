@@ -45,6 +45,7 @@ SyntaxHighlighter.all()
 <li><a href="#intro">Introduction</a></li>
 <li><a href="#normal-form">Normal Forms</a></li>
 <li><a href="#functional-dependency">Functional Dependency</a></li>
+<li><a href="#decomposition">Decomposition</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -179,7 +180,49 @@ SyntaxHighlighter.all()
                 <li>Cannot remove any attributes from left hand side, and have the same equivalent sets as F.</li>
                 <li><p><img src="./normal-forms/algorithm-for-finding-minimum-set.png" width="400" height="200"></p></li>
             </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="decomposition">
+        <h3>Decomposition</h3>
+        <p>Decompose the universal relation schema R into a set of relation schemas D = {R1, R2, R3 ... Rn} that will become the relational database schema by using the functional dependencies.</p>
+        <p>Universal Relation Schema (URS): a relation schema R = {A1, A2, A3, ...} that includes all the attributes of the database.</p>
+        <div class="featureList">
+            <h4>Properties of decomposition</h4>
+            <ol>
+                <li>preservation: every attribute in R must appear in at least one relation Rj. (no attribute is lost).</li>
+                <li>having each Rj satisfied BCNF or 3NF.</li>
+            </ol>
             
+        </div>
+        <h4>Projection of F on Ri</h4>
+        <p>P_ri(F): Suppose F is a set of FDs on R, then the projection of F on Ri is the maximum subset (FD: X->Y) of F+, where X and Y belongs to Ri.</p>
+        <p><span style="font-weight:bold">Dependency Preservation Property of a Decomposition</span>: (P_r1(F) U P_r2(F) U P_r3(F))+ = F+. // the original F is equivalent to the union of projection on each Ri.</p>
+        <p><span style="font-weight:bold">Non-additive (Lossless) Join Property of a Decomposition</span>: join the relevant tuple in each relations will generate the tuple in the original relation.</p>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>Algorithm for determine lossless join</h4>
+                    <pre class="brush:bash">
+                        R = {A1, A2, A3, A4} D = {R1,R2,R3} R1 = {A1, A2}, R2 = {A3, A4}, R3 = {A2, A3}
+                        # 1. create a matrix (# row = # relation Ri, # column = # attribute in original R)
+                        # 2. mark this matrix cell to ai if the relation Ri contains the attribute, otherwise b.
+                        matrix = [
+                            A1,     A2,     A3,     A4
+                        R1   a1     a2      b13     b14
+                        R2   b21    a2      a3      b24
+                        R3   b31    b32     a3      a4
+                        ]
+
+                        # using the given functional dependencies to modify the matrix, for each FD X->Y, if two or more rows has the "a" attributes of X, then mark the Y to "a" as well.
+                        # loop until matrix doesn't change.
+
+                        if one of the row has all "a", then its lossless.
+
+                    </pre>
+                </li>
+            </ol>
         </div>
     </div>
 </li>
