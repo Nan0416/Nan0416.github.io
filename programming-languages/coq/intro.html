@@ -44,7 +44,9 @@ SyntaxHighlighter.all()
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
 <li><a href="#data-structure">Data structures/Collections</a></li>
-<li><a href="#proof">Proof</a></li>
+<li><a href="#proposition">Proposition</a></li>
+<li><a href="#proof">Proof Strategies</a></li>
+<li><a href="#tactis">Coq Tactics</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -173,6 +175,11 @@ SyntaxHighlighter.all()
     </div>
 </li>
 <li>
+    <div class="content" id="proposition">
+        <h3>Proposition</h3>
+    </div>
+</li>
+<li>
     <div class="content" id="proof">
         <h3>Proof Strategies</h3>
         <div class="featureList">
@@ -231,6 +238,72 @@ SyntaxHighlighter.all()
                             rewrite -> H. (* apply the proof *)
                             reflexivity.  Qed.
                     </pre>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="tactis">
+        <h3>Coq Tactics</h3>
+        <p></p>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>Apply</h4>
+                    <p>Using apply to replace rewrite hypothesis when the hypothesis is exact the same as the thing we need to prove.</p>
+                    <pre class="brush:bash">
+                        Theorem qnApply: forall (n m: nat),
+                            n = m -> n = m.
+                        Proof.
+                            intros n m h.
+                            apply h. (* rewrite -> h. reflexivity. *)
+                        Qed.
+                    </pre>
+                    <p>"apply" auto binding hypothesis's conclusion.</p>
+                    <p>
+                        Suppose we have hypothesis: <span style="color:red">(q r : nat), q = r -> [q;o] = [r;p])</span>, and we need to prove <span style="color:red">[n; o] = [m; p]</span>, 
+                        then "apply" will apply the conclusion to the goal by binding q to n, r to m. Then we need to prove n = m.
+                    </p>
+                </li>
+                <li>
+                    <h4>Injection</h4>
+                    <p>If two values are the same, then their constructors must be the same and have the same argument.</p>
+                    <p>If S m = S n, then m = n.</p>
+                    <p><span style="color:red">Injection on a equation will return all the equation that it can generate based on the properties of injection.</span></p>
+                    <p>The newly generated equations will be used as promise ("hypothesis") before the proof.</p>
+                </li>
+                <li>
+                    <h4>discriminate</h4>
+                    <p>If two values are created by different constructors, then they must be different.</p>
+                    <p>given the contradiction to "discriminate", "discriminate" will ignore the goal.</p>
+                    <pre class="brush:bash">
+                        Theorem eqb_0_l : forall n,
+                            0 =? n = true -> n = 0.
+                        Proof.
+                           intros n.
+                           destruct n as [| n'] eqn:E.
+                           - intros H. reflexivity.
+                           - simpl. intros H. discriminate H.  (* H: false = true *, discriminate will throw this subgoal.)
+                    </pre>
+                </li>
+                <li>
+                    <h4>unfold</h4>
+                    <p>unfold the function definition to its function body</p>
+                    <pre class="brush:bash">
+                        Definition square n := n * n.
+                        Lemma square_mult : forall n m, square (n * m) = square n * square m.
+                        Proof.
+                            intros n m. (* square (n * m) = square n * square m *)
+                            unfold square. (*   n * m * (n * m) = n * n * (m * m)   *)
+                    </pre>
+                </li>
+                <li>
+                    <h4>split</h4>
+                    <p>breaks conjunction down into </p>
+                </li>
+                <li>
+                    <h4>left & right</h4>
                 </li>
             </ol>
         </div>

@@ -39,10 +39,11 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Coq&nbsp;-&nbsp;Polymorphism</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-11-17</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-11-17</span></p>
+<p class="date"><span class="created-date">Created:2019-11-17</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-11-24</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
+<li><a href="#higher-order-function">Higher order function</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -52,7 +53,9 @@ SyntaxHighlighter.all()
 <li>
 <div class="content" id="intro">
 <h3>Introduction</h3>
-<p>Polymorphism makes type as a parameter, but this parameter can be used in type's position.</p>
+<p>Polymorphism makes type as a parameter, but this parameter can be used in type's position.<br>
+<span style="color:red">, which is much like Java/C#generics, C++ template.</span>
+</p>
 <div class="featureList">
     <ol>
         <li>
@@ -64,39 +67,88 @@ SyntaxHighlighter.all()
 
                 Inductive list (X: Type) :Type := (* inductive definition usually doesn't need a parameter. but now it can accept a type parameter.*)
                 | nil
-                | cons (n: X) (l: list X). (* inside the definition, X is used as a type. *)
+                | cons (x: X) (l: list X). (* inside the definition, X is used as a type. *)
 
-                Definition mynatlist : list nat := cons n nil.  
+                Definition n3 : nat := S (S (S O)).
+
+                Check nil. (* forall X : Type, list X *)
+                Check nil nat. (* list nat *)
+                Check cons. (*  forall X : Type, X -> list X -> list X *)
+                Check cons nat. (* nat -> list nat -> list nat *)
+                (* this "nat" is given to the X after the "list" *)
+
+                Definition mylistnat : list nat := 
+                    cons nat n3 (cons nat n3 (nil nat)).
             </pre>
         </li>
         <li>
-            <h4>Definition function for the generic list</h4>
-            <p>The type parameter should be placed at the beginning since we will use it in the later argument.</p>
+            <h4>Functions for generic type</h4>
             <pre class="brush:bash">
                 Fixpoint length (X: Type) (l: list X): nat :=
-                match l with
-                | nil => O,
-                | cons _ l' => S (length X l')
-                end.
+                    match l with 
+                    | nil _ => O
+                    | cons _ _ l' => S (length X l')
+                    end.
+
+                Compute length nat mylistnat.
             </pre>
         </li>
         <li>
-            <h4>Implicit type parameter in function</h4>
-            <p>Coq can infer the type parameter according to the input.</p>
+            <h4>Implicit type arguments for function & Argument</h4>
             <pre class="brush:bash">
-                Fixpoint length {X: Type} (l: list X): nat :=
-                match l with
-                | nil => O,
-                | cons _ l' => S (length X l')
-                end.
+                Fixpoint length' {X: Type} (l: list X): nat :=
+                    match l with 
+                    | nil _ => O
+                    | cons _ _ l' => S (length' l')
+                    end.
+
+                Compute length' lnat.
             </pre>
-            <p>When applying length with giving a list of a certain type instaces, coq can infer the type.</p>
-            <p>You can also supply the type by using @</p>
+            <p><span style="color:red">Don't (must not) need to supply the type.</span></p>
+            <h4>Argument directive</h4>
+            <p>By declaring a type is implicit we can futher reduce _</p>
             <pre class="brush:bash">
-                @length nat l. (* in this case, @length must be given the type. *)
+                    Arguments nil {X}.
+                    Arguments cons {X} _ _.
+                    
+                    Fixpoint length'' {X: Type} (l: list X): nat :=
+                        match l with
+                        | nil => O
+                        | cons _ l' => S (length'' l')
+                        end.
             </pre>
         </li>
         <li>
+            <h4>Implicit type arguments for type definition</h4>
+            <p>We can also apply the implicit type argument for type definition, which allows us to avoid the type arguments when declaring values.</p>
+            <p style="color:red">but it's not practical because it increase the difficuty of writing functions.</p>
+            <pre class="brush:bash">
+                Inductive list' {X: Type} : Type :=
+                | nil'
+                | cons' (x :X) (l: list').
+
+                Check nil'. (*  list' where?X : [ |- Type]*)
+                Check cons'. (* ?X -> list' -> list' *)
+                Check cons' n3. (* list' -> list' *)
+                
+                Definition mylistnat' :list' := cons' n3 nil'.
+            </pre>
+            <p>
+                1). mylistnat' type is just list', it's not list' nat.<br>
+                2). coq automatically infer n3 as nat. (nat must not be given)<br>
+                3). cons' false (cons' n3 nil'). cause error.
+            </p>
+        </li>
+    </ol>
+    </div>
+</div>
+</li>
+<li>
+    <div class="content" id="higher-order-function">
+        <h3>Higher-order function</h3>
+        <div class="featureList">
+            <ol>
+            <li>
             <h4>higher-order function</h4>
             <p>A function has another function as input</p>
             <pre class="brush:bash">
@@ -115,7 +167,16 @@ SyntaxHighlighter.all()
         </li>
         <li>
             <h4>Anonymous function</h4>
-            <p></p>
+            <pre class="brush:bash">
+                (* using fun keyword to generate a function *)
+                
+                Definition myfun := fun l => cons O l.
+                Definition lo := myfun( myfun (myfun nil)).
+                Check lo.
+                Compute length'' lo.
+
+                Compute natlistfilter (fun n => false) (cons O nil).
+            </pre>
         </li>
     </ol>
 </div>
@@ -126,7 +187,7 @@ SyntaxHighlighter.all()
 <h3>References</h3>
 <div class="featureList">
     <ol>
-        <li></li>
+        <li><a href="https://softwarefoundations.cis.upenn.edu/lf-current/Poly.html#lab102">Software Foundations I: polymorphism and higher-order functions.</a></li>
     </ol>
 </div>
 </div>
