@@ -21,11 +21,9 @@
 <link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
 <link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />-->
 
-<link rel="stylesheet"
-      href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.16.2/build/styles/default.min.css">
+<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.16.2/build/styles/default.min.css">
 <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.16.2/build/highlight.min.js"></script>
 
-<script src="https://d3js.org/d3.v4.min.js"></script>
 
 </head>
 <body>
@@ -127,7 +125,75 @@
 <li>
     <div class="content" id="control-flow">
         <h3>Control Flow</h3>
-        
+        <p>No parenthese are needed around the condition</p>
+        <p>Must have {} even if one line of code. curly brace {} must </p>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>If else</h4>
+                    <pre>
+                        <code class="swift">
+    let small = 10, big = 20, boo = true
+    if small &lt; big{
+        print("small")
+    }else if boo{
+        print("boo")
+    }else{
+        print("else")
+    }                        
+                        </code>
+                    </pre>
+                    <h4>guard "early exit"</h4>
+                    <p>guard extract the value from optional.</p>
+                    <pre>
+
+                    </pre>
+                </li>
+                <li>
+                    <h4>while loop</h4>
+                    <p>
+                        while condition { statements } <br>
+                        repeat { statements } while condition
+                    </p>
+                    <pre>
+<code class="swift">
+        var count = 0
+        while count &lt; 3{
+            print("while loop")
+            count += 1
+        }
+        count = 0
+        repeat{
+            print("repeat while loop")
+            count += 1
+        }while count &lt; 3
+</code>
+                    </pre>
+                </li>
+                <li>
+                    <h4>for in loop</h4>
+                    <p><span style="color:red">Because no ; in swift, there is no for(;;) loop.</span><br>
+                    for i in 1...5 {} // both sides inclusive. <span style="color:red">i is by default const.</span>
+                    </p>
+                    <pre>
+<code class="swift">
+    for var i in 1...3{
+        i += 1
+        print(i, "for-in")
+    }
+    for i in 1...3{
+        //i += 1 // by default i is "let" const.
+        print(i, "for-in")
+    }
+    for _ in 1...3{
+        print("for-in")
+    }
+</code>
+                    </pre>
+                </li>
+            </ol>
+        </div>
+
     </div>
 </li>
 <li>

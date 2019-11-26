@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>Swift&nbsp;Collections</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-11-26">
+<meta name="keywords" content="swift">
+<meta name="keywords" content="collections">
+<meta name="keywords" content="">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.16.2/build/styles/default.min.css">
+<script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.16.2/build/highlight.min.js"></script>
+
+
+</head>
+<body>
+<script>
+    hljs.initHighlightingOnLoad();
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>&nbsp;-&nbsp;</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-11-26</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-11-26</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#array">Array</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+<p>Swift defines list, set, dictionary (hashmap). There is no array even though the "list" is called array.</p>
+</div>
+</li>
+<li>
+    <div class="content" id="array">
+        <h3>Array (List)</h3>
+        <p>Swift's array is a list. The size of the array is mutable.</p>
+        <pre>
+            <code class="swift">
+    var intArr: Array&lt;Int> = Array&lt;Int>()
+    var simpleIntArr: [Int] = [] // syntax sugar, [Int] == Array&lt;Int>
+    var simpleIntArr2 = [Int]()
+    var numbers = [1,2,3] // type inference with non-empty array.
+            </code>
+        </pre>
+        <h4>Method and properties</h4>
+        <pre>
+            <code class="swift">
+    .count
+    .insert(1, at: 1)
+    .append(1)
+    .remove(at: 1)
+    [1] // access
+    [1...2] // subarray
+    + // concatnate, return a new array, the original two arrays are not modified.
+            </code>
+        </pre>
+        <h4>Interation</h4>
+        
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li><a href="https://docs.swift.org/swift-book/LanguageGuide/CollectionTypes.html" target="_blank">Swift Collection Types</a></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>
