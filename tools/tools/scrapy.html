@@ -39,7 +39,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Tools&nbsp;-&nbsp;Scrapy</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-10-30</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-10-30</span></p>
+<p class="date"><span class="created-date">Created:2019-10-30</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-11-26</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#scrapy">Scrapy</a></li>
@@ -68,6 +68,80 @@ SyntaxHighlighter.all()
             <p style="color:red">** The above process omit engine. **</p>
         </li>
         <li>
+            <h4>request</h4>
+            <p>Each request is a http request and the handler function. The handler function can yield another request, or generate an item.</p>
+            <p>New requests are sent to scheduler, and new items are sent to item pipeline.</p>
+            <pre class="brush:python">
+                def start_requests(self):
+                    for id in range(1, self.product_pages + 1):
+                        yield scrapy.Request(
+                            url = self.base_url % id,
+                            callback = self.parse_metalink,
+                            method = 'GET',
+                            headers = self.headers
+                        )
+            </pre>
+            <p>The start_requests is a framework defined function that will be invoked first. And the callback function is user designated function that can continuously yield requests or return items.</p>
+        </li>
+        <li>
+            <h4>Item and pipeline</h4>
+            <p>Item is a user-defined data structure, it's used to represent a result. The result will be sent to a pipeline of handler, such as persister.</p>
+            <pre class="brush:python">
+# example of item.
+class Product(scrapy.Item):
+    url = scrapy.Field()
+    id = scrapy.Field()
+    category = scrapy.Field()
+    name = scrapy.Field()
+    image_urls = scrapy.Field()
+    price = scrapy.Field()
+    review_num = scrapy.Field()
+    brand = scrapy.Field()
+    rating = scrapy.Field()
+    department = scrapy.Field()
+
+class FailedItem(scrapy.Item):
+    url = scrapy.Field()
+    reason = scrapy.Field()
+            </pre>
+            <p>Pipeline's handler are written as a class, and make a chain by the settings.py file, <span style="color:red">it must return the item.</span></p>
+            <pre class="brush:python">
+                    class SaveProductToFile(object):
+                        file = None
+                        def open_spider(self, spider):
+                            self.file = open('./walmart_products/%s.json' % spider.filename, 'wb')
+                            self.exporter = JsonItemExporter(self.file, indent=4)
+                            self.exporter.start_exporting()
+                    
+                        def close_spider(self, spider):
+                            self.exporter.finish_exporting()
+                            self.file.close()
+                    
+                        def process_item(self, item, spider):
+                            self.exporter.export_item(item)
+                            return item
+                    
+            </pre>
+            <p><span style="color:red">when accessing attributes from the item, using item['attr'] instead of item.attr</span> no javascript.</p>
+        </li>
+        <li>
+            <h4>settings.py</h4>
+            <p>settings.py contains framework specified settings, such as pipeline, logging level, and user sepecified settings, such as db-connection string.</p>
+            <pre class="brush:python">
+                    #settings.py
+                    ITEM_PIPELINES = {
+                        # 'scrapying_scripts.pipelines.SaveProductToFile': 300,
+                        'scrapying_scripts.pipelines.SaveProductToMongoDB': 400,
+                        'scrapying_scripts.pipelines.SaveFailedProductToMongoDB': 500,
+                    }
+                    DB = {
+                        'MONGO_DB_URI': 'mongodb://localhost:27017',
+                        'MONGO_DB_NAME': 'my_project'
+                    }
+            </pre>
+
+        </li>
+        <li>
             <h4>Installation/Template</h4>
             <p>Using a isolated python environment with virtualenv</p>
             <pre class="brush:bash">
@@ -83,6 +157,18 @@ SyntaxHighlighter.all()
             </pre>
             <p>It will generate a directory named as the project name and it includes a python package and a .cfg configuration file.</p>
             <p style="color:red">Under the project directory, scrapy has more sub-commands.</p>
+            <pre class="brush:bash">
+                scrapy.cfg # define the metadata about the project, will be used when deploying the project.
+                project_name/
+                    items.py # a list of classes of Item
+                    pipelines.py # a list of classes of item handler.
+                    middlewares.py
+                    settings.py 
+                    spiders/ # a list of spider.py file, each spider can be executed independently.
+                        spider1.py
+                        spider2.py 
+                        ...
+            </pre>
         </li>
     </ol>
 </div>
