@@ -39,7 +39,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>ElasticSearch&nbsp;-&nbsp;Intro</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-06-29</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-11-13 [Macbook Pro 16-inch released today]</span></p>
+<p class="date"><span class="created-date">Created:2019-06-29</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-11-13 [Macbook Pro 16-inch released today] / 2019-11-27</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -141,6 +141,10 @@ SyntaxHighlighter.all()
                 # shard_1's primary and replica cannot exist on the same node.
                 # node1 and node2 can co-exist on same machine.
             </pre>
+        </li>
+        <li>
+            <h4>Data storage</h4>
+            <p>elasticsearch data is stored in the a data directory under the installation directory. {installation-path}/data </p>
         </li>
     </ol>
 </div>
@@ -254,31 +258,6 @@ SyntaxHighlighter.all()
                 </li>
             </ol>
         </div>
-        <div class="featureList">
-            <ol>
-                <li>
-                    <h4>Create an index</h4>
-                    <p>An index can be created by a HTTP PUT along with index_name, or by adding a new document to a unknown index and then the index is created automatically.</p>
-                    <p>ElasticSearch will detect the inserted document fields, and generate mapping for this index. As new field is inserted, the mapping is also growing. It is called dynamic mapping.</p>
-                    <pre class="brush:bash">
-                        # PUT {{domain}}index_name
-                        # list all index {{domain}}_cat/indices?v&format=json
-                    </pre>
-                </li>
-                <li>
-                    <h4>Add document with _doc or _bulk endpoint.</h4>
-                </li>
-
-                    <p>
-                        <h4>Multi-index search</h4>
-                       
-                    </p>
-                </li>
-                <li><h4>Search API & Query DSL</h4>
-                    ElasticSearch provides a "_search" endpoint for each index, the search can be specified by uri parameter and HTTP GET request body. And the request body's content is specified according to the "Query DSL".
-                    </li>
-            </ol>
-        </div>
     </div>
 </li>
 <li>
@@ -287,6 +266,7 @@ SyntaxHighlighter.all()
 <div class="featureList">
     <ol>
         <li><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/getting-started.html" target="_blank">ElasticSearch Get Started.</a></li>
+        <li><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-create-index.html" target="_blank">Create index API</a></li>
         <li><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html" target="_blank">Mapping</a></li>
         <li><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-body.html" target="_blank">_search request body.</a></li>
     </ol>

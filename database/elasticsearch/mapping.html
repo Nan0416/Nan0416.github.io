@@ -1,0 +1,275 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>Elasticsearch&nbsp;Mapping</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-11-27">
+<meta name="keywords" content="elastichsearch">
+<meta name="keywords" content="mapping">
+<meta name="keywords" content="">
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../script.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushPython.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushSql.js"></script>
+<link href="../../syntaxHighlight_css_c/shCore.css" rel="stylesheet" type="text/css" />
+<link href="../../syntaxHighlight_css_c/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+<script>
+SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+SyntaxHighlighter.config.strings.help = '?';
+SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all()
+</script>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="bar">
+<strong>Elasticsearch&nbsp;-&nbsp;Mapping</strong>
+</div>
+<p class="date"><span class="created-date">Created:2019-11-27</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-11-27</span></p>
+<div class="catalog">
+<ul class="catalogItems">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#data-type">Data types</a></li>
+<li><a href="#create-index">Create/Update/Delete Index</a></li>
+<li><a href="#create-doc">Create/Delete Document</a></li>
+<li><a href="#reference">References</a></li>
+</ul>
+</div>
+<hr>
+<div class="contentContainer">
+<ol>
+<li>
+<div class="content" id="intro">
+<h3>Introduction</h3>
+<p>Data types defines how elasticsearch engine should handle and store a specific data item. For example, if a string is treated as 'text', then the text will be broken down and passed to an "analyzer" and indexed for individual terms.</p>
+<p>Each type can have extra parameters for configuration. For example, a customized analyzer can be bound to a 'text' type.</p>
+<div class="featureList">
+    <h4>Common type parameters</h4>
+    <p><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-params.html" target="_blank">https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-params.html</a></p>
+    <ol>
+        <li>index: true/false. Indicate if elasticsearch should index this field. If not, then this field is not searchable.<br>
+            <p><span style="color:red">Every field will be automatically indexed even if they are not specified in the mapping.</span> Some fields are never searched, .e.g. url, so have to specify this field and disable index explicitly.</p>
+        </li>
+        <li>store: true/false. Indicate if elasticsearch should store this field. If not, then this field cannot be returned.
+            <p><span style="color:red">Elasticsearch by default stores the original JSON in the _source, so we don't need to enable this "store".</span></p>
+        </li>
+        <li>ignore_above: integer. If a string (either keyword or text) length is longer than this number, then it will not be indexed.</li>
+        <li>null_value: set a default value when the field is missing.</li>
+    </ol>
+</div>
+</div>
+</li>
+<li>
+    <div class="content" id="data-type">
+        <h3>Data types</h3>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>text</h4>
+                    <p>Example, "product description", "body of email", need to do full-text search.</p>
+                    <p>A string as "text" will be convert to individual terms and then store. They are not used to sorting. <span style="color:red">what is sorting here?</span></p>
+                </li>
+                <li>
+                    <h4>keyword</h4>
+                    <p>e.g. email address, city name, hostnames</p>
+                    <p>keyword field is much more like RDBMS's varchar. They are used to do exact matching, filtering, sorting and aggregation.</p>
+                </li>
+                <li>
+                    <h4>mutliple index field</h4>
+                    <p>A field can be indexed with different types. For example, it may be useful to index a studio name with both text and keyword so that this field can be queried when doing full-text search and sorting.</p>
+                    <pre class="brush:js">
+                            "studio":{
+                                "type":"text",
+                                "store": false,
+                                "fields":{
+                                    "type-name":{
+                                        "type":"keyword"
+                                    }
+                                }
+                            }
+                    </pre>
+                </li>
+                <li>
+                    <h4>array</h4>
+                    <p>Elasticsearch doesn't have dedicate array type. Each field can be a single data of that type, or an array of that type.</p>
+                    <p><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/array.html" target="_blank">https://www.elastic.co/guide/en/elasticsearch/reference/current/array.html</a></p>
+                    <pre class="brush:js">
+                            "actors":{
+                                "type":"text",
+                                "fields":{
+                                    "key":{
+                                        "type":"keyword"
+                                    }
+                                }
+                            }
+
+                            // with this actors field, you can put an array of actors to that field.
+                            {
+                                "id":"1234",
+                                "title":"Example Movie",
+                                "studio":"colorful studio",
+                                "actors":["a1", "a2", "a2"] // an array of actors.
+                            }
+                    </pre>
+                    <p>The type of each data in the array must be same as the declared type.</p>
+                    <p>array is actually flatten. <span style="color:red">["a1",["a2","a3"]] => ["a1","a2","a3"]</span></p>
+                    <h4>futher reading</h4>
+                    <p>nested type <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/nested.html" target="_blank">https://www.elastic.co/guide/en/elasticsearch/reference/current/nested.html</a></p>
+                </li>
+                <li>
+                    <h4>bool/numeric</h4>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="create-index">
+        <h3>Create Index/Update Index Mapping/Delete Index</h3>
+        <h4>Index metafield</h4>
+        <p><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-fields.html" target="_blank">https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-fields.html</a></p>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>Example</h4>
+                    <pre class="brush:js">
+                            {
+                                "mapping":{
+                                    "_source":{
+                                        "enabled": false 
+                                    }
+                                    "properties":{
+                                        ...
+                                    }
+                                }
+                            }
+                    </pre>
+                </li>
+                <li>
+                    <h4>_source</h4>
+                    <p>
+                        _source controls if elasticsearch need to store the original json data when index it. <br>
+                        storing original json can waste space, but it allows us to reindex data.<br>
+                        by default, elasticsearch stores the original json.
+                        <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-source-field.html" target="_blank">https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-source-field.html</a>
+                    </p>
+                </li>
+            </ol>
+        </div>
+        
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>Create an index</h4>
+                    <p>An index can be created by a HTTP PUT along with index_name, or by adding a new document to a unknown index and then the index is created automatically.</p>
+                    <p>ElasticSearch will detect the inserted document fields, and generate mapping for this index. As new field is inserted, the mapping is also growing. It is called dynamic mapping.</p>
+                    <pre class="brush:js">
+                        // PUT {{domain}}/index_name
+                        {
+                            "mapping":{
+                                "properties":{
+                                    "id":{
+                                        "type":"keyword",
+                                        "store":true
+                                    },
+                                    "title":{
+                                        "type":"text"
+                                    }
+                                }
+                            },
+                            "settings":{
+                                "index" : {
+                                    "number_of_shards" : 1, 
+                                    "number_of_replicas" : 1 // one replica, one parition. 
+                                }
+                            },
+                            "aliases":{
+
+                            }
+                        }
+
+                        // list all index {{domain}}_cat/indices?v&format=json
+                    </pre>
+                    
+                </li>
+                <li>
+                    <h4>Update mapping</h4>
+                    <p>A mapping can be updated with adding new field, updating existed feilds type parameters. 
+                        <span style="color:red">But you cannot modified the field type. (solution is reindex)</span> https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-reindex.html</p>
+                    <pre class="brush:js">
+                        // put {{domain}}/index-name/_mapping, add a new field.
+                        {
+                            "properties":{
+                                "studio":{
+                                    "type":"text",
+                                    "store": false,
+                                    "fields":{
+                                        "type-name":{
+                                            "type":"keyword"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    </pre>
+                </li>
+                <li>
+                    <h4>Delete Index</h4>
+                    <p>This api deletes the index (the table)</p>
+                    <pre class="brush:js">
+                        // Delete {{domain}}/index-name
+                    </pre>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="create-doc">
+        <h3>Create/Delete Document</h3>
+        <p>In elasticsearch, a row of data is called a document.</p>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>Add document with _doc or _bulk endpoint.</h4>
+                    <pre class='brush:javascript'>
+                        // PUT {{domain}}/movie-index/_doc/{5dde24e170e02c43112b151e}
+                        {
+                            ...
+                        }
+                    </pre>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+<div class="content" id="reference">
+<h3>References</h3>
+<div class="featureList">
+    <ol>
+        <li><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.html" target="_blank">Field Datatypes</a></li>
+        <li><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/multi-fields.html" target="_blank">Multiple types for a single field.</a></li>
+    </ol>
+</div>
+</div>
+</li>
+</ol>
+</div>
+    
+</body>
+</html>

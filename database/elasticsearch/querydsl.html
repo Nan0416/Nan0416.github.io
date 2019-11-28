@@ -39,11 +39,11 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Elasticsearch&nbsp;-&nbsp;QueryDSL</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-06-09</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-06-30</span></p>
+<p class="date"><span class="created-date">Created:2019-06-09</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-11-27</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
-<li><a href="#match">Match</a></li>
+<li><a href="#fulltext">Full-text query</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -54,16 +54,62 @@ SyntaxHighlighter.all()
 <div class="content" id="intro">
 <h3>Introduction</h3>
 <p>Query DSL (domain specific language): a language designed by Elastichsearch based on JSON to define Query.</p>
+<p>A search is represented as a tree structure (AST), where each leaf qyery clause looks for a particular field, root and internal node are compound query that consist a set of leaf query clauses.</p>
+<h4>Query & Filter context</h4>
+<p>
+Query context gives each returned item a score as representing how it matches the query.<br>
+Filter context only answer yes/no to a result, kind of strict.<br>
+<span style="color:red">A query context can include a filter context</span>
+ </p>
+<div class="featureList">
+    <p>Compound queries: <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/compound-queries.html" target="_blank">https://www.elastic.co/guide/en/elasticsearch/reference/current/compound-queries.html</a></p>
+    <ol>
+        <li>
+            <h4>Example</h4>
+            <pre class="brush:javascript">
+                {
+                    "query": { // a query context
+                        "bool": {// a leaf query clause combinator.
+                            "must": [ // used under "bool", still part of the leaf query clause combinator.
+                                {"match":{"title":"Today"}},
+                                {"match":{"description":"Top 500 companies"}
+                            ],
+                            "filter":[
+                                {"term":{"status": true}}
+                            ]
+                        }
+                    }
+                }
+            </pre>
+        </li>
+        <li>
+            <h4>bool</h4>
+            <pre class="brush:javascript">
+                "bool":{
+                    "must":[], // query context
+                    "should":[], // query context
+                    'minimum_should_match':1
+                    "must_not":[], // filter context,
+                    filter:[] // filter context,
+                }
+            </pre>
+        </li>
+        <li>
+            <h4>dis_max</h4>
+        </li>
+    </ol>
+</div>
 <p></p>
 </div>
 </li>
 <li>
-    <div class="content" id="match">
-        <h3>Match</h3>
+    <div class="content" id="fulltext">
+        <h3>Full-text queries</h3>
         <div class="featureList">
             <ol>
                 <li>
                     <h4>Analysis</h4>
+                    <p><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis.html" target="_blank">https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis.html</a></p>
                     Analysis is a process that processes text, removing stopwords, lowercase all characters, normalize word (driving -> drive).
                     The process is done by an analyzer. Each text field value will be assigned analyzer.
                     
@@ -75,16 +121,16 @@ SyntaxHighlighter.all()
                 </li>
                 <li>
                     <h4>match</h4>
+                    <p><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-match-query.html" target="_blank">https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-match-query.html</a></p>
                     <p>match a text field, <span style="color:red">the order of words doesn't matter. e.g. "If the analyzer" and "Analyzer if the" results in the same score.</span></p>
-                    <pre class="brush:bash">
+                    <pre class="brush:javascript">
                         {
-                            "query":{
-                                "match":{
-                                    "field_name":{
-                                        "query": "text text text ...",
-                                        "operator": "and",
-                                        "zero_terms_query": "all", #??? avoid removing stopwords in the query. e.g. query is "to be", "to be" will be removed by default, it will return nothing.
-                                    }
+                            "match":{
+                                "title":{ // field name
+                                    "query":"what is today's weather", // 
+                                    "operator":"or",  // match any one word of them.
+                                    "minimum_should_match": "75%", // at lease matching 75% words.
+                                    "analyzer":"standard"
                                 }
                             }
                         }
