@@ -181,6 +181,20 @@ int main(){
                 </li>
                 <li>
                     <h4>Type member</h4>
+                    <p>C++ standard template library collections have a convention to use a "style" to define type member, which use "typedef" inside a class.</p>
+                    <pre class="brush:cpp">
+                    class unordered_map
+                    {
+                    public:
+                        typedef typename std::pair&lt;_Key, _Tp> value_type;
+                        // ...
+                    }
+                    unordered_map&lt;std::string, int>::value_type // same as
+                    pair&lt;std::string, int>
+                    </pre>
+                </li>
+                <li>
+                    <h4>Template specialization</h4>
                 </li>
             </ol>
         </div>
@@ -200,9 +214,79 @@ int main(){
             <ol>
                 <li>
                     <h4>pair & unordered_map</h4>
-                    <p></p>
+                    <p>C++ unordered_map is the hashmap in Java. unordered_map uses a pair to represent the relationship with a key and its associated value.</p>
+                    <p>pair class is defined in utility header, unordered_map in unordered_map header. both of them under the "std" namespace.</p>
+                    <h4>hash function</h4>
+                    <p>Different from Java that the key object has a hash function, C++ map has to build its own hash function for each key type.</p>
+
+                    <pre class="brush:cpp">
+                        #include &lt;functional>
+                        template &lt;class Key>
+                        struct hash
+                        {
+                            size_t operator()(const Key& p) const = 0; // overload () operator.
+                        }
+                        
+                        // define a template specialization in the same namespace, where the unordered_map can automatically find this hash.
+                        namespace std{
+                            template&lt;>
+                            struct hash&lt;Point>
+                            {
+                                size_t operator()(const Point& p) const
+                                {
+                                    return p.x + p.y;
+                                }
+                            };
+                        }
+                        namespace myspace{
+                            struct MyPointHash
+                            {
+                                size_t operator()(const Point& p) const
+                                {
+                                    return p.x + p.y;
+                                }
+                            };
+                        }
+                        std::unordered_map&lt;Point, int> po; // use the std namespace defined hash by default.
+                        std::unordered_map&lt;Point, int, myspace::MyPointHash> po2; // specify a new hash.
+                    </pre>
+                    <p>
+                        The hash function are not guarantee by convention instead of language syntax. For example, there is no syntax err even if the () operator is not overloaded. 
+                        <span style="color:red">But the unordered_map has a "assert" to throw a compile error.</span>
+                    </p>
+                    <pre class="brush:cpp">
+    std::unordered_map&lt;std::string, int> numbers;
+    std::unordered_map&lt;std::string, int>::hasher fn = numbers.hash_function(); // each map type has a type member called hasher.
+    std::cout &lt;&lt; fn("qinnan") &lt;&lt; std::endl; // 15450536227608294505
+                    </pre>
+                    <p>C++ standard library provides hash function for primitive types and address type, different string, thread::id, and so on. <a href="http://www.cplusplus.com/reference/functional/hash/" target="_blank">http://www.cplusplus.com/reference/functional/hash/</a></p>
+                    <h4>functions & loop</h4>
+                    <pre class="brush:cpp">
+                        std::unordered_map&lt;std::string, int> numbers;
+                        .insert(std::pair&lt;std::string, int>("one", 1)); // insert a pair.
+                        []; // read,update,insert *** return a reference *** mapped_type& operator[] ( key_type&& k );
+                        .at(key) // throw error if not exist.
+                        .empty(); // return bool, check if the map is empty
+                        .size(); // return size_type, size_t
+                        .count(key); // return number of value associated with the key, 0 or 1. same as java containsKey
+                        .clear();
+
+                        for(auto it = numbers.begin(); it != numbers.end(); it++){
+                            std::cout &lt;&lt; it->first &lt;&lt; ":" &lt;&lt; it->second &lt;&lt; std::endl;
+                        }
+                        // c++11
+                        for(std::pair<std::string, int> p: numbers){
+                            std::cout &lt;&lt; p.first &lt;&lt; p.second &lt;&lt; std::endl;
+                        }
+                        // c++17
+                        for(auto & [key, val]: numbers){
+                            std::cout &lt;&lt; key &lt;&lt; val &lt;&lt; std::endl;
+                            val = 10; //mutable reference
+                        }
+                    </pre>
                 </li>
                 <li><h4>Vector: (Java ArrayList)</h4>
+                    <p>vecots use contiguous storage locations but with dynamic size. O(1) access, amortized O(1) for insertion.</p>
                     <p>When using value type, the default constructor and copy constructor are implicitly invoked.</p>
                     <pre class="brush:cpp">
 #include &lt;iostream>
@@ -229,6 +313,19 @@ int main(){
     vp.push_back(p1);
 }
                     </pre>
+                    <h4>functions</h4>
+                    <pre class="brush:cpp">
+                        .size()
+                        .capacity()
+                        .push_back()
+                        .pop_back()
+                        .insert()
+                        .clear()
+
+                        // iterators
+                        .begin(); .end()  // ::iterator
+                        .cbegin() .cend()
+                    </pre>
                 </li>
             </ol>
         </div>
@@ -239,6 +336,7 @@ int main(){
         <h3>References</h3>
         <div class="featureList">
             <ol>
+                <li><a href="http://www.cplusplus.com/reference/" target="_blank">Standard C++ Library Reference</a></li>
                 <li><a href="https://stackoverflow.com/questions/2023977/difference-of-keywords-typename-and-class-in-templates" target="_blank">Difference of keywords typename and class in templates?</a></li>
                 <li><a href="https://www.geeksforgeeks.org/the-c-standard-template-library-stl/" target="_blank">The C++ Standard Template Library (STL)</a></li>
             </ol>

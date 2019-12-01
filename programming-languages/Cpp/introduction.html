@@ -40,6 +40,7 @@ SyntaxHighlighter.all()
 <li><a href="#intro">Introduction</a></li>
 <li><a href="#c">Compared with C</a></li>
 <li><a href="#primitive">Primitive types and string</a></li>
+<li><a href="#reference">References</a></li>
 </ul>
 </div>
 <hr>
@@ -48,6 +49,7 @@ SyntaxHighlighter.all()
     <li>
         <div class="content" id="intro">
             <h3>Introduction</h3>
+            <p>The thing I love C++ is that C++ gives your fully control over your machine.</p>
             <p><a href="http://www.cplusplus.com" target="_blank">http://www.cplusplus.com</a></p>
             <p>C++ was created by Bjarne Stroustrup in 1979 as an extension of C language. The goal was to provide high-level features to C.</p>
             <p>In 1998, C++ was standardized by ISO, known as C++98.</p>
@@ -88,11 +90,8 @@ SyntaxHighlighter.all()
 <li>Overload: same function name with different argument types. (the signature of a function includes its name and argument types.)</li>
 </ol>
 </div>
-</div>
-</li>
-<li>
-<div class="content" id="different">
-<h3>Different</h3>
+
+<h4>Different</h4>
 <div class="featureList">
 <ol>
 <li>
@@ -100,16 +99,10 @@ static:
 </li>
 </ol>
 </div>
-</div>
-</li>
-<li>
-<div class="content" id="C">
-<h3>Only C</h3>
-</div>
-</li>
-<li>
-<div class="content" id="Cpp">
-<h3>Only C++</h3>
+
+<h4>Only C</h4>
+
+<h4>Only C++</h4>
 <div class="featureList">
 <ol>
 <li>Inline</li>
@@ -118,6 +111,160 @@ static:
 </ol>
 </div>
 </div>
+</li>
+<li>
+    <div class="content" id="primitive">
+        <h3>Primitive types and String</h3>
+        <div class="featureList">
+            <ol>
+                <li><h4>Integer</h4>
+                    <p>
+                        8 bits: (int8_t) char & unsigned char<br>
+                        16 bits: (int16_t) short & unsigned short<br>
+                        32 bits: (int32_t) int & unsigned int<br>
+                        64 bits: (int64_t) long & unsigned long
+                    </p>
+                    <p>
+                        int & unsigned int: same bits with different signs will represent different number and have different behavior when doing the same operation.<br>
+                        For example, adding two integers that overflow will set the CPU overflow flag. However, adding the same bits unsigned int will not. 
+                    </p>
+                    <p>By default, an immediate integer number is interpreted as signed 32-bit int.</p>
+                    <pre class="brush:cpp">
+#include &lt;iostream>
+int main()
+{
+    unsigned char uint8 = 93; // print as char. ]
+    unsigned short uint16 = 93; // 93
+    unsigned int uint32 = 0xf0000000; // 4026531840
+    int32_t number = uint32; // -268435456
+    int int32 = 0xf0000000; // -268435456
+    unsigned long uint64 = 0xffffffffffffffff; // 18446744073709551615
+
+    std::cout &lt;&lt; uint8 &lt;&lt; std::endl;
+    std::cout &lt;&lt; uint16 &lt;&lt; std::endl;
+    std::cout &lt;&lt; uint32 &lt;&lt; std::endl;
+    std::cout &lt;&lt; int32 &lt;&lt; std::endl;
+    std::cout &lt;&lt; number &lt;&lt; std::endl;
+    std::cout &lt;&lt; uint64 &lt;&lt; std::endl;
+
+    std::cout &lt;&lt; 0x7fffffff + 0x7fffffff &lt;&lt; std::endl; // -2
+    std::cout &lt;&lt; 0x7fffffffU + 0x7fffffffU &lt;&lt; std::endl; // 4294967294
+    return 0;
+}
+                    </pre>
+                    <p>AMD 64, little endian. construct a short 31206</p>
+                    <pre class="brush:cpp">
+                            unsigned short value;
+                            unsigned char * buf = (unsigned char *) &amp;value;
+                            std::cout &lt;&lt; "0x" &lt;&lt; std::hex &lt;&lt;  (unsigned long)&buf[0] &lt;&lt; std::endl;
+                            std::cout &lt;&lt; "0x" &lt;&lt; std::hex &lt;&lt;  (unsigned long)&buf[1] &lt;&lt; std::endl;
+                            buf[0] = 0xE6; // 0x7ffee256fb86
+                            buf[1] = 0x79; // 0x7ffee256fb87
+                        
+                            std::cout &lt;&lt; std::dec &lt;&lt; value &lt;&lt; std::endl; // 31206 = 0x97E6, little endian
+                            return 0;
+                    </pre>
+                </li>
+                <li>
+                    <h4>Character</h4>
+                    <p>char/unsigned char: A 8-bit byte represent ascii, it can also have number operation, e.g. +, -. <span style="color:red">C++ doesn't define "byte" itself.</span></p>
+                    <p>cout print unsgined char as ascii, instead of number.</p>
+                    <h4><span style="color:red">wchar_t</span></h4>
+                    <p>wchar_t is a 2 or 4 bytes data type that encodes unicode. The actual size depends on compiler. (how to encode the unicode)</p>
+                    <pre class="brush:cpp">
+                            wchar_t s = L'秦'; // Unicode U+79E6, 31206
+                            std::cout &lt;&lt; s &lt;&lt; std::endl; // 31206
+                            std::cout &lt;&lt; sizeof(s) &lt;&lt; std::endl; // 4
+                            return 0;
+                    </pre>
+                    <p>cout cannot print the character, instead, it prints the unicode number.</p>
+                </li>
+                <li>
+                    <h4>Float vs Double</h4>
+                    <p>no unsigned float/double, float 4 bytes, double 8 bytes.</p>
+                    <h4>IEEE 754</h4>
+                    <p>IEEE 754 is the standard defined the representation of a singe/double precisonfloating number in memory.</p>
+                    <pre class="brush:cpp">
+                        [1] [2-9] [10-32]
+                        sign,exponent,mantissa ; exponent bias = 127
+                        [1] [2-12] [13-64]
+                        sign,exponent,mantissa ; exponent bias = 1023
+
+                        85.125 = 85 + 0.125 = 0b1010101 + 2^-3 = 0b1010101.001 = 0b1.010101001 * 2^6
+                        exponent = 6 + 127 = 133 = 0b10000101, mantissa = 0b010101001
+                        // exponent: add 127 offset so that we can represent negative exponent, e.g. 1 means 2^-126.
+
+                        [0][10000101][010101001....]
+                        01000010 10101010 01000000 00000000
+                        42 aa 40 00
+                    </pre>
+                    <pre class="brush:cpp">
+    float f_85_125 = 85.125f; 
+    //[0x00, 0x40, 0xaa, 0x42] -> little endian -> 
+    // 0x42,0xaa,0x40,0x00 -> 0x42aa4000 -> [0]
+    unsigned char * buffer = (unsigned char *) &f_85_125;
+    std::cout &lt;&lt; "0x" &lt;&lt; std::hex &lt;&lt;  (int)buffer[0] &lt;&lt; std::endl; // 0x00
+    std::cout &lt;&lt; "0x" &lt;&lt; std::hex &lt;&lt; (int)buffer[1] &lt;&lt; std::endl; // 0x40
+    std::cout &lt;&lt; "0x" &lt;&lt; std::hex &lt;&lt; (int)buffer[2] &lt;&lt; std::endl; // 0xaa
+    std::cout &lt;&lt; "0x" &lt;&lt; std::hex &lt;&lt; (int)buffer[3] &lt;&lt; std::endl; // 0x42
+                    </pre>
+                    
+                </li>
+                <li>
+                    <h4>Boolean</h4>
+                    <p><span style="color:red">C doesn't define boolean</span>. C++ boolean has two inhabitants, true and false, whose size is 1 byte (Java's boolean size depends on JVM)</p>
+                    <p>C++ cout cannot print the word of "true" or "false", instead, it prints 1 or 0 to represent true or false.</p>
+                    <pre class="brush:cpp">
+                        bool f = false, t = true;
+                        std::cout &lt;&lt; t &lt;&lt; std::endl; // 1
+                        std::cout &lt;&lt; (f && t) &lt;&lt; std::endl; // 0
+                    </pre>
+                    <p><span style="color:red">C++ boolean can be auto convert to int, and then perform arithmetic</span></p>
+                    <pre class="brush:cpp">
+                            bool t = true;
+                            int fn = t + t;
+                            std::cout &lt;&lt; fn &lt;&lt; std::endl; // 2
+                    </pre>
+                </li>
+                <li>
+                    <h4>String</h4>
+                    <p>string in C++ is defined as class, and its mutable.</p>
+                    <pre class="brush:cpp">
+                        std::string txt = "qinnan";
+                        .size(); // size_t const;
+                        .length(); // same as above;
+                        += // append to the original string
+                        .push_back(char c);
+                        [] // access, no error when out of range
+                        .at(size_t pos); // return char &, a reference.
+                    </pre>
+                    <p>Iteration of a string.</p>
+                    <pre class="brush:cpp">
+                            for(std::string::iterator it = txt.begin(); it != txt.end(); it++){ // iterator is a inner type of string.
+                                *it += 1; // mutable.
+                            } 
+                            for(auto it = txt.cbegin(); it != txt.cend(); it++){ // get a constant iterator type with auto inference.
+                                std::cout &lt;&lt; *it &lt;&lt; ' ';
+                            }
+                            for (char & c: txt){
+                                std::cout &lt;&lt; c &lt;&lt; ' '; // C++11
+                            }
+                    </pre>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="reference">
+        <h3>References</h3>
+        <div class="featureList">
+            <ol>
+                <li><a href="https://www.geeksforgeeks.org/ieee-standard-754-floating-point-numbers/" target="_blank">IEEE Standard 754 Floating Point Numbers</a></li>
+                <li><a href="https://www.geeksforgeeks.org/wide-char-and-library-functions-in-c/" target="_blank">References</a></li>
+            </ol>
+        </div>
+    </div>
 </li>
 </ol>
 </div>
