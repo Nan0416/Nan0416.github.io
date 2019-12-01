@@ -35,7 +35,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>System&nbsp;-&nbsp;System&nbsp;control</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-01-30</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-03-19</span></p>
+<p class="date"><span class="created-date">Created:2018-01-30</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-11-29</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#ref">Reference Variables</a></li>
@@ -113,15 +113,15 @@ public:
     int x = 0;
 };
 //warning: reference to stack memory associated with local variable 'f' returned [-Wreturn-stack-address]
-F&amp; return_reference(){
+F&amp; return_reference(int x){
     F f;
-    f.x = 1;
+    f.x = x;
     return f;
 }
 //warning: address of stack memory associated with local variable 'f' returned [-Wreturn-stack-address]
-F* return_address(){
+F* return_address(int x){
     F f;
-    f.x = 1;
+    f.x = x;
     return &f;
 }
 //allowed 
@@ -129,12 +129,13 @@ F* return_out(F&amp; f){
     return &f;
 }
 int main(){
-    F *fa = return_address();
-    cout &lt;&lt; fa->x &lt;&lt; endl;
-    F fr = return_reference();
-    cout &lt;&lt; fr.x &lt;&lt; endl;
+    F *fa = return_address(10);
+    return_address(12);
+    return_reference(14);
+    cout &lt;&lt; fa->x &lt;&lt; endl; // 14
 }
 </pre>
+<p>This above code uses "closure", but C++ doesn't support closure. so the above code's behavior is unknown. It accesses data from stack that may already be overriden.</p>
                 </li>
             </ol>
         </div>

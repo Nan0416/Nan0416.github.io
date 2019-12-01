@@ -35,11 +35,11 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>C++&nbsp;-&nbsp;Template</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-03-26</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-03-26</span></p>
+<p class="date"><span class="created-date">Created:2019-03-26</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-11-29</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Comparison: C++, Java, C#</a></li>
-<li><a href="#examples">Template Examples</a></li>
+<li><a href="#examples">C++ Template</a></li>
 <li><a href="#collection">Collections</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
@@ -63,12 +63,32 @@ SyntaxHighlighter.all()
 </li>
 <li>
     <div class="content" id="examples">
-        <h3>Examples</h3>
+        <h3>C++ Template</h3>
         <div class="featureList">
             <ol>
-                <li><h4>Principle 1</h4>
-                <p>C++ first generates source code without using template. After generating the source code, native function has higher priority than template code.<br>
-                   using "nm a.out" to check the symbol table</p>
+                <li>
+                    <h4>Auto inference</h4>
+                    <p>C++ can automatically infer the type from the given input. But type should be provided if the compiler cannot infer.</p>
+                    <pre class="brush:cpp">
+template &lt;class T>
+T sum (T a, T b)
+{
+  return a + b;
+}
+int main () {
+    int r1 =sum&lt;int>(10,10);
+    int r2 = sum(10, 10); // auto inference.
+    double r3 = sum&lt;double>(10.2, 10); // since the right argument 10 is int, compiler cannot interpret the right type.
+    return 0;
+}
+                    </pre>
+                    <p>If the explicit type is given, then it always uses the template function even if there is a regular function with the corresponding type. (see below).</p>
+                </li>
+                <li><h4>native function vs. generic function</h4>
+                <p>
+                    Generic function and regular function with the same name can co-exist. When invoking the function with the right type, the regular function has a higher priority.<br>
+                    using "nm a.out" to check the symbol table
+                </p>
                 <pre class="brush:cpp">
 template &lt;class T>
 void swap_values(T & var1, T & var2){
@@ -159,6 +179,9 @@ int main(){
 }
                     </pre>
                 </li>
+                <li>
+                    <h4>Type member</h4>
+                </li>
             </ol>
         </div>
     </div>
@@ -172,8 +195,13 @@ int main(){
             iterators:
             higher order functions:
         </p>
+        <p>Each collection is defined in a separate header file.</p>
         <div class="featureList">
             <ol>
+                <li>
+                    <h4>pair & unordered_map</h4>
+                    <p></p>
+                </li>
                 <li><h4>Vector: (Java ArrayList)</h4>
                     <p>When using value type, the default constructor and copy constructor are implicitly invoked.</p>
                     <pre class="brush:cpp">
@@ -191,7 +219,7 @@ public:
     void print(){ cout &lt;&lt; "print()" &lt;&lt; endl;}
 };
 int main(){
-    vector&lt;&lt;P> vp;
+    vector&lt;P> vp;
     vp.resize(10); // resize the container. Default P constructor * 10.
     P p1;
     vp.push_back(p1); // Copy constructor * 5
