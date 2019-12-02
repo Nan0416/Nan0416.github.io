@@ -39,7 +39,10 @@ SyntaxHighlighter.all()
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
 <li><a href="#c">Compared with C</a></li>
-<li><a href="#primitive">Primitive types and string</a></li>
+<li><a href="#primitive">Primitive types</a></li>
+<li><a href="#string">String</a></li>
+<li><a href="#standard-library">C++ standard library</a></li>
+<li><a href="#keywork">Keyword</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -226,8 +229,31 @@ int main()
                             std::cout &lt;&lt; fn &lt;&lt; std::endl; // 2
                     </pre>
                 </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
+    <div class="content" id="string">
+        <h3>String</h3>
+        <p>C++ still has the C const string (c-string / string literal), but it also has a string class.</p>
+        <div class="featureList">
+            <ol>
                 <li>
-                    <h4>String</h4>
+                    <h4>string literal</h4>
+                    <p><a href="https://en.cppreference.com/w/cpp/language/string_literal" target="_blank">https://en.cppreference.com/w/cpp/language/string_literal</a></p>
+                    <p>string literal are not objects, they are const char[] declared in .code area. They are not objects and don't have member functions.</p>
+                    <pre class="brush:cpp">
+                        std::cout &lt;&lt; "Where are you?" &lt;&lt; std::endl; // this is a string literal;
+                        std::string question = "Where are you?"; // question is a string object that convert the string literal to string object.
+
+                        std::string &lt;&lt; "qin" + " nan" &lt;&lt; std::endl; // compile error since string literals are not string.
+                    </pre>
+                    <p>unicode: </p>
+                    <p>auto concatenation: placing two string literal side by side concates another string literal at compile time.</p>
+                </li>
+                <li>
+                    <h4>string class</h4>
                     <p>string in C++ is defined as class, and its mutable.</p>
                     <pre class="brush:cpp">
                         std::string txt = "qinnan";
@@ -256,12 +282,39 @@ int main()
     </div>
 </li>
 <li>
+    <div class='content' id='standard-library'>
+        <h3>C++ standard library</h3>
+        <p>C++ standard library is a collection of classes and functions specified in different header files, it's part of C++ ISO standard. These classes and functions are defined within the "std" namespace.</p>
+        <p>GUN implementation is called libstdc++. This library is automatically linked to program.</p>
+        <p>This library provides I/O, threading, collections, algorithm (sorting, hashing, math), memory, regex, localization, error handling.</p>
+        <!--<div class="featureList">
+            <ol>
+                <li>
+                    <h4>collection header & sorting</h4>
+                    <p>vector, unordered_map, </p>
+                </li>
+            </ol>
+        </div>-->
+    </div>
+</li>
+<li>
+    <div class="content" id="keyword">
+        <h3>Keyword</h3>
+        <div class="featureList">
+            <ol>
+                <li>noexcept</li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
     <div class="content" id="reference">
         <h3>References</h3>
         <div class="featureList">
             <ol>
                 <li><a href="https://www.geeksforgeeks.org/ieee-standard-754-floating-point-numbers/" target="_blank">IEEE Standard 754 Floating Point Numbers</a></li>
                 <li><a href="https://www.geeksforgeeks.org/wide-char-and-library-functions-in-c/" target="_blank">References</a></li>
+                <li><a href="https://en.cppreference.com/w/cpp/header" target="_blank">C++ Standard Library headers</a></li>
             </ol>
         </div>
     </div>

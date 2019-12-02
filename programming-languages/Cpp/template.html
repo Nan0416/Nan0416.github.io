@@ -275,7 +275,7 @@ int main(){
                             std::cout &lt;&lt; it->first &lt;&lt; ":" &lt;&lt; it->second &lt;&lt; std::endl;
                         }
                         // c++11
-                        for(std::pair<std::string, int> p: numbers){
+                        for(std::pair&lt;std::string, int> p: numbers){
                             std::cout &lt;&lt; p.first &lt;&lt; p.second &lt;&lt; std::endl;
                         }
                         // c++17
@@ -325,6 +325,50 @@ int main(){
                         // iterators
                         .begin(); .end()  // ::iterator
                         .cbegin() .cend()
+                    </pre>
+
+                    <h4>Sorting</h4>
+                    <p>Sorting in C++ is done by a generic "sort" function defined in "algorithm" header.</p>
+                    <p>There are two versions of sorting, using object's "&lt;" operator to compare or using a dedicated function to compare.</p>
+                    <pre class="brush:cpp">
+                        template&lt;class RandomAccessIterator>
+                        void sort(RandomAccessIterator first, RandomAccessIterator last); // using &lt; operator.
+
+                        template&lt;class RandomAccessIterator>
+                        void sort (RandomAccessIterator first, RandomAccessIterator last, Compare comp); 
+                        // Compare is an object/function takes two argument, return a bool.
+
+                        // sort function use iterator to do in-place sort.
+                        std::sort(numbers.begin(), numbers.end());
+                        // sort with a lambda (-std=c++11), the final state makes (a, b) -> true, which results in descending order.
+                        std::sort(numbers.begin(), numbers.end(), [](const int &a, const int &b) -> bool { return a > b;});
+                    </pre>
+                </li>
+                <li>
+                    <h4>unordered_set</h4>
+                    <p>Same as unordered_map, unordered_set utilizes the default hasher function.</p>
+                    <pre class="brush:cpp">
+                        // constructor.
+                        std::unordered_set&lt;std::string> first;
+                        std::unordered_set&lt;std::string> second = {"alpha","beta","gamma"};
+                        std::unordered_set&lt;std::string> third ( {"red","green","blue"} ); 
+                        std::unordered_set&lt;std::string> fourth ( third ); 
+
+                        .empty() // return bool indicates if the set is empty.
+                        .size()  // return size_type (size_t)
+
+                        .find(const key_type & key); // return iterator of the given key, if not found, return the iterator of end.
+                        .count(const key_type & key); // return size_type 1 or 0.
+
+                        .insert(const value_type & value); 
+                        .erase(const key_type& k) ; // return number of elements ereased, either 1 or 0.
+                        .clear(); 
+
+                        .begin()
+                        .end()
+                        .cbegin()
+                        .cend()
+
                     </pre>
                 </li>
             </ol>
