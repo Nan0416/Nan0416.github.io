@@ -371,6 +371,56 @@ int main(){
 
                     </pre>
                 </li>
+                <li>
+                    <h4>list & deque</h4>
+                    
+                </li>
+                <li>
+                    <h4>queue & priority_queue</h4>
+                    <p>std's queue header defines "queue" and "priority_queue"</p>
+                    <h4>queue</h4>
+                    <p>queue is a FIFO queue. Different from Java, C++ queue is a container adaptor, meaning C++ queue doesn't define how to store data, it only define the FIFO operation.</p>
+                    <p>The default container is deque, but can be replaced by list. <span style="color:red">the containe type must define function of "pop_front" & "pop_back". For example, vector class cannot be used here.</span></p>
+                    <p><span style="color:red">C++'s pop doesn't return the value, it only removes the value.</span></p>
+                    <pre class="brush:cpp">
+                        #include &lt;queue>
+                        // template &lt;class T, class Container = deque&lt;T>> class queue;
+                        .push(T t);
+                        .pop();
+
+                        .front(); // retrieve the first value "reference";
+                        .back(); // retrieve the last value "reference";
+
+                        .size();
+                    </pre>
+                    <h4>priority_queue</h4>
+                    <p>priority queue's comparator less&lt;T></p>
+                    <p>less is a template (generic) struct defined in "functional" header, internally, it uses the &lt; operator. Other classes have "greater", "plus", ... 
+                        This kind of classes is called operator class, which basically wrap an operator to a struct. The goal of this struct is to give as a template parameter.
+                    </p>
+                    <pre class="brush:cpp">
+                        template &lt;class T> 
+                        struct less : binary_function &lt;T,T,bool> {
+                            bool operator() (const T& x, const T& y) const {return x &lt; y;}
+                        };
+                    </pre>
+                    <pre class="brush:cpp">
+                        #include &lt;queue>
+                        // template &lt;class T, class Container = vector&lt;T>, class Compare = less&lt;typename Container::value_type>> 
+                        // class priority_queue;
+                        std::priority_queue&lt;int> first;
+
+                        // greater makes the greatest value be the last one to pop.
+                        std::priority_queue&lt;int, vector&lt;int>, greater&lt;int>> b_queue;
+
+                        struct myless{
+                            bool operator()(const int & a, const int & b){
+                                return a &lt; b;
+                            }
+                        };
+                        std::priority_queue&lt;int, std::vector&lt;int>, myless> q;
+                    </pre>
+                </li>
             </ol>
         </div>
     </div>
