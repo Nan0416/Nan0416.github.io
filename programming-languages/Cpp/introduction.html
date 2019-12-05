@@ -40,6 +40,7 @@ SyntaxHighlighter.all()
 <li><a href="#intro">Introduction</a></li>
 <li><a href="#c">Compared with C</a></li>
 <li><a href="#primitive">Primitive types</a></li>
+<li><a href="#array">Array</a></li>
 <li><a href="#string">String</a></li>
 <li><a href="#standard-library">C++ standard library</a></li>
 <li><a href="#keywork">Keyword</a></li>
@@ -234,6 +235,36 @@ int main()
     </div>
 </li>
 <li>
+    <div class="content" id="array">
+        <h3>Array</h3>
+        <p>C++ has two ways to create array (single-dimension or multi-dimension), either in stack or use "new" keyword to allocate array in stack.</p>
+        <p><span style="color:red">Different from Java, C++ array [] is written after the variable name.</span><br>
+            Java array can be null, C++ array must have initial size or initial elements when declaring.<br>
+            C++ array doesn't initialize array elements to default value.
+        </p>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>Single Dimensional Stack Array</h4>
+                    <pre class="brush:cpp">
+                        // Java int[] arr;
+                        // C++ int arr[];
+                        int arr1[10];
+                        int arr2[] = {1,2,4,5};
+                    </pre>
+                </li>
+                <li>
+                    <h4>Multi-Dimensional Stack Array</h4>
+                    <pre class="brush:cpp">
+                        int arr[10][10];
+                        int arr[][2] = {}; // when declaring a two array, must explicitly give element size except the first.
+                    </pre>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
+<li>
     <div class="content" id="string">
         <h3>String</h3>
         <p>C++ still has the C const string (c-string / string literal), but it also has a string class.</p>
@@ -314,6 +345,7 @@ int main()
         <div class='featureList'>
             <ol>
                 <li>Different from Java that initialize an array with default value, C/C++ doesn't set array's value to a default value, which means array's initial states are unknown.</li>
+                <li>Different from Java, C++ object cannot be set to null, but its pointer can be set to NULL. Decaring a object actually creates the object with the default constructor.</li>
             </ol>
         </div>
     </div>
