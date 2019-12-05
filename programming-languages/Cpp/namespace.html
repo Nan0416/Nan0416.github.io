@@ -35,7 +35,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>C++&nbsp;-&nbsp;Namespace</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-02-12</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-03-19</span></p>
+<p class="date"><span class="created-date">Created:2018-02-12</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-12-04</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#file-struture">C++ File Structure</a></li>
@@ -51,12 +51,12 @@ SyntaxHighlighter.all()
           <h3>C++ File Structure</h3>
           <p>C++ does not have strict rules for organizing source files. The source files can be typically divided into two categories, declaration files (.h) and implementation files (.cpp) 
           Different from Java that puts declaration and implementation together and the file name must be the public class's name, <mark>the class name, .h file name and .cpp file name can be totally different</mark>.
-          Moreover, one definition file can contain more than one class's definitions and be implemented by several source files. (One source file can even just have one function implemented). Also, one .cpp file can implement
+          Moreover, one definition file can contain more than one class's definitions and one class can be implemented by several source files. (One source file can even just have one function implemented). Also, one .cpp file can implement
           several .h files.
           </p>
           <p>The .cpp files is binded to .h files by #include directive. The implementation function is connected to function declaration by <mark>Class::</mark> symbol.</p>
           <p>The .h file also can contain the implementation. This is actually a feature of <a href="./inline.html">inline</a> function. This implementation is treated as inline function and the inline keyword is added by default when ignored.</p>
-          <p>The .cpp file can contain class declaration: but treat an an java private. and must be implemented here.</p>
+          <p>The .cpp file can contain class declaration: but treat an a private class. and must be implemented in the same file.</p>
           </div>
           <div class="termnology">
           <h4>Term</h4>

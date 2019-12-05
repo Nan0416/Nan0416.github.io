@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<title>&nbsp;</title>
+<meta charset="utf-8">
+<meta name="date" content="2019-12-04">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<meta name="keywords" content="">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/10.0.0/markdown-it.js"></script>
+
+<script>
+function renderMarkdown(markdown_url){
+    const xhttp = new XMLHttpRequest();
+    xhttp.open("GET", markdown_url, true);
+    xhttp.onreadystatechange = () => {
+        if (xhttp.readyState == XMLHttpRequest.DONE && (xhttp.status == 200 || xhttp.status == 302)) {
+            let result = marked(xhttp.responseText);
+            document.getElementById('main-container').innerHTML = result;
+        }
+    };
+    
+    xhttp.setRequestHeader('Content-type', 'application/json');
+    xhttp.send();
+}
+</script>
+</head>
+<body>
+<script>
+    renderMarkdown("/tools/tools/markdown.md");
+</script>
+<div id="main-container" class="markdown-body" style="width: 980px; padding: 45px;">
+</div>
+</body>
+</html>
