@@ -39,7 +39,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>General&nbsp;-&nbsp;Math</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-08-13</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-09-18</span></p>
+<p class="date"><span class="created-date">Created:2019-08-13</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-12-09</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -85,6 +85,24 @@ SyntaxHighlighter.all()
                             // ..
                             // n = 10, 9 * 9 * 8 * 7 ... 1
                     </pre>
+                </li>
+                <li>
+                    <p class="algorithm-problem-title">1104. Path In Zigzag Labelled Binary Tree</p>
+                    <p>Desc: <br>
+                        1104. Suppose you have a infinite binary tree, each tree node has two children, left and right. Each node is labeled with a number. The number is count from top to bottom in zigzag order.<br>
+                        <pre class="brush:bash">
+                                    1
+                            3            2
+                        4       5     6      7
+                      15 14   13 12 11 10  9  8
+                        </pre>
+                        Now, given a label, return the path from the root to the node. e.g. given 14 => [1,3,4,14]
+                    </p>
+                    <p>Sol:<br>
+                    1104. depth starts from 0, then we have even depth order from left -> right, odd depth order from right -> left .
+                    create helper function: 1. findDepth(label), 2. findPosition(label, depth) 3. findLabel(position, depth). And then loop from bottom to top until depth = 0.
+                    <span style="color:red">We need two cache to store the layer size and total size on a depth.</span>
+                    </p>
                 </li>
             </ol>
         </div>

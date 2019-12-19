@@ -5,9 +5,9 @@
 <title>String&nbsp;Manipulation</title>
 <meta charset="utf-8">
 <meta name="date" content="2019-02-04">
-<meta name="keywords" content="">
-<meta name="keywords" content="">
-<meta name="keywords" content="">
+<meta name="keywords" content="string">
+<meta name="keywords" content="algorithm">
+<meta name="keywords" content="simulation">
 <link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
 <script type="text/javascript" src="../../script.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
@@ -37,18 +37,48 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>String&nbsp;-&nbsp;Manipulation</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-02-04</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-02-04</span></p>
+<p class="date"><span class="created-date">Created:2019-02-04</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-12-09</span></p>
 <div class="catalog">
 <ul class="catalogItems">
+<li><a href="#example_pure">Example pure string</a></li>
 <li><a href="#intro">Introduction</a></li>
 <li><a href="#example_dp">Example DP</a></li>
-<li><a href="#example_pure">Example pure string</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
 <hr>
 <div class="contentContainer">
 <ol>
+<li>
+    <div class="content" id="example_pure">
+        <h3>String Manipulation</h3>
+        <p>No algorithm, just simulate.</p>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <p class="algorithm-problem-title">68. Text justification</p>
+                    <p>Desc:<br>
+                        68. Given a list of words and a maximum length of a line. Array these word in serveral lines where each line distribute words evenly with space in the middle except the last line. Last line will shift to left.
+                    </p>
+                    <p>
+                        Sol:<br>
+                        68. loop the words and keep a words length. Push words to a queue until the words length > line length. And have two helper function, paddingMiddle and paddingRight to generate string line.<span style="color:red">using while-loop for easy control index.</span>
+                    </p>
+                </li>
+                <li>
+                    <p class="algorithm-problem-title">6. Zigzag conversion</p>
+                    <p>Desc:<br>
+                        6. make a string in zigzag order with a number of row.
+                    </p>
+                    <p>
+                        Sol:<br>
+                        6. Simulation with state machine. (two states: going up, going down.) <span style="color:red">Keep an array of StringBuilder for store char, each StringBuilder is a line.</span>
+                    </p>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
 <li>
 <div class="content" id="intro">
 <h3>Introduction</h3>
@@ -109,58 +139,6 @@ class Solution {
             }
         }
         return s.substring(startIndex, endIndex + 1);
-    }
-}
-                    </pre>
-                </li>
-            </ol>
-        </div>
-    </div>
-</li>
-<li>
-    <div class="content" id="example_pure">
-        <h3>Example Pure</h3>
-        <div class="featureList">
-            <ol>
-                <li>
-                    <h4><a href="">ZigZag Conversion</a></h4>
-                    <pre class="brush:java">
-// corner case: numRows = 1
-class Solution {
-    public String convert(String s, int numRows) {
-        if(numRows == 1) return s;
-        Character [][] result = new Character[numRows][s.length()];
-        char [] result2 = new char[s.length()];
-        boolean risingEdge = false;
-        int counter = 0;
-        int index = 0;
-        while(true){
-            for(int i = 0; i &lt; numRows; i++){
-                if(counter == s.length()){
-                    int tempC = 0;
-                    for(int k = 0; k &lt; numRows; k++){
-                        for(int j = 0; j &lt; s.length(); j++){
-                            if(result[k][j] != null){
-                                result2[tempC++] = result[k][j];
-                            }
-                        }
-                    }
-                    return new String(result2);
-                }
-                if(risingEdge){
-                    // numRows >= 3
-                    index++;
-                    int temp = numRows - i - 2;
-                    if(temp == 0){
-                        break;
-                    }
-                    result[temp][index] = s.charAt(counter++);
-                }else{
-                    result[i][index] = s.charAt(counter++);
-                }
-            }
-            risingEdge = !risingEdge;
-        }
     }
 }
                     </pre>

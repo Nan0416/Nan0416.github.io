@@ -39,7 +39,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Data Structure&nbsp;-&nbsp;Design</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-08-26</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-10-01(颗粒无收)</span></p>
+<p class="date"><span class="created-date">Created:2019-08-26</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-10-01(颗粒无收) / 2019-12-09</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -59,6 +59,20 @@ SyntaxHighlighter.all()
 <h3>Examples</h3>
 <div class="featureList">
     <ol>
+         <li>
+            <p class="algorithm-problem-title">146. LRU Cache</p>
+            <p class="algorithm-problem-title">460. LFU Cache</p>
+            <p>Desc: <br>
+                #146. LRU (least recently used) cache with a certain capacity and will remove the least recently used value once it exceed its capacity.<br>
+                #460. LFU (least frequently used) cache with a certain capacity and will remove the least frequently used value once it exceed it capacity. If serveral value are least frequently, then the least recently used value will be removed.<br>
+            </p>
+            <p>Sol: 
+                #146. HashMap with a self defined LinkedList. HashMap key is key, value is linkedlist node, where a node has {key, value, next, previous} <span style="color:red">when a node is get/update/insert, we put its node to the front.</span><br>
+                #460. Create a linkedlist node, and a doubly linkedlist <span style="color:red">(using dummy node)</span> that provides removeNode, removeLastNode, insertIntoFront.<br> 
+                Two hashmap, a map {} (key = key, value = linkedlist node {key, value, freq, next, previous})<br>
+                A frequency map {key = frequency, value = doubly linedlist.}
+            </p>
+        </li>
         <li>
             <h4>251. Flatten 2D Vector</h4>
             <p>Desc: Design and implement an iterator to flatten a 2d array.e.g. [[2,4],[], [1, 3]] -> 2, 4, 1, 3</p>
@@ -69,11 +83,7 @@ SyntaxHighlighter.all()
             <p>Desc: an array of words (duplicated may exist), find the shortest distance between two words.</p>
             <p>Sol: Map&lt;String, ArrayList&lt;Integer>>: key is word, value is a list of integers. <span style="color:red">the key is the indexes in each arraylist is automatically sorted.</span></p>
         </li>
-        <li>
-            <p class="algorithm-problem-title">146. LRU Cache</p>
-            <p>Desc: LRU (least recently used) cache with a certain capacity.</p>
-            <p>Sol: HashMap with a self defined LinkedList. (linkedlist keeps the least recently, hashmap helps get operation)</p>
-        </li>
+       
         <li>
             <p class="algorithm-problem-title">295. Find Median from Data Stream</p>
             <p>Desc: given a stream of numbers (in range of [0,255]). Take each number at a time, and return the current median, e.g. [1,2,3], after input 1, median is 1; after input 2, median is 1.5; after input 3, median is 2.</p>

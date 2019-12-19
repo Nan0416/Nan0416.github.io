@@ -39,7 +39,7 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Graph&nbsp;-&nbsp;DFS</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-08-16 @ Rockford, IL</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-09-23</span></p>
+<p class="date"><span class="created-date">Created:2019-08-16 @ Rockford, IL</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-12-09</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Introduction</a></li>
@@ -243,13 +243,39 @@ SyntaxHighlighter.all()
                 <li>
                     <p class="algorithm-problem-title">* 199. Binary Tree Right Side View</p>
                     <p class="algorithm-problem-title">545. Boundary of Binary Tree</p>
+                    <p class="algorithm-problem-title">Top view/Bottom view</p>
+                    <p class="algorithm-problem-title">513. Find Bottom Left Tree Value</p>
+                    <p class="algorithm-problem-title">987. Vertical Order Traversal of a Binary Tree (col view)</p>
                     <p>Desc: <br>
                         #199. Given a binary tree, imagine yourself standing on the right side of it, return the values of the nodes you can see ordered from top to bottom.<br>
-                        #545. given a binary tree, return its boundary (root, left-boundary, leaves, right-boundary). left-bounary: the nodes on the path from root to left-most node and then go to right, continue explore left if possible.
+                        #545. given a binary tree, return its boundary (root, left-boundary, leaves, right-boundary). left-bounary: the nodes on the path from root to left-most node and then go to right, continue explore left if possible.<br>
+                        #513. given a binary tree, return most left node on the bottom layer.<br>
+                        #987. given a binary tree, return a list of column value. A column value is a list of value where they are on the same column. (low depth comes first, smaller value comes first)<br>
+                        Top View/Bottom view: given a binary tree, return node value from the top to view the tree, bottom to view the tree.
+
                     </p>
                     <p>Sol: <br>
+                        <p><span style="color:red">Node position</span>: suppose root's position is (0,0), then node.left is (x - 1, y - 1), node.right is (x + 1, y - 1). <span style="color:red">A postion may have multiple nodes.</span></p>
                         #199. always try to use right child first, also keep the depth information to help insert value.<br>
-                        #545. dfs with a flag (isAdd) to indicate if we add a node to the boundary.
+                        #545. dfs with a flag (isAdd) to indicate if we add a node to the boundary.<br>
+                        #513. Keep the max depth and a left node. set it during the first encounter. DFS left-first visiting.<br>
+                        #987. create a wrapper that has (x, y, value). push all node to a priority queue where the queue has sort node based on x, y, and value.
+                        <pre class="brush:java">
+                            class Wrapper implements Comparable&lt;Wrapper>{
+                                @Override
+                                public int compareTo(Wrapper w2){
+                                    if(x != w2.x){
+                                        return x - w2.x;
+                                    }else if(y != w2.y){
+                                        return y - w2.y;
+                                    }else{
+                                        return val - w2.val;
+                                    }
+                                }
+                            }
+                        </pre>
+                        Top View/Bottom view. Keep a map, key is the x position, and keep the minX and maxX. DFS on the tree, Top view only keeps the first occurance of a X.<br>
+                        <span style="color:red">Bottom view is complicated since a position can have multiple, we may also need a priority queue.</span>
                     </p>
                 </li>
                 <li>
