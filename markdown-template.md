@@ -17,5 +17,5 @@ There is no uniform specialization on Markdown. CommonMark is one popular specia
 1. Hyperlink doesn't support target="_blank"
 
 *Solution*: some markdown parser support native html, so use native html to replace markdown text.
-### References
+### <a id="reference">References</a>
 1. <a href="https://guides.github.com/features/mastering-markdown/" target="_blank">Mastering Markdown</a>
