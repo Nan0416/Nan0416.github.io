@@ -93,7 +93,7 @@ At the top layer, each android app lives in its own security sandbox.
 >4. By default, every app runs in its own Linux process. The Android system starts the process when any of the app's components need to be executed, and then shuts down the process when it's no longer needed or when the system must recover memory for other apps.
 
 
-### <a id="sdk">VI. SDK</a>
+### <a id="sdk">IV. SDK</a>
 
 Each Android version brings not only new features for Android users but also a new set of Framework API for Android developers. For example, 
 
@@ -103,11 +103,15 @@ Android API are backward compatible. When starting developing an app, select the
 
 #### Framework API
 
-Framework API contains not only functions, but also XML elements, intents, and permissions that apps can request.
+Framework API contains not only functions, but also XML elements, intents, and permissions that apps can request. The framework API is bound to the Android OS. When the user upgrade its Android system, the framework API is also updated to a new version. Developer can only use the framework API but not be able to control its version.
 
-#### Android Support Library
+#### Android Support Library & AndroidX.
 
+Because android devices can have different version of Framework API, directly using framework API will bring compatibilty issue. Android provides a library layer on top of the Framework API to eliminate the compatibility issue. So developers can import and use this library instead of directly using Framework API.
 
+AndroidX is a refactor of Android Support Library, which is introduced along with Android 9.0 (API level 28). Android Support Library is no longer maintained.
+
+[API reference](https://developer.android.com/reference/)
 ### <a id="manifest">V. Manifest</a>
 
 Each Android project has an associated manifest file (AndroidManifest.xml) that specifies app name, components of the app, permission, framework API requirement.
