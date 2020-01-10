@@ -5,7 +5,7 @@ Modified: 2020-01-04
 
 * [Introduction](#intro)
 * [Resources](#resource)
-* [Layout](#layout)
+* [Style & Theme](#style)
 * [References](#reference)
 ***
 ### <a id="intro">I. Introduction</a>
@@ -130,7 +130,7 @@ The `Context` abstract class defines a abstract method called `public abstract R
 Android support different size unit.
 
 1. px: pixel, a physical pixel is a unit.
-2. dp (dip): density-independent pixel, (virtual pixel). Depends on the resolution of the screen, a unit of dp may equal to several px.  For example, Mi A2's screen is 2016 * 1080 pixel, and 1dp = 3px, so the screen size is also 672 * 360 dp. <span style="color:red">Xiaomi declares the screen is 2160 * 1080, wrong?</span>
+2. dp (dip): density-independent pixel, (virtual pixel). Depends on the resolution of the screen, a unit of dp may equal to several px.  For example, Mi A2's screen is 2160 * 1080 pixel, and 1dp = 3px, so the screen size is also 720 * 360 dp.
 3. sp: scale pixel. sp is used with text. By default, a sp size = a dp size, but it resizes based on the user's preferred text size.
 4. dpi and ppi: dots per inch/pixel per inch. Discribe the density of pixel. # of pixel in one inch line. Mi A2 403 PPI. *dpi and ppi are used interchangeable, but dpi is originally used for printer and scanner*.
 
@@ -152,10 +152,101 @@ public void logScreenMetric(){
 }
 ```
 
+### <a id="style">Style & Theme</a>
+
+Android provides styling attributes to its views. These attributes can be applied directly in views (inline-css), or defined in XML files and apply the xml as resource with `android:style` or `android:theme` (external).
+
+In addition, android "style" / "theme" is not restricted within styling, all attributes (e.g. TextView's text) are able to treat as "style".
+
+#### "inline style" and external style.
+
+* All attributes, such as `android:layout_width`, `android:fontFamily`, `android:text`, are "style" and can be specified in the external style resource file.
+* View class also defines the `style` and `android:theme` attribute to apply external style resource.
+
+```XML
+<TextView
+        android:id="@+id/textView2"
+        style="@style/myText"
+        android:layout_width="wrap_content"
+        android:layout_height="191dp"
+        android:fontFamily="cursive"
+        android:includeFontPadding="false" />
+```
+
+* `<application>` and `<activity>` only have the `android:theme` attribute.
+* When applying a style as `style`, then the style only applied to the view itself, however, if the style is applied as `android:theme`, then all the inner element will have this style.
+* inline-attribute has a higher prority than external attribute.
+
+#### external style
+
+`style`s are defined under the `res/values` directory. 
+
+```XML
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="style_name" parent="@[package:]style/style_to_inherit">
+        <item name="[package:]style_property_name">style_value</item>
+    </style>
+
+    <style name="myText" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">#00FF00</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:text">Default TextView text: Hello</item>
+        <item name="android:fontFamily">monospace</item>
+    </style>
+</resources>
+```
+
+* When applying a style to a view, the view will apply all recoginzed attributes and ignore unknown attributes. In addition, the item's name cannot be arbitary name, they must be specified by some view, either built-in view or custom view.
+* a `style` defines a group of items. To reference the entire style, using `@style/myText`. To reference an item within the style, using `?[<package_name>:][<resource_type>/]<resource_name>` , e.g. `?android:attr/textColor`.
+
+#### Platform & AndroidX defined style and inheritance.
+
+* style (attribute) can be inherited with the `parent` attribute. Derived style can also override inherited attributes.
+* Another inheritance syntax is to prefix parent name. 
+
+```XML
+<style name="MyText" parent="">
+<style name="MyText.LightColor"> <!-- inherit from MyText-->
+```
+
+* Android platform defines built-in styles, such as `@android:style/TextAppearance`, but you should never use or inherit these style since compatibility issue, instead, inherit from `androidx`.
+(Android platform defined style)[https://github.com/aosp-mirror/platform_frameworks_base/blob/master/core/res/res/values/styles.xml], TextAppearance example
+
+```XML
+<style name="TextAppearance">
+    <item name="textColor">?textColorPrimary</item>
+    <item name="textColorHighlight">?textColorHighlight</item>
+    <item name="textColorHint">?textColorHint</item>
+    <item name="textColorLink">?textColorLink</item>
+    <item name="textSize">16sp</item>
+    <item name="textStyle">normal</item>
+</style>
+```
+
+* AndroidX (values source code)[https://android.googlesource.com/platform/frameworks/support/+/androidx-master-dev/appcompat/appcompat/src/main/res/values/]
+
+#### Practice
+* Define a file called `AppTheme.xml` in which you define a `style` inherits from `Theme.AppCompat.*`. And then apply the theme within `<application>`.
+* Define a file called `style.xml` in which you define `style` and applied as style. Reference attributes from the `theme` with `?`. 
+
+
+
+```XML
+<style name="TextAppearance.AppCompat" parent="Base.TextAppearance.AppCompat" />
+<style name="Base.TextAppearance.AppCompat" parent="android:TextAppearance">
+        <item name="android:textColor">?android:textColorPrimary</item>
+        <item name="android:textColorHint">?android:textColorHint</item>
+        <item name="android:textColorHighlight">?android:textColorHighlight</item>
+        <item name="android:textColorLink">?android:textColorLink</item>
+        <item name="android:textSize">@dimen/abc_text_size_body_1_material</item>
+</style>
+```
 
 
 
 ### <a id="reference">V. References</a>
 1. <a href="https://developer.android.com/guide/topics/ui" target="_blank">User Interface & Navigation</a>
 2. <a href="https://developer.android.com/guide/topics/resources/available-resources.html" target="_blank">Resource type overview</a>
+3. <a href="https://developer.android.com/guide/topics/ui/look-and-feel/themes" target="_blank">Styles and Themes</a>
 4. <a href="https://developer.android.com/reference/android/content/res/Resources.html" target="_blank">Resources API</a>

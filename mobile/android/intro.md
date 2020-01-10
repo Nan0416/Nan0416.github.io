@@ -105,13 +105,19 @@ Android API are backward compatible. When starting developing an app, select the
 
 Framework API contains not only functions, but also XML elements, intents, and permissions that apps can request. The framework API is bound to the Android OS. When the user upgrade its Android system, the framework API is also updated to a new version. Developer can only use the framework API but not be able to control its version.
 
+* [source code repo](https://android.googlesource.com/platform/frameworks/base.git)
+* [source code github mirror](https://github.com/aosp-mirror/platform_frameworks_base)
+
 #### Android Support Library & AndroidX.
 
 Because android devices can have different version of Framework API, directly using framework API will bring compatibilty issue. Android provides a library layer on top of the Framework API to eliminate the compatibility issue. So developers can import and use this library instead of directly using Framework API.
 
 AndroidX is a refactor of Android Support Library, which is introduced along with Android 9.0 (API level 28). Android Support Library is no longer maintained.
 
-[API reference](https://developer.android.com/reference/)
+* [API reference](https://developer.android.com/reference/)
+* [Source code](https://android.googlesource.com/platform/frameworks/support/)
+
+
 ### <a id="manifest">V. Manifest</a>
 
 Each Android project has an associated manifest file (AndroidManifest.xml) that specifies app name, components of the app, permission, framework API requirement.
