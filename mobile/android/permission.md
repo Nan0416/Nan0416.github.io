@@ -6,6 +6,7 @@ Modified: 2020-01-10
 * [Introduction](#intro)
 * [Request Perimssion](#request)
 * [Example](#example)
+* [Custom Permission](#custom)
 * [References](#reference)
 ***
 ### <a id="intro">I. Introduction</a>
@@ -69,7 +70,7 @@ So if you don't need to have this permission, do
 [reference](https://developer.android.com/guide/topics/manifest/uses-feature-element#permissions)
 
 
-### <a id="example">Example</a>
+### <a id="example">III. Example</a>
 
 Getting location service. Declare the location permission in manifest. <span style="color:red">For api level below 23, the permission is request at installation time. For api level >= 23, the permission is request at runtime by code explicitly.</span>
 ```XML
@@ -111,5 +112,9 @@ Code get notified with a callback function defines in the `Activity` class. The 
         // the requestCode the app-defined code.
     }
 ```
+### <a id="custom">IV.Custom Permission</a>
 
-### <a id="reference">References</a>
+TODO
+
+### <a id="reference">V. References</a>
+1. <a href="https://developer.android.com/training/permissions/requesting" target="_blank">Request App Permissions</a>

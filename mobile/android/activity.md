@@ -7,8 +7,7 @@ Modified: 2020-01-03
 * [Activity](#activity)
 * [Lifecycle](#lifecycle)
 * [Tasks & Back Stack](#task)
-* [Transition & Intent](#transition)
-* [Fragment](#fragment)
+* [Intent](#intent)
 * [Common Methods and Fields](#method)
 * [References](#reference)
 
@@ -67,8 +66,91 @@ public boolean onKeyDown(int keyCode, KeyEvent event) {
 }
 ```
 
+### <a id="intent">V. Intent</a>
+
+Intent object is used for delivering data to component or launching an component. In precise,
+* starting an activity with input and get back result <span style="color:red">When an activity starts another activity, the target activity will shift up from the bottom. (Android 9.0)</span>
+* starting a service component,
+* delivering a broadcast
+
+The components can from the same application or cross-application.
+
+Two types of intent:
+* Explicit intent with component's class name.
+* Implicit intent to let Android OS select the target activity. When creating a component (activity), we also need to declare the Intents that the component is able to handle in the manifest file. If no intent is specified, the component can only be started by explicit intent.
+
+Important Intent fields
+1. ComponentName: if this field is set, then it's a explicit component.
+2. Action: a important field used to select the target, such as 
+    * `Intent.ACTION_VIEW` view url (broswer), setup alarm, play video.
+    * `Intent.ACTION_VIEW` play video,
+    * `Intent.ACTION_VIEW` show a position on a map
+    * `Intent.ACTION_CALL` make a phone call.
+    * `Intent.ACTION_MAIN` start as a main entry point, doesn't receive data.
+
+In addition, we can also define our own action. A action is a String type. A practice is to add the package name as prefix to avoid duplication with others.
+
+3. Category: used with implicit intent. The purpose of category is to add an additional filter field for Android to select the proper component. <span style="color:red">A intent can include multiple categories.</span>Examples,
+    * `CATEGORY_BROWSABLE`: means the target activity can be started by a web browser to display (VIEW) a link.
+    * `CATEGORY_LAUNCHER`: initial activity of an application.
+    * `CATEGORY_DEFAULT`: if a intent doesn't include a category, or an activity's intent filter doesn't define a category, then its value is default.
+
+4. Data: A Uri data (reference) whose scheme is an important factor used to select implicit activity. e.g. the uri = "http://www.google.com", `getScheme()` will return `http`, which is used to select the implicity activity. In addition, you can set the `MIME` type (Multipurpose Internet Mail Extension). e.g. `text/plain`.
+
+5. Extras: an intent object can also store key-value pair. There exists a few pre-defined keys. such as 
+    * `Intent.EXTRA_EMAIL`: email recipient addresses, value is type of String[]
+    * `Intent.EXTRA_SUBJECT`: set subject.
+
+#### Bundle objects
+
+
+#### Explicit intent
+
+For example, define a activity called `IntentSenderActivity` that has a button whose click callback will start explicitly itself.
+
+```Java
+public class IntentSenderActivity extends Activity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_intent_sender);
+
+        Intent intent = getIntent(); // as target acitivity to get the intent used to start itself.
+        final int count = intent.getIntExtra(IntentSenderActivity.EXTRA_KEK, 0);
+        
+        TextView textView = findViewById(R.id.sender_text);
+        textView.setText("count " + count);
+        Button btn = findViewById(R.id.sender_btn);
+        btn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                Intent intent = new Intent();
+                intent.putExtra(IntentSenderActivity.EXTRA_KEK, count + 1);
+                // explicitly set the recipient activity's application package and its fullname (including package)
+                intent.setClassName("com.example.myapplication", IntentSenderActivity.class.getName()); 
+                startActivity(intent);
+            }
+        });
+    }
+}
+```
+
+1. `getIntent()` is a activity defined method used to get the intent used to current activity itself.
+
+
+#### Implicit Intent (Recipient side)
+
+Activity should advertise itself for receiving corresponding intent (action, category, data uri scheme, and mime type) in the manifest file.
+[reference](https://developer.android.com/guide/components/intents-filters#Resolution)
+
+#### Implicit intent
+
+ToDo
+
+
+
 ### <a id="reference">VI. References</a>
 1. <a href="https://developer.android.com/guide/components/fundamentals" target="_blank">Application Fundamentals</a>
 2. Professional Android 4th Edition, Reto Meier & Ian Lake
 3. <a href="http://www.dre.vanderbilt.edu/~schmidt/android/android-4.0/out/target/common/docs/doc-comment-check/guide/appendix/api-levels.html" target="_blank">Android API Levels</a>
 4. <a href="https://developer.android.com/guide/topics/manifest/uses-sdk-element#ApiLevels" target="_blank">What is API Level?</a>
+5. <a href="https://developer.android.com/guide/components/intents-filters" target="_blank">Intents and Intent Filters</a>
