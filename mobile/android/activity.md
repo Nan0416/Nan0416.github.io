@@ -1,11 +1,12 @@
 # Markdown
 
 Created: 2020-01-03
-Modified: 2020-01-03
+Modified: 2020-01-11
 
 * [Components](#component)
 * [Activity](#activity)
 * [Lifecycle](#lifecycle)
+* [Lifecycle Awareness Component](#lifecycle-awareness)
 * [Tasks & Back Stack](#task)
 * [Intent](#intent)
 * [Common Methods and Fields](#method)
@@ -22,14 +23,75 @@ Activity's lifecycle includes `create -> [start -> resume -> ... -> pause -> sto
 __Rotating screen will destroy the current activity and create a new one.__ The difference between rotating screen and starting a new activity is that rotating screen use the same process (ART).
 
 
-
-
-##### onCreate
+##### 1. onCreate
 onCreate is invoked when launching the activity or screen rotates. It's only invoked once per activity instance.
 
 Things to do:
 1. instantiate class-scope variables.
 2. set view model `setContentView`.
+
+`Activity` class source code
+```Java
+public void onCreate(Bundle savedInstanceState){
+    if (mLastNonConfigurationInstances != null) {
+        mFragments.restoreLoaderNonConfig(mLastNonConfigurationInstances.loaders);
+    }
+
+}
+
+```
+
+##### 2. onStart()
+onStart is invoked when the view is visible to user.
+
+Things to do:
+1. start animation.
+
+`Activity` class source code
+```Java
+protected void onStart(){
+    // mFragments.doLoaderStart(); // deprecated since 28. 
+    mCalled = true;
+    getApplication().dispatchActivityStarted(this);
+    if(mAutoFillResetNeeded){
+        getAutofillManager().onVisibleForAutofill();
+    }
+    if (mActivityInfo.parentActivityName != null) {
+        //...
+    }
+    if (savedInstanceState != null) {
+        //...
+    }
+    // mFragments.dispatchCreate(); deprecated.
+    getApplication().dispatchActivityCreated(this, savedInstanceState);
+    if (mVoiceInteractor != null) {
+        mVoiceInteractor.attachActivity(this);
+    }
+    mRestoredFromBundle = savedInstanceState != null;
+    mCalled = true;
+}
+```
+
+
+
+#### 3. onResume()
+onResume is a point where the user can start interaction with the UI.
+
+```Java
+    protected void onResume() {
+        getApplication().dispatchActivityResumed(this);
+        mActivityTransitionState.onResume(this, isTopOfTask());
+        if (mAutoFillResetNeeded) {
+            if (!mAutoFillIgnoreFirstResumePause) {
+                View focus = getCurrentFocus();
+                if (focus != null && focus.canNotifyAutofillEnterExitEvent()) {
+                    getAutofillManager().notifyViewEntered(focus);
+                }
+            }
+        }
+        mCalled = true;
+    }
+```
 
 
 ### <a id="method">Common Methods and Fields</a>
