@@ -15,6 +15,21 @@ Modified: 2020-01-11
 ***
 ### <a id="intro">I. Components</a>
 
+### <a id="activity">II. Activity</a>
+
+```
+java.lang.Object
+   ↳	android.content.Context
+ 	   ↳	android.content.ContextWrapper
+ 	 	   ↳	android.view.ContextThemeWrapper
+ 	 	 	   ↳	android.app.Activity (Framework Define Activity: support lifecycle, add view and layout)
+ 	 	 	 	   ↳	androidx.activity.ComponentActivity (AndroidX: support lifecycleowner, viewmodelstore owner)
+ 	 	 	 	 	   ↳	androidx.fragment.app.FragmentActivity (AndroidX: support fragment)
+ 	 	 	 	 	 	   ↳	androidx.appcompat.app.AppCompatActivity
+```
+
+Application
+Context
 
 ### <a id="lifecycle">III. Lifecycle</a>
 
@@ -93,8 +108,42 @@ onResume is a point where the user can start interaction with the UI.
     }
 ```
 
+### <a id="lifecycle-awareness">IV. Lifecycle Awareness Component</a>
 
-### <a id="method">Common Methods and Fields</a>
+<span style="color:red">Lifecycle awareness component: decouple activity/fragment with dependent functions.</span>
+
+Activity and Fragment are able to expose their lifecycle events and allow other object to subscribe to these event and query current state. *Lifecycle awareness component is not natively supported by Framework API, instead, it is supported by AndroidX library*.
+
+`ComponentActivity` and `Fragment` implements the `LifecycleOwner` interface, which defines a single method
+```Java
+public abstract Lifecycle getLifecycle ();
+```
+to return a `Lifecycle` object. The `Lifecycle` object allows observer to subscribe/unsubscribe and query current state.
+```Java
+public abstract void addObserver (LifecycleObserver observer);
+public abstract Lifecycle.State getCurrentState ();
+public abstract void removeObserver (LifecycleObserver observer);
+```
+The `LifecycleObserver` is a mark interface, it marks the class as a observer. __The real callback method is marked with Annotation `OnLifecycleEvent`__. Observer can ignore some unnecessary method when using annotation instead of interface.
+
+```Java
+public class Examplebserver implements LifecycleObserver {
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    public void connectListener() {
+        ...
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+    public void disconnectListener() {
+        ...
+    }
+}
+```
+
+
+
+
+### <a id="method">V. Common Methods and Fields</a>
 
 1. public boolean onKeyDown (int keyCode, KeyEvent event); [reference](https://developer.android.com/reference/android/view/KeyEvent)
 * Handle the keydown when the focused view ignore the event. If the focused view handles this event, then the activity will not get the event.
@@ -216,3 +265,4 @@ ToDo
 3. <a href="http://www.dre.vanderbilt.edu/~schmidt/android/android-4.0/out/target/common/docs/doc-comment-check/guide/appendix/api-levels.html" target="_blank">Android API Levels</a>
 4. <a href="https://developer.android.com/guide/topics/manifest/uses-sdk-element#ApiLevels" target="_blank">What is API Level?</a>
 5. <a href="https://developer.android.com/guide/components/intents-filters" target="_blank">Intents and Intent Filters</a>
+6. <a href="https://developer.android.com/topic/libraries/architecture/lifecycle" target="_blank">Lifecycle-Aware Components</a>

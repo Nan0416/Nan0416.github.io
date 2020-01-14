@@ -1,10 +1,12 @@
-# Markdown
+# UI & Resource
 
 Created: 2020-01-04
-Modified: 2020-01-04
+Modified: 2020-01-13
 
 * [Introduction](#intro)
-* [Resources](#resource)
+* [XML & resource](#xml)
+* [Value resource](#value)
+* [Size](#size)
 * [Style & Theme](#style)
 * [References](#reference)
 ***
@@ -45,7 +47,27 @@ Object
             LinearLayout, RelativeLayout
 ```
 
-#### ID attributes
+### <a id="xml">II. XML & Resources</a>
+
+* Android use XML format to declare and define resources. Resource includes layout, images, values.
+* Organization of resources is by directory. [reference](https://developer.android.com/guide/topics/resources/providing-resources#ResourceTypes)
+    * res/layout
+    * res/drawable
+    * res/mipmap
+    * res/values
+
+A resource can be referenced by type + filename or by id in XML or in code.
+
+R.class
+
+adpatable.
+
+#### 1. layout resource
+
+A layout resource is a
+
+They are referenced by filename, e.g. `@layout/layout_1` within XML, `R.layout.layout_1` within code.
+
 
 A view can have attributes, like html attributes.
 
@@ -64,25 +86,12 @@ This button widget (view) defines an id field `@+id/my_button` that can be refer
 Button myButton = (Button) findViewById(R.id.my_button);
 ```
 
-### <a id="resource">II. Resouces</a>
 
-####  Define resources
+### <a id="value">III. Value resource</a>
 
-1. Define __`layout`__ resource.
+#### 1. Define __value__ resources
 
-`layout` resource are stored within `res/layout` directory, for example,
-
-```
-/res
-    /layout
-       /layout_1.xml
-       /layout_2.xml
-```
-
-They are referenced by filename, e.g. `@layout/layout_1` within XML, `R.layout.layout_1` within code.
-
-
-2. Define __value__ resources, value resources include `string`, `style`, `bool`, `color`, `dimen`, `integer`, `integer-array`, `array` and `id`.
+Value resources include `string`, `style`, `bool`, `color`, `dimen`, `integer`, `integer-array`, `array` and `id`.
 All values resources are placed within `res/values` directory. __They are defined with the corresponding type and referenced by `name` attributes__.
 
 ```
@@ -108,7 +117,7 @@ The filename doesn't matter, value resources are referenced by their `name` attr
 
 __The best practice is to place each type of value within its own file.__ For example, placing all `string` within `res/values/string.xml` file.
 
-#### Reference resources
+#### 2. Reference resources
 
 * Android separates App code and resource. All resource, includes images, icon, string (e.g. button's text), layout, are placed inside the `res` directory.
 * Android studio utilizes `aapt` tool to automatically generate a `R` class that used to reference these resource in code. Each resource's id will be an integer in the `R` class.
@@ -117,15 +126,8 @@ placed inside the `layout` directory. In addition, each type of resource are sto
 
 Reference resource within XML is using `@[<package_name>:]<resource_type>/<resource_name>` syntax. For example, `android:text="@string/my_button_text"` set the button's text to be the value of `my_button_text`'s reference.
 
-#### Resources class
 
-The `Context` abstract class defines a abstract method called `public abstract Resources getResources ()` that return a resources object. `Activity` class extends the `Context` class so the resource object can be acquired from within `Activity` class.
-
-1. get screen metrics.
-
-`public DisplayMetrics getDisplayMetrics ()` return a object that represents screen size, pixel density.
-
-##### Size
+### <a id="size">Size</a>
 
 Android support different size unit.
 
@@ -135,6 +137,15 @@ Android support different size unit.
 4. dpi and ppi: dots per inch/pixel per inch. Discribe the density of pixel. # of pixel in one inch line. Mi A2 403 PPI. *dpi and ppi are used interchangeable, but dpi is originally used for printer and scanner*.
 
 Directly using pixel is not recommended, use dp instead.
+
+
+#### Resources class
+
+The `Context` abstract class defines a abstract method called `public abstract Resources getResources ()` that return a resources object. `Activity` class extends the `Context` class so the resource object can be acquired from within `Activity` class.
+
+1. get screen metrics.
+
+`public DisplayMetrics getDisplayMetrics ()` return a object that represents screen size, pixel density.
 
 ```Java
 public void logScreenMetric(){
@@ -151,6 +162,7 @@ public void logScreenMetric(){
         Log.d(TAG, sb.toString());
 }
 ```
+
 
 ### <a id="style">Style & Theme</a>
 

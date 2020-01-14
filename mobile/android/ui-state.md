@@ -1,7 +1,7 @@
 # Markdown
 
 Created: 2020-01-12
-Modified: 2020-01-12
+Modified: 2020-01-13
 
 * [Introduction - onSave/RestoreInstanceState](#intro)
 * [Parcelable & Bundle](#parcelable)
@@ -127,7 +127,120 @@ public class Address implements Parcelable {
 }
 ```
 
-### <a id="callback">III. ViewModel</a>
+### <a id="viewmodel">III. ViewModel</a>
+
+ViewModel is a class used to retain data due to app configuration change (e.g. rotation). 
+
+For example,
+```Java
+public class ViewModelPracticeActivity extends ComponentActivity {
+    private MyViewModel model;
+    protected void onCreate(Bundle savedInstanceState) {
+        //...
+        ViewModelStoreOwner storeOwner = (ViewModelStoreOwner)(this);
+        ViewModelStore store = storeOwner.getViewModelStore();
+        ViewModelProvider provider = new ViewModelProvider(store, new ViewModelProvider.NewInstanceFactory());
+        model = provider.get(MyViewModel.class);
+    }
+}
+```
+
+After the activity is recreated due to configuration change, the model object is same even thought the activity changed.
+
+
+#### Under the hood.
+
+Configuration change causes the entire activity to be re-created. <span style="color:red">It will invoke the activity's constructor to create a brand new activity.</span> However, the app may need to only recreate UI related data and objects, such as the view tree. It's not necessary to re-create buiness logic data. A ViewModel is a class for retaining data during configuration change.
+
+
+A `ViewModel` object is bound to a `ViewModelStore` object. The `ViewModelStoreOwner` interface defines a method to get the `ViewModelStore` object.
+```Java
+public abstract ViewModelStore getViewModelStore ()
+```
+`ComponentActivity` implements this interface. Source code
+```Java
+public ViewModelStore getViewModelStore() {
+        if (getApplication() == null) {
+            throw new IllegalStateException("Your activity is not yet attached to the "
+                    + "Application instance. You can't request ViewModel before onCreate call.");
+        }
+        if (mViewModelStore == null) {
+            NonConfigurationInstances nc = (NonConfigurationInstances) mLastNonConfigurationInstances.activity;
+            // see below retain process;
+            if (nc != null) {
+                mViewModelStore = nc.viewModelStore;
+            }
+            if (mViewModelStore == null) {
+                mViewModelStore = new ViewModelStore();
+            }
+        }
+        return mViewModelStore;
+    }
+```
+
+During the first time to launch an activity, `NonConfigurationInstances` is null, so the activity creates a `new VideModelStore()` object. After configuration change, the application's `ActivityThread` invokes `performDestroyActivity` method, which gets and retains a `Activity.NonConfigurationInstances` from the activity and then the activity is destroied.
+
+During the second time to launch the activity, the activity will be given the last retained object through the `.attach` object.
+
+```Java
+ActivityClientRecord performDestroyActivity(...){
+    // ...
+    ActivityClientRecord r = mActivities.get(token);
+    // ... 
+    r.lastNonConfigurationInstances = r.activity.retainNonConfigurationInstances();
+    /**
+    Activity.retainNonConfigurationInstances{
+        Object activity = onRetainNonConfigurationInstance(){
+            @Override by ComponentActivity.onRetainNonConfigurationInstance{
+                Object custom = onRetainCustomNonConfigurationInstance(); // null
+                return new ComponentActivity.NonConfigurationInstances{
+                    custom = null;
+                    viewModelStore = viewmodelstore;
+                }
+            }
+        }
+        return {
+            activity{ // from above ComponentActivity implementation.
+                custom = next subclass.
+                viewModelStore.
+            }
+            fragment // should be deprecated and implemented by FragmentActivity?.
+            ...
+        }
+    }
+    */
+}
+```
+And followed by the `performLaunchActivity`, where the input r is the return value of `performDestoryActivity`.
+```Java
+private Activity performLaunchActivity(ActivityClientRecord r, Intent customIntent) {
+    // ...
+    activity.attach(... r.lastNonConfigurationInstances, ...);
+    // update activity to new activity.
+     r.activity = activity; 
+}
+```
+
+In summary, the ViewModelStore is created by activity, retain and re-attached to the activity by the `ActivityThread`.
+Because `ViewModelStore` and `ViewModel` objects can has a longer life-scope than `Activity`, it's dangerous to let `ViewModel` depend on `Activity`. Instead, let `Activity` use `ViewModel` as a data container for views, or communication channel between fragments.
+
+
+#### Usage
+`ViewModel` is the base class to define a customized ViewModel. It defines a `.onCleared` callback, which is invoked when the activity should be finished, such as `.finish` method or use click back button.
+
+`ViewModelStore` is the `ViewModel` object container. It's created by activity during the first launch, and retain/re-attach to activity by `ActivityThread`. Its core is a hashmap to put/get viewmodel object. For example, the put method store/update viewmodel and clear the old viewmodel
+```Java
+final void put(String key, ViewModel viewModel) {
+        ViewModel oldViewModel = mMap.put(key, viewModel);
+        if (oldViewModel != null) {
+            oldViewModel.onCleared();
+        }
+    }
+```
+
+`ViewModelProvider` is a helper layer on top of `ViewModeStore` used to create/manage `ViewModel`.
+
 
 ### <a id="reference">IV. References</a>
 1. <a href="https://guides.github.com/features/mastering-markdown/" target="_blank">Mastering Markdown</a>
+
