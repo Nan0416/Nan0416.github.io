@@ -1,5 +1,3 @@
-# UI & Resource
-
 Created: 2020-01-04
 Modified: 2020-01-13
 
@@ -55,6 +53,9 @@ Object
     * res/drawable
     * res/mipmap
     * res/values
+* Resource qualifier: qualifier is a resource selector based on device configuration. For example,
+```
+res/
 
 A resource can be referenced by type + filename or by id in XML or in code.
 

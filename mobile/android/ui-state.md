@@ -1,5 +1,3 @@
-# Markdown
-
 Created: 2020-01-12
 Modified: 2020-01-13
 
