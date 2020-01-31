@@ -6,14 +6,14 @@ Modified: 2020-01-03
 * [References](#reference)
 ***
 ### <a id="compilation">Compilation</a>
-1. Compiling (.c -> .o) a source file only requires the included header files but not the library files.
+1. Compiling (.c -> .o) a source file only requires the included header files (API declaration) but not the library files (implementation).
 2. Linking compiled code requires all compiled code source (e.g. .o .a and .so). 
 3. Running the exeuctable file requires the shared libraries at runtime.
 
 ```shell
 # compilation time
 gcc -S code.c
-as code.s -o code.o
+as code.s -o code.o # object files
 gcc -shared -o libcode lcode.so
 
 # gcc -c code.c to generate the .o file
@@ -29,6 +29,11 @@ gcc -o exeutable main.o -lcode -L .
 windows .dll,
 linux .so
 macos .so or .dylib
+
+#### executable
+1. startup code: different operating systems have different startup code. For example, the address of the first instruction (e.g. _startup label.) The startup code typically reset registers and invoke `main`.
+2. a symbol table has main function and other dependent functions from either the same source code or libraries.
+
 
 ### <a id="pkg-config">pkg-config</a>
 pkg-config is a command line tool for finding metainformation about installed libraries.

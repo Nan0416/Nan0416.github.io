@@ -1,10 +1,12 @@
-#define variable(n) var##n
-#define stringify(s) #s
-
+//int my_sqrt(int);
+#include <math.h>
+#include <stdio.h>
+inline static double my_sqrt(double x);
+double my_sqrt(double x){
+    return x * x * x;
+}
 int main(){
-    int variable(1) = 10;
-    int number = 20;
-    char * name = stringify(number);
-    char * name2 = stringify(variable(100));
+    double s10 = my_sqrt(10);
+    printf("%f\n", s10);
     return 0;
 }

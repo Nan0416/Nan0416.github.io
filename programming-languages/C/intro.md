@@ -13,8 +13,9 @@ Modified: 2020-01-03
 2. Separate .h file for API reference and compilation.
 3. Memory manipulation and pointer.
 4. C code is compiled into machine code, which requires minimal runtime support. 
-5. Marco (kind of customized syntax)
+5. Preprocessor, Marco, #include, inline function
 6. No namespace.
+7. binding with assembly code.
 
 History. (wiki)
 > C was originally developed at Bell Labs by Dennis Ritchie between 1972 and 1973 to make utilities running on Unix. 
