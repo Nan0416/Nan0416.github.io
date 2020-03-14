@@ -34,12 +34,13 @@ SyntaxHighlighter.all()
 </script>
 <!-- ========= START OF TOP NAVBAR ======= -->
 <div class="bar">
-<center><strong>Java&nbsp;-&nbsp;Lambda</strong></center>
+<strong>Java&nbsp;-&nbsp;Lambda</strong>
 </div>
-<p class="date"><span class="created-date">Created:2018-03-10</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2018-03-10</span></p>
+<p class="date"><span class="created-date">Created:2018-03-10</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2020-03-12 [First modification after working.]</span></p>
 <div class="catalog">
 <ul class="catalogItems">
-<li><a href="#lambdaIntro">Introduction</a></li>
+<li><a href="#lambdaIntro">Lambda</a></li>
+<li><a href="#methodreference">Method Reference</a></li>
 <li><a href="#lambdaExample">Examples</a></li>
 
 </ul>
@@ -49,7 +50,7 @@ SyntaxHighlighter.all()
 <ol>
 <li>
 <div class="content" id="lambdaIntro">
-<h3>Introduction</h3>
+<h3>Lambda</h3>
 <p>Lambda is a new feature since Java 8: functionality as an argument. e.g. Runnable</p>
 <div class="featureList">
 <ol>
@@ -175,7 +176,65 @@ interface Operator{
 </div>
 </div>
 </li>
-
+<li>
+    <div class="content" id="methodreference">
+        <h3>Method Reference</h3>
+        <p>Method reference is syntax helper to map a class (static/instance/constructor) method to a functional interface. So there are two ways for creating an instance of functional interface, 1) using lambda, 2) using method reference from existing classes.</p>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>Instance/Static Method Reference</h4>
+                    <p>Suppose defining a Op interface:</p>
+                    <pre class="brush:java">
+                        public interface Op{
+                            double operate(double x, double y);
+                        }
+                    </pre>
+                    <p>And you have a class method, either static or instance, has the same argument and return type as the functional interface defined method. Then you can assign the class method to the functional interface's variable.</p>
+                    <pre class="brush:java">
+                        public class MethodReference {
+                            public static double add(double x, double y){
+                                return x + y;
+                            }
+                            public double subtract(double x, double y){
+                                return x - y;
+                            }
+                        }
+                    </pre>
+                    <pre class="brush:java">
+                        public class StaticMethodReferenceTest {
+                            public static void main(String [] args){
+                                Op add = MethodReference::add; // static method using the class name
+                                MethodReference mr = new MethodReference(); // instance method using the instance.
+                                Op sub = mr::subtract;
+                            }
+                        }
+                        
+                    </pre>
+                    <p>In addition, the modifiers, public,private,protected and default, are stilling working as expected.</p>
+                </li>
+                <li>
+                    <h4>Constructor Method Reference</h4>
+                    <p>Constructor method doesn't have a return type. But it also actually return itself.</p>
+                    <pre class="brush:java">
+                        public interface GetObjectX{
+                            X acquire(String arg1, String arg2);
+                        }
+                        public X{
+                            public X(String arg1, String arg2);
+                        }
+                        public class Test{
+                            public static void main(String [] args){
+                                GetObjectX gx = X::new;
+                                X xObject = gx.acquire("xxx", "yyy");
+                            }
+                        }
+                    </pre>
+                </li>
+            </ol>
+        </div>
+    </div>
+</li>
 
 </ol>
 </div>
