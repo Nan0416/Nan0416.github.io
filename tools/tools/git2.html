@@ -46,12 +46,11 @@ SyntaxHighlighter.all()
 <div class="bar">
 <strong>Git&nbsp;-&nbsp;Version Control</strong>
 </div>
-<p class="date"><span class="created-date">Created:2019-04-16</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-04-16</span></p>
+<p class="date"><span class="created-date">Created:2019-04-16</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-04-16 / 2020-04-13 WFH @ Amazon</span></p>
 <div class="catalog">
 <ul class="catalogItems">
 <li><a href="#intro">Branch & Commit</a></li>
-<li><a href="#add">Stage/Index & Add</a></li>
-<li><a href="#stash">Stash</a></li>
+<li><a href="#rebase">git rebase</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -62,7 +61,6 @@ SyntaxHighlighter.all()
 <div class="content" id="intro">
 <h3>Branch & Commit</h3>
 <p>A branch is just a pointer points to a commit. A series of commit records the process/history of the code development.</p>
-
 <div class="featureList">
     <ol>
         <li><p>After the first commit, master branch is created. <span style="color:red">HEAD</span> is a virtual
@@ -181,9 +179,84 @@ SyntaxHighlighter.all()
         </li>
     </ol>
 </div>
-
-
 </div>
+</li>
+<li>
+    <div class="content" id="rebase">
+        <h3>git rebase</h3>
+        <p>As the name suggest, it rebase a commit on top of another commit.</p>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>Scenario 1</h4>
+                    <p>It's very common that someone push code to remote master branch as you walk on a local feature branch.</p>
+                    <pre class="git">
+                            [someone else]
+                                \
+remote/master [220380] ------- [987999]
+                 \
+local/master  [220380]
+                  \
+local/feature      \ --------- [382979] -- [589232] -- [893792]
+                    </pre>
+                    <p>In this case, you cannot directly push (merge) the local/feature to the remote/master since it may exist conflicts. And you need to "rebase" you local/feature on top of the remote/master.</p>
+                    <pre class="brush:bash">
+                        # checkout to local master and pull the remote master.
+                        git checkout master
+                        git pull origin master
+                    </pre>
+                    <pre class="git">
+        remote/master [220380] ------- [987999]
+                        \
+        local/master  [220380] ------- [987999]
+                          \
+        local/feature      \ --------- [382979] -- [589232] -- [893792]
+                    </pre>
+                    <pre class="brush:bash">
+                        # checkout to the feature and rebase
+                        git checkout feature
+                        git rebase master
+                    </pre>
+                    <p>
+                        Git rebase replays the code change of each commit on top the target commit (in this case, it's the master's HEAD). <br>
+                        <span style="color:red">
+                            Rebase may fail due to modify the same file, in this case, it will add the merge mark 
+                            to these files in the working directory area, let us resolve manually.
+                        </span> 
+                        Run <span style="color:green">git status</span> to find out the conflict files, resolve them, 
+                        <span style="color:green">git add</span> them to stage, and then <span style="color:green">git rebase --continue</span> 
+                        to process the next commit or finish the rebase. 
+                        <br>
+                        You can also skip a commit during the rebase.
+                    </p>
+                    <pre class="git">
+        remote/master [220380] ------- [987999]
+                        \
+        local/master  [220380] ------- [987999]
+                                          \
+        local/feature                      \ ------ [697321] -- [589232] -- [893792] # after the rebase, the commit number also changed.
+                    </pre>
+                </li>
+                <li>
+                    <h4>squashing commit</h4>
+                    <p>You may have a lot of small commit on a feature/branch when you develop it. But it's not recommended to directly push all these small commit to the master branch, since it make master dirty.</p>
+                    <p>So the solution is to "squash" these small commits into a single commit, and this can be done with "git rebase". So essentially, you want to rebase the HEAD to an older commit.</p>
+                    <pre class="git">
+                        local/feature 389302e -> bce73d4 -> b4f2720 -> ef592e1 -> 836311e (HEAD)
+                    </pre>
+                    <pre class="brush:bash">
+                        git rebase -i HEAD~2 # iterative way
+                        # the HEAD~2 is the target commit, in this case, it's b4f2720, which means ef592e1 & 836311e will be squash.
+                        # the interactive command will ask you pick & squash. (leave the first line as pick, all other to be squash).
+                        # and then you can commit this squash.
+                    </pre>
+                    <pre class="git">
+                        local/feature 389302e -> bce73d4 -> b4f2720 -> 32e9832 (HEAD)
+                    </pre>
+                </li>
+            </ol>
+        </pre>
+    </div>
 </li>
 <li>
 <div class="content" id="reference">

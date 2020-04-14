@@ -12,7 +12,7 @@
 <script type="text/javascript" src="../../script.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/XRegExp.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/shCore.js"></script>
-<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushCpp.js"></script>
+<script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushXml.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJava.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushJScript.js"></script>
 <script type="text/javascript" src="../../syntaxHighlight_js_c/shBrushBash.js"></script>
@@ -40,8 +40,9 @@ SyntaxHighlighter.all()
 <p class="date"><span class="created-date">Created:2018-09-30</span>&nbsp;&nbsp;<span class="last-modified">Last modified:2019-10-30</span></p>
 <div class="catalog">
 <ul class="catalogItems">
-<li><a href="#intro">Introduction</a></li>
-<li><a href="#servlet">Java Servlet</a></li>
+<li><a href="#servlet">Servlet & Servlet Container</a></li>
+<li><a href="#tomcat">Tomcat & Servlet</a></li>
+<li><a href="#spring">Spring Framework</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -49,13 +50,393 @@ SyntaxHighlighter.all()
 <div class="contentContainer">
 <ol>
 <li>
-<div class="content" id="intro">
-<h3>Introduction</h3>
-    <p>Spring Framework is a general Java application framework. It can not only build web application, but also other general applications. The core component of Spring Framework is a IoC (dependency injection) container.</p>
-    <p>Spring Framework with Java Servlet together can build web application.</p>
-    <p>First release 2002, current version spring framework 5, spring boot 2 (late-2019)</p>
-    <h4>Spring Framework vs. Spring Boot</h4>
-    <p>Spring Boot is on the top of Spring Framework and eliminates the requirement of spring framework's xml config file. Spring Boot 2.x is based on Spring Framework 5.x, which is based on Java 8.</p>
+<div class="content" id="servlet">
+<h3>Servlet & Servlet Container</h3>
+    <p>Java EE defines Servlet specification, JSR 340 - Servlet 3.1, JSR 369 - Servlet 4.0. The specification also defines the interface between servlet container and servlet.</p>
+    <p>A servlet can be any kind of applications that take requests and return responses. <br>
+        A servlet container is an application that manages a set of servlets. <br>
+        1). manages servlets' lifecycle (create, destroy), and receives external requests and delegates to a servlet.<br>
+        2). apply a list of filter to request and response<br>
+        3). publish servlet context events (initialized & destroy)
+    </p>
+    <p>HTTP servlet is one kind of servlet that receives http request and return http response. HTTP servlet container (e.g. Tomcat) is responsible for receiving http request, convert to 
+        <span style="color:green">HttpServletRequest</span> Java object, and invoke a servlet.
+    </p>
+    <p>A servlet container needs to support HTTP features, such as Non-blocking I/O, Http protocol (1.1 or 2.0), Websocket.</p>
+    <div class="featureList">
+        <ol>
+            <li>
+                <h4>Java interface between Servlet and Servlet Container</h4>
+                <pre class="brush:java">
+                    package javax.servlet;
+                    public interface Servlet{
+                        public void init(ServletConfig config) throws ServletException;
+                        public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException;
+                        public void destroy();
+                        public String getServletInfo();
+                        public ServletConfig getServletConfig();
+                    }
+
+                    public interface ServletRequest{
+                        public Object getAttribute(String name);
+                        public void setAttribute(String name, Object o);
+                        public Enumeration&lt;String&gt; getAttributeNames();
+                        public ServletInputStream getInputStream() throws IOException; 
+                        public String getContentType();
+                        public String getRemoteAddr();
+                        public ServletContext getServletContext();
+                    }
+                </pre>
+                <p>A servlet application should implement this interface. A servlet container should create the concrete <span style="color:green">ServletConfig, ServletRequest, ServletResponse</span> objects</p>
+                <p>This servlet interface is not necessarily the Http servlet. For an Http servlet, the ServletRequest and ServletResponse should be able to cast to HttpServletRequest and HttpServletResponse</p>
+
+            </li>
+            <li>
+                <h4>HttpServletRequest & HttpServletResponse</h4>
+                <p>The interface is part of java ee standard.</p>
+                <pre class="brush:java">
+                    package javax.servlet.http;
+                    public interface HttpServletRequest extends ServletRequest {
+                        public Cookie[] getCookies();
+                        public String getHeader(String name);
+                        public String getMethod(); // POST, GET ...
+                        public String getPathInfo();
+                        public HttpSession getSession();
+                    }
+                </pre>
+                <p>The concrete classes are provided by container. For example, Tomcat defines ...</p>
+            </li>
+            <li>
+                <h4>Example of implementing a trivial http servlet interface.</h4>
+                <pre class="brush:java">
+                    public class MyServlet implements Servlet{
+                        private ServletConfig config;
+                        @Override
+                        public void init(ServletConfig config) throws ServletException {
+                            this.config = config;
+                        }
+                        @Override
+                        public void service(ServletRequest req, ServletResponse res)
+                                throws ServletException, IOException
+                        {
+                            HttpServletRequest request;
+                            HttpServletResponse response;
+
+                            if (!(req instanceof HttpServletRequest &&
+                                    res instanceof HttpServletResponse)) {
+                                throw new ServletException("non-HTTP request or response");
+                            }
+
+                            request = (HttpServletRequest) req;
+                            response = (HttpServletResponse) res;
+
+                            response.sendError(HttpServletResponse.SC_NOT_IMPLEMENTED, "Not Implemented.");
+                        }
+                        @Override
+                        public String getServletInfo() {
+                            return "Example Servlet";
+                        }
+
+                        @Override
+                        public void destroy() {
+                            System.out.println("destroy");
+                        }
+                    }
+                </pre>
+                <p>After compile this project to a war (web application resource) format, you can deploy it to a servlet container (e.g. tomcat)</p>
+            </li>
+            <li>
+                <h4>war format</h4>
+                <p>The war format is used to distribute java servlet (defined in Servlet 2.2 standard), its resources (e.g. static html, image), a war can be considered as a web application.</p>
+                <pre class="brush:bash">
+                    /myapp
+                        /WEB-INF
+                            /web.xml # defines application structure, e.g. filters and servlet.
+                            /classes # the servlet compile code, it will be on the classpath.
+                            /jar # the runtime dependency .jar, such as spring-context-x.x.x.jar (if you use spring framework). 
+                </pre>
+            </li>
+        </ol>
+    </div>
+</div>
+</li>   
+<li>
+<div class="content" id="tomcat">
+    <h3>Tomcat & Serlvet</h3>
+    <p>Tomcat is an implementation of servlet container, Spring is a framework provides IoC container and implementation of Servlet.</p>
+    <h4>Tomcat</h4>
+    <p>Tomcat can manage multiple servlets at the same time, sumbit the war to tomcat's webapps. By default, tomcat listens to http://localhost:8080</p>
+
+    <div class="featureList">
+        <ol>
+            <li>
+                <h4>Tomcat architecture</h4>
+                <p>
+                    CATALINA_HOME defines the the root of Tomcat installation, it contains the "bin", "lib" directory.<br>
+                    CATALINA_BASE defines the runtime configuration of a specific tomcat instance. it contains the "logs", "conf" and "webapps" directory.<br>
+                    <span style="color:red">By default, CATALINA_HOME and CATALINA_BASE are the same. But if you want to run multiple instances of tomcat, each instance has to have its own CATALINA_BASE for the runtime configuration.</span>
+                </p>
+                <p>In side the /conf directory, it contains a server.xml that define the behavior of an Tomcat Instance.</p>
+                <pre class="brush:java">
+                    Server
+                        Service(s) ---> [connectors]
+                            Engine(s) [Catalina]
+                                Host(s) [localhost]
+                                    Context(s) webapps
+                </pre>
+                <p>A tomcat instance is an server that can contains multiple services (usually just one). The services has exactly one engine, but can have multiple connectors to send requests to the engine.</p>
+                <pre class="brush:xml">
+                    <Service name="Catalina">
+                        <Connector port="8080" protocol="HTTP/1.1" connectionTimeout="20000" redirectPort="8443" />
+                        <Connector port="8090" protocol="HTTP/1.1" connectionTimeout="20000" redirectPort="8443" />
+                        <Engine name="Catalina" defaultHost="localhost">
+                            <Host name="localhost"  appBase="webapps" unpackWARs="true" autoDeploy="true">
+                            <!-- others -->
+                            </Host>
+                            <Host name="192.168.0.117"  appBase="webapps-test" unpackWARs="true" autoDeploy="true">
+                                <!-- others -->
+                            </Host>
+                        </Engine>
+                    </Service>
+                </pre>
+                <p>For example, the above define a service named "Cataline", (by default, it uses <span style="color:green">org.apache.catalina.core.StandardService</span> implementation), <a href="https://tomcat.apache.org/tomcat-9.0-doc/config/service.html" target="_blank">reference</a>
+                     it has two connectors that can receive requests and then send to the engine named "Catalina"</p>
+                <p>The "connectionTimeout" define the maximum connection time. Connector supports concurrency, meanning it's able to handle multiple requests at the same time.</p>
+                <p>
+                    The <span style="color:red">Engine</span> is the core to process requests, (the default engine is <span style="color:green">org.apache.catalina.core.StandardEngine</span>) <a href="https://tomcat.apache.org/tomcat-9.0-doc/config/engine.html" target="_blank">reference</a>
+                    each engine can associate with multiple hosts (domains), and each hosts can have its own configuration.
+                </p>
+                <p>For example, the host named "localhost" has configurations of appBase="webapps", which indicates the content is located at "CATALINA_BASE/webapps", upackWARs and autoDeploy will unpack and deploy war when a new comes in.</p>
+                <p>A Host element can have multiple "Context"s. Each Context defines a specific web application. But it's not recommended to place Context here because the "server.xml" cannot be reloaded.</p>
+            </li>
+            <li>
+                <h4>Valve</h4>
+                <p>Valve is http request processor (interceptor), it can read/update/deny http requests before sending them to an web application</p>
+                <p class="reference-box">
+                    A Valve element represents a component that will be inserted into the request processing pipeline for the associated Catalina container (Engine, Host, or Context).
+                </p>
+                <h4>Examples</h4>
+                <p>
+                    1. org.apache.catalina.valves.AccessLogValve (logging)<br>
+                    2. org.apache.catalina.valves.RemoteAddrValve (allow/block access based on source ip or url)
+                </p>
+            </li>
+            <li>
+                <h4>Context</h4>
+                <p>Context is the configuration of an web applications</p>
+                <p>
+                    1. context path: Each web application has a context path that is used by the host to select the proper application when receiving a request. The selection is based on "longest prefix match"<br>
+                    2. context name: context name must be unqiue within a host
+                </p>
+                <p>When the host enabled "autoDeploy", the context name & context path can be automatically set to the war's name.</p>
+                <h4>Default Context vs. Individual context vs Auto context</h4>
+                <p>
+                    1. Default server-wide context: located at $CATALINA_BASE/conf/context.xml<br>
+                    2. Default host-wide context: located at $CATALINA_BASE/conf/[enginename]/[hostname]/context.xml.default<br>
+                    3. Individual context: Inside server.xml's Host element. (not recommended)<br>
+                    4. Individual context: Inside war /META-INF/context.xml<br>
+                    5. $CATALINA_BASE/conf/[enginename]/[hostname]/[xxx].xml<br>
+                    6. Auto context: <a href="https://tomcat.apache.org/tomcat-9.0-doc/config/host.html#Automatic_Application_Deployment" target="_blank">https://tomcat.apache.org/tomcat-9.0-doc/config/host.html#Automatic_Application_Deployment</a>
+                </p>
+                <p>Default context will be inherit by all individual context. Tomcat has a default context defined in /conf/context.xml</p>
+                <pre class="brush:xml">
+                    &lt;Context>
+                        &lt;WatchedResource>WEB-INF/web.xml&lt;/WatchedResource>
+                        &lt;WatchedResource>WEB-INF/tomcat-web.xml&lt;/WatchedResource>
+                        &lt;WatchedResource>${catalina.base}/conf/web.xml&lt;/WatchedResource>
+                    &lt;/Context>
+                </pre>
+                <h4>How does tomcat select a war (web application)?</h4>
+                <p class="reference-box">
+                    The web application used to process each HTTP request is selected by Catalina based on matching the longest possible prefix of the Request URI against the context path of each defined Context. 
+                    Once selected, that Context will select an appropriate servlet to process the incoming request, according to the servlet mappings defined by the web application deployment.
+                </p>
+                <h4>Attribute for context</h4>
+                <p>
+                    1. docBase: the path to the war unpacked directory. This attribute can only be set if the docBase is not under the Host's appBase, or the context is defined in the server.xml. (This attribute is essentially telling where is the web app directory, and catalina will automatically have all web app directory under the Host's appBase, so it's not necessary to set this field if the webapp is already under the Host's appBase)<br>
+                    2. path: the attribute used to select the webapp based on url (longest prefix match). It must only be used if the context is defined in server.xml. If the context is defined in /META-INF/context.xml, then the directory name of unpacked war will be the path. 
+                    If the context is defined under <span style="color:red"> $CATALINA_BASE/conf/[enginename]/[hostname]/[xxx].xml</span>, then [xxx] will be used as the path.
+                </p>
+                <h4>How to set a war whose name is ROOT.war to be ROOT that has path ""</h4>
+                <p>Create a individual context in the $CATALINA_BASE/conf/[enginename]/[hostname]/ named as ROOT.xml, and using docBase to point to the war. The war has to be outside of the Host's appBase, otherwise, it will be loaded twice.
+                    <br>
+                    <a href="https://www.baeldung.com/tomcat-root-application">Reference 1. https://www.baeldung.com/tomcat-root-application</a>
+                    <br>
+                    <a href="https://stackoverflow.com/questions/7276989/how-to-set-the-context-path-of-a-web-application-in-tomcat-7-0">Reference 2. https://stackoverflow.com/questions/7276989/how-to-set-the-context-path-of-a-web-application-in-tomcat-7-0</a>
+                </p>
+                <h4>Nested element</h4>
+                <p>
+                    1. WatchedResource: automatically reload the web application if the specific resource changed. (it seems not support wildcard).<br>
+                    2. Manager: session manager.<br>
+                    3. Loader: load Java classes (from /WEB-INF/classes, /WEB-INF/lib) and resources for your web application. default is <span style="color:red">org.apache.catalina.loader.WebappLoader</span> 
+                    <a href="https://tomcat.apache.org/tomcat-8.0-doc/config/loader.html">reference https://tomcat.apache.org/tomcat-8.0-doc/config/loader.html</a>
+                </p>
+            </li>
+            <li>
+                <h4>web.xml</h4>
+                <p>Each war should contain a WEB-INF/web.xml <span style="color:red">(deployment descriptor elements)</span> to tell Tomcat which filters and servlet should use for this application. It also setup init-param for the servlet. The init-params are then passed into the servlet by <span style="color:green">ServletConfig</span></p>
+                <a href="https://docs.oracle.com/middleware/1221/wls/WBAPP/web_xml.htm#WBAPP502" target="_blank">Reference: https://docs.oracle.com/middleware/1221/wls/WBAPP/web_xml.htm#WBAPP502</a>
+                <pre class="brush:xml">
+                    &lt;?xml version="1.0"?>
+                    &lt;web-app xmlns = "http://java.sun.com/xml/ns/j2ee" version = "3.0">
+                        &lt;display-name>Hello World&lt;/display-name>
+                        
+                        &lt;filter>
+                            &lt;filter-name>Logger&lt;/filter-name>
+                            &lt;filter-class>nqqin.app.springframeworkweb.filter.Log&lt;/filter-class>
+                        &lt;/filter>
+                        &lt;!--> Apply this filter to all request, filter only based on url, it cannot based on HTTP method. &lt;-->
+                        &lt;filter-mapping>
+                            &lt;filter-name>Logger&lt;/filter-name>
+                            &lt;url-pattern>/*&lt;/url-pattern>
+                        &lt;/filter-mapping>
+                        &lt;servlet>
+                            &lt;servlet-name>MainDispatcher&lt;/servlet-name>
+                            &lt;servlet-class>org.springframework.web.servlet.DispatcherServlet&lt;/servlet-class>
+                            &lt;load-on-startup>1&lt;/load-on-startup>
+                        &lt;/servlet>
+                    
+                        &lt;servlet-mapping>
+                            &lt;servlet-name>MainDispatcher&lt;/servlet-name>
+                            &lt;url-pattern>/view/*&lt;/url-pattern>
+                        &lt;/servlet-mapping>
+                    &lt;/web-app>
+                </pre>
+                <h4>filter-mapping and servlet-mapping</h4>
+                <p>
+                    After selecting the web application based the context path (longest prefix match), the url-pattern matching is based on the remaining path. For example, 
+                    a url http://localhost:8080/sample/hellworld, with a context path as /sample, the remaining will be /helloworld and /helloworld will be used to match url-pattern.<br>
+                    1. /{path} : exact match (the highest procedure)<br>
+                    2. *.{extension} match all url with an [extension] <br>
+                    3. /{prefix}/* match all url with an prefix.<br>
+                    4. / match all request
+                </p>
+                <h4>filter</h4>
+                filter and filter-mapping: filters are a java class that implements the Filter interface, you can use it to do authentication, logging, and others.
+                <pre class="brush:java">
+                    interface Filter {
+                        default public void init(FilterConfig filterConfig) throws ServletException {}
+                        public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+                            throws IOException, ServletException;
+                        default public void destroy() {}
+                    }
+                </pre>
+                <p>Servlet container manage its lifecycle and apply to specific urls controlled by the <span style="color:red">filter-mapping</span>.</p>
+            </li>
+            <li>
+                <h4>Servlet</h4>
+                <p>The servlet is a java class that implement that <span style="color:red">javax.http.servlet</span> interface. An web application can have multiple servlets.</p>
+            </li>
+            <li>
+                <h4>Passing parameter from servlet container to servlet</h4>
+                <p>1. context-param element: this key-value pair will be set to <span style="color:red">ServletContext</span>, and all servlets within the web application get them.</p>
+                <pre class="brush:xml">
+                    &lt;web-app xmlns = "http://java.sun.com/xml/ns/j2ee" version = "3.0">
+                        &lt;context-param>
+                            &lt;param-name>myKey&lt;/param-name>
+                            &lt;param-value>SomeStringValue&lt;/param-value>
+                        &lt;/context-param>
+                    &lt;/web-app>
+                </pre>
+                <pre class="brush:java">
+                    Enumeration&lt;String> contextParam = config.getServletContext().getInitParameterNames();
+                    String value = config.getServletContext().getInitParameter("myKey");
+                </pre>
+                <p>2. init-param inside servlet scope, only the servlet knows it.</p>
+                <pre class="brush:xml">
+                        &lt;web-app xmlns = "http://java.sun.com/xml/ns/j2ee" version = "3.0">
+                            &lt;servlet>
+                                &lt;servlet-name>MainDispatcher&lt;/servlet-name>
+                                &lt;servlet-class>org.springframework.web.servlet.DispatcherServlet&lt;/servlet-class>
+                                &lt;init-param>
+                                    &lt;param-name>contextConfigLocation&lt;/param-name>
+                                    &lt;param-value>/WEB-INF/main-dispatcher-servlet.xml&lt;/param-value>
+                                &lt;/init-param>
+                                &lt;init-param>
+                                    &lt;param-name>nan-namespace&lt;/param-name>
+                                    &lt;param-value>nan-value&lt;/param-value>
+                                &lt;/init-param>
+                                &lt;load-on-startup>1&lt;/load-on-startup>
+                            &lt;/servlet>
+                        &lt;/web-app>
+                </pre>
+                Java code to extract parameters.
+                <pre class="brush:java">
+                    Enumeration&lt;String> params = config.getInitParameterNames();
+                    while(params.hasMoreElements()){
+                        String para = params.nextElement();
+                        System.out.format("Param %s : %s\n",para, config.getInitParameter(para));
+                    }
+                </pre>
+            </li>
+            <li>
+                <h4>Other ServletConfig and web.xml mapping</h4>
+            </li>
+            <li>
+                <h4>ServletContext</h4>
+                <pre class="brush:java">
+                    ServletContext tomcatContext = servletConfig.getServletContext();
+                    tomcatContext.getServletContext().getContextPath() // e.g. /sample
+                </pre>
+            </li>
+        </ol>
+    </div>
+</div>
+</li>
+<li>
+    <div class="content" id="spring">
+        <h3>Spring Framework</h3>
+        <p>First release 2002, current version spring framework 5, spring boot 2 (late-2019)</p>
+        <p>Spring Framework contains servlet components. It's primarily a IoC container. It also has a component "Web Servlet", which is a java ee serlvet implementation.</p>
+        <div class="featureList">
+            <ol>
+                <li>
+                    <h4>Architecture</h4>
+                    <pre class="brush:java">
+                        abstract class GenericServlet implements Servlet, ServletConfig {}
+                        // GenericServlet has a ServletConfig config, merge the two interface together.
+                        abstract class HttpServlet extends GenericServlet{}
+                        // separate different http method to different java method.
+                        abstract class HttpServletBean extends HttpServlet implements EnvironmentCapable, EnvironmentAware{}
+                        // Use BeanWrapper to set web.xml's servlet's &lt;init-param> to the Servlet's property members.
+                        // you can configure the Servlet's property by using the init-param in web.xml.
+                        /**
+                        For example, 
+                        &lt;init-param>
+                            &lt;param-name>contextConfigLocation&lt;/param-name>
+                            &lt;param-value>/WEB-INF/main-dispatcher-servlet.xml&lt;/param-value>
+                        &lt;/init-param>
+                        will set up FrameworkServlet's contextConfigLocation to that value.
+                        */
+
+                        abstract class FrameworkServlet extends HttpServletBean implements ApplicationContextAware{
+                            // some default
+                            public static final Class&lt;?> DEFAULT_CONTEXT_CLASS = XmlWebApplicationContext.class;
+                            public String getNamespace() {
+                                return (this.namespace != null ? this.namespace : getServletName() + DEFAULT_NAMESPACE_SUFFIX);
+                            }
+                        }
+                        /**
+                        This class primarily for setting up a application context, (application context is different from servlet context, servlet context is given by servlet container (e.g. tomcat), application
+                        context is from Spring). Application context has the important BeanFactory for DI.
+                        // XmlWebApplicationContext.
+                        @Override
+                        protected String[] getDefaultConfigLocations() {
+                            if (getNamespace() != null) {
+                                return new String[] {DEFAULT_CONFIG_LOCATION_PREFIX + getNamespace() + DEFAULT_CONFIG_LOCATION_SUFFIX};
+                            }
+                            else {
+                                return new String[] {DEFAULT_CONFIG_LOCATION};
+                            }
+                        }
+                        */
+
+                    </pre>
+                </li>
+            </ol>
+        </div>
+        <h4>Spring Framework vs. Spring Boot</h4>
+        <p>Spring Boot is on the top of Spring Framework and eliminates the requirement of spring framework's xml config file. Spring Boot 2.x is based on Spring Framework 5.x, which is based on Java 8.</p>
     <div class="featureList">
         <ol>
             <li>
@@ -136,72 +517,6 @@ SyntaxHighlighter.all()
 </div>
 </li>
 <li>
-<div class="content" id="servlet">
-<h3>Spring with Java Servlet</h3>
-<p>JSR 369 defines the specficiation of Java Servlet 4.0</p>
-<p>A Java Servelet is a Java program (a set of classes) that 
-    <br>1. realizes developer-defined functionality.
-    <br>2. implement JSR defines interfaces, e.g. init(), service(), destory(), in order to let servlet container to control it.
-</p>
-<div class="featureList">
-    <ol>
-        <li>
-            <h4>Servlet Container</h4>
-            <p>A servlet container is another Java program that 
-                <br>1. receive user request, and convert to a ServletRequest object.
-                <br>2. send back response by converting ServletResponse.
-                <br>3. Manage java servlet, e.g. dynamic loading, init, destory.
-            </p>
-            <p>Open source Java EE Servlet Container: Tomcat, Wildfly (JBoss)</p>
-        </li>
-        <li>
-            <h4>Spring Application with Servlet web</h4>
-            <pre class="brush:java">
-                SpringApplicationBuilder appBuilder = new SpringApplicationBuilder(Config.class)
-                    .web(WebApplicationType.SERVLET); 
-            </pre>
-            <p>Spring will try to find <span class="inline-code">ServletWebServerFactory</span> bean to create and run a servlet container.</p>
-            <p>
-
-            </p>
-                There two ways to register a servlet factory<br>
-                1). With manually defining @Bean in the Configuration class.
-                2). Using @EnableAutoConfiguration.
-            </p>
-            <pre class="brush:java">
-                public interface ServletWebServerFactory {
-                    WebServer getWebServer(ServletContextInitializer... initializers);
-                }
-                public class TomcatServletWebServerFactory extends AbstractServletWebServerFactory
-		            implements ConfigurableTomcatWebServerFactory, ResourceLoaderAware{
-                }
-            
-                // method 1. inside the config class.
-                @Bean
-                public ServletWebServerFactory servletFactory(){
-                    return new TomcatServletWebServerFactory(9000); // make 9000 as the port
-                }
-
-                // method 2
-                /**
-                * @EnableAutoConfiguration{
-                *   @AutoConfigurationPackage{
-                *       @Import(value=org.springframework.boot.autoconfigure.AutoConfigurationPackages.Registrar.class)
-                *   }
-                *   @Import(value=AutoConfigurationImportSelector.class)
-                * }
-                */
-                @EnableAutoConfiguration
-                public class Config{
-
-                }
-            </pre>
-        </li>
-    </ol>
-</div>
-</div>
-</li>
-<li>
 <div class="content" id="reference">
 <h3>References</h3>
 <div class="featureList">
@@ -209,7 +524,8 @@ SyntaxHighlighter.all()
         <li><a href="https://docs.spring.io/spring-boot/docs/2.2.0.RELEASE/reference/html/spring-boot-features.html#boot-features-spring-application" target="_blank">SpringApplication </a></li>
         <li><a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/SpringApplication.html" target="_blank">SpringApplication API</a></li>
         <li><a href="../resources/servlet-4_0_FINAL.pdf" target="_blank">Java EE Servlet 4.0 Specification</a></li>
-        
+        <li><a href="https://tomcat.apache.org/tomcat-9.0-doc/" target="_blank">Tomcat 9.0 docs</a></li>
+        <li><a href="https://howtodoinjava.com/tomcat/tomcats-architecture-and-server-xml-configuration-tutorial/" target="_blank">Tomcat – Architecture and server.xml configuration</a></li>
     </ol>
 </div>
 </div>

@@ -1,10 +1,11 @@
 Created: 2020-03-29
-Modified: 2020-03-29
+Modified: 2020-04-05
 
 * [Introduction](#intro)
 * [Project](#project)
 * [Task](#task)
 * [Plugin](#plugin)
+* [Multi-project & Dependency Configuration](#dependency)
 * [References](#reference)
 ***
 ### <a id="intro">I. Introduction</a>
@@ -73,6 +74,21 @@ public interface PluginAware {
     void apply(Map<String, ?> options);
 }
 ```
+
+#### Create a gradle based project
+Inside a directory, run `gradle init`.
+It will ask 
+1. project type (e.g. basic, application, library or gradle plugin)
+2. implementation language (e.g. C++, Java ...)
+3. script DSL (e.g. Groovy, Kotlin)
+4. test framework (e.g. JUnit 4, JUnit 5/Jupiter)
+
+After this initializatio, it will also include a gradle/wrapper jar, gradlew and gradlew so that you can distriute and run it on a system
+that doesn't have gradle installed.
+
+#### Integrate with Intellij
+1. Use Intellij to open a gradle project, go to project structure to select a JDK (e.g. JDK 8)
+2. map file directory to project structure. Setup as source and test directory (so that Intellij can index source files and be able to jumping around code.)
 
 ### <a id="project">II. Project</a>
 A project object has a few important handler to handle different configurations.
@@ -268,6 +284,46 @@ task mydemo(type: nqqin.app.gradleplugin.DemoTask){
 }
 ```
 
+### <a id="dependency">Dependency Configurations</a>
+A dependency configuration specifies the dependencies required at different lifecycle (e.g. compile time, runtime). It usually means adding this dependency to the classpath
+during compile (javac) and running (java).
+
+1. api/implementation: api and implementation are the artifacts (jar) required at both `compile time` and `runtime`. The different between API and Implementation is that API
+will expose `transitive dependency` to the consumer.
+* In a gradle multi-project sencario, if a subproject "Library" declare a dependency as 
+    ```
+    dependencies {
+        implementation "nqqin-software:Datastore:1.0.2"
+    }
+    ```  
+And another subproject "Driver" declare a dependency to import "Library"
+    ```
+    dependencies {
+        implementation project(":Library")
+    }
+    ```
+Then the driver will not have the "nqqin-software:Datastore:1.0.2" in both compile time and runtime classpath. The Driver can compile successfully if it doesn't directly use 
+"Datastore", but it may fail to run because "Library" has dependency on "Datastore" and `java Driver` doesn't provide the classpath to "Datastore". So in this case, the consumer "Driver" has to figure out the transitive dependency.
+
+* If Gradle pulish the "Library" project to the Maven (local) repo, it will generate a maven POM file to declare its dependency. Maven has 6 scopes to specify when a dependency will be used.
+    * compile: (default scope): depenency will appear on the compile, test, and runtime classpath, and propagated to dependent projects' compile classpath.
+    * runtime: dependency only required at runtime `java -cp`.
+    * test: dependency on the compilation and runtime classpath during testing.
+    * provided: dependency will be provided at runtime by JDK or a container. 
+    ...
+When a dependency is declared as `api` in gradle build, it will be in the `compile` scope; a dependency is declared as `implementation` in gradle build, it will be in the `runtime` scope.
+
+Example, s3 -> datastore -> driver
+"Datastore" project declares `implementation s3` inside the dependency, and publish it to Maven. The generated POM will put `s3` in a `runtime` scope.
+"Driver" project declares `implementation datastore` inside its dependency. The `s3` will be added to its `runtime` classpath, but will not be in `compile` time (`javac -cp`), which means if you need `s3` in the `Driver` project, you have to include `s3` directly from the "Driver" project.
+
+2. compileOnly: only required at compile time. <span style="color:red">It will not show in the POM file, but will be add to `javac -cp` when build</span>. Example of lombok.
+3. annotationProcessor: this configuration is not set as classpath, instead, it register a list of annotation processor to generate new source files (e.g. lombok)
+4. runtimeOnly: //todo
+
+
 
 ### <a id="reference">V. References</a>
 1. <a href="http://www.thinkcode.se/blog/2015/03/22/a-gradle-plugin-written-in-java" target="_blank">A Gradle plugin written in Java</a>
+1. <a href="https://docs.gradle.org/current/userguide/dependency_management.html#declaring-dependencies" target="_blank">Declaring Dependencies</a>
+2. <a href="https://docs.gradle.org/current/userguide/java_library_plugin.html#sec:java_library_separation" target="_blank">API and Implementation separation</a>
