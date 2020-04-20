@@ -1,5 +1,5 @@
 Created: 2020-04-16
-Modified: 2020-04-16
+Modified: 2020-04-18
 
 * [java.util.logging](#java.util.logging)
 * [log4j](#log4j)
@@ -161,7 +161,8 @@ Log4j came before java.util.logging api, it was release in 2001 by Apache Softwa
 
 Log4j was not supported since 2015, the last version of Log4j is 1.2. Its successor is Log4j 2.
 
-* Logger, Appenders (Handlers) and Layouts (Formatter) <span style="color:red">It doesn't have filters</span>
+* Logger has level and Appenders (Handlers).
+* Appender owns threshold (level), a chain of Filters, a layout (Formatter) and an error handler. (a layout cannot be shared between appender)
 * LogManager: has a repository that maintain the structures of loggers. The default implementation is `Hierarchy`.
 * A child logger, by default, inherits its parent's appenders. (Achieved by the hierarcial structure.)
 * Different from java.util.logging's handlers, appenders don't have log level control.
@@ -266,10 +267,36 @@ otherwise try to loading `log4j.xml` and `log4j.properties` files from __classpa
 
 ##### .properties (PropertyConfigurator)
 
-loggerName = LEVEL, appender-name-1, appender-name-2
-log4j.appender.appender-name-1= org.apache.log4j.ConsoleAppender # class
-...
+The configuration will initialize all configured loggers at configuration time, (not lazy)
+```
+log4j.rootLogger = LEVEL, {appender-name}, {appender-name-2} ...
+log4j.logger.{child-logger-name} = LEVEL, {appender-name}, {appender-name-2} ... 
+log4j.appender.{appender-name}= org.apache.log4j.ConsoleAppender # class
+log4j.appender.{appender-name}.layout = org.apache.log4j.PatternLayout # class
+log4j.appender.{appender-name}.layout.{key} = {value} # beanwrapper to update the layout object's properties
+log4j.appender.{appender-name}.errorhandler 
+log4j.appender.{appender-name}.{key} = {value} # beanwrapper to update the appender object's properties
+log4j.appender.{appender-name}.filter
 
+log4j.loggerFactory = class # give an optional factory, default is `DefaultCategoryFactory`
+log4j.factory.{key} = value # beanwrapper to update factory's properties
+```
+
+```java
+  static final String      CATEGORY_PREFIX = "log4j.category.";
+  static final String      LOGGER_PREFIX   = "log4j.logger.";
+  static final String       FACTORY_PREFIX = "log4j.factory";
+  static final String    ADDITIVITY_PREFIX = "log4j.additivity.";
+  static final String ROOT_CATEGORY_PREFIX = "log4j.rootCategory";
+  static final String ROOT_LOGGER_PREFIX   = "log4j.rootLogger";
+  static final String      APPENDER_PREFIX = "log4j.appender.";
+  static final String      RENDERER_PREFIX = "log4j.renderer.";
+  static final String      THRESHOLD_PREFIX = "log4j.threshold";
+  private static final String      THROWABLE_RENDERER_PREFIX = "log4j.throwableRenderer";
+  private static final String LOGGER_REF	= "logger-ref";
+  private static final String ROOT_REF		= "root-ref";
+  private static final String APPENDER_REF_TAG 	= "appender-ref";  
+```
 ### <a id="reference">References</a>
 1. <a href="http://tutorials.jenkov.com/java-logging/index.html" target="_blank">Java Logging</a>
 2. <a href="https://logging.apache.org/log4j/1.2/manual.html" target="_blank">Log4j 1.2</a>

@@ -43,6 +43,7 @@ SyntaxHighlighter.all()
 <li><a href="#servlet">Servlet & Servlet Container</a></li>
 <li><a href="#tomcat">Tomcat & Servlet</a></li>
 <li><a href="#spring">Spring Framework</a></li>
+<li><a href="#spring-boot">Spring Boot</a></li>
 <li><a href="#reference">References</a></li>
 </ul>
 </div>
@@ -397,31 +398,141 @@ SyntaxHighlighter.all()
                         // GenericServlet has a ServletConfig config, merge the two interface together.
                         abstract class HttpServlet extends GenericServlet{}
                         // separate different http method to different java method.
-                        abstract class HttpServletBean extends HttpServlet implements EnvironmentCapable, EnvironmentAware{}
+                        abstract class HttpServletBean extends HttpServlet implements EnvironmentCapable, EnvironmentAware{
+                            @Override
+                            public final void init(){ // lifecycle method, invoked by servlet container.
+                                // BeanWrapper, setup class properties according to web.xml
+                                initServletBean(); // subclass hook.
+                            }
+
+                            public ConfigurableEnvironment getEnvironment() {
+                                if (this.environment == null) {
+                                    this.environment = new StandardServletEnvironment();
+                                }
+                                return this.environment;
+                            }
+                        }
                         // Use BeanWrapper to set web.xml's servlet's &lt;init-param> to the Servlet's property members.
                         // you can configure the Servlet's property by using the init-param in web.xml.
-                        /**
-                        For example, 
+
+                        // it also setup an Environment, which aggregate configurations from container's config and context.
+                    </pre>
+                    For example, 
+                    <pre class="brush:xml">
                         &lt;init-param>
                             &lt;param-name>contextConfigLocation&lt;/param-name>
                             &lt;param-value>/WEB-INF/main-dispatcher-servlet.xml&lt;/param-value>
                         &lt;/init-param>
-                        will set up FrameworkServlet's contextConfigLocation to that value.
-                        */
-
+                    </pre>
+                    will set up FrameworkServlet's contextConfigLocation to that value.
+                    
+                </li>
+                <li>
+                    <h4>FrameworkServlet</h4>
+                    <p>
+                        This class primarily for setting up a application context, (application context is different from servlet context, servlet context is given by servlet container (e.g. tomcat), application
+                        context is from Spring). Application context has the important BeanFactory for DI.
+                    </p>
+                    <p>
+                        If you specify the &lt;param-name>contextConfigLocation&lt;/param-name> inside the servlet in the web.xml. The <span style="color:green">HttpServletBean.init()</span> will help setup the 
+                        <span style="color:green">FrameworkServlet.contextConfigLocation</span>, if not set, it will the following logic 
+                    </p>
+                    <pre class="brush:java">
                         abstract class FrameworkServlet extends HttpServletBean implements ApplicationContextAware{
                             // some default
+                            public static final String DEFAULT_NAMESPACE_SUFFIX = "-servlet";
                             public static final Class&lt;?> DEFAULT_CONTEXT_CLASS = XmlWebApplicationContext.class;
                             public String getNamespace() {
                                 return (this.namespace != null ? this.namespace : getServletName() + DEFAULT_NAMESPACE_SUFFIX);
                             }
+
+                            @Override 
+                            protected final void initServletBean() { // invoked by HttpServletBean's init()
+                                this.webApplicationContext = initWebApplicationContext();
+                                initFrameworkServlet(); // subclass hook
+                            }
+
+                            protected WebApplicationContext initWebApplicationContext(){
+                                WebApplicationContext rootContext = servletConfig.servletContext.getAttribute(ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
+                                WebApplicationContext wac = null;
+                                if(this.webApplicationContext != null){
+                                    wac = this.webApplicationContext;
+                                    // already has the web application context; the refresh it.
+                                    ConfigurableWebApplicationContext cwac = (ConfigurableWebApplicationContext) wac;
+                                    cwac.setParent(rootContext);
+                                    configureAndRefreshWebApplicationContext(cwac);
+                                }else if(this.contextAttribute != null){ // settable from param-init
+                                    wac = servletConfig.servletContext.getAttribute(ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
+                                }
+                                if(wac == null){
+                                    wac = createWebApplicationContext(rootContext)
+                                }
+
+                            }
+                            // create a new ApplicationContext;
+                            protected WebApplicationContext createWebApplicationContext(@Nullable ApplicationContext parent) {
+                                Class&lt;?> contextClass = getContextClass(); // by default, it's XmlWebApplicationContext.class;
+                                ConfigurableWebApplicationContext wac =
+                                            (ConfigurableWebApplicationContext) BeanUtils.instantiateClass(contextClass);
+                                wac.setEnvironment(getEnvironment());
+                                wac.setParent(parent);
+                                String configLocation = getContextConfigLocation();
+                                if (configLocation != null) {
+                                    wac.setConfigLocation(configLocation); 
+                                    // settable from init-param. If not set, the XmlWebApplicationContext.class; has it's own default configuration location.
+                                }
+                                configureAndRefreshWebApplicationContext(wac);
+                                return wac;
+                            }
+
+                            protected void configureAndRefreshWebApplicationContext(ConfigurableWebApplicationContext wac) {
+                                if(this.contextId != null){
+                                    wac.setId(this.contextId); // contextId can comes from init-param.
+                                }else{
+                                    wac.setId(some default value);
+                                }
+                                wac.setServletContext(getServletContext()); // setup container's context;
+                                wac.setServletConfig(getServletConfig()); // setup container's servlet config;
+                                wac.setNamespace(getNamespace()); // setup namespace.
+
+                                // ApplicationContext extends ApplicationEventPublisher, which support event. e.g. publishEvent(ApplicationEvent event);
+                                wac.addApplicationListener(new SourceFilteringListener(wac, new ContextRefreshListener()));
+                                
+                                // init environment.
+                                wac.getEnvironment().initPropertySources(getServletContext(), getServletConfig());
+                                
+                                postProcessWebApplicationContext(wac); // subclass hook.
+
+                                // you can implement "ApplicationContextInitializer&lt;ConfigurableApplicationContext>" to intialize the application context.
+                                // Add the application context initializer by configuration see below.
+                                applyInitializers(wac); 
+                                wac.refresh(); // pass to the WebApplicationContext implementation.
+                            }
                         }
-                        /**
-                        This class primarily for setting up a application context, (application context is different from servlet context, servlet context is given by servlet container (e.g. tomcat), application
-                        context is from Spring). Application context has the important BeanFactory for DI.
-                        // XmlWebApplicationContext.
+                    </pre>
+
+                    <h4>Add context initializer</h4>
+                    Context intializer can be specified in context-param, or servlet's init-param.
+                    <pre class="brush:xml">
+                        &lt;context-param>
+                            &lt;param-name>globalInitializerClasses&lt;/param-name>
+                            &lt;param-value>class1, class2&lt;/param-value>
+                        &lt;/context-param>
+                        &lt;servlet>
+                            &lt;init-param>
+                                &lt;param-name>contextInitializerClasses&lt;/param-name>
+                                &lt;param-value>class1, class2&lt;/param-value>
+                            &lt;/init-param>
+                        &lt;/servlet>
+                    </pre>
+                </li>
+                <li>
+                    <h4>XmlWebApplicationContext</h4>
+                    <p>The default application context used by FrameworkServlet</p>
+                    <pre class="brush:java">
+                    public class XmlWebApplicationContext extends AbstractRefreshableWebApplicationContext
                         @Override
-                        protected String[] getDefaultConfigLocations() {
+                        protected String[] getDefaultConfigLocations() { // the default location of configuration file if not given by FrameworkServlet.
                             if (getNamespace() != null) {
                                 return new String[] {DEFAULT_CONFIG_LOCATION_PREFIX + getNamespace() + DEFAULT_CONFIG_LOCATION_SUFFIX};
                             }
@@ -429,15 +540,23 @@ SyntaxHighlighter.all()
                                 return new String[] {DEFAULT_CONFIG_LOCATION};
                             }
                         }
-                        */
-
+                    }
                     </pre>
+                    <p>Check <a href="./application-context.html">Application Context</a> for more details</p>
+                </li>
+                <li>
+                    <h4>DispatcherServlet</h4>
                 </li>
             </ol>
         </div>
+    </div>
+    </li>
+    <li>
+        <div class="content" id="spring-boot">
+        <h3>Spring Boot</h3>
         <h4>Spring Framework vs. Spring Boot</h4>
         <p>Spring Boot is on the top of Spring Framework and eliminates the requirement of spring framework's xml config file. Spring Boot 2.x is based on Spring Framework 5.x, which is based on Java 8.</p>
-    <div class="featureList">
+        <div class="featureList">
         <ol>
             <li>
                 <h4>SpringApplication</h4>
