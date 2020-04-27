@@ -31,10 +31,13 @@ You can also execute `LogManager manager = LogManager.getLogManager();` to expli
         }
     }
     ```
-    , which means you can have your own `LogManager` by supplying the system property.
+    , which means you can have your own `LogManager` by supplying the system property. (Tomcat does have its own log manager)
 
-    2. Read configuration, Update existing logger's log level, notify listeners.
-    ```java
+    2. Inside the LogManager, it will read configuration and initialze logger eagerly, update existing logger's log level, notify listeners. 
+    It first reads the configuration class from `java.util.logging.config.class` system property, if not set will use 
+    the property files specified by `java.util.logging.config.file`. <span style='color:red'>the abosulte file path, not the classpath</span>
+```java
+public class LogManager {
     public void readConfiguration(){
         String cname = System.getProperty("java.util.logging.config.class");
         if(cname != null){
@@ -51,7 +54,8 @@ You can also execute `LogManager manager = LogManager.getLogManager();` to expli
         }
         readConfiguration(new BufferedInputStream(new FileInputStream(fname)));
     }
-    ```
+}
+```
 
     Example of Configuration Class (does the same thing) (Configuration class is not very useful, since you sill need to invoke `.readConfiguration(InputStream in)`, but it may be useful when you do configuration over network since you can put the network input stream to the function);
     ```java

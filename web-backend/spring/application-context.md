@@ -3,6 +3,8 @@ Modified: 2020-04-04
 
 * [Bean Related Classes & Interfaces](#bean)
 * [Application Context](#ac)
+* [Annotation based App Context](#aac)
+* [XML based App Context](#xac)
 * [Web Application Context](#wac)
 * [References](#reference)
 ***
@@ -383,7 +385,8 @@ public class GenericApplicationContext extends AbstractApplicationContext implem
 
 The `GenericAC` class provides method to register bean definition, but on one invokes this method to register beans. This is done by subclass, e.g. `AnnotationConfigApplicationContext` that reader bean definition from configuration class and then register them with `GenericAC.registerBeanDefinition` method.
 
-#### 3). AnnotationConfigApplicationContext
+### <a id="acc">III. Annotation based App Context (AnnotationConfigApplicationContext)</a>
+
 `AnnotationConfigApplicationContext` read bean definition from Configuration classes and register them with `GenericAC`'s `registerBeanDefinition` method. The operation is delegated to `AnnotatedBeanDefinitionReader`
 
 ```java
@@ -481,7 +484,89 @@ This step happened after parsing @Configuration classes.
 
 #####  Example of Configuration class
 ```java
+@Configuration
+@ComponentScan // import all class annotated with @Component in this package and subpackages.
+@Import({AnotherConfiguration.class}) // explicitly import a configuration class.
+@Profile("dev") // conditional import.
+public class MyConfiguration {
+    @Bean
+    public X getX(){
+        return new X();
+    }
+    @Bean
+    public Y getY(){
+        return new Y(getX());
+    }
 
+    // You can have a nested configuration class inside.
+    public class NestConfiguration{
+        @Bean
+        public Z2 getZ2(){
+            return new Z2(getX());
+        }
+    }
+}
 ```
-### <a id="reference">References</a>
-1. <a href="https://guides.github.com/features/mastering-markdown/" target="_blank">Mastering Markdown</a>
+
+### <a id="reference">XML based app context</a>
+There are two XML based App Context, `ClassPathXmlApplicationContext` and `FileSystemXmlApplicationContext`
+
+#### Class structure
+```bash
+AbstractApplicationContext
+AbstractRefreshableApplicationContext
+AbstractRefreshableConfigApplicationContext
+AbstractXmlApplicationContext
+ClassPath/FileSystemXmlApplicationContext
+```
+
+The common ancestor of a XML application context and annotation based app context is `AbstractApplicationContext`.
+* AbstractRefreshableApplicationContext: provide a refresh skeleton invoked by parent, use `DefaultListableBeanFactory` as default BeanFactory and registry.
+```java
+protected final void refreshBeanFactory(){
+    if(this.beanFactory != null){
+        this.beanFactory.destroySingletons();
+    }
+    this.beanFactory = new DefaultListableBeanFactory(getInternalParentBeanFactory());
+    customizeBeanFactory(beanFactory)
+    {
+        beanFactory.setAllowBeanDefinitionOverriding(this.allowBeanDefinitionOverriding);
+        beanFactory.setAllowCircularReferences(this.allowCircularReferences);
+    }
+    loadBeanDefinitions(beanFactory); // abstract
+}
+```
+
+* AbstractRefreshableConfigApplicationContext: provide method to set/get configuration locations and resolve configuration's real locations in case it contains placeholder.
+```java
+public void setConfigLocations(@Nullable String... locations) {	
+	this.configLocations = new String[locations.length];
+	for (int i = 0; i < locations.length; i++) {
+		this.configLocations[i] = this.environment.resolveRequiredPlaceholders(locations[i]).trim();
+	}
+}
+```
+
+* AbstractXmlApplicationContext: provide a skeleton for loading XML based configurations.
+```java
+protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) throws BeansException, IOException {	
+	XmlBeanDefinitionReader beanDefinitionReader = new XmlBeanDefinitionReader(beanFactory); // the actual worker
+
+	beanDefinitionReader.setEnvironment(this.getEnvironment());
+	beanDefinitionReader.setResourceLoader(this);
+	beanDefinitionReader.setEntityResolver(new ResourceEntityResolver(this));
+    beanDefinitionReader.setValidating(this.validating); // indicate if allowing invalid .xml
+	loadBeanDefinitions(beanDefinitionReader);{
+        Resource[] configResources = getConfigResources(); // leave to subclass to provide default configurations.
+		if (configResources != null) {
+			reader.loadBeanDefinitions(configResources);
+		}
+		String[] configLocations = getConfigLocations(); // ClasspathXML override this class to provide XML resource.
+		if (configLocations != null) {
+			reader.loadBeanDefinitions(configLocations);
+		}
+    }
+}
+```
+
+1. <a href="http://tomcat.apache.org/tomcat-8.0-doc/class-loader-howto.html" target="_blank">Tomcat classloader</a>
