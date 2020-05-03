@@ -5,11 +5,11 @@ Modified: 2020-04-26
 * [DispatcherServlet](#dispatcher-servlet)
 * [References](#reference)
 ***
-### <a id="intro">Web Application Context</a>
+### <a id="intro">I. Web Application Context</a>
 The FrameworkServlet provides a `XmlWebApplicationContext` as the default the app context if not specifies in the init-param. Any Web enabled application context actually doesn't register extra beans by default. The extra things they do are to support `getServletContext/Config` and `namespace`, override environment, and also extra bean factory scopes. The extra beans are registered in other forms.
 
 #### Context for Web App
-Spring define a interface `WebApplicationContext` that defines the extra functions should be included with a web app enabled context, such as knowing `ServletContext`. `ConfigurableWebApplicationContext` futher extends its functions by adding `namespace`, `servlet-config`, and `config location`.
+Spring defines an interface `WebApplicationContext` that defines the extra functions should be included with a web app enabled context, such as knowing `ServletContext`. `ConfigurableWebApplicationContext` futher extends its functions by adding `namespace`, `servlet-config`, and `config location`.
 
 ```java
 public interface WebApplicationContext extends ApplicationContext{
@@ -35,28 +35,27 @@ public interface ConfigurableWebApplicationContext extends WebApplicationContext
 It also 
 1. overrides the environment by using `StandardServletEnvironment`, which add context-param and init-param to the environment.
 2. implement `AbstractApplicationContext` function hook `postProcessBeanFactory`
+
 ```java
-protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
-    // if a bean implements ServletContextAware or ServletConfigAware interface, the context/config will be set.
-	beanFactory.addBeanPostProcessor(new ServletContextAwareProcessor(this.servletContext, this.servletConfig));
-	beanFactory.ignoreDependencyInterface(ServletContextAware.class);
-	beanFactory.ignoreDependencyInterface(ServletConfigAware.class);
+	protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
+		// support ServletContextAware or ServletConfigAware interface, the context/config will be set.
+		beanFactory.addBeanPostProcessor(new ServletContextAwareProcessor(this.servletContext, this.servletConfig));
+		beanFactory.ignoreDependencyInterface(ServletContextAware.class);
+		beanFactory.ignoreDependencyInterface(ServletConfigAware.class);
 
-    // register the request & session scope.
-	WebApplicationContextUtils.registerWebApplicationScopes(beanFactory, this.servletContext);
-	WebApplicationContextUtils.registerEnvironmentBeans(beanFactory, this.servletContext, this.servletConfig);
-}
-
+		// register the request & session scope.
+		WebApplicationContextUtils.registerWebApplicationScopes(beanFactory, this.servletContext);
+		WebApplicationContextUtils.registerEnvironmentBeans(beanFactory, this.servletContext, this.servletConfig);
+	}
 ```
 
-`XmlWebApplicationContext` has a default configuration locations if you don't explicitly give one.
-The default configuration is `/WEB-INF/${namespace}.xml` or `/WEB-INF/applicationContext.xml` if you don't have a namespace.
-
+`XmlWebApplicationContext` has a default configuration locations if you don't explicitly give one. The default configuration is `/WEB-INF/${namespace}.xml` or `/WEB-INF/applicationContext.xml` if you don't have a namespace. But the `FrameworkServlet` always setup its namespace to the app context. If the namespace of the `FrameworkServlet` is not set in the web.xml, by default, namespace = `{servlet-name}-servlet`. Therefore, if you set nothing, the `XmlWebApplicationContext` will look for a file named as `/WEB-INF/${servlet-name}-servlet.xml`.
 
 #### Where does web/http related beans registered?
 
 Different configuration sources have different forms to register web/http related beans.
 For example, a Xml based web application's xml configuration usually contains
+
 ```xml
 <mvc:annotation-driven>
     <mvc:message-converters>
@@ -65,6 +64,7 @@ For example, a Xml based web application's xml configuration usually contains
     </mvc:message-converters>
 </mvc:annotation-driven>
 ```
+
 And the `mvc:annotation-driven` element is handler by MvcNamespaceHandler's AnnotationDrivenParser, which does register a group of beans for handling Http specific requests. For example, 
 `RequestMappingHandlerMapping` helps finding the right controller method by reading `@RequestMapping` annotation.
 
@@ -106,6 +106,7 @@ public class DispatcherServlet extends FrameworkServlet {
 ```
 
 The default strategy file is in spring-webmvc-xxx.jar's org.springframework.web.servlet package.
+
 ```bash
 org.springframework.web.servlet.LocaleResolver=org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver
 org.springframework.web.servlet.ThemeResolver=org.springframework.web.servlet.theme.FixedThemeResolver
@@ -131,7 +132,8 @@ org.springframework.web.servlet.FlashMapManager=org.springframework.web.servlet.
 
 
 #### How does this initStrategy invoked?
-`FrameworkServlet` add a listener to the Web Application Context. 
+`FrameworkServlet` add a listener to the Web Application Context.
+
 ```java
 public class FrameworkServlet{
     protected void configureAndRefreshWebApplicationContext(ConfigurableWebApplicationContext wac) {
@@ -156,6 +158,7 @@ public class FrameworkServlet{
 	}
 }
 ```
+
 DS override the onRefresh listener, and calls the `initStrategies` method.
 The `AbstractApplicationContext` publish a refresh event at the end of refresh().
 
